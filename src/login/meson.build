@@ -1,17 +1,16 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 #if 0 /// rename to elogind
-# systemd_logind_sources = files('''
-#         logind.c
-#         logind.h
-# '''.split())
+# systemd_logind_sources = files(
+#         'logind.c',
+#         'logind.h',
+# )
 #else // 0
-elogind_sources = files('''
-        elogind.c
-        elogind.h
-        logind.c
-        logind.h
-'''.split())
+elogind_sources = files(
+        'elogind.c',
+        'elogind.h',
+        'logind.c',
+        'logind.h')
 #endif // 0
 
 logind_gperf_c = custom_target(
@@ -20,50 +19,49 @@ logind_gperf_c = custom_target(
         output : 'logind-gperf.c',
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
 
-liblogind_core_sources = files('''
-        logind-action.c
-        logind-action.h
-        logind-brightness.c
-        logind-brightness.h
-        logind-button.c
-        logind-button.h
-        logind-core.c
-        logind-dbus.c
-        logind-dbus.h
-        logind-device.c
-        logind-device.h
-        logind-inhibit.c
-        logind-inhibit.h
-        logind-polkit.c
-        logind-polkit.h
-        logind-seat-dbus.c
-        logind-seat-dbus.h
-        logind-seat.c
-        logind-seat.h
-        logind-session-dbus.c
-        logind-session-dbus.h
-        logind-session-device.c
-        logind-session-device.h
-        logind-session.c
-        logind-session.h
-        logind-user-dbus.c
-        logind-user-dbus.h
-        logind-user.c
-        logind-user.h
-        logind-utmp.c
-'''.split())
+liblogind_core_sources = files(
+        'logind-action.c',
+        'logind-action.h',
+        'logind-brightness.c',
+        'logind-brightness.h',
+        'logind-button.c',
+        'logind-button.h',
+        'logind-core.c',
+        'logind-dbus.c',
+        'logind-dbus.h',
+        'logind-device.c',
+        'logind-device.h',
+        'logind-inhibit.c',
+        'logind-inhibit.h',
+        'logind-polkit.c',
+        'logind-polkit.h',
+        'logind-seat-dbus.c',
+        'logind-seat-dbus.h',
+        'logind-seat.c',
+        'logind-seat.h',
+        'logind-session-dbus.c',
+        'logind-session-dbus.h',
+        'logind-session-device.c',
+        'logind-session-device.h',
+        'logind-session.c',
+        'logind-session.h',
+        'logind-user-dbus.c',
+        'logind-user-dbus.h',
+        'logind-user.c',
+        'logind-user.h',
+        'logind-utmp.c',
+)
 
 #if 1 /// elogind has some additional files:
-liblogind_core_sources += [files('''
-        elogind-dbus.c
-        elogind-dbus.h
-        user-runtime-dir.c
-        user-runtime-dir.h
-'''.split()),
+liblogind_core_sources += [files(
+        'user-runtime-dir.c',
+        'user-runtime-dir.h',
+),
         libcore_sources,
         sleep_files,
         update_utmp_files]
 #endif // 1
+
 liblogind_core_sources += [logind_gperf_c]
 
 liblogind_core = static_library(
@@ -71,58 +69,56 @@ liblogind_core = static_library(
         liblogind_core_sources,
         include_directories : includes,
 #if 0 /// elogind needs audit support for utmp inclusion
-#         dependencies : [libacl])
+#         dependencies : libacl,
+#         build_by_default : false)
 #else // 0
         dependencies : [libacl,
                         libaudit])
 #endif // 0
 
-loginctl_sources = files('''
-        loginctl.c
-        sysfs-show.h
-        sysfs-show.c
-'''.split())
-
-#if 0 /// UNNEEDED by elogind
-# user_runtime_dir_sources = files('''
-#         user-runtime-dir.c
-# '''.split())
-#endif // 0
+loginctl_sources = files(
+        'loginctl.c',
+        'sysfs-show.h',
+        'sysfs-show.c',
+)
 
 #if 1 /// elogind has and needs some additional files:
-loginctl_sources += files('''
-        eloginctl.c
-        eloginctl.h
-'''.split())
+loginctl_sources += files(
+        'eloginctl.c',
+        'eloginctl.h',
+)
 #endif // 1
+
+#if 0 /// elogind builds itself unconditionally
+# user_runtime_dir_sources = files('user-runtime-dir.c')
+#else // 0
+enable_logind = true
+#endif // 0
 
 pam_elogind_sym = 'src/login/pam_elogind.sym'
 pam_elogind_c = files('pam_elogind.c')
 
-#if 0 /// elogind builds itself unconditionally
+#if 0 /// This is elogind
 # enable_logind = conf.get('ENABLE_LOGIND') == 1
 #else // 0
 enable_logind = true
 #endif // 0
 
-in_files = [
-        ['logind.conf',        pkgsysconfdir, enable_logind],
-        ['70-uaccess.rules',   udevrulesdir,  enable_logind and conf.get('HAVE_ACL') == 1],
-        ['71-seat.rules',      udevrulesdir,  enable_logind],
-        ['73-seat-late.rules', udevrulesdir,  enable_logind],
-        ['elogind-user',       pamconfdir,    enable_logind and pamconfdir != 'no']]
+custom_target(
+        'logind.conf',
+        input : 'logind.conf.in',
+        output : 'logind.conf',
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+        install : enable_logind and install_sysconfdir_samples and pkgsysconfdir != 'no',
+        install_dir : pkgsysconfdir)
 
-foreach tuple : in_files
-        file = tuple[0]
-        custom_target(
-                file,
-                input : file + '.in',
-                output: file,
-                command : [meson_render_jinja2, config_h, '@INPUT@'],
-                capture : true,
-                install : tuple[2],
-                install_dir : tuple[1])
-endforeach
+custom_target(
+        'elogind-user',
+        input : 'elogind-user.in',
+        output : 'elogind-user',
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+        install : enable_logind and pamconfdir != 'no',
+        install_dir : pamconfdir)
 
 if enable_logind
         install_data('org.freedesktop.login1.conf',
@@ -140,20 +136,21 @@ if enable_logind
 #endif // 0
         install_data('org.freedesktop.login1.policy',
                      install_dir : polkitpolicydir)
-        install_data('70-power-switch.rules',
-                     install_dir : udevrulesdir)
 endif
 
 ############################################################
 
 tests += [
-        [['src/login/test-login-shared.c']],
+        [files('test-login-shared.c')],
 
-        [['src/login/test-inhibit.c'],
+        [files('test-inhibit.c'),
          [], [], [], '', 'manual'],
 
-        [['src/login/test-login-tables.c'],
+        [files('test-login-tables.c'),
          [liblogind_core,
           libshared],
          [threads]],
+
+        [files('test-session-properties.c'),
+         [], [], [], '', 'manual'],
 ]

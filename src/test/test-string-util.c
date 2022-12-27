@@ -1,5 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
+#include <ctype.h>
+
 #include "alloc-util.h"
 #include "locale-util.h"
 #include "macro.h"
@@ -9,17 +11,16 @@
 #include "utf8.h"
 #include "util.h"
 
-static void test_string_erase(void) {
-        log_info("/* %s */", __func__);
-
+#if 0 /// UNNEEDED by elogind
+TEST(string_erase) {
         char *x;
-        x = strdupa("");
+        x = strdupa_safe("");
         assert_se(streq(string_erase(x), ""));
 
-        x = strdupa("1");
+        x = strdupa_safe("1");
         assert_se(streq(string_erase(x), ""));
 
-        x = strdupa("123456789");
+        x = strdupa_safe("123456789");
         assert_se(streq(string_erase(x), ""));
 
         assert_se(x[1] == '\0');
@@ -32,9 +33,10 @@ static void test_string_erase(void) {
         assert_se(x[8] == '\0');
         assert_se(x[9] == '\0');
 }
+#endif // 0
 
 static void test_free_and_strndup_one(char **t, const char *src, size_t l, const char *expected, bool change) {
-        log_debug("%s: \"%s\", \"%s\", %zd (expect \"%s\", %s)",
+        log_debug("%s: \"%s\", \"%s\", %zu (expect \"%s\", %s)",
                   __func__, strnull(*t), strnull(src), l, strnull(expected), yes_no(change));
 
         int r = free_and_strndup(t, src, l);
@@ -42,9 +44,7 @@ static void test_free_and_strndup_one(char **t, const char *src, size_t l, const
         assert_se(r == change); /* check that change occurs only when necessary */
 }
 
-static void test_free_and_strndup(void) {
-        log_info("/* %s */", __func__);
-
+TEST(free_and_strndup) {
         static const struct test_case {
                 const char *src;
                 size_t len;
@@ -92,9 +92,7 @@ static void test_free_and_strndup(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_ascii_strcasecmp_n(void) {
-        log_info("/* %s */", __func__);
-
+TEST(ascii_strcasecmp_n) {
         assert_se(ascii_strcasecmp_n("", "", 0) == 0);
         assert_se(ascii_strcasecmp_n("", "", 1) == 0);
         assert_se(ascii_strcasecmp_n("", "a", 1) < 0);
@@ -120,9 +118,7 @@ static void test_ascii_strcasecmp_n(void) {
         assert_se(ascii_strcasecmp_n("xxxxYxxxx", "xxxxXxxxx", 9) > 0);
 }
 
-static void test_ascii_strcasecmp_nn(void) {
-        log_info("/* %s */", __func__);
-
+TEST(ascii_strcasecmp_nn) {
         assert_se(ascii_strcasecmp_nn("", 0, "", 0) == 0);
         assert_se(ascii_strcasecmp_nn("", 0, "", 1) < 0);
         assert_se(ascii_strcasecmp_nn("", 1, "", 0) > 0);
@@ -140,10 +136,8 @@ static void test_ascii_strcasecmp_nn(void) {
 }
 #endif // 0
 
-static void test_cellescape(void) {
+TEST(cellescape) {
         char buf[40];
-
-        log_info("/* %s */", __func__);
 
         assert_se(streq(cellescape(buf, 1, ""), ""));
         assert_se(streq(cellescape(buf, 1, "1"), ""));
@@ -181,16 +175,16 @@ static void test_cellescape(void) {
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
 #endif // 1 
-        assert_se(streq(cellescape(buf, 4, "\020"), "…"));
+        assert_se(streq(cellescape(buf, 4, "\020"), is_locale_utf8() ? "…" : "..."));
         assert_se(streq(cellescape(buf, 5, "\020"), "\\020"));
 
-        assert_se(streq(cellescape(buf, 5, "1234\020"), "1…"));
-        assert_se(streq(cellescape(buf, 6, "1234\020"), "12…"));
-        assert_se(streq(cellescape(buf, 7, "1234\020"), "123…"));
-        assert_se(streq(cellescape(buf, 8, "1234\020"), "1234…"));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1 
+        assert_se(streq(cellescape(buf, 5, "1234\020"), is_locale_utf8() ? "1…" : "1..."));
+        assert_se(streq(cellescape(buf, 6, "1234\020"), is_locale_utf8() ? "12…" : "12..."));
+        assert_se(streq(cellescape(buf, 7, "1234\020"), is_locale_utf8() ? "123…" : "123..."));
+        assert_se(streq(cellescape(buf, 8, "1234\020"), is_locale_utf8() ? "1234…" : "1234..."));
         assert_se(streq(cellescape(buf, 9, "1234\020"), "1234\\020"));
 
         assert_se(streq(cellescape(buf, 1, "\t\n"), ""));
@@ -199,36 +193,36 @@ static void test_cellescape(void) {
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
 #endif // 1 
-        assert_se(streq(cellescape(buf, 4, "\t\n"), "…"));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1 
+        assert_se(streq(cellescape(buf, 4, "\t\n"), is_locale_utf8() ? "…" : "..."));
         assert_se(streq(cellescape(buf, 5, "\t\n"), "\\t\\n"));
 
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
 #endif // 1 
-        assert_se(streq(cellescape(buf, 5, "1234\t\n"), "1…"));
-        assert_se(streq(cellescape(buf, 6, "1234\t\n"), "12…"));
-        assert_se(streq(cellescape(buf, 7, "1234\t\n"), "123…"));
-        assert_se(streq(cellescape(buf, 8, "1234\t\n"), "1234…"));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1 
+        assert_se(streq(cellescape(buf, 5, "1234\t\n"), is_locale_utf8() ? "1…" : "1..."));
+        assert_se(streq(cellescape(buf, 6, "1234\t\n"), is_locale_utf8() ? "12…" : "12..."));
+        assert_se(streq(cellescape(buf, 7, "1234\t\n"), is_locale_utf8() ? "123…" : "123..."));
+        assert_se(streq(cellescape(buf, 8, "1234\t\n"), is_locale_utf8() ? "1234…" : "1234..."));
         assert_se(streq(cellescape(buf, 9, "1234\t\n"), "1234\\t\\n"));
 
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
 #endif // 1 
-        assert_se(streq(cellescape(buf, 4, "x\t\020\n"), "…"));
-        assert_se(streq(cellescape(buf, 5, "x\t\020\n"), "x…"));
-        assert_se(streq(cellescape(buf, 6, "x\t\020\n"), "x…"));
-        assert_se(streq(cellescape(buf, 7, "x\t\020\n"), "x\\t…"));
-        assert_se(streq(cellescape(buf, 8, "x\t\020\n"), "x\\t…"));
-        assert_se(streq(cellescape(buf, 9, "x\t\020\n"), "x\\t…"));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1 
+        assert_se(streq(cellescape(buf, 4, "x\t\020\n"), is_locale_utf8() ? "…" : "..."));
+        assert_se(streq(cellescape(buf, 5, "x\t\020\n"), is_locale_utf8() ? "x…" : "x..."));
+        assert_se(streq(cellescape(buf, 6, "x\t\020\n"), is_locale_utf8() ? "x…" : "x..."));
+        assert_se(streq(cellescape(buf, 7, "x\t\020\n"), is_locale_utf8() ? "x\\t…" : "x\\t..."));
+        assert_se(streq(cellescape(buf, 8, "x\t\020\n"), is_locale_utf8() ? "x\\t…" : "x\\t..."));
+        assert_se(streq(cellescape(buf, 9, "x\t\020\n"), is_locale_utf8() ? "x\\t…" : "x\\t..."));
         assert_se(streq(cellescape(buf, 10, "x\t\020\n"), "x\\t\\020\\n"));
 
         assert_se(streq(cellescape(buf, 6, "1\011"), "1\\t"));
@@ -247,25 +241,19 @@ static void test_cellescape(void) {
         assert_se(streq(cellescape(buf, sizeof buf, "1\020x"), "1\\020x"));
 }
 
-static void test_streq_ptr(void) {
-        log_info("/* %s */", __func__);
-
+TEST(streq_ptr) {
         assert_se(streq_ptr(NULL, NULL));
         assert_se(!streq_ptr("abc", "cdef"));
 }
 
-static void test_strstrip(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strstrip) {
         char *ret, input[] = "   hello, waldo.   ";
 
         ret = strstrip(input);
         assert_se(streq(ret, "hello, waldo."));
 }
 
-static void test_strextend(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strextend) {
         _cleanup_free_ char *str = NULL;
 
         assert_se(strextend(&str, NULL));
@@ -276,9 +264,7 @@ static void test_strextend(void) {
         assert_se(streq_ptr(str, "0123456789"));
 }
 
-static void test_strextend_with_separator(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strextend_with_separator) {
         _cleanup_free_ char *str = NULL;
 
         assert_se(strextend_with_separator(&str, NULL, NULL));
@@ -301,9 +287,8 @@ static void test_strextend_with_separator(void) {
         assert_se(streq_ptr(str, "start,,1,234;more;5;678"));
 }
 
-static void test_strrep(void) {
-        log_info("/* %s */", __func__);
-
+#if 0 /// UNNEEDED by elogind
+TEST(strrep) {
         _cleanup_free_ char *one, *three, *zero;
         one = strrep("waldo", 1);
         three = strrep("waldo", 3);
@@ -313,8 +298,9 @@ static void test_strrep(void) {
         assert_se(streq(three, "waldowaldowaldo"));
         assert_se(streq(zero, ""));
 }
+#endif // 0
 
-static void test_string_has_cc(void) {
+TEST(string_has_cc) {
         assert_se(string_has_cc("abc\1", NULL));
         assert_se(string_has_cc("abc\x7f", NULL));
         assert_se(string_has_cc("abc\x7f", NULL));
@@ -329,17 +315,12 @@ static void test_string_has_cc(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_ascii_strlower(void) {
-        log_info("/* %s */", __func__);
-
+TEST(ascii_strlower) {
         char a[] = "AabBcC Jk Ii Od LKJJJ kkd LK";
         assert_se(streq(ascii_strlower(a), "aabbcc jk ii od lkjjj kkd lk"));
 }
-#endif // 0
 
-static void test_strshorten(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strshorten) {
         char s[] = "foobar";
 
         assert_se(strlen(strshorten(s, 6)) == 6);
@@ -347,10 +328,9 @@ static void test_strshorten(void) {
         assert_se(strlen(strshorten(s, 2)) == 2);
         assert_se(strlen(strshorten(s, 0)) == 0);
 }
+#endif // 0
 
-static void test_strjoina(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strjoina) {
         char *actual;
 
         actual = strjoina("", "foo", "bar");
@@ -381,7 +361,7 @@ static void test_strjoina(void) {
         assert_se(streq(actual, "/sys/fs/cgroup/dn"));
 }
 
-static void test_strjoin(void) {
+TEST(strjoin) {
         char *actual;
 
         actual = strjoin("", "foo", "bar");
@@ -413,9 +393,7 @@ static void test_strjoin(void) {
         mfree(actual);
 }
 
-static void test_strcmp_ptr(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strcmp_ptr) {
         assert_se(strcmp_ptr(NULL, NULL) == 0);
         assert_se(strcmp_ptr("", NULL) > 0);
         assert_se(strcmp_ptr("foo", NULL) > 0);
@@ -427,9 +405,7 @@ static void test_strcmp_ptr(void) {
         assert_se(strcmp_ptr("", "") == 0);
 }
 
-static void test_foreach_word(void) {
-        log_info("/* %s */", __func__);
-
+TEST(foreach_word) {
         const char *test = "test abc d\te   f   ";
         const char * const expected[] = {
                 "test",
@@ -478,9 +454,7 @@ static void check(const char *test, char** expected, bool trailing) {
         assert_se(expected[i] == NULL);
 }
 
-static void test_foreach_word_quoted(void) {
-        log_info("/* %s */", __func__);
-
+TEST(foreach_word_quoted) {
         check("test a b c 'd' e '' '' hhh '' '' \"a b c\"",
               STRV_MAKE("test",
                         "a",
@@ -505,9 +479,7 @@ static void test_foreach_word_quoted(void) {
               true);
 }
 
-static void test_endswith(void) {
-        log_info("/* %s */", __func__);
-
+TEST(endswith) {
         assert_se(endswith("foobar", "bar"));
         assert_se(endswith("foobar", ""));
         assert_se(endswith("foobar", "foobar"));
@@ -517,9 +489,7 @@ static void test_endswith(void) {
         assert_se(!endswith("foobar", "foobarfoofoo"));
 }
 
-static void test_endswith_no_case(void) {
-        log_info("/* %s */", __func__);
-
+TEST(endswith_no_case) {
         assert_se(endswith_no_case("fooBAR", "bar"));
         assert_se(endswith_no_case("foobar", ""));
         assert_se(endswith_no_case("foobar", "FOOBAR"));
@@ -529,9 +499,7 @@ static void test_endswith_no_case(void) {
         assert_se(!endswith_no_case("foobar", "FOOBARFOOFOO"));
 }
 
-static void test_delete_chars(void) {
-        log_info("/* %s */", __func__);
-
+TEST(delete_chars) {
         char *s, input[] = "   hello, waldo.   abc";
 
         s = delete_chars(input, WHITESPACE);
@@ -539,9 +507,7 @@ static void test_delete_chars(void) {
         assert_se(s == input);
 }
 
-static void test_delete_trailing_chars(void) {
-        log_info("/* %s */", __func__);
-
+TEST(delete_trailing_chars) {
         char *s,
                 input1[] = " \n \r k \n \r ",
                 input2[] = "kkkkthiskkkiskkkaktestkkk",
@@ -564,9 +530,7 @@ static void test_delete_trailing_chars(void) {
         assert_se(s == input3);
 }
 
-static void test_delete_trailing_slashes(void) {
-        log_info("/* %s */", __func__);
-
+TEST(delete_trailing_slashes) {
         char s1[] = "foobar//",
              s2[] = "foobar/",
              s3[] = "foobar",
@@ -579,9 +543,7 @@ static void test_delete_trailing_slashes(void) {
         assert_se(streq(delete_trailing_chars(s4, "/"), ""));
 }
 
-static void test_skip_leading_chars(void) {
-        log_info("/* %s */", __func__);
-
+TEST(skip_leading_chars) {
         char input1[] = " \n \r k \n \r ",
                 input2[] = "kkkkthiskkkiskkkaktestkkk",
                 input3[] = "abcdef";
@@ -593,16 +555,13 @@ static void test_skip_leading_chars(void) {
         assert_se(streq(skip_leading_chars(input3, "bcaef"), "def"));
 }
 
-static void test_in_charset(void) {
-        log_info("/* %s */", __func__);
-
+TEST(in_charset) {
         assert_se(in_charset("dddaaabbbcccc", "abcd"));
         assert_se(!in_charset("dddaaabbbcccc", "abc f"));
 }
 
-static void test_split_pair(void) {
-        log_info("/* %s */", __func__);
-
+#if 0 /// UNNEEDED by elogind
+TEST(split_pair) {
         _cleanup_free_ char *a = NULL, *b = NULL;
 
         assert_se(split_pair("", "", &a, &b) == -EINVAL);
@@ -623,10 +582,9 @@ static void test_split_pair(void) {
         assert_se(streq(a, ""));
         assert_se(streq(b, "="));
 }
+#endif // 0
 
-static void test_first_word(void) {
-        log_info("/* %s */", __func__);
-
+TEST(first_word) {
         assert_se(first_word("Hello", ""));
         assert_se(first_word("Hello", "Hello"));
         assert_se(first_word("Hello world", "Hello"));
@@ -640,17 +598,13 @@ static void test_first_word(void) {
         assert_se(!first_word("Hellooo", "Hello"));
 }
 
-static void test_strlen_ptr(void) {
-        log_info("/* %s */", __func__);
-
+TEST(strlen_ptr) {
         assert_se(strlen_ptr("foo") == 3);
         assert_se(strlen_ptr("") == 0);
         assert_se(strlen_ptr(NULL) == 0);
 }
 
-static void test_memory_startswith(void) {
-        log_info("/* %s */", __func__);
-
+TEST(memory_startswith) {
         assert_se(streq(memory_startswith("", 0, ""), ""));
         assert_se(streq(memory_startswith("", 1, ""), ""));
         assert_se(streq(memory_startswith("x", 2, ""), "x"));
@@ -665,9 +619,7 @@ static void test_memory_startswith(void) {
 }
 
 #if 0 /// This is not used anywhere in elogind and thus masked.
-static void test_memory_startswith_no_case(void) {
-        log_info("/* %s */", __func__);
-
+TEST(memory_startswith_no_case) {
         assert_se(streq(memory_startswith_no_case("", 0, ""), ""));
         assert_se(streq(memory_startswith_no_case("", 1, ""), ""));
         assert_se(streq(memory_startswith_no_case("x", 2, ""), "x"));
@@ -700,9 +652,7 @@ static void test_string_truncate_lines_one(const char *input, size_t n_lines, co
         assert_se(!!k == truncation);
 }
 
-static void test_string_truncate_lines(void) {
-        log_info("/* %s */", __func__);
-
+TEST(string_truncate_lines) {
         test_string_truncate_lines_one("", 0, "", false);
         test_string_truncate_lines_one("", 1, "", false);
         test_string_truncate_lines_one("", 2, "", false);
@@ -773,9 +723,7 @@ static void test_string_extract_lines_one(const char *input, size_t i, const cha
         assert_se(!!k == more);
 }
 
-static void test_string_extract_line(void) {
-        log_info("/* %s */", __func__);
-
+TEST(string_extract_line) {
         test_string_extract_lines_one("", 0, "", false);
         test_string_extract_lines_one("", 1, "", false);
         test_string_extract_lines_one("", 2, "", false);
@@ -842,9 +790,7 @@ static void test_string_extract_line(void) {
         test_string_extract_lines_one("\n\n\nx\n", 3, "x", false);
 }
 
-static void test_string_contains_word_strv(void) {
-        log_info("/* %s */", __func__);
-
+TEST(string_contains_word_strv) {
         const char *w;
 
         assert_se(string_contains_word_strv("a b cc", NULL, STRV_MAKE("a", "b"), NULL));
@@ -871,9 +817,7 @@ static void test_string_contains_word_strv(void) {
         assert_se(streq(w, ""));
 }
 
-static void test_string_contains_word(void) {
-        log_info("/* %s */", __func__);
-
+TEST(string_contains_word) {
         assert_se( string_contains_word("a b cc", NULL, "a"));
         assert_se( string_contains_word("a b cc", NULL, "b"));
         assert_se(!string_contains_word("a b cc", NULL, "c"));
@@ -924,19 +868,30 @@ static void test_string_contains_word(void) {
         assert_se(!string_contains_word("a:b:cc", ":#", ":cc"));
 }
 
-static void test_strverscmp_improved_one(const char *newer, const char *older) {
-        log_info("/* %s(%s, %s) */", __func__, strnull(newer), strnull(older));
+static void test_strverscmp_improved_one(const char* a, const char *b, int expected) {
+        int r = strverscmp_improved(a, b);
 
-        assert_se(strverscmp_improved(newer, newer) == 0);
-        assert_se(strverscmp_improved(newer, older) >  0);
-        assert_se(strverscmp_improved(older, newer) <  0);
-        assert_se(strverscmp_improved(older, older) == 0);
+        log_info("'%s' %s '%s'%s",
+                 strnull(a),
+                 comparison_operator(r),
+                 strnull(b),
+                 r == expected ? "" : " !!!!!!!!!!!!!");
+        assert_se(r == expected);
 }
 
-static void test_strverscmp_improved(void) {
+static void test_strverscmp_improved_newer(const char *older, const char *newer) {
+        test_strverscmp_improved_one(older, newer, -1);
+
+        assert_se(strverscmp_improved(older, older) == 0);
+        assert_se(strverscmp_improved(older, newer) < 0);
+        assert_se(strverscmp_improved(newer, older) > 0);
+        assert_se(strverscmp_improved(newer, newer) == 0);
+}
+
+TEST(strverscmp_improved) {
         static const char * const versions[] = {
-                "",
                 "~1",
+                "",
                 "ab",
                 "abb",
                 "abc",
@@ -961,48 +916,223 @@ static void test_strverscmp_improved(void) {
                 "124",
                 NULL,
         };
-        const char * const *p, * const *q;
 
         STRV_FOREACH(p, versions)
                 STRV_FOREACH(q, p + 1)
-                        test_strverscmp_improved_one(*q, *p);
+                        test_strverscmp_improved_newer(*p, *q);
 
-        test_strverscmp_improved_one("123.45-67.89", "123.45-67.88");
-        test_strverscmp_improved_one("123.45-67.89a", "123.45-67.89");
-        test_strverscmp_improved_one("123.45-67.89", "123.45-67.ab");
-        test_strverscmp_improved_one("123.45-67.89", "123.45-67.9");
-        test_strverscmp_improved_one("123.45-67.89", "123.45-67");
-        test_strverscmp_improved_one("123.45-67.89", "123.45-66.89");
-        test_strverscmp_improved_one("123.45-67.89", "123.45-9.99");
-        test_strverscmp_improved_one("123.45-67.89", "123.42-99.99");
-        test_strverscmp_improved_one("123.45-67.89", "123-99.99");
+        test_strverscmp_improved_newer("123.45-67.88", "123.45-67.89");
+        test_strverscmp_improved_newer("123.45-67.89", "123.45-67.89a");
+        test_strverscmp_improved_newer("123.45-67.ab", "123.45-67.89");
+        test_strverscmp_improved_newer("123.45-67.9", "123.45-67.89");
+        test_strverscmp_improved_newer("123.45-67", "123.45-67.89");
+        test_strverscmp_improved_newer("123.45-66.89", "123.45-67.89");
+        test_strverscmp_improved_newer("123.45-9.99", "123.45-67.89");
+        test_strverscmp_improved_newer("123.42-99.99", "123.45-67.89");
+        test_strverscmp_improved_newer("123-99.99", "123.45-67.89");
 
         /* '~' : pre-releases */
-        test_strverscmp_improved_one("123.45-67.89", "123~rc1-99.99");
-        test_strverscmp_improved_one("123-45.67.89", "123~rc1-99.99");
-        test_strverscmp_improved_one("123~rc2-67.89", "123~rc1-99.99");
-        test_strverscmp_improved_one("123^aa2-67.89", "123~rc1-99.99");
-        test_strverscmp_improved_one("123aa2-67.89", "123~rc1-99.99");
+        test_strverscmp_improved_newer("123~rc1-99.99", "123.45-67.89");
+        test_strverscmp_improved_newer("123~rc1-99.99", "123-45.67.89");
+        test_strverscmp_improved_newer("123~rc1-99.99", "123~rc2-67.89");
+        test_strverscmp_improved_newer("123~rc1-99.99", "123^aa2-67.89");
+        test_strverscmp_improved_newer("123~rc1-99.99", "123aa2-67.89");
 
         /* '-' : separator between version and release. */
-        test_strverscmp_improved_one("123.45-67.89", "123-99.99");
-        test_strverscmp_improved_one("123^aa2-67.89", "123-99.99");
-        test_strverscmp_improved_one("123aa2-67.89", "123-99.99");
+        test_strverscmp_improved_newer("123-99.99", "123.45-67.89");
+        test_strverscmp_improved_newer("123-99.99", "123^aa2-67.89");
+        test_strverscmp_improved_newer("123-99.99", "123aa2-67.89");
 
         /* '^' : patch releases */
-        test_strverscmp_improved_one("123.45-67.89", "123^45-67.89");
-        test_strverscmp_improved_one("123^aa2-67.89", "123^aa1-99.99");
-        test_strverscmp_improved_one("123aa2-67.89", "123^aa2-67.89");
+        test_strverscmp_improved_newer("123^45-67.89", "123.45-67.89");
+        test_strverscmp_improved_newer("123^aa1-99.99", "123^aa2-67.89");
+        test_strverscmp_improved_newer("123^aa2-67.89", "123aa2-67.89");
 
         /* '.' : point release */
-        test_strverscmp_improved_one("123aa2-67.89", "123.aa2-67.89");
-        test_strverscmp_improved_one("123.ab2-67.89", "123.aa2-67.89");
+        test_strverscmp_improved_newer("123.aa2-67.89", "123aa2-67.89");
+        test_strverscmp_improved_newer("123.aa2-67.89", "123.ab2-67.89");
 
         /* invalid characters */
         assert_se(strverscmp_improved("123_aa2-67.89", "123aa+2-67.89") == 0);
+
+        /* some corner cases */
+        assert_se(strverscmp_improved("123.", "123") > 0);     /* One more version segment */
+        assert_se(strverscmp_improved("12_3", "123") < 0);     /* 12 < 123 */
+        assert_se(strverscmp_improved("12_3", "12") > 0);      /* 3 > '' */
+        assert_se(strverscmp_improved("12_3", "12.3") > 0);    /* 3 > '' */
+        assert_se(strverscmp_improved("123.0", "123") > 0);    /* 0 > '' */
+        assert_se(strverscmp_improved("123_0", "123") > 0);    /* 0 > '' */
+        assert_se(strverscmp_improved("123..0", "123.0") < 0); /* '' < 0 */
+
+        /* empty strings or strings with ignored characters only */
+        assert_se(strverscmp_improved("", NULL) == 0);
+        assert_se(strverscmp_improved(NULL, "") == 0);
+        assert_se(strverscmp_improved("0_", "0") == 0);
+        assert_se(strverscmp_improved("_0_", "0") == 0);
+        assert_se(strverscmp_improved("_0", "0") == 0);
+        assert_se(strverscmp_improved("0", "0___") == 0);
+        assert_se(strverscmp_improved("", "_") == 0);
+        assert_se(strverscmp_improved("_", "") == 0);
+        assert_se(strverscmp_improved("_", "_") == 0);
+        assert_se(strverscmp_improved("", "~") > 0);
+        assert_se(strverscmp_improved("~", "") < 0);
+        assert_se(strverscmp_improved("~", "~") == 0);
+
+        /* non-ASCII digits */
+        (void) setlocale(LC_NUMERIC, "ar_YE.utf8");
+        assert_se(strverscmp_improved("1٠١٢٣٤٥٦٧٨٩", "1") == 0);
+
+        (void) setlocale(LC_NUMERIC, "th_TH.utf8");
+        assert_se(strverscmp_improved("1๐๑๒๓๔๕๖๗๘๙", "1") == 0);
 }
 
-static void test_strextendf(void) {
+#define RPMVERCMP(a, b, c) \
+        test_strverscmp_improved_one(STRINGIFY(a), STRINGIFY(b), (c))
+
+TEST(strverscmp_improved_rpm) {
+        /* Tests copied from rmp's rpmio test suite, under the LGPL license:
+         * https://github.com/rpm-software-management/rpm/blob/master/tests/rpmvercmp.at.
+         * The original form is retained for easy comparisons and updates.
+         */
+
+        RPMVERCMP(1.0, 1.0, 0);
+        RPMVERCMP(1.0, 2.0, -1);
+        RPMVERCMP(2.0, 1.0, 1);
+
+        RPMVERCMP(2.0.1, 2.0.1, 0);
+        RPMVERCMP(2.0, 2.0.1, -1);
+        RPMVERCMP(2.0.1, 2.0, 1);
+
+        RPMVERCMP(2.0.1a, 2.0.1a, 0);
+        RPMVERCMP(2.0.1a, 2.0.1, 1);
+        RPMVERCMP(2.0.1, 2.0.1a, -1);
+
+        RPMVERCMP(5.5p1, 5.5p1, 0);
+        RPMVERCMP(5.5p1, 5.5p2, -1);
+        RPMVERCMP(5.5p2, 5.5p1, 1);
+
+        RPMVERCMP(5.5p10, 5.5p10, 0);
+        RPMVERCMP(5.5p1, 5.5p10, -1);
+        RPMVERCMP(5.5p10, 5.5p1, 1);
+
+        RPMVERCMP(10xyz, 10.1xyz, 1);    /* Note: this is reversed from rpm's vercmp */
+        RPMVERCMP(10.1xyz, 10xyz, -1);   /* Note: this is reversed from rpm's vercmp */
+
+        RPMVERCMP(xyz10, xyz10, 0);
+        RPMVERCMP(xyz10, xyz10.1, -1);
+        RPMVERCMP(xyz10.1, xyz10, 1);
+
+        RPMVERCMP(xyz.4, xyz.4, 0);
+        RPMVERCMP(xyz.4, 8, -1);
+        RPMVERCMP(8, xyz.4, 1);
+        RPMVERCMP(xyz.4, 2, -1);
+        RPMVERCMP(2, xyz.4, 1);
+
+        RPMVERCMP(5.5p2, 5.6p1, -1);
+        RPMVERCMP(5.6p1, 5.5p2, 1);
+
+        RPMVERCMP(5.6p1, 6.5p1, -1);
+        RPMVERCMP(6.5p1, 5.6p1, 1);
+
+        RPMVERCMP(6.0.rc1, 6.0, 1);
+        RPMVERCMP(6.0, 6.0.rc1, -1);
+
+        RPMVERCMP(10b2, 10a1, 1);
+        RPMVERCMP(10a2, 10b2, -1);
+
+        RPMVERCMP(1.0aa, 1.0aa, 0);
+        RPMVERCMP(1.0a, 1.0aa, -1);
+        RPMVERCMP(1.0aa, 1.0a, 1);
+
+        RPMVERCMP(10.0001, 10.0001, 0);
+        RPMVERCMP(10.0001, 10.1, 0);
+        RPMVERCMP(10.1, 10.0001, 0);
+        RPMVERCMP(10.0001, 10.0039, -1);
+        RPMVERCMP(10.0039, 10.0001, 1);
+
+        RPMVERCMP(4.999.9, 5.0, -1);
+        RPMVERCMP(5.0, 4.999.9, 1);
+
+        RPMVERCMP(20101121, 20101121, 0);
+        RPMVERCMP(20101121, 20101122, -1);
+        RPMVERCMP(20101122, 20101121, 1);
+
+        RPMVERCMP(2_0, 2_0, 0);
+        RPMVERCMP(2.0, 2_0, -1);   /* Note: in rpm those compare equal */
+        RPMVERCMP(2_0, 2.0, 1);    /* Note: in rpm those compare equal */
+
+        /* RhBug:178798 case */
+        RPMVERCMP(a, a, 0);
+        RPMVERCMP(a+, a+, 0);
+        RPMVERCMP(a+, a_, 0);
+        RPMVERCMP(a_, a+, 0);
+        RPMVERCMP(+a, +a, 0);
+        RPMVERCMP(+a, _a, 0);
+        RPMVERCMP(_a, +a, 0);
+        RPMVERCMP(+_, +_, 0);
+        RPMVERCMP(_+, +_, 0);
+        RPMVERCMP(_+, _+, 0);
+        RPMVERCMP(+, _, 0);
+        RPMVERCMP(_, +, 0);
+
+        /* Basic testcases for tilde sorting */
+        RPMVERCMP(1.0~rc1, 1.0~rc1, 0);
+        RPMVERCMP(1.0~rc1, 1.0, -1);
+        RPMVERCMP(1.0, 1.0~rc1, 1);
+        RPMVERCMP(1.0~rc1, 1.0~rc2, -1);
+        RPMVERCMP(1.0~rc2, 1.0~rc1, 1);
+        RPMVERCMP(1.0~rc1~git123, 1.0~rc1~git123, 0);
+        RPMVERCMP(1.0~rc1~git123, 1.0~rc1, -1);
+        RPMVERCMP(1.0~rc1, 1.0~rc1~git123, 1);
+
+        /* Basic testcases for caret sorting */
+        RPMVERCMP(1.0^, 1.0^, 0);
+        RPMVERCMP(1.0^, 1.0, 1);
+        RPMVERCMP(1.0, 1.0^, -1);
+        RPMVERCMP(1.0^git1, 1.0^git1, 0);
+        RPMVERCMP(1.0^git1, 1.0, 1);
+        RPMVERCMP(1.0, 1.0^git1, -1);
+        RPMVERCMP(1.0^git1, 1.0^git2, -1);
+        RPMVERCMP(1.0^git2, 1.0^git1, 1);
+        RPMVERCMP(1.0^git1, 1.01, -1);
+        RPMVERCMP(1.01, 1.0^git1, 1);
+        RPMVERCMP(1.0^20160101, 1.0^20160101, 0);
+        RPMVERCMP(1.0^20160101, 1.0.1, -1);
+        RPMVERCMP(1.0.1, 1.0^20160101, 1);
+        RPMVERCMP(1.0^20160101^git1, 1.0^20160101^git1, 0);
+        RPMVERCMP(1.0^20160102, 1.0^20160101^git1, 1);
+        RPMVERCMP(1.0^20160101^git1, 1.0^20160102, -1);
+
+        /* Basic testcases for tilde and caret sorting */
+        RPMVERCMP(1.0~rc1^git1, 1.0~rc1^git1, 0);
+        RPMVERCMP(1.0~rc1^git1, 1.0~rc1, 1);
+        RPMVERCMP(1.0~rc1, 1.0~rc1^git1, -1);
+        RPMVERCMP(1.0^git1~pre, 1.0^git1~pre, 0);
+        RPMVERCMP(1.0^git1, 1.0^git1~pre, 1);
+        RPMVERCMP(1.0^git1~pre, 1.0^git1, -1);
+
+        /* These are included here to document current, arguably buggy behaviors
+         * for reference purposes and for easy checking against unintended
+         * behavior changes. */
+        log_info("/* RPM version comparison oddities */");
+        /* RhBug:811992 case */
+        RPMVERCMP(1b.fc17, 1b.fc17, 0);
+        RPMVERCMP(1b.fc17, 1.fc17, 1); /* Note: this is reversed from rpm's vercmp, WAT! */
+        RPMVERCMP(1.fc17, 1b.fc17, -1);
+        RPMVERCMP(1g.fc17, 1g.fc17, 0);
+        RPMVERCMP(1g.fc17, 1.fc17, 1);
+        RPMVERCMP(1.fc17, 1g.fc17, -1);
+
+        /* Non-ascii characters are considered equal so these are all the same, eh… */
+        RPMVERCMP(1.1.α, 1.1.α, 0);
+        RPMVERCMP(1.1.α, 1.1.β, 0);
+        RPMVERCMP(1.1.β, 1.1.α, 0);
+        RPMVERCMP(1.1.αα, 1.1.α, 0);
+        RPMVERCMP(1.1.α, 1.1.ββ, 0);
+        RPMVERCMP(1.1.ββ, 1.1.αα, 0);
+}
+
+TEST(strextendf) {
         _cleanup_free_ char *p = NULL;
 
         assert_se(strextendf(&p, "<%i>", 77) >= 0);
@@ -1014,7 +1144,7 @@ static void test_strextendf(void) {
         assert_se(strextendf(&p, "<%80i>", 88) >= 0);
         assert_se(streq(p, "<77><99><                                                                              88>"));
 
-        assert_se(strextendf(&p, "<%08x>", 0x1234) >= 0);
+        assert_se(strextendf(&p, "<%08x>", 0x1234u) >= 0);
         assert_se(streq(p, "<77><99><                                                                              88><00001234>"));
 
         p = mfree(p);
@@ -1028,55 +1158,59 @@ static void test_strextendf(void) {
         assert_se(strextendf_with_separator(&p, ",", "<%80i>", 88) >= 0);
         assert_se(streq(p, "<77>,<99>,<                                                                              88>"));
 
-        assert_se(strextendf_with_separator(&p, ",", "<%08x>", 0x1234) >= 0);
+        assert_se(strextendf_with_separator(&p, ",", "<%08x>", 0x1234u) >= 0);
         assert_se(streq(p, "<77>,<99>,<                                                                              88>,<00001234>"));
 }
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
-
-        test_string_erase();
-        test_free_and_strndup();
-#if 0 /// UNNEEDED by elogind
-        test_ascii_strcasecmp_n();
-        test_ascii_strcasecmp_nn();
-#endif // 0
-        test_cellescape();
-        test_streq_ptr();
-        test_strstrip();
-        test_strextend();
-        test_strextend_with_separator();
-        test_strrep();
-        test_string_has_cc();
-#if 0 /// UNNEEDED by elogind
-        test_ascii_strlower();
-#endif // 0
-        test_strshorten();
-        test_strjoina();
-        test_strjoin();
-        test_strcmp_ptr();
-        test_foreach_word();
-        test_foreach_word_quoted();
-        test_endswith();
-        test_endswith_no_case();
-        test_delete_chars();
-        test_delete_trailing_chars();
-        test_delete_trailing_slashes();
-        test_skip_leading_chars();
-        test_in_charset();
-        test_split_pair();
-        test_first_word();
-        test_strlen_ptr();
-        test_memory_startswith();
-#if 0 /// This is not used anywhere in elogind and thus masked.
-        test_memory_startswith_no_case();
-#endif // 0
-        test_string_truncate_lines();
-        test_string_extract_line();
-        test_string_contains_word_strv();
-        test_string_contains_word();
-        test_strverscmp_improved();
-        test_strextendf();
-
-        return 0;
+TEST(string_replace_char) {
+        assert_se(streq(string_replace_char(strdupa_safe(""), 'a', 'b'), ""));
+        assert_se(streq(string_replace_char(strdupa_safe("abc"), 'a', 'b'), "bbc"));
+        assert_se(streq(string_replace_char(strdupa_safe("hoge"), 'a', 'b'), "hoge"));
+        assert_se(streq(string_replace_char(strdupa_safe("aaaa"), 'a', 'b'), "bbbb"));
+        assert_se(streq(string_replace_char(strdupa_safe("aaaa"), 'a', '\t'), "\t\t\t\t"));
 }
+
+TEST(strspn_from_end) {
+        assert_se(strspn_from_end(NULL, NULL) == 0);
+        assert_se(strspn_from_end("hoge", NULL) == 0);
+        assert_se(strspn_from_end(NULL, DIGITS) == 0);
+        assert_se(strspn_from_end("", DIGITS) == 0);
+        assert_se(strspn_from_end("hoge", DIGITS) == 0);
+        assert_se(strspn_from_end("1234", DIGITS) == 4);
+        assert_se(strspn_from_end("aaa1234", DIGITS) == 4);
+        assert_se(strspn_from_end("aaa1234aaa", DIGITS) == 0);
+        assert_se(strspn_from_end("aaa12aa34", DIGITS) == 2);
+}
+
+TEST(streq_skip_trailing_chars) {
+        /* NULL is WHITESPACE by default*/
+        assert_se(streq_skip_trailing_chars("foo bar", "foo bar", NULL));
+        assert_se(streq_skip_trailing_chars("foo", "foo", NULL));
+        assert_se(streq_skip_trailing_chars("foo bar      ", "foo bar", NULL));
+        assert_se(streq_skip_trailing_chars("foo bar", "foo bar\t\t", NULL));
+        assert_se(streq_skip_trailing_chars("foo bar  ", "foo bar\t\t", NULL));
+        assert_se(streq_skip_trailing_chars("foo\nbar", "foo\nbar", NULL));
+        assert_se(streq_skip_trailing_chars("\t\tfoo bar", "\t\tfoo bar", NULL));
+        assert_se(streq_skip_trailing_chars(" foo bar\t", " foo bar\n", NULL));
+
+        assert_se(!streq_skip_trailing_chars("foobar", "foo bar", NULL));
+        assert_se(!streq_skip_trailing_chars("foo\nbar", "foo\tbar", NULL));
+        assert_se(!streq_skip_trailing_chars("\t\nfoo bar", "\t foo bar", NULL));
+
+        assert_se(streq_skip_trailing_chars("foo bar      ", "foo bar", WHITESPACE));
+        assert_se(!streq_skip_trailing_chars("foo bar      ", "foo bar", NEWLINE));
+
+        assert_se(streq_skip_trailing_chars(NULL, NULL, NULL));
+        assert_se(streq_skip_trailing_chars("", "", NULL));
+        assert_se(!streq_skip_trailing_chars(NULL, "foo bar", NULL));
+        assert_se(!streq_skip_trailing_chars("foo", NULL, NULL));
+        assert_se(!streq_skip_trailing_chars("", "f", NULL));
+}
+
+#if 0 /// UNNEEDED by elogind
+#endif // 0
+#if 0 /// UNNEEDED by elogind
+#endif // 0
+#if 0 /// This is not used anywhere in elogind and thus masked.
+#endif // 0
+DEFINE_TEST_MAIN(LOG_DEBUG);

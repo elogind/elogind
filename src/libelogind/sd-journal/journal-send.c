@@ -10,6 +10,9 @@
 #include <stddef.h>
 //#include <sys/un.h>
 #include <unistd.h>
+#if HAVE_VALGRIND_VALGRIND_H
+#include <valgrind/valgrind.h>
+#endif
 
 #define SD_JOURNAL_SUPPRESS_LOCATION
 
@@ -18,8 +21,9 @@
 #include "alloc-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "io-util.h"
 #include "fileio.h"
+#include "io-util.h"
+#include "journal-send.h"
 #include "memfd-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"
@@ -46,10 +50,10 @@
  * all its threads, and all its subprocesses. This means we need to
  * initialize it atomically, and need to operate on it atomically
  * never assuming we are the only user */
+static int fd_plus_one = 0;
 
 static int journal_fd(void) {
         int fd;
-        static int fd_plus_one = 0;
 
 retry:
         if (fd_plus_one > 0)
@@ -61,14 +65,43 @@ retry:
 
         fd_inc_sndbuf(fd, SNDBUF_SIZE);
 
-        if (!__sync_bool_compare_and_swap(&fd_plus_one, 0, fd+1)) {
+        if (!__atomic_compare_exchange_n(&fd_plus_one, &(int){0}, fd+1,
+                false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)) {
                 safe_close(fd);
                 goto retry;
         }
 
         return fd;
 }
-#endif // 0
+
+int journal_fd_nonblock(bool nonblock) {
+        int r;
+
+        r = journal_fd();
+        if (r < 0)
+                return r;
+
+        return fd_nonblock(r, nonblock);
+}
+#endif /// 0
+
+#if VALGRIND
+void close_journal_fd(void) {
+        /* Be nice to valgrind. This is not atomic. This must be used only in tests. */
+
+        if (!RUNNING_ON_VALGRIND)
+                return;
+
+        if (getpid() != gettid())
+                return;
+
+        if (fd_plus_one <= 0)
+                return;
+
+        safe_close(fd_plus_one - 1);
+        fd_plus_one = 0;
+}
+#endif
 
 _public_ int sd_journal_print(int priority, const char *format, ...) {
         int r;
@@ -111,7 +144,7 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
 
         /* Allocate large buffer to accommodate big message */
         if (len >= LINE_MAX) {
-                buffer = alloca(len + 9);
+                buffer = alloca_safe(len + 9);
                 memcpy(buffer, "MESSAGE=", 8);
                 assert_se(vsnprintf(buffer + 8, len + 1, format, ap) == len);
         }
@@ -347,7 +380,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
         if (errno == ENOENT)
                 return 0;
 
-        if (!IN_SET(errno, EMSGSIZE, ENOBUFS))
+        if (!IN_SET(errno, EMSGSIZE, ENOBUFS, EAGAIN))
                 return -errno;
 
         /* Message doesn't fit... Let's dump the data in a memfd or
@@ -460,10 +493,6 @@ _public_ int sd_journal_perror(const char *message) {
 
 _public_ int sd_journal_stream_fd(const char *identifier, int priority, int level_prefix) {
 #if 0 /// elogind is not journald and can not stream fds in the latter.
-        static const union sockaddr_union sa = {
-                .un.sun_family = AF_UNIX,
-                .un.sun_path = "/run/systemd/journal/stdout",
-        };
         _cleanup_close_ int fd = -1;
         char *header;
         size_t l;
@@ -476,9 +505,9 @@ _public_ int sd_journal_stream_fd(const char *identifier, int priority, int leve
         if (fd < 0)
                 return -errno;
 
-        r = connect(fd, &sa.sa, SOCKADDR_UN_LEN(sa.un));
+        r = connect_unix_path(fd, AT_FDCWD, "/run/systemd/journal/stdout");
         if (r < 0)
-                return -errno;
+                return r;
 
         if (shutdown(fd, SHUT_RD) < 0)
                 return -errno;
@@ -552,7 +581,7 @@ _public_ int sd_journal_printv_with_location(int priority, const char *file, con
 
         /* Allocate large buffer to accommodate big message */
         if (len >= LINE_MAX) {
-                buffer = alloca(len + 9);
+                buffer = alloca_safe(len + 9);
                 memcpy(buffer, "MESSAGE=", 8);
                 assert_se(vsnprintf(buffer + 8, len + 1, format, ap) == len);
         }

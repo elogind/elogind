@@ -23,7 +23,7 @@ static void test_file(void) {
         log_info("RELATIVE_SOURCE_PATH: %s", RELATIVE_SOURCE_PATH);
         log_info("PROJECT_FILE: %s", PROJECT_FILE);
 
-        assert(startswith(__FILE__, RELATIVE_SOURCE_PATH "/"));
+        assert_se(startswith(__FILE__, RELATIVE_SOURCE_PATH "/"));
 }
 
 static void test_log_struct(void) {
@@ -31,16 +31,21 @@ static void test_log_struct(void) {
                    "MESSAGE=Waldo PID="PID_FMT" (no errno)", getpid_cached(),
                    "SERVICE=piepapo");
 
-        log_struct_errno(LOG_INFO, EILSEQ,
-                   "MESSAGE=Waldo PID="PID_FMT": %m (normal)", getpid_cached(),
+        /* The same as above, just using LOG_MESSAGE(), which is generally recommended */
+        log_struct(LOG_INFO,
+                   LOG_MESSAGE("Waldo PID="PID_FMT" (no errno)", getpid_cached()),
                    "SERVICE=piepapo");
+
+        log_struct_errno(LOG_INFO, EILSEQ,
+                         LOG_MESSAGE("Waldo PID="PID_FMT": %m (normal)", getpid_cached()),
+                         "SERVICE=piepapo");
 
         log_struct_errno(LOG_INFO, SYNTHETIC_ERRNO(EILSEQ),
-                   "MESSAGE=Waldo PID="PID_FMT": %m (synthetic)", getpid_cached(),
-                   "SERVICE=piepapo");
+                         LOG_MESSAGE("Waldo PID="PID_FMT": %m (synthetic)", getpid_cached()),
+                         "SERVICE=piepapo");
 
         log_struct(LOG_INFO,
-                   "MESSAGE=Foobar PID="PID_FMT, getpid_cached(),
+                   LOG_MESSAGE("Foobar PID="PID_FMT, getpid_cached()),
                    "FORMAT_STR_TEST=1=%i A=%c 2=%hi 3=%li 4=%lli 1=%p foo=%s 2.5=%g 3.5=%g 4.5=%Lg",
                    (int) 1, 'A', (short) 2, (long int) 3, (long long int) 4, (void*) 1, "foo", (float) 2.5f, (double) 3.5, (long double) 4.5,
                    "SUFFIX=GOT IT");
@@ -66,11 +71,11 @@ static void test_log_syntax(void) {
 }
 
 int main(int argc, char* argv[]) {
-        int target;
-
         test_file();
 
-        for (target = 0; target < _LOG_TARGET_MAX; target++) {
+        assert_se(log_info_errno(SYNTHETIC_ERRNO(EUCLEAN), "foo") == -EUCLEAN);
+
+        for (int target = 0; target < _LOG_TARGET_MAX; target++) {
                 log_set_target(target);
                 log_open();
 
@@ -78,8 +83,6 @@ int main(int argc, char* argv[]) {
                 test_long_lines();
                 test_log_syntax();
         }
-
-        assert_se(log_info_errno(SYNTHETIC_ERRNO(EUCLEAN), "foo") == -EUCLEAN);
 
         return 0;
 }

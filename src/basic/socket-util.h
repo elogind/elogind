@@ -15,6 +15,7 @@
 #include <sys/un.h>
 
 #include "errno-util.h"
+#include "in-addr-util.h"
 #include "macro.h"
 #include "missing_network.h"
 #include "missing_socket.h"
@@ -111,7 +112,10 @@ bool socket_ipv6_is_enabled(void);
 #endif // 0
 
 int sockaddr_port(const struct sockaddr *_sa, unsigned *port);
+#if 0 /// UNNEEDED by elogind
 const union in_addr_union *sockaddr_in_addr(const struct sockaddr *sa);
+int sockaddr_set_in_addr(union sockaddr_union *u, int family, const union in_addr_union *a, uint16_t port);
+#endif // 0
 
 int sockaddr_pretty(const struct sockaddr *_sa, socklen_t salen, bool translate_ipv6, bool include_port, char **ret);
 #if 0 /// UNNEEDED by elogind
@@ -135,7 +139,7 @@ static inline int fd_inc_sndbuf(int fd, size_t n) {
         return fd_set_sndbuf(fd, n, true);
 }
 int fd_set_rcvbuf(int fd, size_t n, bool increase);
-static inline int fd_inc_rcvbuf(int fd, size_t n) {
+static inline int fd_increase_rxbuf(int fd, size_t n) {
         return fd_set_rcvbuf(fd, n, true);
 }
 
@@ -145,9 +149,10 @@ int ip_tos_from_string(const char *s);
 #endif // 0
 
 typedef enum {
-        IFNAME_VALID_ALTERNATIVE = 1 << 0,
-        IFNAME_VALID_NUMERIC     = 1 << 1,
-        _IFNAME_VALID_ALL        = IFNAME_VALID_ALTERNATIVE | IFNAME_VALID_NUMERIC,
+        IFNAME_VALID_ALTERNATIVE = 1 << 0, /* Allow "altnames" too */
+        IFNAME_VALID_NUMERIC     = 1 << 1, /* Allow decimal formatted ifindexes too */
+        IFNAME_VALID_SPECIAL     = 1 << 2, /* Allow the special names "all" and "default" */
+        _IFNAME_VALID_ALL        = IFNAME_VALID_ALTERNATIVE | IFNAME_VALID_NUMERIC | IFNAME_VALID_SPECIAL,
 } IfnameValidFlags;
 bool ifname_valid_char(char a);
 bool ifname_valid_full(const char *p, IfnameValidFlags flags);
@@ -166,7 +171,7 @@ int getpeergroups(int fd, gid_t **ret);
 ssize_t send_one_fd_iov_sa(
                 int transport_fd,
                 int fd,
-                struct iovec *iov, size_t iovlen,
+                const struct iovec *iov, size_t iovlen,
                 const struct sockaddr *sa, socklen_t len,
                 int flags);
 int send_one_fd_sa(int transport_fd,
@@ -177,9 +182,11 @@ int send_one_fd_sa(int transport_fd,
 #define send_one_fd(transport_fd, fd, flags) send_one_fd_iov_sa(transport_fd, fd, NULL, 0, NULL, 0, flags)
 ssize_t receive_one_fd_iov(int transport_fd, struct iovec *iov, size_t iovlen, int flags, int *ret_fd);
 int receive_one_fd(int transport_fd, int flags);
+#endif // 0
 
 ssize_t next_datagram_size_fd(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int flush_accept(int fd);
 #endif // 0
 
@@ -237,11 +244,12 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                          strnlen(_sa->sun_path, sizeof(_sa->sun_path))+1); \
         })
 
-#define SOCKADDR_LEN(sa)                                                \
+#if 0 /// UNNEEDED by elogind
+#define SOCKADDR_LEN(saddr)                                             \
         ({                                                              \
-                const union sockaddr_union *__sa = &(sa);               \
+                const union sockaddr_union *__sa = &(saddr);            \
                 size_t _len;                                            \
-                switch(__sa->sa.sa_family) {                            \
+                switch (__sa->sa.sa_family) {                           \
                 case AF_INET:                                           \
                         _len = sizeof(struct sockaddr_in);              \
                         break;                                          \
@@ -261,12 +269,13 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
                         _len = sizeof(struct sockaddr_vm);              \
                         break;                                          \
                 default:                                                \
-                        assert_not_reached("invalid socket family");    \
+                        assert_not_reached();                           \
                 }                                                       \
                 _len;                                                   \
         })
 
 int socket_ioctl_fd(void);
+#endif // 0
 
 int sockaddr_un_set_path(struct sockaddr_un *ret, const char *path);
 
@@ -295,19 +304,39 @@ int socket_bind_to_ifname(int fd, const char *ifname);
 int socket_bind_to_ifindex(int fd, int ifindex);
 #endif // 0
 
+/* Define a 64bit version of timeval/timespec in any case, even on 32bit userspace. */
+struct timeval_large {
+        uint64_t tvl_sec, tvl_usec;
+};
+struct timespec_large {
+        uint64_t tvl_sec, tvl_nsec;
+};
+
+/* glibc duplicates timespec/timeval on certain 32bit archs, once in 32bit and once in 64bit.
+ * See __convert_scm_timestamps() in glibc source code. Hence, we need additional buffer space for them
+ * to prevent from recvmsg_safe() returning -EXFULL. */
+#define CMSG_SPACE_TIMEVAL                                              \
+        ((sizeof(struct timeval) == sizeof(struct timeval_large)) ?     \
+         CMSG_SPACE(sizeof(struct timeval)) :                           \
+         CMSG_SPACE(sizeof(struct timeval)) +                           \
+         CMSG_SPACE(sizeof(struct timeval_large)))
+#define CMSG_SPACE_TIMESPEC                                             \
+        ((sizeof(struct timespec) == sizeof(struct timespec_large)) ?   \
+         CMSG_SPACE(sizeof(struct timespec)) :                          \
+         CMSG_SPACE(sizeof(struct timespec)) +                          \
+         CMSG_SPACE(sizeof(struct timespec_large)))
+
 ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags);
 
-int socket_get_family(int fd, int *ret);
 #if 0 /// UNNEEDED by elogind
+int socket_get_family(int fd, int *ret);
 int socket_set_recvpktinfo(int fd, int af, bool b);
 int socket_set_unicast_if(int fd, int af, int ifi);
-#endif // 0
 
 int socket_set_option(int fd, int af, int opt_ipv4, int opt_ipv6, int val);
 static inline int socket_set_recverr(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVERR, IPV6_RECVERR, b);
 }
-#if 0 /// UNNEEDED by elogind
 static inline int socket_set_recvttl(int fd, int af, bool b) {
         return socket_set_option(fd, af, IP_RECVTTL, IPV6_RECVHOPLIMIT, b);
 }
@@ -326,3 +355,8 @@ static inline int socket_set_recvfragsize(int fd, int af, bool b) {
 
 int socket_get_mtu(int fd, int af, size_t *ret);
 #endif // 0
+
+/* an initializer for struct ucred that initialized all fields to the invalid value appropriate for each */
+#define UCRED_INVALID { .pid = 0, .uid = UID_INVALID, .gid = GID_INVALID }
+
+int connect_unix_path(int fd, int dir_fd, const char *path);

@@ -1,28 +1,29 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '249',
+        version : '252',
         license : 'LGPLv2+',
         default_options: [
-                'c_std=gnu99',
+                'c_std=gnu11',
                 'prefix=/usr',
                 'sysconfdir=/etc',
                 'localstatedir=/var',
                 'warning_level=2',
         ],
-        meson_version : '>= 0.46',
+        meson_version : '>= 0.53.2',
        )
 
-libsystemd_version = '0.32.0'
-#if 0 /// elogind does not ship libudev
-# libudev_version = '1.7.2'
+libsystemd_version = '0.35.0'
+#if 0 /// elogind does not ship lubudev
+# libudev_version = '1.7.5'
 #endif // 0
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
-# conf.set_quoted('PROJECT_URL', 'https://www.freedesktop.org/wiki/Software/elogind')
+# conf.set_quoted('PROJECT_URL', 'https://systemd.io/')
 #else // 0
-conf.set_quoted('PROJECT_URL', 'https://github.com/elogind/elogind')
+support_url = 'https://github.com/elogind/elogind'
+conf.set_quoted('PROJECT_URL', support_url)
 #endif // 0
 conf.set('PROJECT_VERSION',    meson.project_version(),
          description : 'Numerical project version (used where a simple number is expected)')
@@ -33,21 +34,39 @@ project_source_root = meson.current_source_dir()
 project_build_root = meson.current_build_dir()
 relative_source_path = run_command('realpath',
                                    '--relative-to=@0@'.format(project_build_root),
-                                   project_source_root).stdout().strip()
+                                   project_source_root,
+                                   check : true).stdout().strip()
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
            description : 'tailor build to development or release builds')
+verification = get_option('log-message-verification')
+if verification == 'auto'
+        verification = conf.get('BUILD_MODE_DEVELOPER') == 1
+else
+        verification = verification == 'true'
+endif
+conf.set10('LOG_MESSAGE_VERIFICATION', verification)
 
 #if 0 /// fuzz regression tests are not supported by elogind
 # want_ossfuzz = get_option('oss-fuzz')
 # want_libfuzzer = get_option('llvm-fuzz')
-# if want_ossfuzz + want_libfuzzer > 1
+# if want_ossfuzz and want_libfuzzer
 #         error('only one of oss-fuzz or llvm-fuzz can be specified')
 # endif
 #
-# skip_deps = want_ossfuzz or want_libfuzzer
+# skip_deps = want_ossfuzz or get_option('skip-deps')
 # fuzzer_build = want_ossfuzz or want_libfuzzer
+#
+# # If we're building *not* for actual fuzzing, allow input samples of any size
+# # (for testing and for reproduction of issues discovered with previously-higher
+# # limits).
+# conf.set10('FUZZ_USE_SIZE_LIMIT', fuzzer_build)
+#
+# # Create a title-less summary section early, so it ends up first in the output.
+# # More items are added later after they have been detected.
+# summary({'build mode' : get_option('mode')})
+#
 #else // 0
 skip_deps = false
 #endif // 0
@@ -58,7 +77,7 @@ skip_deps = false
 # # Try to install the git pre-commit hook
 # add_git_hook_sh = find_program('tools/add-git-hook.sh', required : false)
 # if add_git_hook_sh.found()
-#         git_hook = run_command(add_git_hook_sh)
+#         git_hook = run_command(add_git_hook_sh, check : false)
 #         if git_hook.returncode() == 0
 #                 message(git_hook.stdout().strip())
 #         endif
@@ -73,8 +92,9 @@ skip_deps = false
 
 #####################################################################
 
+fs = import('fs')
 if get_option('split-usr') == 'auto'
-        split_usr = run_command('test', '-L', '/bin').returncode() != 0
+        split_usr = not fs.is_symlink('/bin')
 else
         split_usr = get_option('split-usr') == 'true'
 endif
@@ -87,7 +107,7 @@ conf.set10('HAVE_SPLIT_USR', split_usr,
            description : '/usr/bin and /bin directories are separate')
 
 if get_option('split-bin') == 'auto'
-        split_bin = run_command('test', '-L', '/usr/sbin').returncode() != 0
+        split_bin = not fs.is_symlink('/usr/sbin')
 else
         split_bin = get_option('split-bin') == 'true'
 endif
@@ -110,6 +130,7 @@ rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 # sysvrcnd_path = get_option('sysvrcnd-path')
 # conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
 #            description : 'SysV init scripts and rcN.d links are supported')
+# conf.set10('CREATE_LOG_DIRS', get_option('create-log-dirs'))
 #
 # if get_option('hibernate') and not get_option('initrd')
 #         error('hibernate depends on initrd')
@@ -120,9 +141,9 @@ rootprefixdir_noslash = rootprefixdir == '/' ? '' : rootprefixdir
 #endif // 0
 conf.set('HIGH_RLIMIT_NOFILE',          512*1024)
 
-# join_paths ignores the preceding arguments if an absolute component is
-# encountered, so this should canonicalize various paths when they are
-# absolute or relative.
+# Meson ignores the preceding arguments when joining paths if an absolute
+# component is encountered, so this should canonicalize various paths when they
+# are absolute or relative.
 prefixdir = get_option('prefix')
 if not prefixdir.startswith('/')
         error('Prefix is not absolute: "@0@"'.format(prefixdir))
@@ -132,17 +153,17 @@ if prefixdir != rootprefixdir and rootprefixdir != '/' and not prefixdir.strip('
                 rootprefixdir, prefixdir))
 endif
 
-bindir = join_paths(prefixdir, get_option('bindir'))
-libdir = join_paths(prefixdir, get_option('libdir'))
-sysconfdir = join_paths(prefixdir, get_option('sysconfdir'))
-includedir = join_paths(prefixdir, get_option('includedir'))
-datadir = join_paths(prefixdir, get_option('datadir'))
-localstatedir = join_paths('/', get_option('localstatedir'))
+bindir = prefixdir / get_option('bindir')
+libdir = prefixdir / get_option('libdir')
+sysconfdir = prefixdir / get_option('sysconfdir')
+includedir = prefixdir / get_option('includedir')
+datadir = prefixdir / get_option('datadir')
+localstatedir = '/' / get_option('localstatedir')
 
-rootbindir = join_paths(rootprefixdir, 'bin')
-rootsbindir = join_paths(rootprefixdir, split_bin ? 'sbin' : 'bin')
+rootbindir = rootprefixdir / 'bin'
+rootsbindir = rootprefixdir / (split_bin ? 'sbin' : 'bin')
 #if 0 /// elogind has a different default
-# rootlibexecdir = join_paths(rootprefixdir, 'lib/systemd')
+# rootlibexecdir = rootprefixdir / 'lib/systemd'
 #else // 0
 rootlibexecdir = get_option('rootlibexecdir')
 rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/elogind')
@@ -150,66 +171,77 @@ rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdi
 
 rootlibdir = get_option('rootlibdir')
 if rootlibdir == ''
-        rootlibdir = join_paths(rootprefixdir, libdir.split('/')[-1])
+        # This will be a relative path if libdir is in prefix.
+        rootlibdir = get_option('libdir')
 endif
+if not rootlibdir.startswith('/')
+        # If we have a relative path, add rootprefixdir to the front.
+        rootlibdir = rootprefixdir / rootlibdir
+endif
+rootpkglibdir = rootlibdir / 'elogind'
 
 install_sysconfdir = get_option('install-sysconfdir') != 'false'
 install_sysconfdir_samples = get_option('install-sysconfdir') == 'true'
 # Dirs of external packages
-pkgconfigdatadir = get_option('pkgconfigdatadir') == '' ? join_paths(datadir, 'pkgconfig') : get_option('pkgconfigdatadir')
-pkgconfiglibdir = get_option('pkgconfiglibdir') == '' ? join_paths(libdir, 'pkgconfig') : get_option('pkgconfiglibdir')
-polkitpolicydir = join_paths(datadir, 'polkit-1/actions')
-polkitrulesdir = join_paths(datadir, 'polkit-1/rules.d')
-polkitpkladir = join_paths(localstatedir, 'lib/polkit-1/localauthority/10-vendor.d')
 #if 0 /// UNNEEDED by elogind
-# xinitrcdir = get_option('xinitrcdir') == '' ? join_paths(sysconfdir, 'X11/xinit/xinitrc.d') : get_option('xinitrcdir')
+# pkgconfigdatadir = get_option('pkgconfigdatadir') != '' ? get_option('pkgconfigdatadir') : datadir / 'pkgconfig'
+#endif // 0
+pkgconfiglibdir = get_option('pkgconfiglibdir') != '' ? get_option('pkgconfiglibdir') : libdir / 'pkgconfig'
+polkitpolicydir = datadir / 'polkit-1/actions'
+#if 0 /// UNNEEDED by elogind
+# polkitrulesdir = datadir / 'polkit-1/rules.d'
+# polkitpkladir = localstatedir / 'lib/polkit-1/localauthority/10-vendor.d'
+# xinitrcdir = get_option('xinitrcdir') != '' ? get_option('xinitrcdir') : sysconfdir / 'X11/xinit/xinitrc.d'
 # rpmmacrosdir = get_option('rpmmacrosdir')
 # if rpmmacrosdir != 'no'
-#         rpmmacrosdir = join_paths(prefixdir, rpmmacrosdir)
+#         rpmmacrosdir = prefixdir / rpmmacrosdir
 # endif
-# modprobedir = join_paths(rootprefixdir, 'lib/modprobe.d')
+# modprobedir = rootprefixdir / 'lib/modprobe.d'
 #endif // 0
 
 # Our own paths
 #if 0 /// elogind has a bit different layout and does not need all of theses
-# pkgdatadir = join_paths(datadir, 'systemd')
-# environmentdir = join_paths(prefixdir, 'lib/environment.d')
-# pkgsysconfdir = join_paths(sysconfdir, 'systemd')
-# userunitdir = join_paths(prefixdir, 'lib/systemd/user')
-# userpresetdir = join_paths(prefixdir, 'lib/systemd/user-preset')
-# tmpfilesdir = join_paths(prefixdir, 'lib/tmpfiles.d')
-# sysusersdir = join_paths(prefixdir, 'lib/sysusers.d')
-# sysctldir = join_paths(prefixdir, 'lib/sysctl.d')
-# binfmtdir = join_paths(prefixdir, 'lib/binfmt.d')
-# modulesloaddir = join_paths(prefixdir, 'lib/modules-load.d')
-# networkdir = join_paths(rootprefixdir, 'lib/systemd/network')
-# pkgincludedir = join_paths(includedir, 'systemd')
-# systemgeneratordir = join_paths(rootlibexecdir, 'system-generators')
-# usergeneratordir = join_paths(prefixdir, 'lib/systemd/user-generators')
-# systemenvgeneratordir = join_paths(prefixdir, 'lib/systemd/system-environment-generators')
-# userenvgeneratordir = join_paths(prefixdir, 'lib/systemd/user-environment-generators')
-# systemshutdowndir = join_paths(rootlibexecdir, 'system-shutdown')
-# systemsleepdir = join_paths(rootlibexecdir, 'system-sleep')
-# systemunitdir = join_paths(rootprefixdir, 'lib/systemd/system')
-# systempresetdir = join_paths(rootprefixdir, 'lib/systemd/system-preset')
-# udevlibexecdir = join_paths(rootprefixdir, 'lib/udev')
-# udevrulesdir = join_paths(udevlibexecdir, 'rules.d')
-# udevhwdbdir = join_paths(udevlibexecdir, 'hwdb.d')
-# catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
-# kernelinstalldir = join_paths(prefixdir, 'lib/kernel/install.d')
-# factorydir = join_paths(datadir, 'factory')
-# bootlibdir = join_paths(prefixdir, 'lib/systemd/boot/efi')
-# testsdir = join_paths(prefixdir, 'lib/systemd/tests')
-# systemdstatedir = join_paths(localstatedir, 'lib/systemd')
-# catalogstatedir = join_paths(systemdstatedir, 'catalog')
-# randomseeddir = join_paths(localstatedir, 'lib/systemd')
-# profiledir = join_paths(rootlibexecdir, 'portable', 'profile')
-# ntpservicelistdir = join_paths(rootprefixdir, 'lib/systemd/ntp-units.d')
+# pkgdatadir = datadir / 'systemd'
+# environmentdir = prefixdir / 'lib/environment.d'
+# pkgsysconfdir = sysconfdir / 'systemd'
+# userunitdir = prefixdir / 'lib/systemd/user'
+# userpresetdir = prefixdir / 'lib/systemd/user-preset'
+# tmpfilesdir = prefixdir / 'lib/tmpfiles.d'
+# usertmpfilesdir = prefixdir / 'share/user-tmpfiles.d'
+# sysusersdir = prefixdir / 'lib/sysusers.d'
+# sysctldir = prefixdir / 'lib/sysctl.d'
+# binfmtdir = prefixdir / 'lib/binfmt.d'
+# modulesloaddir = prefixdir / 'lib/modules-load.d'
+# networkdir = rootprefixdir / 'lib/systemd/network'
+# pkgincludedir = includedir / 'systemd'
+# systemgeneratordir = rootlibexecdir / 'system-generators'
+# usergeneratordir = prefixdir / 'lib/systemd/user-generators'
+# systemenvgeneratordir = prefixdir / 'lib/systemd/system-environment-generators'
+# userenvgeneratordir = prefixdir / 'lib/systemd/user-environment-generators'
+# systemshutdowndir = rootlibexecdir / 'system-shutdown'
+# systemsleepdir = rootlibexecdir / 'system-sleep'
+# systemunitdir = rootprefixdir / 'lib/systemd/system'
+# systempresetdir = rootprefixdir / 'lib/systemd/system-preset'
+# udevlibexecdir = rootprefixdir / 'lib/udev'
+# udevrulesdir = udevlibexecdir / 'rules.d'
+# udevhwdbdir = udevlibexecdir / 'hwdb.d'
+# catalogdir = prefixdir / 'lib/systemd/catalog'
+# kerneldir = prefixdir / 'lib/kernel'
+# kernelinstalldir = kerneldir / 'install.d'
+# factorydir = datadir / 'factory'
+# bootlibdir = prefixdir / 'lib/systemd/boot/efi'
+# testsdir = prefixdir / 'lib/systemd/tests'
+# systemdstatedir = localstatedir / 'lib/systemd'
+# catalogstatedir = systemdstatedir / 'catalog'
+# randomseeddir = localstatedir / 'lib/systemd'
+# profiledir = rootlibexecdir / 'portable' / 'profile'
+# ntpservicelistdir = rootprefixdir / 'lib/systemd/ntp-units.d'
 #
 # docdir = get_option('docdir')
 # if docdir == ''
-#         docdir = join_paths(datadir, 'doc/systemd')
+#         docdir = datadir / 'doc/systemd'
 # endif
+#
 #else // 0
 pkgdatadir = join_paths(datadir, 'elogind')
 pkgsysconfdir = join_paths(sysconfdir, 'elogind')
@@ -224,53 +256,49 @@ udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
 factorydir = join_paths(datadir, 'factory')
 docdir = get_option('docdir')
-docdir = docdir != '' ? docdir: '-'.join([join_paths(datadir, 'doc/elogind'),
-                                          meson.project_version()])
+if docdir == ''
+        docdir = datadir / 'doc/elogind'
+endif
 testsdir = join_paths(prefixdir, 'lib/elogind/tests')
 randomseeddir = join_paths(localstatedir, 'lib/elogind')
 #endif // 0
 
-dbuspolicydir = get_option('dbuspolicydir')
-if dbuspolicydir == ''
-        dbuspolicydir = join_paths(datadir, 'dbus-1/system.d')
-endif
-
-dbussessionservicedir = get_option('dbussessionservicedir')
-if dbussessionservicedir == ''
-        dbussessionservicedir = join_paths(datadir, 'dbus-1/services')
-endif
-
-dbussystemservicedir = get_option('dbussystemservicedir')
-if dbussystemservicedir == ''
-        dbussystemservicedir = join_paths(datadir, 'dbus-1/system-services')
-endif
-
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
-varrunissymllink = run_command('test', '-L', '/var/run').returncode() == 0
+varrunissymllink = run_command('test', '-L', '/var/run', check : false).returncode() == 0
 message('Setting VARRUN_IS_SYMLINK to: @0@'.format(varrunissymllink))
 conf.set10('VARRUN_IS_SYMLINK', varrunissymllink)
 #endif // 1
+
 pamlibdir = get_option('pamlibdir')
 if pamlibdir == ''
-        pamlibdir = join_paths(rootlibdir, 'security')
+        pamlibdir = rootlibdir / 'security'
 endif
 
 pamconfdir = get_option('pamconfdir')
 if pamconfdir == ''
-        pamconfdir = join_paths(prefixdir, 'lib/pam.d')
+        pamconfdir = prefixdir / 'lib/pam.d'
 endif
 
 #if 0 /// UNNEEDED by elogind
+# libcryptsetup_plugins_dir = get_option('libcryptsetup-plugins-dir')
+# if libcryptsetup_plugins_dir == ''
+#         libcryptsetup_plugins_dir = rootlibdir / 'cryptsetup'
+# endif
+#
 # memory_accounting_default = get_option('memory-accounting-default')
 # status_unit_format_default = get_option('status-unit-format-default')
+# if status_unit_format_default == 'auto'
+#         status_unit_format_default = conf.get('BUILD_MODE_DEVELOPER') == 1 ? 'name' : 'description'
+# endif
 #
 # conf.set_quoted('BINFMT_DIR',                                 binfmtdir)
 # conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
-# conf.set_quoted('CATALOG_DATABASE',                           join_paths(catalogstatedir, 'database'))
+# conf.set_quoted('CATALOG_DATABASE',                           catalogstatedir / 'database')
 # conf.set_quoted('CERTIFICATE_ROOT',                           get_option('certificate-root'))
 #endif // 0
-conf.set_quoted('DOCUMENT_ROOT',                              join_paths(pkgdatadir, 'gatewayd'))
+conf.set_quoted('DOC_DIR',                                    docdir)
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('DOCUMENT_ROOT',                              pkgdatadir / 'gatewayd')
 # conf.set_quoted('ENVIRONMENT_DIR',                            environmentdir)
 #endif // 0
 conf.set_quoted('INCLUDE_DIR',                                includedir)
@@ -280,10 +308,10 @@ conf.set_quoted('LIBDIR',                                     libdir)
 # conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
 #endif // 0
 conf.set_quoted('PKGSYSCONFDIR',                              pkgsysconfdir)
-conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   join_paths(bindir, 'pkttyagent'))
+conf.set_quoted('POLKIT_AGENT_BINARY_PATH',                   bindir / 'pkttyagent')
+conf.set_quoted('PREFIX',                                     prefixdir)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('PREFIX',                                     prefixdir)
-# conf.set_quoted('RANDOM_SEED',                                join_paths(randomseeddir, 'random-seed'))
+# conf.set_quoted('RANDOM_SEED',                                randomseeddir / 'random-seed')
 # conf.set_quoted('RANDOM_SEED_DIR',                            randomseeddir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #endif // 0
@@ -295,35 +323,35 @@ conf.set_quoted('ROOTLIBEXECDIR',                             rootlibexecdir)
 # conf.set_quoted('ROOTPREFIX_NOSLASH',                         rootprefixdir_noslash)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
-# conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      join_paths(rootbindir, 'systemctl'))
-# conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'systemd'))
+# conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      rootbindir / 'systemctl')
+# conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'systemd')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
-# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 join_paths(rootlibexecdir, 'systemd-cgroups-agent'))
-# conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    join_paths(rootlibexecdir, 'systemd-cryptsetup'))
-# conf.set_quoted('SYSTEMD_EXPORT_PATH',                        join_paths(rootlibexecdir, 'systemd-export'))
-# conf.set_quoted('SYSTEMD_FSCK_PATH',                          join_paths(rootlibexecdir, 'systemd-fsck'))
-# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        join_paths(rootlibexecdir, 'systemd-growfs'))
-# conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-homework'))
-# conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     join_paths(rootlibexecdir, 'systemd-import-fs'))
-# conf.set_quoted('SYSTEMD_IMPORT_PATH',                        join_paths(rootlibexecdir, 'systemd-import'))
-# conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      join_paths(pkgdatadir, 'kbd-model-map'))
-# conf.set_quoted('SYSTEMD_LANGUAGE_FALLBACK_MAP',              join_paths(pkgdatadir, 'language-fallback-map'))
-# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        join_paths(rootlibexecdir, 'systemd-makefs'))
-# conf.set_quoted('SYSTEMD_PULL_PATH',                          join_paths(rootlibexecdir, 'systemd-pull'))
-# conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               join_paths(rootlibexecdir, 'systemd-shutdown'))
-# conf.set_quoted('SYSTEMD_STDIO_BRIDGE_BINARY_PATH',           join_paths(bindir, 'systemd-stdio-bridge'))
+# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'systemd-cgroups-agent')
 #else // 0
-conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
-conf.set_quoted('SYSTEMD_CGROUP_AGENT_PATH',                  join_paths(rootlibexecdir, 'elogind-cgroups-agent'))
-conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               join_paths(rootlibexecdir, 'elogind-uaccess-command'))
-conf.set_quoted('SYSTEMD_BINARY_PATH',                        join_paths(rootlibexecdir, 'elogind'))
+conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
+conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               rootlibexecdir / 'elogind-uaccess-command')
+conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'elogind')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEMD_TEST_DATA',                          join_paths(testsdir, 'testdata'))
-# conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', join_paths(rootbindir, 'systemd-tty-ask-password-agent'))
-# conf.set_quoted('SYSTEMD_USERWORK_PATH',                      join_paths(rootlibexecdir, 'systemd-userwork'))
-# conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   join_paths(rootlibexecdir, 'systemd-veritysetup'))
-# conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     join_paths(pkgsysconfdir, 'system'))
+# conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    rootlibexecdir / 'systemd-cryptsetup')
+# conf.set_quoted('SYSTEMD_EXPORT_PATH',                        rootlibexecdir / 'systemd-export')
+# conf.set_quoted('SYSTEMD_FSCK_PATH',                          rootlibexecdir / 'systemd-fsck')
+# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        rootlibexecdir / 'systemd-growfs')
+# conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      rootlibexecdir / 'systemd-homework')
+# conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     rootlibexecdir / 'systemd-import-fs')
+# conf.set_quoted('SYSTEMD_IMPORT_PATH',                        rootlibexecdir / 'systemd-import')
+# conf.set_quoted('SYSTEMD_INTEGRITYSETUP_PATH',                rootlibexecdir / 'systemd-integritysetup')
+# conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      pkgdatadir / 'kbd-model-map')
+# conf.set_quoted('SYSTEMD_LANGUAGE_FALLBACK_MAP',              pkgdatadir / 'language-fallback-map')
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        rootlibexecdir / 'systemd-makefs')
+# conf.set_quoted('SYSTEMD_PULL_PATH',                          rootlibexecdir / 'systemd-pull')
+# conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               rootlibexecdir / 'systemd-shutdown')
+# conf.set_quoted('SYSTEMD_TEST_DATA',                          testsdir / 'testdata')
+# conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', rootbindir / 'systemd-tty-ask-password-agent')
+# conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 rootlibexecdir / 'systemd-update-helper')
+# conf.set_quoted('SYSTEMD_USERWORK_PATH',                      rootlibexecdir / 'systemd-userwork')
+# conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   rootlibexecdir / 'systemd-veritysetup')
+# conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     pkgsysconfdir / 'system')
 # conf.set_quoted('SYSTEM_DATA_UNIT_DIR',                       systemunitdir)
 # conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
 # conf.set_quoted('SYSTEM_GENERATOR_DIR',                       systemgeneratordir)
@@ -336,31 +364,37 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
 # conf.set_quoted('SYSUSERS_DIR',                               sysusersdir)
 # conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
+# conf.set_quoted('USER_TMPFILES_DIR',                          usertmpfilesdir)
 # conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
 # conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
-# conf.set_quoted('USER_CONFIG_UNIT_DIR',                       join_paths(pkgsysconfdir, 'user'))
+# conf.set_quoted('UPDATE_HELPER_USER_TIMEOUT',                 get_option('update-helper-user-timeout'))
+# conf.set_quoted('USER_CONFIG_UNIT_DIR',                       pkgsysconfdir / 'user')
 # conf.set_quoted('USER_DATA_UNIT_DIR',                         userunitdir)
 # conf.set_quoted('USER_ENV_GENERATOR_DIR',                     userenvgeneratordir)
 # conf.set_quoted('USER_GENERATOR_DIR',                         usergeneratordir)
-# conf.set_quoted('USER_KEYRING_PATH',                          join_paths(pkgsysconfdir, 'import-pubring.gpg'))
+# conf.set_quoted('USER_KEYRING_PATH',                          pkgsysconfdir / 'import-pubring.gpg')
 # conf.set_quoted('USER_PRESET_DIR',                            userpresetdir)
-# conf.set_quoted('VENDOR_KEYRING_PATH',                        join_paths(rootlibexecdir, 'import-pubring.gpg'))
+# conf.set_quoted('VENDOR_KEYRING_PATH',                        rootlibexecdir / 'import-pubring.gpg')
 #
 # conf.set('ANSI_OK_COLOR',                                     'ANSI_' + get_option('ok-color').underscorify().to_upper())
+#endif // 0
+conf.set10('ENABLE_URLIFY',                                   get_option('urlify'))
+#if 0 /// UNNEEDED by elogind
 # conf.set10('ENABLE_FEXECVE',                                  get_option('fexecve'))
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
+#
+# conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 #endif // 0
+
+conf.set10('EFI_TPM_PCR_COMPAT',                              get_option('efi-tpm-pcr-compat'))
 
 #####################################################################
 
 cc = meson.get_compiler('c')
 pkgconfig = import('pkgconfig')
-check_compilation_sh = find_program('tools/check-compilation.sh')
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
@@ -397,24 +431,28 @@ cxx_cmd = ''
 # Those generate many false positives, and we do not want to change the code to
 # avoid them.
 basic_disabled_warnings = [
-        '-Wno-format-signedness',
         '-Wno-missing-field-initializers',
         '-Wno-unused-parameter',
-        '-Wno-unused-result',
 ]
 
 possible_common_cc_flags = [
         '-Wdate-time',
         '-Wendif-labels',
         '-Werror=format=2',
+        '-Werror=format-signedness',
         '-Werror=implicit-function-declaration',
         '-Werror=incompatible-pointer-types',
+        '-Werror=int-conversion',
         '-Werror=overflow',
+        '-Werror=override-init',
         '-Werror=return-type',
         '-Werror=shift-count-overflow',
         '-Werror=shift-overflow=2',
         '-Werror=undef',
         '-Wfloat-equal',
+        # gperf prevents us from enabling this because it does not emit fallthrough
+        # attribute with clang.
+        #'-Wimplicit-fallthrough',
         '-Wimplicit-fallthrough=5',
         '-Winit-self',
         '-Wlogical-op',
@@ -428,6 +466,7 @@ possible_common_cc_flags = [
         '-Wstrict-aliasing=2',
         '-Wstrict-prototypes',
         '-Wsuggest-attribute=noreturn',
+        '-Wunused-function',
         '-Wwrite-strings',
 
         # negative arguments are correctly detected starting with meson 0.46.
@@ -435,22 +474,44 @@ possible_common_cc_flags = [
         '-Wno-string-plus-int',  # clang
 ]
 
-# Disable -Wmaybe-unitialized when compiling with -Os/-O1/-O3/etc. There are
+c_args = get_option('c_args')
+
+# Our json library does not support -ffinite-math-only, which is enabled by -Ofast or -ffast-math.
+if (('-Ofast' in c_args or '-ffast-math' in c_args or '-ffinite-math-only' in c_args) and '-fno-finite-math-only' not in c_args)
+        error('-Ofast, -ffast-math, or -ffinite-math-only is specified in c_args.')
+endif
+
+# Disable -Wmaybe-uninitialized when compiling with -Os/-O1/-O3/etc. There are
 # too many false positives with gcc >= 8. Effectively, we only test with -O0
 # and -O2; this should be enough to catch most important cases without too much
 # busywork. See https://github.com/systemd/systemd/pull/19226.
 if cc.get_id() == 'gcc' and (not '02'.contains(get_option('optimization')) or
-                             cc.version().version_compare('<10'))
+                             cc.version().version_compare('<10') or
+                             '-Os' in c_args or
+                             '-O1' in c_args or
+                             '-O3' in c_args or
+                             '-Og' in c_args)
         possible_common_cc_flags += '-Wno-maybe-uninitialized'
 endif
 
+# Disable -Wno-unused-result with gcc, see
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66425.
+if cc.get_id() == 'gcc'
+        possible_common_cc_flags += '-Wno-unused-result'
+endif
+
 # --as-needed and --no-undefined are provided by meson by default,
-# run mesonconf to see what is enabled
+# run 'meson configure' to see what is enabled
 possible_link_flags = [
-        '-Wl,-z,relro',
+        '-Wl,--fatal-warnings',
         '-Wl,-z,now',
+        '-Wl,-z,relro',
         '-fstack-protector',
 ]
+
+if get_option('b_sanitize') == 'none'
+        possible_link_flags += '-Wl,--warn-common'
+endif
 
 if cc.get_id() == 'clang'
         possible_common_cc_flags += [
@@ -459,11 +520,17 @@ if cc.get_id() == 'clang'
         ]
 endif
 
+if get_option('mode') == 'release'
+        # We could enable 'pattern' for developer mode, but that can interfere with
+        # valgrind and sanitizer builds. Also, clang does not zero-initialize unions,
+        # breaking some of our code (https://reviews.llvm.org/D68115).
+        possible_common_cc_flags += '-ftrivial-auto-var-init=zero'
+endif
+
 possible_cc_flags = possible_common_cc_flags + [
         '-Werror=missing-declarations',
         '-Werror=missing-prototypes',
         '-fdiagnostics-show-option',
-        '-ffast-math',
         '-fno-common',
         '-fno-strict-aliasing',
         '-fstack-protector',
@@ -479,6 +546,10 @@ if get_option('buildtype') != 'debug'
         ]
 
         possible_link_flags += '-Wl,--gc-sections'
+endif
+
+if get_option('mode') == 'developer'
+        possible_cc_flags += '-fno-omit-frame-pointer'
 endif
 
 add_project_arguments(cc.get_supported_arguments(basic_disabled_warnings), language : 'c')
@@ -520,6 +591,7 @@ conf.set('SIZEOF_DEV_T', cc.sizeof('dev_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_INO_T', cc.sizeof('ino_t', prefix : '#include <sys/types.h>'))
 conf.set('SIZEOF_TIME_T', cc.sizeof('time_t', prefix : '#include <sys/time.h>'))
 conf.set('SIZEOF_RLIM_T', cc.sizeof('rlim_t', prefix : '#include <sys/resource.h>'))
+conf.set('SIZEOF_TIMEX_MEMBER', cc.sizeof('typeof(((struct timex *)0)->freq)', prefix : '#include <sys/timex.h>'))
 
 decl_headers = '''
 #if 1 /// elogind supports system where _GNU_SOURCE is not set in ENV
@@ -530,7 +602,6 @@ decl_headers = '''
 #include <uchar.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <linux/fs.h>
 '''
 
 foreach decl : ['char16_t',
@@ -541,6 +612,17 @@ foreach decl : ['char16_t',
 
         # We get -1 if the size cannot be determined
         have = cc.sizeof(decl, prefix : decl_headers, args : '-D_GNU_SOURCE') > 0
+
+        if decl == 'struct mount_attr'
+                if have
+                        want_linux_fs_h = false
+                else
+                        have = cc.sizeof(decl,
+                                         prefix : decl_headers + '#include <linux/fs.h>',
+                                         args : '-D_GNU_SOURCE') > 0
+                        want_linux_fs_h = have
+                endif
+        endif
 
         if decl == 'struct statx'
                 if have
@@ -557,9 +639,8 @@ foreach decl : ['char16_t',
 endforeach
 
 conf.set10('WANT_LINUX_STAT_H', want_linux_stat_h)
+conf.set10('WANT_LINUX_FS_H', want_linux_fs_h)
 
-#if 0 /// elogind does not need any of this networking stuff
-#endif // 0
 foreach ident : ['secure_getenv', '__secure_getenv']
         conf.set10('HAVE_' + ident.to_upper(), cc.has_function(ident))
 endforeach
@@ -575,6 +656,8 @@ foreach ident : [
 #if 1 /// elogind supports musl, but upstream refuses to add qsort_r
         ['qsort_r',           '''#include <stdlib.h>'''],
 #endif // 1
+        ['ioprio_get',        '''#include <sched.h>'''],      # no known header declares ioprio_get
+        ['ioprio_set',        '''#include <sched.h>'''],      # no known header declares ioprio_set
         ['name_to_handle_at', '''#include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],
@@ -622,6 +705,7 @@ foreach ident : [
         ['mount_setattr',     '''#include <sys/mount.h>'''],
         ['move_mount',        '''#include <sys/mount.h>'''],
         ['open_tree',         '''#include <sys/mount.h>'''],
+        ['getdents64',        '''#include <dirent.h>'''],
 ]
 
         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE')
@@ -676,9 +760,13 @@ endif
 
 versiondep = declare_dependency(sources: version_h)
 
+shared_lib_tag = get_option('shared-lib-tag')
+if shared_lib_tag == ''
+        shared_lib_tag = meson.project_version()
+endif
+
 sh = find_program('sh')
 echo = find_program('echo')
-test = find_program('test')
 sed = find_program('sed')
 awk = find_program('awk')
 stat = find_program('stat')
@@ -691,18 +779,17 @@ perl = find_program('perl', required : false)
 #endif // 0
 meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #if 0 /// UNNEEDED by elogind
-# test_efi_create_disk_sh = find_program('test/test-efi-create-disk.sh')
 #endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
 meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
+
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// UNNEEDED by elogind
-# splash_bmp = files('test/splash.bmp')
 #endif // 0
 
-# if -Dxxx-path option is found, use that. Otherwise, check in $PATH,
+# If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
 #if 0 /// elogind has a bit different list and some adaptions
 # progs = [['quotaon',    '/usr/sbin/quotaon'    ],
@@ -742,14 +829,15 @@ endforeach
 #if 0 /// unneeded by elogind
 # conf.set_quoted('TELINIT', get_option('telinit-path'))
 #
-# if run_command(ln, '--relative', '--help').returncode() != 0
+# if run_command(ln, '--relative', '--help', check : false).returncode() != 0
 #         error('ln does not support --relative (added in coreutils 8.16)')
 # endif
 #endif // 0
 
 ############################################################
 
-if run_command('python3', '-c', 'import jinja2').returncode() != 0
+python = find_program('python3')
+if run_command(python, '-c', 'import jinja2', check : false).returncode() != 0
         error('python3 jinja2 missing')
 endif
 
@@ -762,8 +850,8 @@ gperf_test_format = '''
 const char * in_word_set(const char *, @0@);
 @1@
 '''
-gperf_snippet_format = 'echo foo,bar | @0@ -L ANSI-C'
-gperf_snippet = run_command(sh, '-c', gperf_snippet_format.format(gperf.path()))
+gperf_snippet = run_command(sh, '-c', 'echo foo,bar | "$1" -L ANSI-C', '_', gperf,
+                            check : true)
 gperf_test = gperf_test_format.format('size_t', gperf_snippet.stdout())
 if cc.compiles(gperf_test)
         gperf_len_type = 'size_t'
@@ -803,16 +891,13 @@ endforeach
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-# fallback_hostname = get_option('fallback-hostname')
-# if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0] == '-'
-#         error('Invalid fallback-hostname configuration')
-#         # A more extensive test is done in test-hostname-util. Let's catch
-#         # the most obvious errors here so we don't fail with an assert later.
-# endif
-# conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
-#
-#endif // 0
+fallback_hostname = get_option('fallback-hostname')
+if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0] == '-'
+        error('Invalid fallback-hostname configuration')
+        # A more extensive test is done in test-hostname-util. Let's catch
+        # the most obvious errors here so we don't fail with an assert later.
+endif
+conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 
 default_hierarchy = get_option('default-hierarchy')
 conf.set_quoted('DEFAULT_HIERARCHY_NAME', default_hierarchy,
@@ -825,32 +910,62 @@ else
         conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_ALL')
 endif
 
-default_net_naming_scheme = get_option('default-net-naming-scheme')
-conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
-
 #if 0 /// UNNEEDED by elogind
+# extra_net_naming_schemes = []
+# extra_net_naming_map = []
+# foreach scheme: get_option('extra-net-naming-schemes').split(',')
+#         if scheme != ''
+#                 name = scheme.split('=')[0]
+#                 value = scheme.split('=')[1]
+#                 NAME = name.underscorify().to_upper()
+#                 VALUE = []
+#                 foreach field: value.split('+')
+#                         VALUE += 'NAMING_' + field.underscorify().to_upper()
+#                 endforeach
+#                 extra_net_naming_schemes += 'NAMING_@0@ = @1@,'.format(NAME, '|'.join(VALUE))
+#                 extra_net_naming_map += '{ "@0@", NAMING_@1@ },'.format(name, NAME)
+#         endif
+# endforeach
+# conf.set('EXTRA_NET_NAMING_SCHEMES', ' '.join(extra_net_naming_schemes))
+# conf.set('EXTRA_NET_NAMING_MAP', ' '.join(extra_net_naming_map))
+#
+# default_net_naming_scheme = get_option('default-net-naming-scheme')
+# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
+# if default_net_naming_scheme != 'latest'
+#         conf.set('_DEFAULT_NET_NAMING_SCHEME_TEST',
+#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper())
+# endif
+#
 # time_epoch = get_option('time-epoch')
-# if time_epoch == -1
-#         time_epoch = run_command(sh, '-c', 'echo "$SOURCE_DATE_EPOCH"').stdout().strip()
-#         if time_epoch == '' and git.found() and run_command('test', '-e', '.git').returncode() == 0
+# if time_epoch <= 0
+#         time_epoch = run_command(sh, '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
+#         if time_epoch == '' and git.found() and fs.exists('.git')
 #                 # If we're in a git repository, use the creation time of the latest git tag.
-#                 latest_tag = run_command(git, 'describe', '--abbrev=0', '--tags').stdout().strip()
-#                 time_epoch = run_command(git, 'log', '--no-show-signature', '-1', '--format=%at', latest_tag).stdout()
+#                 latest_tag = run_command(git, 'describe', '--abbrev=0', '--tags',
+#                                          check : false)
+#                 if latest_tag.returncode() == 0
+#                         time_epoch = run_command(
+#                                 git, 'log', '--no-show-signature', '-1', '--format=%at',
+#                                      latest_tag.stdout().strip(),
+#                                 check : false).stdout()
+#                 endif
 #         endif
 #         if time_epoch == ''
 #                 NEWS = files('NEWS')
-#                 time_epoch = run_command(stat, '-c', '%Y', NEWS).stdout()
+#                 time_epoch = run_command(stat, '-c', '%Y', NEWS,
+#                                          check : true).stdout()
 #         endif
-#         time_epoch = time_epoch.to_int()
+#         time_epoch = time_epoch.strip().to_int()
 # endif
 # conf.set('TIME_EPOCH', time_epoch)
+#
+# conf.set('CLOCK_VALID_RANGE_USEC_MAX', get_option('clock-valid-range-usec-max'))
 #else // 0
-############################################################
 # elogind needs to know which cgroups controller to follow.
 get_cg_ctrl_sh = find_program('tools/meson-get-cg-controller.sh')
 with_cgroupctrl = get_option('cgroup-controller')
 if with_cgroupctrl == '' or with_cgroupctrl == 'auto'
-        with_cgroupctrl = run_command(get_cg_ctrl_sh, []).stdout().strip()
+        with_cgroupctrl = run_command(get_cg_ctrl_sh, [], check : false).stdout().strip()
 elif with_cgroupctrl == 'none'
         with_cgroupctrl = 'elogind'
 endif
@@ -870,16 +985,21 @@ conf.set_quoted('SYSTEMD_CGROUP_CONTROLLER_HYBRID',
 ############################################################
 #endif // 0
 
+default_user_shell = get_option('default-user-shell')
+conf.set_quoted('DEFAULT_USER_SHELL',      default_user_shell)
+conf.set_quoted('DEFAULT_USER_SHELL_NAME', fs.name(default_user_shell))
+
 foreach tuple : [['system-alloc-uid-min', 'SYS_UID_MIN', 1],  # Also see login.defs(5).
                  ['system-uid-max',       'SYS_UID_MAX', 999],
                  ['system-alloc-gid-min', 'SYS_GID_MIN', 1],
                  ['system-gid-max',       'SYS_GID_MAX', 999]]
         v = get_option(tuple[0])
-        if v == -1
+        if v <= 0
                 v = run_command(
                         awk,
                         '/^\s*@0@\s+/ { uid=$2 } END { print uid }'.format(tuple[1]),
-                        '/etc/login.defs').stdout().strip()
+                        '/etc/login.defs',
+                        check : false).stdout().strip()
                 if v == ''
                         v = tuple[2]
                 else
@@ -911,7 +1031,7 @@ nobody_user = get_option('nobody-user')
 nobody_group = get_option('nobody-group')
 
 if not meson.is_cross_build()
-        getent_result = run_command('getent', 'passwd', '65534')
+        getent_result = run_command('getent', 'passwd', '65534', check : false)
         if getent_result.returncode() == 0
                 name = getent_result.stdout().split(':')[0]
                 if name != nobody_user
@@ -920,9 +1040,9 @@ if not meson.is_cross_build()
                                 'Your build will result in an user table setup that is incompatible with the local system.')
                 endif
         endif
-        id_result = run_command('id', '-u', nobody_user)
+        id_result = run_command('id', '-u', nobody_user, check : false)
         if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
+                id = id_result.stdout().strip().to_int()
                 if id != 65534
                         warning('\n' +
                                 'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
@@ -930,7 +1050,7 @@ if not meson.is_cross_build()
                 endif
         endif
 
-        getent_result = run_command('getent', 'group', '65534')
+        getent_result = run_command('getent', 'group', '65534', check : false)
         if getent_result.returncode() == 0
                 name = getent_result.stdout().split(':')[0]
                 if name != nobody_group
@@ -939,9 +1059,9 @@ if not meson.is_cross_build()
                                 'Your build will result in an group table setup that is incompatible with the local system.')
                 endif
         endif
-        id_result = run_command('id', '-g', nobody_group)
+        id_result = run_command('id', '-g', nobody_group, check : false)
         if id_result.returncode() == 0
-                id = id_result.stdout().to_int()
+                id = id_result.stdout().strip().to_int()
                 if id != 65534
                         warning('\n' +
                                 'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, id) +
@@ -986,8 +1106,8 @@ conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
 #         val = get_option(option)
 #
 #         # Ensure provided GID argument is numeric, otherwise fall back to default assignment
-#         conf.set(name, val >= 0 ? val : '-')
-#         if val >= 0
+#         conf.set(name, val > 0 ? val : '-')
+#         if val > 0
 #                 static_ugids += '@0@:@1@'.format(option, val)
 #         endif
 # endforeach
@@ -1014,15 +1134,10 @@ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
 # conf.set_quoted('NTP_SERVERS', ntp_servers)
 #
 # default_locale = get_option('default-locale')
-# if default_locale == ''
-#         if not meson.is_cross_build()
-#                 choose_default_locale_sh = find_program('tools/choose-default-locale.sh')
-#                 default_locale = run_command(choose_default_locale_sh).stdout().strip()
-#         else
-#                 default_locale = 'C.UTF-8'
-#         endif
-# endif
 # conf.set_quoted('SYSTEMD_DEFAULT_LOCALE', default_locale)
+#
+# nspawn_locale = get_option('nspawn-locale')
+# conf.set_quoted('SYSTEMD_NSPAWN_LOCALE', nspawn_locale)
 #
 # localegen_path = get_option('localegen-path')
 # if localegen_path != ''
@@ -1076,10 +1191,6 @@ conf.set10('LOG_TRACE', get_option('log-trace'))
 default_user_path = get_option('user-path')
 if default_user_path != ''
         conf.set_quoted('DEFAULT_USER_PATH', default_user_path)
-        default_user_path_display = default_user_path
-else
-        # meson 0.49 fails when ?: is used in .format()
-        default_user_path_display = '(same as system services)'
 endif
 
 
@@ -1092,6 +1203,17 @@ threads = dependency('threads')
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
 libcrypt = cc.find_library('crypt')
+
+# On some architectures, libatomic is required. But on some installations,
+# it is found, but actual linking fails. So let's try to use it opportunistically.
+# If it is installed, but not needed, it will be dropped because of --as-needed.
+if cc.links('''int main(int argc, char **argv) { return 0; }''',
+            args : '-latomic',
+            name : 'libatomic')
+        libatomic = declare_dependency(link_args : '-latomic')
+else
+        libatomic = []
+endif
 
 crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
 foreach ident : [
@@ -1110,25 +1232,101 @@ if not libcap.found()
         libcap = cc.find_library('cap')
 endif
 
-want_bpf_framework = get_option('bpf-framework')
-bpf_framework_required = want_bpf_framework == 'true'
+#if 0 /// BPF is nowhere used or usable within elogind
+# want_bpf_framework = get_option('bpf-framework')
+# bpf_compiler = get_option('bpf-compiler')
+# bpf_framework_required = want_bpf_framework == 'true'
+#
+# libbpf_version_requirement = '>= 0.1.0'
+# if bpf_compiler == 'gcc'
+#         libbpf_version_requirement = '>= 1.0.0'
+# endif
+# libbpf = dependency('libbpf', required : bpf_framework_required, version : libbpf_version_requirement)
+# conf.set10('HAVE_LIBBPF', libbpf.found())
+#
+# bpftool_strip_version_requirement = '>= 5.13.0'
+# if bpf_compiler == 'gcc'
+#         bpftool_strip_version_requirement = '>= 7.0.0'
+# endif
+#else // 0
+want_bpf_framework = 'false'
+conf.set10('HAVE_LIBBPF', false)
+#endif // 0
 
-libbpf = dependency('libbpf', required : bpf_framework_required, version : '>= 0.2')
-conf.set10('HAVE_LIBBPF', libbpf.found())
-
-if want_bpf_framework == 'false'
-        conf.set10('BPF_FRAMEWORK', 0)
+if want_bpf_framework == 'false' or not libbpf.found() or skip_deps
+        conf.set10('BPF_FRAMEWORK', false)
 else
-        clang = find_program('clang', required : bpf_framework_required)
-        llvm_strip = find_program('llvm-strip', required : bpf_framework_required)
-        # Debian installs this in /usr/sbin/ which is not in $PATH
-        # FIXME: use the 'dirs' parameter once we bump Meson version to >= 0.53
-        bpftool = find_program('bpftool', '/usr/sbin/bpftool', required : bpf_framework_required)
-        bpf_arches = ['x86_64']
-        deps_found = libbpf.found() and clang.found() and llvm_strip.found() and bpftool.found()
+        clang_found = false
+        clang_supports_bpf = false
+        bpf_gcc_found = false
+        bpftool_strip = false
+        deps_found = false
+
+        if bpf_compiler == 'clang'
+                # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
+                # (like clang-10/llvm-strip-10)
+                if meson.is_cross_build() or cc.get_id() != 'clang' or cc.cmd_array()[0].contains('afl-clang') or cc.cmd_array()[0].contains('hfuzz-clang')
+                        r = find_program('clang', required : bpf_framework_required, version : '>= 10.0.0')
+                        clang_found = r.found()
+                        if clang_found
+                                clang = r.path()
+                        endif
+                        # Assume that the required flags are supported by the found clang.
+                        clang_supports_flags = clang_found
+                else
+                        clang_found = true
+                        clang = cc.cmd_array()
+                        clang_supports_flags = cc.has_argument('-Wno-compare-distinct-pointer-types')
+                endif
+
+                if clang_found
+                        # Check if 'clang -target bpf' is supported.
+                        clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
+                endif
+        elif bpf_compiler == 'gcc'
+                warning('GCC BPF Compiler support is experimental and not recommended.')
+                bpf_gcc = find_program('bpf-gcc',
+                                       required : true,
+                                       version : '>= 12.1.0')
+                bpf_gcc_found = bpf_gcc.found()
+        endif
+
+        if clang_supports_bpf or bpf_gcc_found
+                # Debian installs this in /usr/sbin/ which is not in $PATH.
+                # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
+                # We use 'bpftool gen object' subcommand for bpftool strip, it was added by d80b2fcbe0a023619e0fc73112f2a02c2662f6ab (v5.13).
+                bpftool_strip_required = bpf_framework_required and bpf_compiler == 'gcc'
+                bpftool = find_program('bpftool',
+                                       '/usr/sbin/bpftool',
+                                       required : bpftool_strip_required,
+                                       version : bpftool_strip_version_requirement)
+
+                if bpftool.found()
+                        bpftool_strip = true
+                        deps_found = true
+                elif bpf_compiler == 'clang'
+                        # We require the 'bpftool gen skeleton' subcommand, it was added by 985ead416df39d6fe8e89580cc1db6aa273e0175 (v5.6).
+                        bpftool = find_program('bpftool',
+                                               '/usr/sbin/bpftool',
+                                               required : bpf_framework_required,
+                                               version : '>= 5.6.0')
+                endif
+
+                # We use `llvm-strip` as a fallback if `bpftool gen object` strip support is not available.
+                if not bpftool_strip and bpftool.found() and clang_supports_bpf
+                        if not meson.is_cross_build()
+                                llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
+                                                             check : true).stdout().strip()
+                        else
+                                llvm_strip_bin = 'llvm-strip'
+                        endif
+                        llvm_strip = find_program(llvm_strip_bin, required : bpf_framework_required, version : '>= 10.0.0')
+                        deps_found = llvm_strip.found()
+                endif
+        endif
+
         # Can build BPF program from source code in restricted C
-        conf.set10('BPF_FRAMEWORK',
-                bpf_arches.contains(host_machine.cpu_family()) and deps_found)
+        conf.set10('BPF_FRAMEWORK', deps_found)
 endif
 
 libmount = dependency('mount',
@@ -1138,7 +1336,7 @@ libmount = dependency('mount',
 # want_libfdisk = get_option('fdisk')
 # if want_libfdisk != 'false' and not skip_deps
 #         libfdisk = dependency('fdisk',
-#                               version : '>= 2.33',
+#                               version : '>= 2.32',
 #                               required : want_libfdisk == 'true')
 #         have = libfdisk.found()
 # else
@@ -1169,6 +1367,7 @@ libmount = dependency('mount',
 # endif
 # conf.set10('HAVE_SECCOMP', have)
 #else // 0
+libseccomp = []
 conf.set10('HAVE_SECCOMP', false)
 #endif // 0
 
@@ -1200,8 +1399,20 @@ libapparmor = []
 #endif // 0
 conf.set10('HAVE_APPARMOR', have)
 
-conf.set10('HAVE_SMACK_RUN_LABEL', get_option('smack-run-label') != '')
-conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
+#if 0 /// UNNEEDED by elogind
+# have = get_option('smack') and get_option('smack-run-label') != ''
+# conf.set10('HAVE_SMACK_RUN_LABEL', have)
+# if have
+#         conf.set_quoted('SMACK_RUN_LABEL', get_option('smack-run-label'))
+# endif
+#
+# have = get_option('smack') and get_option('smack-default-process-label') != ''
+# if have
+#         conf.set_quoted('SMACK_DEFAULT_PROCESS_LABEL', get_option('smack-default-process-label'))
+# endif
+#else // 0
+conf.set10('HAVE_SMACK_RUN_LABEL', false)
+#endif // 0
 
 want_polkit = get_option('polkit')
 install_polkit = false
@@ -1294,23 +1505,46 @@ conf.set10('HAVE_PAM', have)
 # conf.set10('HAVE_MICROHTTPD', have)
 #
 # want_libcryptsetup = get_option('libcryptsetup')
+# want_libcryptsetup_plugins = get_option('libcryptsetup-plugins')
+#
+# if want_libcryptsetup_plugins == 'true' and want_libcryptsetup == 'false'
+#         error('libcryptsetup-plugins can not be requested without libcryptsetup')
+# endif
+#
 # if want_libcryptsetup != 'false' and not skip_deps
 #         libcryptsetup = dependency('libcryptsetup',
-#                                    version : '>= 2.0.1',
-#                                    required : want_libcryptsetup == 'true')
+#                                    version : want_libcryptsetup_plugins == 'true' ? '>= 2.4.0' : '>= 2.0.1',
+#                                    required : want_libcryptsetup == 'true' or want_libcryptsetup_plugins == 'true')
 #         have = libcryptsetup.found()
 #
-#         conf.set10('HAVE_CRYPT_SET_METADATA_SIZE',
-#                    have and cc.has_function('crypt_set_metadata_size', dependencies : libcryptsetup))
-#         conf.set10('HAVE_CRYPT_ACTIVATE_BY_SIGNED_KEY',
-#                    have and cc.has_function('crypt_activate_by_signed_key', dependencies : libcryptsetup))
-#         conf.set10('HAVE_CRYPT_TOKEN_MAX',
-#                    have and cc.has_function('crypt_token_max', dependencies : libcryptsetup))
+#         foreach ident : ['crypt_set_metadata_size',
+#                          'crypt_activate_by_signed_key',
+#                          'crypt_token_max']
+#                 have_ident = have and cc.has_function(
+#                         ident,
+#                         prefix : '#include <libcryptsetup.h>',
+#                         dependencies : libcryptsetup)
+#                 conf.set10('HAVE_' + ident.to_upper(), have_ident)
+#         endforeach
 # else
 #         have = false
 #         libcryptsetup = []
 # endif
 # conf.set10('HAVE_LIBCRYPTSETUP', have)
+#
+# if want_libcryptsetup_plugins != 'false' and not skip_deps
+#         have = (cc.has_function(
+#                         'crypt_activate_by_token_pin',
+#                         prefix : '#include <libcryptsetup.h>',
+#                         dependencies : libcryptsetup) and
+#                 cc.has_function(
+#                         'crypt_token_external_path',
+#                         prefix : '#include <libcryptsetup.h>',
+#                         dependencies : libcryptsetup))
+# else
+#         have = false
+# endif
+# conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', have)
 #
 # want_libcurl = get_option('libcurl')
 # if want_libcurl != 'false' and not skip_deps
@@ -1364,7 +1598,7 @@ conf.set10('HAVE_PAM', have)
 # want_qrencode = get_option('qrencode')
 # if want_qrencode != 'false' and not skip_deps
 #         libqrencode = dependency('libqrencode',
-#                                  version : '>= 4',
+#                                  version : '>= 3',
 #                                  required : want_qrencode == 'true')
 #         have = libqrencode.found()
 # else
@@ -1426,9 +1660,16 @@ conf.set10('HAVE_PAM', have)
 #
 # want_libfido2 = get_option('libfido2')
 # if want_libfido2 != 'false' and not skip_deps
-#         libfido2 = dependency('libfido2',
-#                               required : want_libfido2 == 'true')
-#         have = libfido2.found()
+#         if conf.get('HAVE_OPENSSL') == 1
+#                 libfido2 = dependency('libfido2',
+#                                       required : want_libfido2 == 'true')
+#                 have = libfido2.found()
+#         elif want_libfido2 == 'true'
+#                 error('libfido2=true requires openssl')
+#         else
+#                 have = false
+#                 libfido2 = []
+#         endif
 # else
 #         have = false
 #         libfido2 = []
@@ -1451,6 +1692,10 @@ conf.set10('HAVE_PAM', have)
 #         libdw = dependency('libdw',
 #                            required : want_elfutils == 'true')
 #         have = libdw.found()
+#
+#         # New in elfutils 0.177
+#         conf.set10('HAVE_DWELF_ELF_E_MACHINE_STRING',
+#                    have and cc.has_function('dwelf_elf_e_machine_string', dependencies : libdw))
 # else
 #         have = false
 #         libdw = []
@@ -1516,6 +1761,26 @@ conf.set10('HAVE_PAM', have)
 #
 # conf.set10('HAVE_COMPRESSION', have_xz or have_lz4 or have_zstd)
 #
+# compression = get_option('default-compression')
+# if compression == 'auto'
+#         if have_zstd
+#                 compression = 'zstd'
+#         elif have_lz4
+#                 compression = 'lz4'
+#         elif have_xz
+#                 compression = 'xz'
+#         else
+#                 compression = 'none'
+#         endif
+# elif compression == 'zstd' and not have_zstd
+#         error('default-compression=zstd requires zstd')
+# elif compression == 'lz4' and not have_lz4
+#         error('default-compression=lz4 requires lz4')
+# elif compression == 'xz' and not have_xz
+#         error('default-compression=xz requires xz')
+# endif
+# conf.set('DEFAULT_COMPRESSION', 'COMPRESSION_@0@'.format(compression.to_upper()))
+#
 # want_xkbcommon = get_option('xkbcommon')
 # if want_xkbcommon != 'false' and not skip_deps
 #         libxkbcommon = dependency('xkbcommon',
@@ -1544,9 +1809,14 @@ libxz = []
 liblz4 = []
 libzstd = []
 libxkbcommon = []
+conf.set10('HAVE_LIBCRYPTSETUP', false)
+conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', false)
 conf.set10('HAVE_GCRYPT', false)
 conf.set10('HAVE_LIBIDN2', false)
 conf.set10('HAVE_LIBIDN', false)
+conf.set10('HAVE_OPENSSL', false)
+conf.set10('HAVE_P11KIT', false)
+conf.set10('HAVE_TPM2', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
 conf.set10('HAVE_ZSTD', false)
@@ -1556,7 +1826,7 @@ conf.set10('HAVE_XKBCOMMON', false)
 
 #if 0 /// UNNEEDED by elogind
 # want_pcre2 = get_option('pcre2')
-# if want_pcre2 != 'false'
+# if want_pcre2 != 'false' and not skip_deps
 #         libpcre2 = dependency('libpcre2-8',
 #                               required : want_pcre2 == 'true')
 #         have = libpcre2.found()
@@ -1602,35 +1872,78 @@ else
 endif
 conf.set10('HAVE_DBUS', have)
 
+dbusdatadir = datadir / 'dbus-1'
+if conf.get('HAVE_DBUS') == 1
+        dbusdatadir = libdbus.get_variable(pkgconfig: 'datadir', default_value: datadir) / 'dbus-1'
+endif
+
+dbuspolicydir = get_option('dbuspolicydir')
+if dbuspolicydir == ''
+        dbuspolicydir = dbusdatadir / 'system.d'
+endif
+
+dbussessionservicedir = get_option('dbussessionservicedir')
+if dbussessionservicedir == ''
+        dbussessionservicedir = dbusdatadir / 'services'
+        if conf.get('HAVE_DBUS') == 1
+                dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
+        endif
+endif
+
+dbussystemservicedir = get_option('dbussystemservicedir')
+if dbussystemservicedir == ''
+        dbussystemservicedir = dbusdatadir / 'system-services'
+        if conf.get('HAVE_DBUS') == 1
+                dbussystemservicedir = libdbus.get_variable(pkgconfig: 'system_bus_services_dir', default_value: dbussystemservicedir)
+        endif
+endif
+
+dbus_interfaces_dir = get_option('dbus-interfaces-dir')
+if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
+        if meson.is_cross_build() and dbus_interfaces_dir != 'yes'
+                dbus_interfaces_dir = 'no'
+                warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
+        else
+                dbus_interfaces_dir = dbusdatadir / 'interfaces'
+                if conf.get('HAVE_DBUS') == 1
+                        dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
+                endif
+        endif
+endif
+
 #if 0 /// UNNEEDED by elogind
-# default_dnssec = get_option('default-dnssec')
-# if skip_deps
-#         default_dnssec = 'no'
+# # We support one or the other. If gcrypt is available, we assume it's there to
+# # be used, and use it in preference.
+# opt = get_option('cryptolib')
+# if opt == 'openssl' and conf.get('HAVE_OPENSSL') == 0
+#         error('openssl requested as the default cryptolib, but not available')
 # endif
-# if default_dnssec != 'no' and conf.get('HAVE_GCRYPT') == 0
-#         message('default-dnssec cannot be set to yes or allow-downgrade when gcrypt is disabled. Setting default-dnssec to no.')
-#         default_dnssec = 'no'
-# endif
-# conf.set('DEFAULT_DNSSEC_MODE',
-#          'DNSSEC_' + default_dnssec.underscorify().to_upper())
-# conf.set_quoted('DEFAULT_DNSSEC_MODE_STR', default_dnssec)
+# conf.set10('PREFER_OPENSSL',
+#            opt == 'openssl' or (opt == 'auto' and conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_GCRYPT') == 0))
+# conf.set10('HAVE_OPENSSL_OR_GCRYPT',
+#            conf.get('HAVE_OPENSSL') == 1 or conf.get('HAVE_GCRYPT') == 1)
+# lib_openssl_or_gcrypt = conf.get('PREFER_OPENSSL') == 1 ? [libopenssl] : [libgcrypt, libgpg_error]
 #
 # dns_over_tls = get_option('dns-over-tls')
 # if dns_over_tls != 'false'
-#         if dns_over_tls == 'openssl'
-#                 have_gnutls = false
-#         else
-#                 have_gnutls = (conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0'))
-#                 if dns_over_tls == 'gnutls' and not have_gnutls
-#                         error('DNS-over-TLS support was requested with gnutls, but dependencies are not available')
-#                 endif
+#         if dns_over_tls == 'gnutls' and conf.get('PREFER_OPENSSL') == 1
+#                 error('Sorry, -Ddns-over-tls=gnutls is not supported when openssl is used as the cryptolib')
 #         endif
-#         if dns_over_tls == 'gnutls' or have_gnutls
+#
+#         if dns_over_tls == 'gnutls'
 #                 have_openssl = false
 #         else
 #                 have_openssl = conf.get('HAVE_OPENSSL') == 1
-#                 if dns_over_tls != 'auto' and not have_openssl
-#                         str = dns_over_tls == 'openssl' ? ' with openssl' : ''
+#                 if dns_over_tls == 'openssl' and not have_openssl
+#                         error('DNS-over-TLS support was requested with openssl, but dependencies are not available')
+#                 endif
+#         endif
+#         if dns_over_tls == 'openssl' or have_openssl
+#                 have_gnutls = false
+#         else
+#                 have_gnutls = conf.get('HAVE_GNUTLS') == 1 and libgnutls.version().version_compare('>= 3.6.0')
+#                 if dns_over_tls != 'auto' and not have_gnutls
+#                         str = dns_over_tls == 'gnutls' ? ' with gnutls' : ''
 #                         error('DNS-over-TLS support was requested@0@, but dependencies are not available'.format(str))
 #                 endif
 #         endif
@@ -1668,8 +1981,7 @@ conf.set10('HAVE_DBUS', have)
 #
 # want_repart = get_option('repart')
 # if want_repart != 'false'
-#         have = (conf.get('HAVE_OPENSSL') == 1 and
-#                 conf.get('HAVE_LIBFDISK') == 1)
+#         have = conf.get('HAVE_LIBFDISK') == 1
 #         if want_repart == 'true' and not have
 #                 error('repart support was requested, but dependencies are not available')
 #         endif
@@ -1678,12 +1990,36 @@ conf.set10('HAVE_DBUS', have)
 # endif
 # conf.set10('ENABLE_REPART', have)
 #
+# default_dnssec = get_option('default-dnssec')
+# if skip_deps
+#         default_dnssec = 'no'
+# endif
+# if default_dnssec != 'no' and conf.get('HAVE_OPENSSL_OR_GCRYPT') == 0
+#         message('default-dnssec cannot be set to yes or allow-downgrade openssl and gcrypt are disabled. Setting default-dnssec to no.')
+#         default_dnssec = 'no'
+# endif
+# conf.set('DEFAULT_DNSSEC_MODE',
+#          'DNSSEC_' + default_dnssec.underscorify().to_upper())
+# conf.set_quoted('DEFAULT_DNSSEC_MODE_STR', default_dnssec)
+#
+# want_sysupdate = get_option('sysupdate')
+# if want_sysupdate != 'false'
+#         have = (conf.get('HAVE_OPENSSL') == 1 and
+#                 conf.get('HAVE_LIBFDISK') == 1)
+#         if want_sysupdate == 'true' and not have
+#                 error('sysupdate support was requested, but dependencies are not available')
+#         endif
+# else
+#         have = false
+# endif
+# conf.set10('ENABLE_SYSUPDATE', have)
+#
 # want_importd = get_option('importd')
 # if want_importd != 'false'
 #         have = (conf.get('HAVE_LIBCURL') == 1 and
+#                 conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and
 #                 conf.get('HAVE_ZLIB') == 1 and
-#                 conf.get('HAVE_XZ') == 1 and
-#                 conf.get('HAVE_GCRYPT') == 1)
+#                 conf.get('HAVE_XZ') == 1)
 #         if want_importd == 'true' and not have
 #                 error('importd support was requested, but dependencies are not available')
 #         endif
@@ -1691,6 +2027,9 @@ conf.set10('HAVE_DBUS', have)
 #         have = false
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
+#
+# want_kernel_install = get_option('kernel-install')
+# conf.set10('ENABLE_KERNEL_INSTALL', want_kernel_install)
 #
 # want_homed = get_option('homed')
 # if want_homed != 'false'
@@ -1782,7 +2121,7 @@ foreach term : ['smack',
 endforeach
 
 #if 1 /// elogind always looks at uid boundaries in /etc/login.defs
-conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
+conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
@@ -1819,47 +2158,27 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', 1)
 
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
-#####################################################################
+############################################################
 
-if get_option('efi')
-        efi_arch = host_machine.cpu_family()
-
-        if efi_arch == 'x86'
-                EFI_MACHINE_TYPE_NAME = 'ia32'
-                gnu_efi_arch = 'ia32'
-        elif efi_arch == 'x86_64'
-                EFI_MACHINE_TYPE_NAME = 'x64'
-                gnu_efi_arch = 'x86_64'
-        elif efi_arch == 'arm'
-                EFI_MACHINE_TYPE_NAME = 'arm'
-                gnu_efi_arch = 'arm'
-        elif efi_arch == 'aarch64'
-                EFI_MACHINE_TYPE_NAME = 'aa64'
-                gnu_efi_arch = 'aarch64'
-        elif efi_arch == 'riscv64'
-                EFI_MACHINE_TYPE_NAME = 'riscv64'
-                gnu_efi_arch = 'riscv64'
-        else
-                EFI_MACHINE_TYPE_NAME = ''
-                gnu_efi_arch = ''
-        endif
-
-        have = true
-        conf.set_quoted('EFI_MACHINE_TYPE_NAME', EFI_MACHINE_TYPE_NAME)
-
-#if 0 /// UNNEEDED by elogind
-#         conf.set('SD_TPM_PCR', get_option('tpm-pcrindex'))
-#endif // 0
-else
-        have = false
-endif
-conf.set10('ENABLE_EFI', have)
+tests = []
+fuzzers = []
+catalogs = []
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-# build_bpf_skel_py = find_program('tools/build-bpf-skel.py')
+# Include these now as they provide gnu-efi detection.
+subdir('src/fundamental')
+#if 0 /// UNSUPPORTED by elogind (at the moment)
+# subdir('src/boot/efi')
+#else // 0
+# But we need the EFI configuration that is now determined in src/boot/efi/meson.build
+# TODO : Include EFI support
+conf.set10('ENABLE_EFI', get_option('efi'))
+conf.set10('HAVE_GNU_EFI', false)
 #endif // 0
+
+############################################################
+
 generate_gperfs = find_program('tools/generate-gperfs.py')
 
 #if 0 /// UNNEEDED by elogind
@@ -1870,7 +2189,7 @@ make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
-
+update_man_rules_py = find_program('tools/update-man-rules.py')
 #if 0 /// UNNEEDED by elogind
 # update_hwdb_sh = find_program('tools/update-hwdb.sh')
 # update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
@@ -1878,6 +2197,7 @@ update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
+export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
 
 #if 1 /// These are not needed by elogind, but meson wants them although they are commented out.
 conf.set_quoted('CERTIFICATE_ROOT',                 '/dev/null')
@@ -1890,13 +2210,22 @@ conf.set_quoted('USER_ENV_GENERATOR_PATH',          '/dev/null')
 conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 conf.set_quoted('DEBUGTTY',                         '/dev/null')
 #####################################################################
+############################################################
 
 #endif // 1
+if get_option('b_coverage')
+        add_project_arguments('-include', 'src/basic/coverage.h', language : 'c')
+endif
+
+############################################################
+
 config_h = configure_file(
         output : 'config.h',
         configuration : conf)
 
 add_project_arguments('-include', 'config.h', language : 'c')
+
+jinja2_cmdline = [meson_render_jinja2, config_h, version_h]
 
 ############################################################
 
@@ -1904,11 +2233,8 @@ add_project_arguments('-include', 'config.h', language : 'c')
 # usually, but not always, installed in /bin.
 public_programs = []
 
-tests = []
-
-#if 0 /// elogind does not fuzz
-# fuzzers = []
-#endif // 0
+# D-Bus introspection XML export
+dbus_programs = []
 
 basic_includes = include_directories(
         'src/basic',
@@ -1949,31 +2275,32 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
-subdir('src/fundamental')
 subdir('src/basic')
 subdir('src/libelogind')
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/udev')
 # subdir('src/libudev')
+# subdir('src/cryptsetup/cryptsetup-tokens')
+#
+# alias_target('devel', libsystemd_pc, libudev_pc)
+#else // 0
+alias_target('devel', libelogind_pc)
 #endif // 0
 
 libelogind = shared_library(
         'elogind',
-        disable_mempool_c,
         version : libsystemd_version,
         include_directories : libelogind_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
-#                      libbasic_gcrypt],
+#                      libbasic_gcrypt,
+#                      libbasic_compress],
 #         link_whole : [libsystemd_static],
 #         dependencies : [threads,
-#                         librt,
-#                         libxz,
-#                         libzstd,
-#                         liblz4],
+#                         librt],
 #         link_depends : libsystemd_sym,
 #else // 0
                      '-Wl,--version-script=' + libelogind_sym_path],
@@ -1983,8 +2310,10 @@ libelogind = shared_library(
         link_depends : libelogind_sym,
 #endif // 0
         install : true,
+        install_tag: 'libsystemd',
         install_dir : rootlibdir)
 
+alias_target('libelogind', libelogind)
 
 #if 0 /// Do a real elogind masking else, diff always goes haywire here
 # install_libsystemd_static = static_library(
@@ -1996,14 +2325,15 @@ install_libelogind_static = static_library(
         libelogind_sources,
 #endif // 0
         basic_sources,
-#if 0 /// No gcrypt with elogind
+#if 0 /// No gcrypt or compress with elogind
 #         basic_gcrypt_sources,
+#         basic_compress_sources,
 #endif // 0
         fundamental_sources,
-        disable_mempool_c,
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
+        install_tag: 'libelogind',
         install_dir : rootlibdir,
 #if 0 /// elogind only needs libcap, libdl, libmount threads and selinux.
 #         pic : static_libsystemd_pic,
@@ -2016,12 +2346,12 @@ install_libelogind_static = static_library(
 #                         libcap,
 #                         libblkid,
 #                         libmount,
-#                         libgcrypt],
+#                         libgcrypt,
+#                         libopenssl],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
 # libudev = shared_library(
 #         'udev',
-#         disable_mempool_c,
 #         version : libudev_version,
 #         include_directories : includes,
 #         link_args : ['-shared',
@@ -2031,7 +2361,10 @@ install_libelogind_static = static_library(
 #         dependencies : [threads],
 #         link_depends : libudev_sym,
 #         install : true,
+#         install_tag: 'libudev',
 #         install_dir : rootlibdir)
+#
+# alias_target('libudev', libudev)
 #
 # install_libudev_static = static_library(
 #         'udev',
@@ -2040,10 +2373,10 @@ install_libelogind_static = static_library(
 #         shared_sources,
 #         libsystemd_sources,
 #         libudev_sources,
-#         disable_mempool_c,
 #         include_directories : includes,
 #         build_by_default : static_libudev != 'false',
 #         install : static_libudev != 'false',
+#         install_tag: 'libudev',
 #         install_dir : rootlibdir,
 #         link_depends : libudev_sym,
 #         dependencies : libshared_deps + [libmount],
@@ -2058,12 +2391,66 @@ install_libelogind_static = static_library(
         c_args : libsystemd_c_args)
 #endif // 0
 
-############################################################
+if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
+        if conf.get('HAVE_TPM2') == 1
+                cryptsetup_token_elogind_tpm2 = shared_library(
+                        'cryptsetup-token-elogind-tpm2',
+                        cryptsetup_token_elogind_tpm2_sources,
+                        include_directories : includes,
+                        link_args : ['-shared',
+                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
+                        link_with : [lib_cryptsetup_token_common,
+                                     libshared],
+                        dependencies : [libcryptsetup,
+                                        tpm2,
+                                        versiondep],
+                        link_depends : cryptsetup_token_sym,
+                        install_rpath : rootpkglibdir,
+                        install : true,
+                        install_dir : libcryptsetup_plugins_dir)
+        endif
 
+        if conf.get('HAVE_LIBFIDO2') == 1
+                cryptsetup_token_elogind_fido2 = shared_library(
+                        'cryptsetup-token-elogind-fido2',
+                        cryptsetup_token_elogind_fido2_sources,
+                        include_directories : includes,
+                        link_args : ['-shared',
+                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
+                        link_with : [lib_cryptsetup_token_common,
+                                     libshared],
+                        dependencies : [libcryptsetup,
+                                        libfido2,
+                                        versiondep],
+                        link_depends : cryptsetup_token_sym,
+                        install_rpath : rootpkglibdir,
+                        install : true,
+                        install_dir : libcryptsetup_plugins_dir)
+        endif
+
+        if conf.get('HAVE_P11KIT') == 1
+                cryptsetup_token_elogind_pkcs11 = shared_library(
+                        'cryptsetup-token-elogind-pkcs11',
+                        cryptsetup_token_elogind_pkcs11_sources,
+                        include_directories : includes,
+                        link_args : ['-shared',
+                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
+                        link_with : [lib_cryptsetup_token_common,
+                                     libshared],
+                        dependencies : [libcryptsetup,
+                                        libp11kit,
+                                        versiondep],
+                        link_depends : cryptsetup_token_sym,
+                        install_rpath : rootpkglibdir,
+                        install : true,
+                        install_dir : libcryptsetup_plugins_dir)
+        endif
+endif
 
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+############################################################
 
 # systemd-analyze requires 'libcore'
 subdir('src/core')
@@ -2081,7 +2468,6 @@ subdir('src/update-utmp')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/analyze')
-# subdir('src/boot/efi')
 #endif // 0
 
 subdir('src/busctl')
@@ -2113,11 +2499,11 @@ subdir('src/login')
 # subdir('src/shutdown')
 # subdir('src/sysext')
 # subdir('src/systemctl')
+# subdir('src/sysupdate')
 # subdir('src/timedate')
 # subdir('src/timesync')
 # subdir('src/tmpfiles')
 # subdir('src/userdb')
-# subdir('src/vconsole')
 # subdir('src/xdg-autostart-generator')
 #endif // 0
 
@@ -2138,7 +2524,6 @@ subdir('src/test')
 test_dlopen = executable(
         'test-dlopen',
         test_dlopen_c,
-        disable_mempool_c,
         include_directories : includes,
         link_with : [libbasic],
         dependencies : [libdl],
@@ -2155,7 +2540,7 @@ test_dlopen = executable(
 #                 module = tuple[0]
 #
 #                 sym = 'src/nss-@0@/nss-@0@.sym'.format(module)
-#                 version_script_arg = join_paths(project_source_root, sym)
+#                 version_script_arg = project_source_root / sym
 #
 #                 sources = ['src/nss-@0@/nss-@0@.c'.format(module)]
 #                 if tuple.length() > 2
@@ -2169,7 +2554,6 @@ test_dlopen = executable(
 #                 nss = shared_library(
 #                         'nss_' + module,
 #                         sources,
-#                         disable_mempool_c,
 #                         version : '2',
 #                         include_directories : incs,
 #                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
@@ -2183,19 +2567,23 @@ test_dlopen = executable(
 #                                         librt],
 #                         link_depends : sym,
 #                         install : true,
+#                         install_tag : 'nss',
 #                         install_dir : rootlibdir)
 #
 #                 # We cannot use shared_module because it does not support version suffix.
 #                 # Unfortunately shared_library insists on creating the symlink…
 #                 meson.add_install_script('sh', '-c',
 #                                          'rm $DESTDIR@0@/libnss_@1@.so'
-#                                          .format(rootlibdir, module))
+#                                          .format(rootlibdir, module),
+#                                          install_tag : 'nss'
+#                                          )
 #
 #                 if want_tests != 'false'
 #                         test('dlopen-nss_' + module,
 #                              test_dlopen,
 #                              # path to dlopen must include a slash
-#                              args : nss.full_path())
+#                              args : nss.full_path(),
+#                              depends : nss)
 #                 endif
 #         endif
 # endforeach
@@ -2204,42 +2592,41 @@ test_dlopen = executable(
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# executable(
+# exe = executable(
 #         'systemd',
 #         systemd_sources,
 #         include_directories : includes,
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         threads,
-#                         librt,
-#                         libseccomp,
-#                         libselinux,
-#                         libmount,
-#                         libblkid],
-#         install_rpath : rootlibexecdir,
+#                         libseccomp],
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
+# dbus_programs += exe
+# public_programs += exe
 #
 # meson.add_install_script(meson_make_symlink,
-#                          join_paths(rootlibexecdir, 'systemd'),
-#                          join_paths(rootsbindir, 'init'))
+#                          rootlibexecdir / 'systemd',
+#                          rootsbindir / 'init')
 #
-# public_programs += executable(
+# exe = executable(
 #         'systemd-analyze',
 #         systemd_analyze_sources,
 #         include_directories : core_includes,
 #         link_with : [libcore,
 #                      libshared],
 #         dependencies : [versiondep,
-#                         threads,
-#                         librt,
-#                         libseccomp,
-#                         libselinux,
-#                         libmount,
-#                         libblkid],
-#         install_rpath : rootlibexecdir,
-#         install : conf.get('ENABLE_ANALYZE'))
+#                         libseccomp],
+#         install_rpath : rootpkglibdir,
+#         install : conf.get('ENABLE_ANALYZE') == 1)
+# public_programs += exe
+#
+# if want_tests != 'false'
+#         test('test-compare-versions',
+#              test_compare_versions_sh,
+#              args : exe.full_path())
+# endif
 #
 # executable(
 #         'systemd-journald',
@@ -2252,7 +2639,7 @@ test_dlopen = executable(
 #                         liblz4,
 #                         libselinux,
 #                         libzstd],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -2263,21 +2650,29 @@ test_dlopen = executable(
 #         link_with : [libjournal_core,
 #                      libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
+#
+# if get_option('link-journalctl-shared')
+#         journalctl_link_with = [libshared]
+# else
+#         journalctl_link_with = [libsystemd_static,
+#                                 libshared_static,
+#                                 libbasic_gcrypt]
+# endif
 #
 # public_programs += executable(
 #         'journalctl',
 #         journalctl_sources,
 #         include_directories : includes,
-#         link_with : [libshared],
+#         link_with : [journalctl_link_with],
 #         dependencies : [threads,
 #                         libdl,
 #                         libxz,
 #                         liblz4,
 #                         libzstd,
 #                         libdl],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -2286,7 +2681,7 @@ test_dlopen = executable(
 #         'src/getty-generator/getty-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2295,7 +2690,7 @@ test_dlopen = executable(
 #         'src/debug-generator/debug-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2304,18 +2699,30 @@ test_dlopen = executable(
 #         'src/run-generator/run-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
-# executable(
+# exe = executable(
 #         'systemd-fstab-generator',
 #         'src/fstab-generator/fstab-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
+#
+# meson.add_install_script(meson_make_symlink,
+#                          systemgeneratordir / 'systemd-fstab-generator',
+#                          rootlibexecdir / 'systemd-sysroot-fstab-check')
+#
+# if want_tests != 'false'
+#         test('test-fstab-generator',
+#              test_fstab_generator_sh,
+#              # https://github.com/mesonbuild/meson/issues/2681
+#              args : exe.full_path(),
+#              depends : exe)
+# endif
 #
 # if conf.get('ENABLE_ENVIRONMENT_D') == 1
 #         executable(
@@ -2323,13 +2730,13 @@ test_dlopen = executable(
 #                 'src/environment-d-generator/environment-d-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : userenvgeneratordir)
 #
 #         meson.add_install_script(meson_make_symlink,
-#                                  join_paths(sysconfdir, 'environment'),
-#                                  join_paths(environmentdir, '99-environment.conf'))
+#                                  sysconfdir / 'environment',
+#                                  environmentdir / '99-environment.conf')
 # endif
 #
 # if conf.get('ENABLE_HIBERNATE') == 1
@@ -2338,7 +2745,7 @@ test_dlopen = executable(
 #                 'src/hibernate-resume/hibernate-resume-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -2347,7 +2754,7 @@ test_dlopen = executable(
 #                 'src/hibernate-resume/hibernate-resume.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2359,7 +2766,7 @@ test_dlopen = executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : libblkid,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -2368,12 +2775,12 @@ test_dlopen = executable(
 #                 'src/dissect/dissect.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
 # if conf.get('ENABLE_RESOLVE') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-resolved',
 #                 systemd_resolved_sources,
 #                 include_directories : resolve_includes,
@@ -2381,7 +2788,7 @@ test_dlopen = executable(
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
 #                 dependencies : systemd_resolved_dependencies,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2393,23 +2800,23 @@ test_dlopen = executable(
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
 #                 dependencies : [threads,
-#                                 libgpg_error,
+#                                 lib_openssl_or_gcrypt,
 #                                 libm,
 #                                 libidn],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         meson.add_install_script(meson_make_symlink,
-#                                  join_paths(bindir, 'resolvectl'),
-#                                  join_paths(rootsbindir, 'resolvconf'))
+#                                  bindir / 'resolvectl',
+#                                  rootsbindir / 'resolvconf')
 #
 #         meson.add_install_script(meson_make_symlink,
-#                                  join_paths(bindir, 'resolvectl'),
-#                                  join_paths(bindir, 'systemd-resolve'))
+#                                  bindir / 'resolvectl',
+#                                  bindir / 'systemd-resolve')
 # endif
 #
 # if conf.get('ENABLE_LOGIND') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-logind',
 #                 systemd_logind_sources,
 #                 include_directories : includes,
@@ -2417,7 +2824,7 @@ test_dlopen = executable(
 #                              libshared],
 #                 dependencies : [threads,
 #                                 libacl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2430,7 +2837,7 @@ test_dlopen = executable(
 #                                 liblz4,
 #                                 libxz,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #
@@ -2439,12 +2846,12 @@ test_dlopen = executable(
 #                 'src/login/inhibit.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #
 #         if conf.get('HAVE_PAM') == 1
-#                 version_script_arg = join_paths(project_source_root, pam_systemd_sym)
+#                 version_script_arg = project_source_root / pam_systemd_sym
 #                 pam_systemd = shared_library(
 #                         'pam_systemd',
 #                         pam_systemd_c,
@@ -2459,13 +2866,15 @@ test_dlopen = executable(
 #                                         libpam_misc],
 #                         link_depends : pam_systemd_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
 #
 #                 if want_tests != 'false'
 #                         test('dlopen-pam_systemd',
 #                              test_dlopen,
 #                              # path to dlopen must include a slash
-#                              args : pam_systemd.full_path())
+#                              args : pam_systemd.full_path(),
+#                              depends : pam_systemd)
 #                 endif
 #         endif
 #
@@ -2474,7 +2883,7 @@ test_dlopen = executable(
 #                 user_runtime_dir_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2521,7 +2930,7 @@ if conf.get('HAVE_PAM') == 1
 #                 'src/user-sessions/user-sessions.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #else // 0
@@ -2552,23 +2961,29 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// UNNEEDED by elogind
-# if conf.get('ENABLE_EFI') == 1 and conf.get('HAVE_BLKID') == 1
+# if conf.get('HAVE_BLKID') == 1 and conf.get('HAVE_GNU_EFI') == 1
+#         if get_option('link-boot-shared')
+#                 boot_link_with = [libshared]
+#         else
+#                 boot_link_with = [libsystemd_static, libshared_static]
+#         endif
+#
 #         public_programs += executable(
 #                 'bootctl',
 #                 'src/boot/bootctl.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 #
 #         public_programs += executable(
 #                 'systemd-bless-boot',
 #                 'src/boot/bless-boot.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [boot_link_with],
 #                 dependencies : [libblkid],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2576,10 +2991,31 @@ endif
 #                 'systemd-bless-boot-generator',
 #                 'src/boot/bless-boot-generator.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 link_with : [boot_link_with],
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
+#
+#         if conf.get('HAVE_OPENSSL') == 1 and conf.get('HAVE_TPM2') == 1
+#                 executable(
+#                         'systemd-measure',
+#                         'src/boot/measure.c',
+#                         include_directories : includes,
+#                         link_with : [libshared],
+#                         dependencies : [libopenssl],
+#                         install_rpath : rootpkglibdir,
+#                         install : true,
+#                         install_dir : rootlibexecdir)
+#                 executable(
+#                         'systemd-pcrphase',
+#                         'src/boot/pcrphase.c',
+#                         include_directories : includes,
+#                         link_with : [libshared],
+#                         dependencies : [libopenssl, tpm2],
+#                         install_rpath : rootpkglibdir,
+#                         install : true,
+#                         install_dir : rootlibexecdir)
+#         endif
 # endif
 #
 # executable(
@@ -2588,7 +3024,7 @@ endif
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libblkid],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -2598,10 +3034,10 @@ endif
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
-# public_programs += executable(
+# systemctl = executable(
 #         'systemctl',
 #         systemctl_sources,
 #         include_directories : includes,
@@ -2612,18 +3048,19 @@ endif
 #                         libxz,
 #                         liblz4,
 #                         libzstd],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
+# public_programs += systemctl
 #
 # if conf.get('ENABLE_PORTABLED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-portabled',
 #                 systemd_portabled_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 dependencies : [threads, libselinux],
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2633,7 +3070,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -2644,7 +3081,7 @@ endif
 #                 systemd_sysext_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -2656,7 +3093,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2666,7 +3103,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2676,9 +3113,8 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
+#                 install_rpath : rootpkglibdir,
+#                 install : true)
 # endif
 #
 # if conf.get('ENABLE_HOMED') == 1
@@ -2693,19 +3129,20 @@ endif
 #                                 libopenssl,
 #                                 libfdisk,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-homed',
 #                 systemd_homed_sources,
 #                 include_directories : home_includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libcrypt,
-#                                 libopenssl],
-#                 install_rpath : rootlibexecdir,
+#                                 libopenssl,
+#                                 libm],
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2719,13 +3156,12 @@ endif
 #                                 libopenssl,
 #                                 libp11kit,
 #                                 libdl],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
+#                 install_rpath : rootpkglibdir,
+#                 install : true)
 #
 #         if conf.get('HAVE_PAM') == 1
-#                 version_script_arg = join_paths(project_source_root, pam_systemd_home_sym)
-#                 pam_systemd = shared_library(
+#                 version_script_arg = project_source_root / pam_systemd_home_sym
+#                 pam_systemd_home = shared_library(
 #                         'pam_systemd_home',
 #                         pam_systemd_home_c,
 #                         name_prefix : '',
@@ -2740,20 +3176,29 @@ endif
 #                                         libcrypt],
 #                         link_depends : pam_systemd_home_sym,
 #                         install : true,
+#                         install_tag : 'pam',
 #                         install_dir : pamlibdir)
+#
+#                 if want_tests != 'false'
+#                         test('dlopen-pam_systemd_home',
+#                              test_dlopen,
+#                              # path to dlopen must include a slash
+#                              args : pam_systemd_home.full_path(),
+#                              depends : pam_systemd_home)
+#                 endif
 #         endif
 # endif
 #
 # foreach alias : (['halt', 'poweroff', 'reboot', 'shutdown'] +
 #                  (conf.get('HAVE_SYSV_COMPAT') == 1 ? ['runlevel', 'telinit'] : []))
 #         meson.add_install_script(meson_make_symlink,
-#                                  join_paths(rootbindir, 'systemctl'),
-#                                  join_paths(rootsbindir, alias))
+#                                  rootbindir / 'systemctl',
+#                                  rootsbindir / alias)
 # endforeach
 #
 # meson.add_install_script(meson_make_symlink,
-#                          join_paths(rootbindir, 'udevadm'),
-#                          join_paths(rootlibexecdir, 'systemd-udevd'))
+#                          rootbindir / 'udevadm',
+#                          rootlibexecdir / 'systemd-udevd')
 #
 # if conf.get('ENABLE_BACKLIGHT') == 1
 #         executable(
@@ -2761,7 +3206,7 @@ endif
 #                 'src/backlight/backlight.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2772,7 +3217,7 @@ endif
 #                 'src/rfkill/rfkill.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2782,7 +3227,7 @@ endif
 #         'src/system-update-generator/system-update-generator.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : systemgeneratordir)
 #
@@ -2794,7 +3239,7 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [libcryptsetup,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2803,7 +3248,7 @@ endif
 #                 'src/cryptsetup/cryptsetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
@@ -2813,7 +3258,7 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libcryptsetup],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2822,11 +3267,11 @@ endif
 #                 'src/veritysetup/veritysetup-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'systemd-cryptenroll',
 #                 systemd_cryptenroll_sources,
 #                 include_directories : includes,
@@ -2835,26 +3280,52 @@ endif
 #                                 libdl,
 #                                 libopenssl,
 #                                 libp11kit],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
+#
+#         executable(
+#                 'systemd-integritysetup',
+#                 ['src/integritysetup/integritysetup.c', 'src/integritysetup/integrity-util.c'],
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 dependencies : [libcryptsetup],
+#                 install_rpath : rootpkglibdir,
+#                 install : true,
+#                 install_dir : rootlibexecdir)
+#
+#         executable(
+#                 'systemd-integritysetup-generator',
+#                 ['src/integritysetup/integritysetup-generator.c', 'src/integritysetup/integrity-util.c'],
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 install_rpath : rootpkglibdir,
+#                 install : true,
+#                 install_dir : systemgeneratordir)
 # endif
 #
 # if conf.get('HAVE_SYSV_COMPAT') == 1
-#         executable(
+#         exe = executable(
 #                 'systemd-sysv-generator',
 #                 'src/sysv-generator/sysv-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
+#
+#         sysv_generator_test_py = find_program('test/sysv-generator-test.py')
+#         if want_tests != 'false'
+#                 test('sysv-generator-test',
+#                      sysv_generator_test_py,
+#                      depends : exe)
+#         endif
 #
 #         executable(
 #                 'systemd-rc-local-generator',
 #                 'src/rc-local-generator/rc-local-generator.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : systemgeneratordir)
 # endif
@@ -2865,7 +3336,7 @@ endif
 #                 systemd_xdg_autostart_generator_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : usergeneratordir)
 #
@@ -2874,18 +3345,18 @@ endif
 #                 'src/xdg-autostart-generator/xdg-autostart-condition.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
 #
 # if conf.get('ENABLE_HOSTNAMED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-hostnamed',
 #                 'src/hostname/hostnamed.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2894,25 +3365,26 @@ endif
 #                 'src/hostname/hostnamectl.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
 # if conf.get('ENABLE_LOCALED') == 1
 #         if conf.get('HAVE_XKBCOMMON') == 1
-#                 # logind will load libxkbcommon.so dynamically on its own
-#                 deps = [libdl]
+#                 # logind will load libxkbcommon.so dynamically on its own, but we still
+#                 # need to specify where the headers are
+#                 deps = [libdl, libxkbcommon.partial_dependency(compile_args: true)]
 #         else
 #                 deps = []
 #         endif
 #
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-localed',
 #                 systemd_localed_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : deps,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2921,17 +3393,17 @@ endif
 #                 localectl_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
 # if conf.get('ENABLE_TIMEDATED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-timedated',
 #                 'src/timedate/timedated.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -2941,7 +3413,7 @@ endif
 #                 'timedatectl',
 #                 'src/timedate/timedatectl.c',
 #                 include_directories : includes,
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 link_with : [libshared],
 #                 dependencies : [libm],
 #                 install : true)
@@ -2955,7 +3427,7 @@ endif
 #                 link_with : [libtimesyncd_core],
 #                 dependencies : [threads,
 #                                 libm],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2964,19 +3436,19 @@ endif
 #                 'src/timesync/wait-sync.c',
 #                 include_directories : includes,
 #                 link_with : [libtimesyncd_core],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
 #
 # if conf.get('ENABLE_MACHINED') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-machined',
 #                 systemd_machined_sources,
 #                 include_directories : includes,
 #                 link_with : [libmachine_core,
 #                              libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -2989,19 +3461,19 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
 #
 # if conf.get('ENABLE_IMPORTD') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-importd',
 #                 systemd_importd_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3009,14 +3481,15 @@ endif
 #                 'systemd-pull',
 #                 systemd_pull_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [versiondep,
 #                                 libcurl,
+#                                 lib_openssl_or_gcrypt,
 #                                 libz,
 #                                 libbzip2,
-#                                 libxz,
-#                                 libgcrypt],
-#                 install_rpath : rootlibexecdir,
+#                                 libxz],
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3024,12 +3497,13 @@ endif
 #                 'systemd-import',
 #                 systemd_import_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [libcurl,
 #                                 libz,
 #                                 libbzip2,
 #                                 libxz],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3037,8 +3511,9 @@ endif
 #                 'systemd-import-fs',
 #                 systemd_import_fs_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 link_with : [libshared,
+#                              lib_import_common],
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3046,12 +3521,13 @@ endif
 #                 'systemd-export',
 #                 systemd_export_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              lib_import_common],
 #                 dependencies : [libcurl,
 #                                 libz,
 #                                 libbzip2,
 #                                 libxz],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3071,7 +3547,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3080,7 +3556,7 @@ endif
 #         public_programs += executable(
 #                 'systemd-journal-remote',
 #                 systemd_journal_remote_sources,
-#                 include_directories : includes,
+#                 include_directories : journal_includes,
 #                 link_with : [libshared,
 #                              libsystemd_journal_remote],
 #                 dependencies : [threads,
@@ -3089,14 +3565,14 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
 #         public_programs += executable(
 #                 'systemd-journal-gatewayd',
 #                 systemd_journal_gatewayd_sources,
-#                 include_directories : includes,
+#                 include_directories : journal_includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libmicrohttpd,
@@ -3104,7 +3580,7 @@ endif
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3114,14 +3590,14 @@ endif
 #                 'systemd-coredump',
 #                 systemd_coredump_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libbasic_compress],
 #                 dependencies : [threads,
 #                                 libacl,
-#                                 libdw,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3129,12 +3605,13 @@ endif
 #                 'coredumpctl',
 #                 coredumpctl_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [libshared,
+#                              libbasic_compress],
 #                 dependencies : [threads,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true)
 # endif
 #
@@ -3146,22 +3623,21 @@ endif
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libacl,
-#                                 libdw,
 #                                 libxz,
 #                                 liblz4,
 #                                 libzstd],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
 #
 # if conf.get('ENABLE_OOMD') == 1
-#         executable('systemd-oomd',
+#         dbus_programs += executable('systemd-oomd',
 #                    systemd_oomd_sources,
 #                    include_directories : includes,
 #                    link_with : [libshared],
-#                    dependencies : [],
-#                    install_rpath : rootlibexecdir,
+#                    dependencies : [libatomic],
+#                    install_rpath : rootpkglibdir,
 #                    install : true,
 #                    install_dir : rootlibexecdir)
 #
@@ -3171,9 +3647,8 @@ endif
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootbindir)
+#                 install_rpath : rootpkglibdir,
+#                 install : true)
 # endif
 #
 # if conf.get('ENABLE_BINFMT') == 1
@@ -3182,7 +3657,7 @@ endif
 #                 'src/binfmt/binfmt.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3190,30 +3665,24 @@ endif
 #                                  mkdir_p.format(binfmtdir))
 #         if install_sysconfdir
 #                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'binfmt.d')))
+#                                          mkdir_p.format(sysconfdir / 'binfmt.d'))
 #         endif
 # endif
 #
-# if conf.get('ENABLE_REPART') == 1
+# if conf.get('ENABLE_SYSUPDATE') == 1
 #         exe = executable(
-#                 'systemd-repart',
-#                 systemd_repart_sources,
+#                 'systemd-sysupdate',
+#                 systemd_sysupdate_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [threads,
 #                                 libblkid,
 #                                 libfdisk,
 #                                 libopenssl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
-#                 install_dir : rootbindir)
+#                 install_dir : rootlibexecdir)
 #         public_programs += exe
-#
-#         if want_tests != 'false'
-#                 test('test-repart',
-#                      test_repart_sh,
-#                      args : exe.full_path())
-#         endif
 # endif
 #
 # if conf.get('ENABLE_VCONSOLE') == 1
@@ -3222,7 +3691,7 @@ endif
 #                 'src/vconsole/vconsole-setup.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3233,19 +3702,19 @@ endif
 #                 'src/random-seed/random-seed.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
 #
 # if conf.get('ENABLE_FIRSTBOOT') == 1
-#         executable(
+#         public_programs += executable(
 #                 'systemd-firstboot',
 #                 'src/firstboot/firstboot.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libcrypt],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 # endif
@@ -3255,7 +3724,7 @@ endif
 #         'src/remount-fs/remount-fs.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3264,7 +3733,7 @@ endif
 #         'src/machine-id-setup/machine-id-setup-main.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3273,7 +3742,7 @@ endif
 #         'src/fsck/fsck.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3281,7 +3750,7 @@ endif
 #            'src/partition/growfs.c',
 #            include_directories : includes,
 #            link_with : [libshared],
-#            install_rpath : rootlibexecdir,
+#            install_rpath : rootpkglibdir,
 #            install : true,
 #            install_dir : rootlibexecdir)
 #
@@ -3290,7 +3759,7 @@ endif
 #         'src/partition/makefs.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3299,21 +3768,23 @@ endif
 #         'src/sleep/sleep.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
-#
-# if install_sysconfdir_samples
-#         install_data('src/sleep/sleep.conf',
-#                      install_dir : pkgsysconfdir)
-# endif
-#
+#endif // 0
+
+if install_sysconfdir_samples
+        install_data('src/sleep/sleep.conf',
+                     install_dir : pkgsysconfdir)
+endif
+
+#if 0 /// UNNEEDED by elogind
 # public_programs += executable(
 #         'systemd-sysctl',
 #         'src/sysctl/sysctl.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3322,7 +3793,7 @@ endif
 #         'src/ac-power/ac-power.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3331,7 +3802,7 @@ endif
 #         'src/detect-virt/detect-virt.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3339,7 +3810,7 @@ endif
 #         'src/delta/delta.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3347,7 +3818,7 @@ endif
 #         'src/escape/escape.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3356,7 +3827,18 @@ endif
 #         'src/notify/notify.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
+#         install : true,
+#         install_dir : rootbindir)
+#
+# public_programs += executable(
+#         'systemd-creds',
+#         'src/creds/creds.c',
+#         include_directories : includes,
+#         link_with : [libshared],
+#         dependencies : [threads,
+#                         libopenssl],
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3365,43 +3847,44 @@ endif
 #         'src/volatile-root/volatile-root.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : conf.get('ENABLE_INITRD') == 1,
 #         install_dir : rootlibexecdir)
-#else // 0
-executable('elogind-cgroups-agent',
-           'src/cgroups-agent/cgroups-agent.c',
-           include_directories : includes,
-           link_with : [libshared],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
 #endif // 0
 
+executable(
+        'elogind-cgroups-agent',
+        'src/cgroups-agent/cgroups-agent.c',
+        include_directories : includes,
+        link_with : [libshared],
+        install_rpath : rootpkglibdir,
+        install : true,
+        install_dir : rootlibexecdir)
+
 #if 0 /// UNNEEDED by elogind
-# executable(
-#         'systemd-cgroups-agent',
-#         'src/cgroups-agent/cgroups-agent.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
-#         install : true,
-#         install_dir : rootlibexecdir)
-#
-# public_programs += executable(
+# systemd_id128 = executable(
 #         'systemd-id128',
 #         'src/id128/id128.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
+# public_programs += systemd_id128
+#
+# if want_tests != 'false'
+#         test('test-systemctl-enable',
+#              test_systemctl_enable_sh,
+#              # https://github.com/mesonbuild/meson/issues/2681
+#              args : [systemctl.full_path(),
+#                      systemd_id128.full_path()])
+# endif
 #
 # public_programs += executable(
 #         'systemd-path',
 #         'src/path/path.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3409,7 +3892,7 @@ executable('elogind-cgroups-agent',
 #         'src/ask-password/ask-password.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3418,7 +3901,7 @@ executable('elogind-cgroups-agent',
 #         'src/reply-password/reply-password.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3427,7 +3910,7 @@ executable('elogind-cgroups-agent',
 #         'src/tty-ask-password-agent/tty-ask-password-agent.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
 #
@@ -3436,7 +3919,7 @@ executable('elogind-cgroups-agent',
 #         'src/cgls/cgls.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3444,7 +3927,7 @@ executable('elogind-cgroups-agent',
 #         'src/cgtop/cgtop.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # executable(
@@ -3452,7 +3935,7 @@ executable('elogind-cgroups-agent',
 #         'src/initctl/initctl.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : (conf.get('HAVE_SYSV_COMPAT') == 1),
 #         install_dir : rootlibexecdir)
 #
@@ -3462,18 +3945,18 @@ executable('elogind-cgroups-agent',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies: [libmount],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # meson.add_install_script(meson_make_symlink,
-#                          'systemd-mount', join_paths(bindir, 'systemd-umount'))
+#                          'systemd-mount', bindir / 'systemd-umount')
 #
 # public_programs += executable(
 #         'systemd-run',
 #         'src/run/run.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # public_programs += executable(
@@ -3482,7 +3965,7 @@ executable('elogind-cgroups-agent',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [versiondep],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #endif // 0
 
@@ -3491,7 +3974,8 @@ public_programs += executable(
         busctl_sources,
         include_directories : includes,
         link_with : [libshared],
-        install_rpath : rootlibexecdir,
+        dependencies : [versiondep],
+        install_rpath : rootpkglibdir,
         install : true)
 
 #if 0 /// UNNEEDED by elogind
@@ -3501,7 +3985,7 @@ public_programs += executable(
 #                 'src/sysusers/sysusers.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
@@ -3543,7 +4027,7 @@ public_programs += executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libacl],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
 #         public_programs += exe
@@ -3556,7 +4040,7 @@ public_programs += executable(
 #         endif
 #
 #         if have_standalone_binaries
-#                 public_programs += executable(
+#                 exe = executable(
 #                         'systemd-tmpfiles.standalone',
 #                         systemd_tmpfiles_sources,
 #                         include_directories : includes,
@@ -3568,6 +4052,14 @@ public_programs += executable(
 #                         dependencies : [libacl],
 #                         install : true,
 #                         install_dir : rootbindir)
+#                 public_programs += exe
+#
+#                 if want_tests != 'false'
+#                         test('test-systemd-tmpfiles.standalone',
+#                              test_systemd_tmpfiles_py,
+#                              # https://github.com/mesonbuild/meson/issues/2681
+#                              args : exe.full_path())
+#                 endif
 #         endif
 # endif
 #
@@ -3585,6 +4077,7 @@ public_programs += executable(
 #         if want_tests != 'false'
 #                 test('hwdb-test',
 #                      hwdb_test_sh,
+#                      suite : 'dist-check',
 #                      args : [systemd_hwdb.full_path()],
 #                      timeout : 90)
 #         endif
@@ -3596,7 +4089,7 @@ public_programs += executable(
 #                 'src/quotacheck/quotacheck.c',
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 # endif
@@ -3607,11 +4100,11 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# public_programs += executable(
+# udevadm = executable(
 #         'udevadm',
 #         udevadm_sources,
 #         include_directories : includes,
@@ -3625,6 +4118,23 @@ public_programs += executable(
 #         install_rpath : udev_rpath,
 #         install : true,
 #         install_dir : rootbindir)
+# public_programs += udevadm
+#
+# if conf.get('ENABLE_REPART') == 1
+#         exe = executable(
+#                 'systemd-repart',
+#                 systemd_repart_sources,
+#                 include_directories : includes,
+#                 link_with : [libshared],
+#                 dependencies : [threads,
+#                                 libblkid,
+#                                 libfdisk,
+#                                 libopenssl],
+#                 install_rpath : rootpkglibdir,
+#                 install : true,
+#                 install_dir : rootbindir)
+#         public_programs += exe
+# endif
 #
 # executable(
 #         'systemd-shutdown',
@@ -3632,7 +4142,7 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libmount],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3641,7 +4151,7 @@ public_programs += executable(
 #         'src/update-done/update-done.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
@@ -3651,7 +4161,7 @@ public_programs += executable(
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [libaudit],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : (conf.get('ENABLE_UTMP') == 1),
 #         install_dir : rootlibexecdir)
 #
@@ -3662,7 +4172,7 @@ public_programs += executable(
 #                 include_directories : includes,
 #                 link_with : [libshared],
 #                 dependencies : [libkmod],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3670,7 +4180,7 @@ public_programs += executable(
 #                                  mkdir_p.format(modulesloaddir))
 #         if install_sysconfdir
 #                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(join_paths(sysconfdir, 'modules-load.d')))
+#                                          mkdir_p.format(sysconfdir / 'modules-load.d'))
 #         endif
 # endif
 #
@@ -3682,11 +4192,11 @@ public_programs += executable(
 #                      libshared],
 #         dependencies : [libblkid,
 #                         libseccomp],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true)
 #
 # if conf.get('ENABLE_NETWORKD') == 1
-#         executable(
+#         dbus_programs += executable(
 #                 'systemd-networkd',
 #                 systemd_networkd_sources,
 #                 include_directories : network_includes,
@@ -3694,16 +4204,16 @@ public_programs += executable(
 #                              libsystemd_network,
 #                              networkd_link_with],
 #                 dependencies : [threads],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
-#         executable(
+#         public_programs += executable(
 #                 'systemd-networkd-wait-online',
 #                 systemd_networkd_wait_online_sources,
 #                 include_directories : includes,
 #                 link_with : [networkd_link_with],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #
@@ -3713,25 +4223,26 @@ public_programs += executable(
 #                 include_directories : libsystemd_network_includes,
 #                 link_with : [libsystemd_network,
 #                              networkd_link_with],
-#                 install_rpath : rootlibexecdir,
+#                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootbindir)
+# endif
 #
-#         exe = executable(
-#                 'systemd-network-generator',
-#                 network_generator_sources,
-#                 include_directories : includes,
-#                 link_with : [networkd_link_with],
-#                 install_rpath : rootlibexecdir,
-#                 install : true,
-#                 install_dir : rootlibexecdir)
+# exe = executable(
+#         'systemd-network-generator',
+#         network_generator_sources,
+#         include_directories : includes,
+#         link_with : [networkd_link_with],
+#         install_rpath : rootpkglibdir,
+#         install : true,
+#         install_dir : rootlibexecdir)
 #
-#         if want_tests != 'false'
-#                 test('test-network-generator-conversion',
-#                      test_network_generator_conversion_sh,
-#                      # https://github.com/mesonbuild/meson/issues/2681
-#                      args : exe.full_path())
-#         endif
+# if want_tests != 'false'
+#         test('test-network-generator-conversion',
+#              test_network_generator_conversion_sh,
+#              # https://github.com/mesonbuild/meson/issues/2681
+#              args : exe.full_path(),
+#              depends : exe)
 # endif
 #
 # executable(
@@ -3739,9 +4250,25 @@ public_programs += executable(
 #         'src/sulogin-shell/sulogin-shell.c',
 #         include_directories : includes,
 #         link_with : [libshared],
-#         install_rpath : rootlibexecdir,
+#         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootlibexecdir)
+#
+# exe = custom_target(
+#         'kernel-install',
+#         input : kernel_install_in,
+#         output : 'kernel-install',
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         install : want_kernel_install,
+#         install_mode : 'rwxr-xr-x',
+#         install_dir : bindir)
+# public_programs += exe
+#
+# if want_tests != 'false'
+#         test('test-kernel-install',
+#              test_kernel_install_sh,
+#              args : [exe.full_path(), loaderentry_install])
+# endif
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
@@ -3757,13 +4284,14 @@ executable('elogind-uaccess-command',
 
 ############################################################
 
-custom_target(
+runtest_env = custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
         command : [sh, '-c',
                    '{ echo SYSTEMD_TEST_DATA=@0@; echo SYSTEMD_CATALOG_DIR=@1@; } >@OUTPUT@'.format(
-                           join_paths(project_source_root, 'test'),
-                           join_paths(project_build_root, 'catalog'))],
+                           project_source_root / 'test',
+                           project_build_root / 'catalog')],
+        depends : catalogs,
         build_by_default : true)
 
 test_cflags = ['-DTEST_CODE=1']
@@ -3771,7 +4299,7 @@ test_cflags = ['-DTEST_CODE=1']
 # bunch of _cleanup_ variables in tests, to ensure valgrind is triggered if we
 # use the variable unexpectedly. This triggers a lot of maybe-uninitialized
 # false positives when the combination of -O2 and -flto is used. Suppress them.
-if '-O2' in get_option('c_args') and '-flto=auto' in get_option('c_args')
+if '-O2' in c_args and '-flto=auto' in c_args
         test_cflags += cc.first_supported_argument('-Wno-maybe-uninitialized')
 endif
 
@@ -3787,11 +4315,16 @@ foreach tuple : tests
         parallel = tuple.length() > 7 ? tuple[7] : true
         timeout = 30
 
-        name = sources[0].split('/')[-1].split('.')[0]
+        # FIXME: Use fs.stem() with meson >= 0.54.0
+        name = '@0@'.format(sources[0]).split('/')[-1].split('.')[0]
         if type.startswith('timeout=')
                 timeout = type.split('=')[1].to_int()
                 type = ''
         endif
+
+        suite = fs.name(fs.parent('@0@'.format(sources[0])))
+        # FIXME: Use str.replace() with meson >= 0.58.0
+        suite = suite.split('sd-')[-1]
 
         if condition == '' or conf.get(condition) == 1
                 exe = executable(
@@ -3803,9 +4336,10 @@ foreach tuple : tests
                                         dependencies],
                         c_args : defs,
                         build_by_default : want_tests != 'false',
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : install_tests,
-                        install_dir : join_paths(testsdir, type))
+                        install_dir : testsdir / type,
+                        link_depends : runtest_env)
 
                 if type == 'manual'
                         message('@0@ is a manual test'.format(name))
@@ -3814,7 +4348,9 @@ foreach tuple : tests
                 elif want_tests != 'false'
                         test(name, exe,
                              env : test_env,
-                             timeout : timeout)
+                             timeout : timeout,
+                             suite : suite,
+                             is_parallel : parallel)
                 endif
         else
                 message('Not compiling @0@ because @1@ is not true'.format(name, condition))
@@ -3898,7 +4434,8 @@ endforeach
 #                 sources += 'src/fuzz/fuzz-main.c'
 #         endif
 #
-#         name = sources[0].split('/')[-1].split('.')[0]
+#         # FIXME: Use fs.stem() with meson >= 0.54.0
+#         name = '@0@'.format(sources[0]).split('/')[-1].split('.')[0]
 #
 #         exe = executable(
 #                 name,
@@ -3922,16 +4459,14 @@ endforeach
 #                         if b == name
 #                                 test('@0@_@1@'.format(b, c),
 #                                      exe,
-#                                      args : [join_paths(project_source_root, p)])
+#                                      suite : 'fuzzers',
+#                                      args : [project_source_root / p])
 #                         endif
 #                 endforeach
 #         endif
 # endforeach
 #
-# run_target(
-#         'fuzzers',
-#         depends : fuzzer_exes,
-#         command : ['true'])
+# alias_target('fuzzers', fuzzer_exes)
 #
 # ############################################################
 #
@@ -3977,13 +4512,11 @@ subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
-#endif // 0
-
-install_subdir('factory/etc',
-               install_dir : factorydir)
-
-
-#if 0 /// UNNEEDED by elogind
+#
+# install_subdir('factory/etc',
+#                install_dir : factorydir)
+# subdir('factory/templates')
+#
 # if install_sysconfdir
 #         install_data('xorg/50-systemd-user.sh',
 #                      install_dir : xinitrcdir)
@@ -4006,10 +4539,12 @@ install_data('LICENSE.GPL2',
 #              'docs/TRANSLATORS.md',
 #              'docs/UIDS-GIDS.md',
 #endif // 0
-             'docs/GVARIANT-SERIALIZATION.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
+# install_subdir('LICENSES',
+#                install_dir : docdir)
+#
 # meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
 #endif // 0
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
@@ -4024,21 +4559,32 @@ jekyll = find_program('jekyll', required : false)
 if get_option('mode') == 'developer' and want_tests != 'false' and jekyll.found()
         test('github-pages',
              jekyll,
+             suite : 'dist-check',
              args : ['build',
-                     '--source', join_paths(project_source_root, 'docs'),
-                     '--destination', join_paths(project_build_root, '_site')])
+                     '--source', project_source_root / 'docs',
+                     '--destination', project_build_root / '_site'])
 endif
 
 ############################################################
 
 check_help = find_program('tools/check-help.sh')
+check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
         name = exec.full_path().split('/')[-1]
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
-                     args : exec.full_path())
+                     suite : 'dist-check',
+                     args : exec.full_path(),
+                     depends: exec)
+
+                test('check-version-' + name,
+                     check_version,
+                     suite : 'dist-check',
+                     args : [exec.full_path(),
+                             meson.project_version()],
+                     depends: exec)
         endif
 endforeach
 
@@ -4050,6 +4596,7 @@ endforeach
 # if want_tests != 'false'
 #         test('check-directives',
 #              check_directives_sh,
+#              suite : 'dist-check',
 #              args : [project_source_root, project_build_root])
 # endif
 #
@@ -4077,7 +4624,7 @@ endforeach
 #                                                 output : name,
 #                                                 depends : build,
 #                                                 command : [ln, '-fs',
-#                                                            join_paths(build.full_path(), b),
+#                                                            build.full_path() / b,
 #                                                            '@OUTPUT@'],
 #                                                 build_by_default : true)
 #                                 else
@@ -4089,10 +4636,11 @@ endforeach
 #                         if fuzz_tests
 #                                 test('@0@_@1@_@2@'.format(b, c, sanitizer),
 #                                      env,
+#                                      suite : 'fuzz+san',
 #                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
 #                                      timeout : 60,
 #                                      args : [exe.full_path(),
-#                                              join_paths(project_source_root, p)])
+#                                              project_source_root / p])
 #                         endif
 #                 endforeach
 #         endif
@@ -4106,17 +4654,19 @@ if git.found()
         all_files = run_command(
                 env, '-u', 'GIT_WORK_TREE',
                 git, '--git-dir=@0@/.git'.format(project_source_root),
-                'ls-files', ':/*.[ch]')
+                     'ls-files', ':/*.[ch]',
+                check : false)
+        if all_files.returncode() == 0
+                all_files = files(all_files.stdout().split())
 
-        all_files = files(all_files.stdout().split())
-
-        custom_target(
-                'tags',
-                output : 'tags',
-                command : [env, 'etags', '-o', '@0@/TAGS'.format(project_source_root)] + all_files)
-        run_target(
-                'ctags',
-                command : [env, 'ctags', '-o', '@0@/tags'.format(project_source_root)] + all_files)
+                custom_target(
+                        'tags',
+                        output : 'tags',
+                        command : [env, 'etags', '-o', '@0@/TAGS'.format(project_source_root)] + all_files)
+                run_target(
+                        'ctags',
+                        command : [env, 'ctags', '--tag-relative=never', '-o', '@0@/tags'.format(project_source_root)] + all_files)
+        endif
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -4130,13 +4680,13 @@ endif
 
 if git.found()
         git_head = run_command(
-                git,
-                '--git-dir=@0@/.git'.format(project_source_root),
-                'rev-parse', 'HEAD').stdout().strip()
+                git, '--git-dir=@0@/.git'.format(project_source_root),
+                     'rev-parse', 'HEAD',
+                check : false).stdout().strip()
         git_head_short = run_command(
-                git,
-                '--git-dir=@0@/.git'.format(project_source_root),
-                'rev-parse', '--short=7', 'HEAD').stdout().strip()
+                git, '--git-dir=@0@/.git'.format(project_source_root),
+                     'rev-parse', '--short=7', 'HEAD',
+                check : false).stdout().strip()
 
         run_target(
                 'git-snapshot',
@@ -4160,156 +4710,118 @@ run_target(
         depends : [man, libelogind],
         command : [check_api_docs_sh, libelogind.full_path()])
 #endif // 0
-############################################################
-
-if dbus_docs.length() > 0
-        custom_target(
-                'update-dbus-docs',
-                output : 'update-dbus-docs',
-                command : [update_dbus_docs_py,
-                           '--build-dir=@0@'.format(project_build_root),
-                           '@INPUT@'],
-                input : dbus_docs)
-
-        if conf.get('BUILD_MODE_DEVELOPER') == 1
-                test('dbus-docs-fresh',
-                     update_dbus_docs_py,
-                     args : ['--build-dir=@0@'.format(project_build_root),
-                             '--test'] + dbus_docs)
-        endif
-endif
-
-custom_target(
-        'update-man-rules',
-        output : 'update-man-rules',
-        command : [sh, '-c',
-                   'cd @0@ && '.format(meson.build_root()) +
-                   'python3 @0@/tools/update-man-rules.py $(find @0@ -wholename "*/man/*.xml") >t && '.format(project_source_root) +
-                   'mv t @0@/man/rules/meson.build'.format(meson.current_source_dir())],
-        depends : custom_entities_ent)
+alias_target('update-dbus-docs', update_dbus_docs)
+alias_target('update-man-rules', update_man_rules)
 
 #if 0 /// elogind is not (and never will be) PID 1
+# if not meson.is_cross_build()
+#         custom_target(
+#                 'export-dbus-interfaces',
+#                 output : fs.name(dbus_interfaces_dir),
+#                 install : dbus_interfaces_dir != 'no',
+#                 install_dir : fs.parent(dbus_interfaces_dir),
+#                 command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
+# endif
+#
 # ############################################################
-# watchdog_opt = service_watchdog == '' ? 'disabled' : service_watchdog
+#
+# alt_time_epoch = run_command('date', '-Is', '-u', '-d', '@@0@'.format(time_epoch),
+#                              check : true).stdout().strip()
 #endif // 0
 
-status = [
-        '@0@ @1@'.format(meson.project_name(), meson.project_version()),
-
-        'build mode:                        @0@'.format(get_option('mode')),
-        'split /usr:                        @0@'.format(split_usr),
-        'split bin-sbin:                    @0@'.format(split_bin),
-        'prefix directory:                  @0@'.format(prefixdir),
-        'rootprefix directory:              @0@'.format(rootprefixdir),
-        'sysconf directory:                 @0@'.format(sysconfdir),
-        'include directory:                 @0@'.format(includedir),
-        'lib directory:                     @0@'.format(libdir),
-        'rootlib directory:                 @0@'.format(rootlibdir),
+summary({
+        'split /usr' :                      split_usr,
+        'split bin-sbin' :                  split_bin,
+        'prefix directory' :                prefixdir,
+        'rootprefix directory' :            rootprefixdir,
+        'sysconf directory' :               sysconfdir,
+        'include directory' :               includedir,
+        'lib directory' :                   libdir,
+        'rootlib directory' :               rootlibdir,
 #if 1 /// Needed by elogind
-        'rootexeclib dir:                   @0@'.format(rootlibexecdir),
+        'rootexeclib dir' :                 rootlibexecdir,
 #endif // 1
 #if 0 /// UNNEEDED by elogind
-#         'SysV init scripts:                 @0@'.format(sysvinit_path),
-#         'SysV rc?.d directories:            @0@'.format(sysvrcnd_path),
+#         'SysV init scripts' :               sysvinit_path,
+#         'SysV rc?.d directories' :          sysvrcnd_path,
+#         'PAM modules directory' :           pamlibdir,
+#         'PAM configuration directory' :     pamconfdir,
+#         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
+#         'RPM macros directory' :            rpmmacrosdir,
+#         'modprobe.d directory' :            modprobedir,
 #endif // 0
-        'PAM modules directory:             @0@'.format(pamlibdir),
-        'PAM configuration directory:       @0@'.format(pamconfdir),
+        'D-Bus policy directory' :          dbuspolicydir,
+        'D-Bus session directory' :         dbussessionservicedir,
+        'D-Bus system directory' :          dbussystemservicedir,
+        'D-Bus interfaces directory' :      dbus_interfaces_dir,
+        'bash completions directory' :      bashcompletiondir,
+        'zsh completions directory' :       zshcompletiondir,
 #if 0 /// UNNEEDED by elogind
-#         'RPM macros directory:              @0@'.format(rpmmacrosdir),
-#         'modprobe.d directory:              @0@'.format(modprobedir),
+#         'private shared lib version tag' :  shared_lib_tag,
+#         'extra start script' :              get_option('rc-local'),
+#         'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
+#                                                                get_option('debug-tty')),
 #endif // 0
-        'D-Bus policy directory:            @0@'.format(dbuspolicydir),
-        'D-Bus session directory:           @0@'.format(dbussessionservicedir),
-        'D-Bus system directory:            @0@'.format(dbussystemservicedir),
-        'bash completions directory:        @0@'.format(bashcompletiondir),
-        'zsh completions directory:         @0@'.format(zshcompletiondir),
-#if 0 /// UNSUPPORTED by elogind
-#         'extra start script:                @0@'.format(get_option('rc-local')),
-#         'debug shell:                       @0@ @ @1@'.format(get_option('debug-shell'),
-#                                                               get_option('debug-tty')),
-#         'system UIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
-#                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
-#         'system GIDs:                       <=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
-#                                                                         conf.get('SYSTEM_ALLOC_GID_MIN')),
-#         'dynamic UIDs:                      @0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
-#         'container UID bases:               @0@…@1@'.format(container_uid_base_min, container_uid_base_max),
-#         'static UID/GID allocations:        @0@'.format(' '.join(static_ugids)),
+        'system UIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_UID_MAX'),
+                                                                         conf.get('SYSTEM_ALLOC_UID_MIN')),
+        'system GIDs' :                     '<=@0@ (alloc >=@1@)'.format(conf.get('SYSTEM_GID_MAX'),
+                                                                         conf.get('SYSTEM_ALLOC_GID_MIN')),
+#if 0 /// UNNEEDED by elogind
+#         'dynamic UIDs' :                    '@0@…@1@'.format(dynamic_uid_min, dynamic_uid_max),
+#         'container UID bases' :             '@0@…@1@'.format(container_uid_base_min, container_uid_base_max),
+#         'static UID/GID allocations' :      ' '.join(static_ugids),
 #endif // 0
-        '/dev/kvm access mode:              @0@'.format(get_option('dev-kvm-mode')),
-        'render group access mode:          @0@'.format(get_option('group-render-mode')),
-#if 0 /// UNSUPPORTED by elogind
-#         'certificate root directory:        @0@'.format(get_option('certificate-root')),
-#         'support URL:                       @0@'.format(support_url),
+        '/dev/kvm access mode' :            get_option('dev-kvm-mode'),
+        'render group access mode' :        get_option('group-render-mode'),
+#if 0 /// UNNEEDED by elogind
+#         'certificate root directory' :      get_option('certificate-root'),
 #endif // 0
-        'nobody user name:                  @0@'.format(nobody_user),
-        'nobody group name:                 @0@'.format(nobody_group),
-#if 0 /// UNSUPPORTED by elogind
-#         'fallback hostname:                 @0@'.format(get_option('fallback-hostname')),
-#
-#         'default DNSSEC mode:               @0@'.format(default_dnssec),
-#         'default DNS-over-TLS mode:         @0@'.format(default_dns_over_tls),
-#         'default mDNS mode:                 @0@'.format(default_mdns),
-#         'default LLMNR mode:                @0@'.format(default_llmnr),
-#         'default cgroup hierarchy:          @0@'.format(default_hierarchy),
-#         'default net.naming-scheme setting: @0@'.format(default_net_naming_scheme),
-#         'default KillUserProcesses setting: @0@'.format(kill_user_processes),
-#         'default locale:                    @0@'.format(default_locale),
-#         'default user $PATH:                @0@'.format(default_user_path_display),
-#         'systemd service watchdog:          @0@'.format(watchdog_opt)]
+        'support URL' :                     support_url,
+        'nobody user name' :                nobody_user,
+        'nobody group name' :               nobody_group,
+        'fallback hostname' :               get_option('fallback-hostname'),
+#if 0 /// UNNEEDED by elogind
+#         'default compression method' :      compression,
+#         'default DNSSEC mode' :             default_dnssec,
+#         'default DNS-over-TLS mode' :       default_dns_over_tls,
+#         'default mDNS mode' :               default_mdns,
+#         'default LLMNR mode' :              default_llmnr,
+#         'default DNS servers' :             dns_servers.split(' '),
+#         'default NTP servers' :             ntp_servers.split(' '),
+#endif // 0
+        'default cgroup hierarchy' :        default_hierarchy,
+#if 0 /// UNNEEDED by elogind
+#         'default net.naming-scheme value' : default_net_naming_scheme,
+#endif // 0
+        'default KillUserProcesses value' : kill_user_processes,
+#if 0 /// UNNEEDED by elogind
+#         'default locale' :                  default_locale,
+#         'default nspawn locale' :           nspawn_locale,
+#         'default status unit format' :      status_unit_format_default,
+#endif // 0
+        'default user $PATH' :
+                default_user_path != '' ? default_user_path : '(same as system services)',
+#if 0 /// UNNEEDED by elogind
+#         'systemd service watchdog' :        service_watchdog == '' ? 'disabled' : service_watchdog,
+#         'time epoch' :                      '@0@ (@1@)'.format(time_epoch, alt_time_epoch)})
 #else // 0
-        'default KillUserProcesses setting: @0@'.format(kill_user_processes)]
+})
 #endif // 0
 
-#if 0 /// UNSUPPORTED by elogind
-# alt_dns_servers = '\n                                            '.join(dns_servers.split(' '))
-# alt_ntp_servers = '\n                                            '.join(ntp_servers.split(' '))
-# status += [
-#         'default DNS servers:               @0@'.format(alt_dns_servers),
-#         'default NTP servers:               @0@'.format(alt_ntp_servers)]
-#
-# alt_time_epoch = run_command('date', '-Is', '-u', '-d',
-#                              '@@0@'.format(time_epoch)).stdout().strip()
-# status += [
-#         'time epoch:                        @0@ (@1@)'.format(time_epoch, alt_time_epoch)]
-#endif // 0
-#if 0 /// elogind does not ship libudeb. Obviously.
-#
-#endif // 0
 # TODO:
 # CFLAGS:   ${OUR_CFLAGS} ${CFLAGS}
 # CPPFLAGS: ${OUR_CPPFLAGS} ${CPPFLAGS}
 # LDFLAGS:  ${OUR_LDFLAGS} ${LDFLAGS}
 
-if conf.get('ENABLE_EFI') == 1
-        status += 'efi arch:                          @0@'.format(efi_arch)
-
-#if 0 /// UNNEEDED by elogind
-#         if have_gnu_efi
-#                 status += [
-#                         'EFI machine type:                  @0@'.format(EFI_MACHINE_TYPE_NAME),
-#                         'EFI CC                             @0@'.format(' '.join(efi_cc)),
-#                         'EFI lds:                           @0@'.format(efi_lds),
-#                         'EFI crt0:                          @0@'.format(efi_crt0),
-#                         'EFI include directory:             @0@'.format(efi_incdir)]
-#         endif
-#endif // 0
-endif
-
 found = []
 missing = []
 
 foreach tuple : [
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         # dependencies
         ['ACL'],
         ['AUDIT'],
 #if 0 /// UNNEEDED by elogind
 #         ['AppArmor'],
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 #         ['IMA'],
 #         ['PAM'],
 #         ['SECCOMP'],
@@ -4317,14 +4829,13 @@ foreach tuple : [
         ['SELinux'],
         ['SMACK'],
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 #         ['blkid'],
 #         ['elfutils'],
 #         ['gcrypt'],
 #         ['gnutls'],
 #         ['libbpf'],
 #         ['libcryptsetup'],
+#         ['libcryptsetup-plugins'],
 #         ['libcurl'],
 #         ['libfdisk'],
 #         ['libfido2'],
@@ -4350,11 +4861,11 @@ foreach tuple : [
 #         # components
 #         ['backlight'],
 #         ['binfmt'],
-#         ['bpf-framework',         conf.get('BPF_FRAMEWORK') == 1],
+#         ['bpf-framework',          conf.get('BPF_FRAMEWORK') == 1],
 #         ['coredump'],
 #         ['environment.d'],
 #         ['efi'],
-#         ['gnu-efi',               have_gnu_efi],
+#         ['gnu-efi'],
 #         ['firstboot'],
 #         ['hibernate'],
 #         ['homed'],
@@ -4362,7 +4873,7 @@ foreach tuple : [
 #         ['hwdb'],
 #         ['importd'],
 #         ['initrd'],
-#         ['kernel-install',        get_option('kernel-install')],
+#         ['kernel-install'],
 #         ['localed'],
 #         ['logind'],
 #         ['machined'],
@@ -4380,7 +4891,8 @@ foreach tuple : [
 #         ['resolve'],
 #         ['rfkill'],
 #         ['sysext'],
-#         ['systemd-analyze',       conf.get('ENABLE_ANALYZE') == 1],
+#         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
+#         ['sysupdate'],
 #         ['sysusers'],
 #         ['timedated'],
 #         ['timesyncd'],
@@ -4390,12 +4902,12 @@ foreach tuple : [
 #         ['xdg-autostart'],
 #
 #         # optional features
+#         ['idn'],
 #endif // 0
-        ['idn'],
         ['polkit'],
 #if 0 /// UNNEEDED by elogind
 #         ['nscd'],
-#         ['legacy-pkla',           install_polkit_pkla],
+#         ['legacy-pkla',            install_polkit_pkla],
 #         ['kmod'],
 #endif // 0
         ['dbus'],
@@ -4404,19 +4916,19 @@ foreach tuple : [
 #         ['tpm'],
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-#         ['man pages',             want_man],
-#         ['html pages',            want_html],
-#         ['man page indices',      want_man and have_lxml],
+#         ['man pages',              want_man],
+#         ['html pages',             want_html],
+#         ['man page indices',       want_man and have_lxml],
 #         ['SysV compat'],
+#         ['compat-mutable-uid-boundaries'],
 #endif // 0
-        ['compat-mutable-uid-boundaries'],
         ['utmp'],
 #if 0 /// UNNEEDED by elogind
 #         ['ldconfig'],
 #endif // 0
-        ['adm group',             get_option('adm-group')],
-        ['wheel group',           get_option('wheel-group')],
-#if 1 /// Extra debugging for elogind
+#if 0 /// UNNEEDED by elogind
+#         ['adm group',              get_option('adm-group')],
+#         ['wheel group',            get_option('wheel-group')],
 #         ['gshadow'],
 #endif // 0
 #if 1 /// Extra debugging for elogind
@@ -4424,22 +4936,22 @@ foreach tuple : [
 #endif // 1
         ['debug hashmap'],
         ['debug mmap cache'],
-#if 0 /// elogind does not ships libudev.
-#         ['debug siphash'],
+        ['debug siphash'],
+        ['valgrind',               conf.get('VALGRIND') == 1],
+        ['trace logging',          conf.get('LOG_TRACE') == 1],
+        ['install tests',          install_tests],
+#if 0 /// elogind does not ship any of those
+#         ['link-udev-shared',       get_option('link-udev-shared')],
+#         ['link-systemctl-shared',  get_option('link-systemctl-shared')],
+#         ['link-networkd-shared',   get_option('link-networkd-shared')],
+#         ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
+#         ['link-journalctl-shared', get_option('link-journalctl-shared')],
+#         ['link-boot-shared',       get_option('link-boot-shared')],
+#         ['first-boot-full-preset'],
+#         ['fexecve'],
+#         ['standalone-binaries',    get_option('standalone-binaries')],
 #endif // 0
-#if 0 /// elogind ships neither libudev nor systemctl or any other of those
-#         ['valgrind',              conf.get('VALGRIND') == 1],
-#         ['trace logging',         conf.get('LOG_TRACE') == 1],
-#         ['install tests',         install_tests],
-#         ['link-udev-shared',      get_option('link-udev-shared')],
-#         ['link-systemctl-shared', get_option('link-systemctl-shared')],
-#         ['link-networkd-shared',  get_option('link-networkd-shared')],
-#         ['link-timesyncd-shared', get_option('link-timesyncd-shared')],
-#endif // 0
-        ['fexecve'],
-#if 0 /// elogind has everything standalone that can be standalone already
-#         ['standalone-binaries',   get_option('standalone-binaries')],
-#endif // 0
+        ['coverage',               get_option('b_coverage')],
 ]
 
         if tuple.length() >= 2
@@ -4462,11 +4974,19 @@ else
         found += 'static-libelogind(@0@)'.format(static_libelogind)
 endif
 
-#if 0 /// UNNEEDED by eloignd
+#if 0 /// UNNEEDED by elogind
 # if static_libudev == 'false'
 #         missing += 'static-libudev'
 # else
 #         found += 'static-libudev(@0@)'.format(static_libudev)
+# endif
+#
+# if conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and conf.get('PREFER_OPENSSL') == 1
+#         found += 'cryptolib(openssl)'
+# elif conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1
+#         found += 'cryptolib(gcrypt)'
+# else
+#         missing += 'cryptolib'
 # endif
 #
 # if conf.get('DNS_OVER_TLS_USE_GNUTLS') == 1
@@ -4478,13 +4998,10 @@ endif
 # endif
 #endif // 0
 
-status += [
-        '',
-        'enabled features: @0@'.format(', '.join(found)),
-        '',
-        'disabled features: @0@'.format(', '.join(missing)),
-        '']
-message('\n         '.join(status))
+summary({
+        'enabled' :  ', '.join(found),
+        'disabled' : ', '.join(missing)},
+        section : 'Features')
 
 #if 0 /// Nicely enough this isn't true for elogind. :-)
 # if rootprefixdir != rootprefix_default

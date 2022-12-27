@@ -54,9 +54,11 @@ static int dev_uaccess(const char *path, const char *seat) {
 
         umask(0022);
 
+#if 0 /// If elogind is not running, yet, dbus will start it when it is needed.
         /* don't muck around with ACLs when the system is not running elogind */
         if (!logind_running())
                 return 0;
+#endif // 0
 
 #if 0 /// With elogind both path and seat are delivered from main()
         r = sd_device_get_devname(dev, &path);

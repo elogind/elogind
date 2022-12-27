@@ -5,36 +5,15 @@
 #include <unistd.h>
 
 #include "fd-util.h"
-#include "fs-util.h"
 #include "hexdecoct.h"
 #include "id128-util.h"
 #include "io-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
+#include "sync-util.h"
 
-char *id128_to_uuid_string(sd_id128_t id, char s[static ID128_UUID_STRING_MAX]) {
-        unsigned n, k = 0;
 
-        assert(s);
-
-        /* Similar to sd_id128_to_string() but formats the result as UUID instead of plain hex chars */
-
-        for (n = 0; n < 16; n++) {
-
-                if (IN_SET(n, 4, 6, 8, 10))
-                        s[k++] = '-';
-
-                s[k++] = hexchar(id.bytes[n] >> 4);
-                s[k++] = hexchar(id.bytes[n] & 0xF);
-        }
-
-        assert(k == 36);
-
-        s[k] = 0;
-
-        return s;
-}
-
+#if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) {
         size_t i, l;
 
@@ -48,9 +27,9 @@ bool id128_is_valid(const char *s) {
                 for (i = 0; i < l; i++) {
                         char c = s[i];
 
-                        if (!(c >= '0' && c <= '9') &&
-                            !(c >= 'a' && c <= 'z') &&
-                            !(c >= 'A' && c <= 'Z'))
+                        if (!ascii_isdigit(c) &&
+                            !(c >= 'a' && c <= 'f') &&
+                            !(c >= 'A' && c <= 'F'))
                                 return false;
                 }
 
@@ -65,9 +44,9 @@ bool id128_is_valid(const char *s) {
                                 if (c != '-')
                                         return false;
                         } else {
-                                if (!(c >= '0' && c <= '9') &&
-                                    !(c >= 'a' && c <= 'z') &&
-                                    !(c >= 'A' && c <= 'Z'))
+                                if (!ascii_isdigit(c) &&
+                                    !(c >= 'a' && c <= 'f') &&
+                                    !(c >= 'A' && c <= 'F'))
                                         return false;
                         }
                 }
@@ -77,6 +56,7 @@ bool id128_is_valid(const char *s) {
 
         return true;
 }
+#endif // 0
 
 int id128_read_fd(int fd, Id128Format f, sd_id128_t *ret) {
         char buffer[36 + 2];
@@ -153,13 +133,13 @@ int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync) {
         assert(f < _ID128_FORMAT_MAX);
 
         if (f != ID128_UUID) {
-                sd_id128_to_string(id, buffer);
-                buffer[32] = '\n';
-                sz = 33;
+                assert_se(sd_id128_to_string(id, buffer));
+                buffer[SD_ID128_STRING_MAX - 1] = '\n';
+                sz = SD_ID128_STRING_MAX;
         } else {
-                id128_to_uuid_string(id, buffer);
-                buffer[36] = '\n';
-                sz = 37;
+                assert_se(sd_id128_to_uuid_string(id, buffer));
+                buffer[SD_ID128_UUID_STRING_MAX - 1] = '\n';
+                sz = SD_ID128_UUID_STRING_MAX;
         }
 
         r = loop_write(fd, buffer, sz, false);
@@ -167,10 +147,7 @@ int id128_write_fd(int fd, Id128Format f, sd_id128_t id, bool do_sync) {
                 return r;
 
         if (do_sync) {
-                if (fsync(fd) < 0)
-                        return -errno;
-
-                r = fsync_directory_of_file(fd);
+                r = fsync_full(fd);
                 if (r < 0)
                         return r;
         }
@@ -188,6 +165,7 @@ int id128_write(const char *p, Id128Format f, sd_id128_t id, bool do_sync) {
 
         return id128_write_fd(fd, f, id, do_sync);
 }
+#endif // 0
 
 void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
         siphash24_compress(p, sizeof(sd_id128_t), state);
@@ -196,7 +174,6 @@ void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
 int id128_compare_func(const sd_id128_t *a, const sd_id128_t *b) {
         return memcmp(a, b, 16);
 }
-#endif // 0
 
 sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         /* Stolen from generate_random_uuid() of drivers/char/random.c
@@ -211,9 +188,7 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id) {
         return id;
 }
 
-#if 0 /// UNNEEDED by elogind
 DEFINE_HASH_OPS(id128_hash_ops, sd_id128_t, id128_hash_func, id128_compare_func);
-#endif // 0
 
 int id128_get_product(sd_id128_t *ret) {
         sd_id128_t uuid;
@@ -226,7 +201,7 @@ int id128_get_product(sd_id128_t *ret) {
 
         r = id128_read("/sys/class/dmi/id/product_uuid", ID128_UUID, &uuid);
         if (r == -ENOENT)
-                r = id128_read("/sys/firmware/devicetree/base/vm,uuid", ID128_UUID, &uuid);
+                r = id128_read("/proc/device-tree/vm,uuid", ID128_UUID, &uuid);
         if (r < 0)
                 return r;
 

@@ -34,6 +34,7 @@ typedef enum TimestampStyle {
         TIMESTAMP_US,
         TIMESTAMP_UTC,
         TIMESTAMP_US_UTC,
+        TIMESTAMP_UNIX,
         _TIMESTAMP_STYLE_MAX,
         _TIMESTAMP_STYLE_INVALID = -EINVAL,
 } TimestampStyle;
@@ -84,14 +85,16 @@ dual_timestamp* dual_timestamp_get(dual_timestamp *ts);
 dual_timestamp* dual_timestamp_from_realtime(dual_timestamp *ts, usec_t u);
 #if 0 /// UNNEEDED by elogind
 dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
-dual_timestamp* dual_timestamp_from_boottime_or_monotonic(dual_timestamp *ts, usec_t u);
 #endif // 0
+dual_timestamp* dual_timestamp_from_boottime(dual_timestamp *ts, usec_t u);
 
 triple_timestamp* triple_timestamp_get(triple_timestamp *ts);
+#if 0 /// UNNEEDED by elogind
 triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u);
 
 #define DUAL_TIMESTAMP_HAS_CLOCK(clock)                               \
         IN_SET(clock, CLOCK_REALTIME, CLOCK_REALTIME_ALARM, CLOCK_MONOTONIC)
+#endif // 0
 
 #define TRIPLE_TIMESTAMP_HAS_CLOCK(clock)                               \
         IN_SET(clock, CLOCK_REALTIME, CLOCK_REALTIME_ALARM, CLOCK_MONOTONIC, CLOCK_BOOTTIME, CLOCK_BOOTTIME_ALARM)
@@ -117,27 +120,46 @@ usec_t timespec_load(const struct timespec *ts) _pure_;
 #if 0 /// UNNEEDED by elogind
 nsec_t timespec_load_nsec(const struct timespec *ts) _pure_;
 #endif // 0
-struct timespec *timespec_store(struct timespec *ts, usec_t u);
-struct timespec *timespec_store_nsec(struct timespec *ts, nsec_t n);
+struct timespec* timespec_store(struct timespec *ts, usec_t u);
+#if 0 /// UNNEEDED by elogind
+struct timespec* timespec_store_nsec(struct timespec *ts, nsec_t n);
 
+#endif // 0
+#define TIMESPEC_STORE(u) timespec_store(&(struct timespec) {}, (u))
+
+#if 0 /// UNNEEDED by elogind
 usec_t timeval_load(const struct timeval *tv) _pure_;
-struct timeval *timeval_store(struct timeval *tv, usec_t u);
+#endif // 0
+struct timeval* timeval_store(struct timeval *tv, usec_t u);
 
-char *format_timestamp_style(char *buf, size_t l, usec_t t, TimestampStyle style);
-char *format_timestamp_relative(char *buf, size_t l, usec_t t);
-char *format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy);
+#define TIMEVAL_STORE(u) timeval_store(&(struct timeval) {}, (u))
 
-static inline char *format_timestamp(char *buf, size_t l, usec_t t) {
+char* format_timestamp_style(char *buf, size_t l, usec_t t, TimestampStyle style) _warn_unused_result_;
+char* format_timestamp_relative(char *buf, size_t l, usec_t t) _warn_unused_result_;
+char* format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) _warn_unused_result_;
+
+_warn_unused_result_
+static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
         return format_timestamp_style(buf, l, t, TIMESTAMP_PRETTY);
 }
+
+/* Note: the lifetime of the compound literal is the immediately surrounding block,
+ * see C11 §6.5.2.5, and
+ * https://stackoverflow.com/questions/34880638/compound-literal-lifetime-and-if-blocks */
+#define FORMAT_TIMESTAMP(t) format_timestamp((char[FORMAT_TIMESTAMP_MAX]){}, FORMAT_TIMESTAMP_MAX, t)
+#define FORMAT_TIMESTAMP_RELATIVE(t)                                    \
+        format_timestamp_relative((char[FORMAT_TIMESTAMP_RELATIVE_MAX]){}, FORMAT_TIMESTAMP_RELATIVE_MAX, t)
+#define FORMAT_TIMESPAN(t, accuracy) format_timespan((char[FORMAT_TIMESPAN_MAX]){}, FORMAT_TIMESPAN_MAX, t, accuracy)
+#define FORMAT_TIMESTAMP_STYLE(t, style) \
+        format_timestamp_style((char[FORMAT_TIMESTAMP_MAX]){}, FORMAT_TIMESTAMP_MAX, t, style)
 
 #if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *usec);
 #endif // 0
 
 int parse_sec(const char *t, usec_t *usec);
-#if 0 /// UNNEEDED by elogind
 int parse_sec_fix_0(const char *t, usec_t *usec);
+#if 0 /// UNNEEDED by elogind
 int parse_sec_def_infinity(const char *t, usec_t *usec);
 #endif // 0
 int parse_time(const char *t, usec_t *usec, usec_t default_unit);
@@ -151,9 +173,7 @@ static inline bool timezone_is_valid(const char *name, int log_level) {
         return verify_timezone(name, log_level) >= 0;
 }
 
-bool clock_boottime_supported(void);
 bool clock_supported(clockid_t clock);
-clockid_t clock_boottime_or_monotonic(void);
 
 #if 0 /// UNNEEDED by elogind
 usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
@@ -174,9 +194,8 @@ bool in_utc_timezone(void);
 #endif // 0
 
 static inline usec_t usec_add(usec_t a, usec_t b) {
-
-        /* Adds two time values, and makes sure USEC_INFINITY as input results as USEC_INFINITY in output, and doesn't
-         * overflow. */
+        /* Adds two time values, and makes sure USEC_INFINITY as input results as USEC_INFINITY in output,
+         * and doesn't overflow. */
 
         if (a > USEC_INFINITY - b) /* overflow check */
                 return USEC_INFINITY;
@@ -185,7 +204,6 @@ static inline usec_t usec_add(usec_t a, usec_t b) {
 }
 
 static inline usec_t usec_sub_unsigned(usec_t timestamp, usec_t delta) {
-
         if (timestamp == USEC_INFINITY) /* Make sure infinity doesn't degrade */
                 return USEC_INFINITY;
         if (timestamp < delta)
@@ -194,27 +212,34 @@ static inline usec_t usec_sub_unsigned(usec_t timestamp, usec_t delta) {
         return timestamp - delta;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline usec_t usec_sub_signed(usec_t timestamp, int64_t delta) {
+        if (delta == INT64_MIN) { /* prevent overflow */
+                assert_cc(-(INT64_MIN + 1) == INT64_MAX);
+                assert_cc(USEC_INFINITY > INT64_MAX);
+                return usec_add(timestamp, (usec_t) INT64_MAX + 1);
+        }
         if (delta < 0)
                 return usec_add(timestamp, (usec_t) (-delta));
-        else
-                return usec_sub_unsigned(timestamp, (usec_t) delta);
+
+        return usec_sub_unsigned(timestamp, (usec_t) delta);
 }
+#endif // 0
 
 #if SIZEOF_TIME_T == 8
-/* The last second we can format is 31. Dec 9999, 1s before midnight, because otherwise we'd enter 5 digit year
- * territory. However, since we want to stay away from this in all timezones we take one day off. */
-#define USEC_TIMESTAMP_FORMATTABLE_MAX ((usec_t) 253402214399000000)
+  /* The last second we can format is 31. Dec 9999, 1s before midnight, because otherwise we'd enter 5 digit
+   * year territory. However, since we want to stay away from this in all timezones we take one day off. */
+#  define USEC_TIMESTAMP_FORMATTABLE_MAX ((usec_t) 253402214399000000)
 #elif SIZEOF_TIME_T == 4
 /* With a 32bit time_t we can't go beyond 2038... */
-#define USEC_TIMESTAMP_FORMATTABLE_MAX ((usec_t) 2147483647000000)
+#  define USEC_TIMESTAMP_FORMATTABLE_MAX ((usec_t) 2147483647000000)
 #else
-#error "Yuck, time_t is neither 4 nor 8 bytes wide?"
+#  error "Yuck, time_t is neither 4 nor 8 bytes wide?"
 #endif
 
 #if 0 /// UNNEEDED by elogind
 int time_change_fd(void);
-#endif // 0
 
 const char* timestamp_style_to_string(TimestampStyle t) _const_;
 TimestampStyle timestamp_style_from_string(const char *s) _pure_;
+#endif // 0

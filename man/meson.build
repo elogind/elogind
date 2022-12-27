@@ -30,14 +30,13 @@ custom_entities_ent = custom_target(
         'custom-entities.ent',
         input : 'custom-entities.ent.in',
         output : 'custom-entities.ent',
-        command : [meson_render_jinja2, config_h, '@INPUT@'],
-        capture : true)
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'])
 
 man_pages = []
 html_pages = []
 source_xml_files = []
 dbus_docs = []
-foreach tuple : xsltproc.found() ? manpages : []
+foreach tuple : manpages
         stem = tuple[0]
         section = tuple[1]
         aliases = tuple[2]
@@ -54,57 +53,61 @@ foreach tuple : xsltproc.found() ? manpages : []
                 htmlaliases += alias + '.html'
         endforeach
 
-        mandirn = join_paths(get_option('mandir'), 'man' + section)
+        mandirn = get_option('mandir') / ('man' + section)
+
+#if 1 /// This must be configurable in elogind
+        htmldir = get_option('htmldir')
+        if htmldir == ''
+                htmldir = docdir / 'html'
+        endif
+#endif // 1
 
         if condition == '' or conf.get(condition) == 1
-                p1 = custom_target(
-                        man,
-                        input : xml,
-                        output : [man] + manaliases,
-                        command : xslt_cmd + [custom_man_xsl, '@INPUT@'],
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-                        depends : custom_entities_ent,
-                        install : want_man,
-                        install_dir : mandirn)
-                man_pages += p1
-
-                p2 = []
-                foreach htmlalias : htmlaliases
-                        link = custom_target(
-                                htmlalias,
-                                output : htmlalias,
-                                command : [ln, '-fs', html, '@OUTPUT@'])
-                        if want_html
-#if 0 /// This must be configurable in elogind
-#                                 dst = join_paths(docdir, 'html', htmlalias)
-#else // 0
-                                  dst = get_option('htmldir')
-                                  dst = dst != '' ? dst: join_paths(docdir, 'html', htmlalias)
-#endif // 0
-                                cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
-                                meson.add_install_script('sh', '-c', cmd)
-                                p2 += link
-                        endif
-                        html_pages += link
-                endforeach
-
-                p3 = custom_target(
-                        html,
-                        input : xml,
-                        output : html,
-                        command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-                        depends : [custom_entities_ent, p2],
-                        install : want_html,
-                        install_dir : join_paths(docdir, 'html'))
-                html_pages += p3
-
                 file = files(tuple[0] + '.xml')
                 source_xml_files += file
                 if tuple[0].startswith('org.freedesktop.')
                         dbus_docs += file
+                endif
+
+                if xsltproc.found()
+                        p1 = custom_target(
+                                man,
+                                input : xml,
+                                output : [man] + manaliases,
+                                command : xslt_cmd + [custom_man_xsl, '@INPUT@'],
+                                depends : custom_entities_ent,
+                                install : want_man,
+                                install_dir : mandirn)
+                        man_pages += p1
+
+                        p2 = []
+                        foreach htmlalias : htmlaliases
+                                link = custom_target(
+                                        htmlalias,
+                                        output : htmlalias,
+                                        command : [ln, '-fs', html, '@OUTPUT@'])
+                                if want_html
+#if 0 /// This is configurable in elogind - see above
+#                                         dst = docdir / 'html' / htmlalias
+#else // 0
+                                        dst = htmldir / htmlalias
+#endif // 0
+                                        cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
+                                        meson.add_install_script('sh', '-c', cmd)
+                                        p2 += link
+                                endif
+                                html_pages += link
+                        endforeach
+
+                        p3 = custom_target(
+                                html,
+                                input : xml,
+                                output : html,
+                                command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
+                                depends : [custom_entities_ent, p2],
+                                install : want_html,
+                                install_dir : docdir / 'html')
+                        html_pages += p3
                 endif
         else
                 message('Skipping @0@.@1@ because @2@ is false'.format(stem, section, condition))
@@ -113,7 +116,7 @@ endforeach
 
 ############################################################
 
-have_lxml = run_command(xml_helper_py).returncode() == 0
+have_lxml = run_command(xml_helper_py, check: false).returncode() == 0
 if not have_lxml
         message('python-lxml not available, not making man page indices')
 endif
@@ -141,7 +144,14 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
         html = stem + '.html'
         man = stem + '.' + section
 
-        mandirn = join_paths(get_option('mandir'), 'man' + section)
+        mandirn = get_option('mandir') / ('man' + section)
+
+#if 1 /// This must be configurable in elogind
+        htmldir = get_option('htmldir')
+        if htmldir == ''
+                htmldir = docdir / 'html'
+        endif
+#endif // 1
 
         p1 = custom_target(
                 man,
@@ -161,7 +171,11 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                         output : htmlalias,
                         command : [ln, '-fs', html, '@OUTPUT@'])
                 if want_html
-                        dst = join_paths(docdir, 'html', htmlalias)
+#if 0 /// This is configurable in elogind - see above
+#                         dst = docdir / 'html' / htmlalias
+#else // 0
+                        dst = htmldir / htmlalias
+#endif // 0
                         cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
                         meson.add_install_script('sh', '-c', cmd)
                         p2 += link
@@ -174,11 +188,9 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                 input : xml,
                 output : html,
                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
-#if 0 /// UNNEEDED by elogind
-#endif // 0
                 depends : [custom_entities_ent, p2],
                 install : want_html and have_lxml,
-                install_dir : join_paths(docdir, 'html'))
+                install_dir : docdir / 'html')
         html_pages += p3
 endforeach
 
@@ -226,3 +238,27 @@ configure_file(
         input : 'html.in',
         output : 'html',
         configuration : buildroot_substs)
+
+############################################################
+
+update_dbus_docs = custom_target(
+        'update-dbus-docs',
+        output : 'update-dbus-docs',
+        command : [update_dbus_docs_py, '--build-dir', project_build_root, '@INPUT@'],
+        input : dbus_docs)
+
+if conf.get('BUILD_MODE_DEVELOPER') == 1
+        test('dbus-docs-fresh',
+             update_dbus_docs_py,
+             suite : 'dist-check',
+             args : ['--build-dir', project_build_root, '--test', dbus_docs],
+             depends : dbus_programs)
+endif
+
+update_man_rules = custom_target(
+        'update-man-rules',
+        output : 'update-man-rules',
+        command : [update_man_rules_py,
+                   '@0@/man/*.xml'.format(project_source_root),
+                   '@0@/rules/meson.build'.format(meson.current_source_dir())],
+        depends : custom_entities_ent)

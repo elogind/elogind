@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
+#include "chase-symlinks.h"
 #include "copy.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -20,17 +21,15 @@
 #include "tmpfile-util.h"
 #include "user-util.h"
 #include "util.h"
-#include "xattr-util.h"
+//#include "xattr-util.h"
 
 #if 0 /// UNNEEDED by elogind
-static void test_copy_file(void) {
+TEST(copy_file) {
         _cleanup_free_ char *buf = NULL;
         char fn[] = "/tmp/test-copy_file.XXXXXX";
         char fn_copy[] = "/tmp/test-copy_file.XXXXXX";
         size_t sz = 0;
         int fd;
-
-        log_info("%s", __func__);
 
         fd = mkostemp_safe(fn);
         assert_se(fd >= 0);
@@ -52,14 +51,81 @@ static void test_copy_file(void) {
         unlink(fn_copy);
 }
 
-static void test_copy_file_fd(void) {
+static bool read_file_and_streq(const char* filepath, const char* expected_contents) {
+        _cleanup_free_ char *buf = NULL;
+
+        assert_se(read_full_file(filepath, &buf, NULL) == 0);
+        return streq(buf, expected_contents);
+}
+
+TEST(copy_tree_replace_file) {
+        _cleanup_free_ char *src = NULL, *dst = NULL;
+
+        assert_se(tempfn_random("/tmp/test-copy_file.XXXXXX", NULL, &src) >= 0);
+        assert_se(tempfn_random("/tmp/test-copy_file.XXXXXX", NULL, &dst) >= 0);
+
+        assert_se(write_string_file(src, "bar bar", WRITE_STRING_FILE_CREATE) == 0);
+        assert_se(write_string_file(dst, "foo foo foo", WRITE_STRING_FILE_CREATE) == 0);
+
+        /* The file exists- now overwrite original contents, and test the COPY_REPLACE flag. */
+
+        assert_se(copy_tree(src, dst, UID_INVALID, GID_INVALID, COPY_REFLINK) == -EEXIST);
+
+        assert_se(read_file_and_streq(dst, "foo foo foo\n"));
+
+        assert_se(copy_tree(src, dst, UID_INVALID, GID_INVALID, COPY_REFLINK|COPY_REPLACE) == 0);
+
+        assert_se(read_file_and_streq(dst, "bar bar\n"));
+}
+
+TEST(copy_tree_replace_dirs) {
+        _cleanup_free_ char *src_path1 = NULL, *src_path2 = NULL, *dst_path1 = NULL, *dst_path2 = NULL;
+        _cleanup_(rm_rf_physical_and_freep) char *src_directory = NULL, *dst_directory = NULL;
+        const char *file1 = "foo_file", *file2 = "bar_file";
+
+        /* Create the random source/destination directories */
+        assert_se(mkdtemp_malloc("/tmp/dirXXXXXX", &src_directory) >= 0);
+        assert_se(mkdtemp_malloc("/tmp/dirXXXXXX", &dst_directory) >= 0);
+
+        /* Construct the source/destination filepaths (should have different dir name, but same file names within) */
+        assert_se(src_path1 = path_join(src_directory, file1));
+        assert_se(src_path2 = path_join(src_directory, file2));
+        assert_se(dst_path1 = path_join(dst_directory, file1));
+        assert_se(dst_path2 = path_join(dst_directory, file2));
+
+        /* Populate some data to differentiate the files. */
+        assert_se(write_string_file(src_path1, "src file 1", WRITE_STRING_FILE_CREATE) == 0);
+        assert_se(write_string_file(src_path2, "src file 2", WRITE_STRING_FILE_CREATE) == 0);
+
+        assert_se(write_string_file(dst_path1, "dest file 1", WRITE_STRING_FILE_CREATE) == 0);
+        assert_se(write_string_file(dst_path2, "dest file 2", WRITE_STRING_FILE_CREATE) == 0);
+
+        /* Copying without COPY_REPLACE should fail because the destination file already exists. */
+        assert_se(copy_tree(src_directory, dst_directory, UID_INVALID, GID_INVALID, COPY_REFLINK) == -EEXIST);
+
+        {
+                assert_se(read_file_and_streq(src_path1,  "src file 1\n"));
+                assert_se(read_file_and_streq(src_path2,  "src file 2\n"));
+                assert_se(read_file_and_streq(dst_path1,  "dest file 1\n"));
+                assert_se(read_file_and_streq(dst_path2,  "dest file 2\n"));
+        }
+
+        assert_se(copy_tree(src_directory, dst_directory, UID_INVALID, GID_INVALID, COPY_REFLINK|COPY_REPLACE|COPY_MERGE) == 0);
+
+        {
+                assert_se(read_file_and_streq(src_path1,  "src file 1\n"));
+                assert_se(read_file_and_streq(src_path2,  "src file 2\n"));
+                assert_se(read_file_and_streq(dst_path1,  "src file 1\n"));
+                assert_se(read_file_and_streq(dst_path2,  "src file 2\n"));
+        }
+}
+
+TEST(copy_file_fd) {
         char in_fn[] = "/tmp/test-copy-file-fd-XXXXXX";
         char out_fn[] = "/tmp/test-copy-file-fd-XXXXXX";
         _cleanup_close_ int in_fd = -1, out_fd = -1;
         const char *text = "boohoo\nfoo\n\tbar\n";
         char buf[64] = {};
-
-        log_info("%s", __func__);
 
         in_fd = mkostemp_safe(in_fn);
         assert_se(in_fd >= 0);
@@ -78,7 +144,7 @@ static void test_copy_file_fd(void) {
         unlink(out_fn);
 }
 
-static void test_copy_tree(void) {
+TEST(copy_tree) {
         char original_dir[] = "/tmp/test-copy_tree/";
         char copy_dir[] = "/tmp/test-copy_tree-copy/";
         char **files = STRV_MAKE("file", "dir1/file", "dir1/dir2/file", "dir1/dir2/dir3/dir4/dir5/file");
@@ -87,12 +153,9 @@ static void test_copy_tree(void) {
         char **hardlinks = STRV_MAKE("hlink", "file",
                                      "hlink2", "dir1/file");
         const char *unixsockp;
-        char **p, **ll;
         struct stat st;
         int xattr_worked = -1; /* xattr support is optional in temporary directories, hence use it if we can,
                                 * but don't fail if we can't */
-
-        log_info("%s", __func__);
 
         (void) rm_rf(copy_dir, REMOVE_ROOT|REMOVE_PHYSICAL);
         (void) rm_rf(original_dir, REMOVE_ROOT|REMOVE_PHYSICAL);
@@ -103,8 +166,7 @@ static void test_copy_tree(void) {
 
                 assert_se(f = path_join(original_dir, *p));
 
-                assert_se(mkdir_parents(f, 0755) >= 0);
-                assert_se(write_string_file(f, "file", WRITE_STRING_FILE_CREATE) == 0);
+                assert_se(write_string_file(f, "file", WRITE_STRING_FILE_CREATE|WRITE_STRING_FILE_MKDIR_0755) == 0);
 
                 assert_se(base64mem(*p, strlen(*p), &c) >= 0);
 
@@ -149,7 +211,7 @@ static void test_copy_tree(void) {
                 assert_se(read_full_file(f, &buf, &sz) == 0);
                 assert_se(streq(buf, "file\n"));
 
-                k = getxattr_malloc(f, "user.testxattr", &c, false);
+                k = lgetxattr_malloc(f, "user.testxattr", &c);
                 assert_se(xattr_worked < 0 || ((k >= 0) == !!xattr_worked));
 
                 if (k >= 0) {
@@ -196,7 +258,7 @@ static void test_copy_tree(void) {
 }
 #endif // 0
 
-static void test_copy_bytes(void) {
+TEST(copy_bytes) {
         _cleanup_close_pair_ int pipefd[2] = {-1, -1};
         _cleanup_close_ int infd = -1;
         int r, r2;
@@ -232,7 +294,7 @@ static void test_copy_bytes(void) {
         assert_se(r == -EBADF);
 }
 
-static void test_copy_bytes_regular_file(const char *src, bool try_reflink, uint64_t max_bytes) {
+static void test_copy_bytes_regular_file_one(const char *src, bool try_reflink, uint64_t max_bytes) {
         char fn2[] = "/tmp/test-copy-file-XXXXXX";
         char fn3[] = "/tmp/test-copy-file-XXXXXX";
         _cleanup_close_ int fd = -1, fd2 = -1, fd3 = -1;
@@ -288,8 +350,17 @@ static void test_copy_bytes_regular_file(const char *src, bool try_reflink, uint
         unlink(fn3);
 }
 
+TEST(copy_bytes_regular_file) {
+        test_copy_bytes_regular_file_one(saved_argv[0], false, UINT64_MAX);
+        test_copy_bytes_regular_file_one(saved_argv[0], true, UINT64_MAX);
+        test_copy_bytes_regular_file_one(saved_argv[0], false, 1000); /* smaller than copy buffer size */
+        test_copy_bytes_regular_file_one(saved_argv[0], true, 1000);
+        test_copy_bytes_regular_file_one(saved_argv[0], false, 32000); /* larger than copy buffer size */
+        test_copy_bytes_regular_file_one(saved_argv[0], true, 32000);
+}
+
 #if 0 /// UNNEEDED by elogind
-static void test_copy_atomic(void) {
+TEST(copy_atomic) {
         _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
         const char *q;
         int r;
@@ -307,7 +378,7 @@ static void test_copy_atomic(void) {
         assert_se(copy_file_atomic("/etc/fstab", q, 0644, 0, 0, COPY_REPLACE) >= 0);
 }
 
-static void test_copy_proc(void) {
+TEST(copy_proc) {
         _cleanup_(rm_rf_physical_and_freep) char *p = NULL;
         _cleanup_free_ char *f = NULL, *a = NULL, *b = NULL;
 
@@ -324,25 +395,60 @@ static void test_copy_proc(void) {
 }
 #endif // 0
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
+TEST_RET(copy_holes) {
+        char fn[] = "/var/tmp/test-copy-hole-fd-XXXXXX";
+        char fn_copy[] = "/var/tmp/test-copy-hole-fd-XXXXXX";
+        struct stat stat;
+        off_t blksz;
+        int r, fd, fd_copy;
+        char *buf;
 
-#if 0 /// UNNEEDED by elogind
-        test_copy_file();
-        test_copy_file_fd();
-        test_copy_tree();
-#endif // 0
-        test_copy_bytes();
-        test_copy_bytes_regular_file(argv[0], false, UINT64_MAX);
-        test_copy_bytes_regular_file(argv[0], true, UINT64_MAX);
-        test_copy_bytes_regular_file(argv[0], false, 1000); /* smaller than copy buffer size */
-        test_copy_bytes_regular_file(argv[0], true, 1000);
-        test_copy_bytes_regular_file(argv[0], false, 32000); /* larger than copy buffer size */
-        test_copy_bytes_regular_file(argv[0], true, 32000);
-#if 0 /// UNNEEDED by elogind
-        test_copy_atomic();
-        test_copy_proc();
-#endif // 0
+        fd = mkostemp_safe(fn);
+        assert_se(fd >= 0);
+
+        fd_copy = mkostemp_safe(fn_copy);
+        assert_se(fd_copy >= 0);
+
+        r = RET_NERRNO(fallocate(fd, FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE, 0, 1));
+        if (ERRNO_IS_NOT_SUPPORTED(r))
+                return log_tests_skipped("Filesystem doesn't support hole punching");
+        assert_se(r >= 0);
+
+        assert_se(fstat(fd, &stat) >= 0);
+        blksz = stat.st_blksize;
+        buf = alloca_safe(blksz);
+        memset(buf, 1, blksz);
+
+        /* We need to make sure to create hole in multiples of the block size, otherwise filesystems (btrfs)
+         * might silently truncate/extend the holes. */
+
+        assert_se(lseek(fd, blksz, SEEK_CUR) >= 0);
+        assert_se(write(fd, buf, blksz) >= 0);
+        assert_se(lseek(fd, 0, SEEK_END) == 2 * blksz);
+        /* Only ftruncate() can create holes at the end of a file. */
+        assert_se(ftruncate(fd, 3 * blksz) >= 0);
+        assert_se(lseek(fd, 0, SEEK_SET) >= 0);
+
+        assert_se(copy_bytes(fd, fd_copy, UINT64_MAX, COPY_HOLES) >= 0);
+
+        /* Test that the hole starts at the beginning of the file. */
+        assert_se(lseek(fd_copy, 0, SEEK_HOLE) == 0);
+        /* Test that the hole has the expected size. */
+        assert_se(lseek(fd_copy, 0, SEEK_DATA) == blksz);
+        assert_se(lseek(fd_copy, blksz, SEEK_HOLE) == 2 * blksz);
+        assert_se(lseek(fd_copy, 2 * blksz, SEEK_DATA) < 0 && errno == ENXIO);
+
+        /* Test that the copied file has the correct size. */
+        assert_se(fstat(fd_copy, &stat) >= 0);
+        assert_se(stat.st_size == 3 * blksz);
+
+        close(fd);
+        close(fd_copy);
+
+        unlink(fn);
+        unlink(fn_copy);
 
         return 0;
 }
+
+DEFINE_TEST_MAIN(LOG_DEBUG);

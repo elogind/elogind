@@ -3,9 +3,10 @@
 
 #include <stdbool.h>
 
+#include "errno-list.h"
 #include "macro.h"
 
-enum {
+typedef enum Virtualization {
         VIRTUALIZATION_NONE = 0,
 
         VIRTUALIZATION_VM_FIRST,
@@ -24,6 +25,7 @@ enum {
         VIRTUALIZATION_QNX,
         VIRTUALIZATION_ACRN,
         VIRTUALIZATION_POWERVM,
+        VIRTUALIZATION_APPLE,
         VIRTUALIZATION_VM_OTHER,
         VIRTUALIZATION_VM_LAST = VIRTUALIZATION_VM_OTHER,
 
@@ -43,27 +45,30 @@ enum {
 
         _VIRTUALIZATION_MAX,
         _VIRTUALIZATION_INVALID = -EINVAL,
-};
+        _VIRTUALIZATION_ERRNO_MAX = -ERRNO_MAX, /* ensure full range of errno fits into this enum */
+} Virtualization;
 
 #if 0 /// UNNEEDED by elogind
-static inline bool VIRTUALIZATION_IS_VM(int x) {
+static inline bool VIRTUALIZATION_IS_VM(Virtualization x) {
         return x >= VIRTUALIZATION_VM_FIRST && x <= VIRTUALIZATION_VM_LAST;
 }
 
-static inline bool VIRTUALIZATION_IS_CONTAINER(int x) {
+static inline bool VIRTUALIZATION_IS_CONTAINER(Virtualization x) {
         return x >= VIRTUALIZATION_CONTAINER_FIRST && x <= VIRTUALIZATION_CONTAINER_LAST;
 }
 
-int detect_vm(void);
+Virtualization detect_vm(void);
 #endif // 0
-int detect_container(void);
+Virtualization detect_container(void);
 #if 0 /// UNNEEDED by elogind
-int detect_virtualization(void);
+Virtualization detect_virtualization(void);
 
 int running_in_userns(void);
 #endif // 0
 int running_in_chroot(void);
 
-const char *virtualization_to_string(int v) _const_;
-int virtualization_from_string(const char *s) _pure_;
+const char *virtualization_to_string(Virtualization v) _const_;
+Virtualization virtualization_from_string(const char *s) _pure_;
+#if 0 /// UNNEEDED by elogind
 bool has_cpu_with_flag(const char *flag);
+#endif // 0

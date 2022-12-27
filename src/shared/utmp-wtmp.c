@@ -26,7 +26,7 @@
 
 #if 0 /// UNNEEDED by elogind
 int utmp_get_runlevel(int *runlevel, int *previous) {
-        _cleanup_(utxent_cleanup) bool utmpx = false;
+        _unused_ _cleanup_(utxent_cleanup) bool utmpx = false;
         struct utmpx *found, lookup = { .ut_type = RUN_LVL };
         const char *e;
 
@@ -89,7 +89,7 @@ static void init_entry(struct utmpx *store, usec_t t) {
 }
 
 static int write_entry_utmp(const struct utmpx *store) {
-        _cleanup_(utxent_cleanup) bool utmpx = false;
+        _unused_ _cleanup_(utxent_cleanup) bool utmpx = false;
 
         assert(store);
 
@@ -218,13 +218,14 @@ int utmp_put_init_process(const char *id, pid_t pid, pid_t sid, const char *line
 }
 
 int utmp_put_dead_process(const char *id, pid_t pid, int code, int status) {
+        _unused_ _cleanup_(utxent_cleanup) bool utmpx = false;
         struct utmpx lookup = {
                 .ut_type = INIT_PROCESS /* looks for DEAD_PROCESS, LOGIN_PROCESS, USER_PROCESS, too */
         }, store, store_wtmp, *found;
 
         assert(id);
 
-        setutxent();
+        utmpx = utxent_start();
 
         /* Copy the whole string if it fits, or just the suffix without the terminating NUL. */
         copy_suffix(store.ut_id, sizeof(store.ut_id), id);
@@ -340,11 +341,11 @@ int utmp_wall(
         const char *message,
         const char *username,
         const char *origin_tty,
-        bool (*match_tty)(const char *tty, void *userdata),
+        bool (*match_tty)(const char *tty, bool is_local, void *userdata),
         void *userdata) {
 
+        _unused_ _cleanup_(utxent_cleanup) bool utmpx = false;
         _cleanup_free_ char *text = NULL, *hn = NULL, *un = NULL, *stdin_tty = NULL;
-        char date[FORMAT_TIMESTAMP_MAX];
         struct utmpx *u;
         int r;
 
@@ -363,16 +364,16 @@ int utmp_wall(
         }
 
         if (asprintf(&text,
-                     "\a\r\n"
+                     "\r\n"
                      "Broadcast message from %s@%s%s%s (%s):\r\n\r\n"
                      "%s\r\n\r\n",
                      un ?: username, hn,
                      origin_tty ? " on " : "", strempty(origin_tty),
-                     format_timestamp(date, sizeof(date), now(CLOCK_REALTIME)),
+                     FORMAT_TIMESTAMP(now(CLOCK_REALTIME)),
                      message) < 0)
                 return -ENOMEM;
 
-        setutxent();
+        utmpx = utxent_start();
 
         r = 0;
 
@@ -384,17 +385,20 @@ int utmp_wall(
                 if (u->ut_type != USER_PROCESS || u->ut_user[0] == 0)
                         continue;
 
-                /* this access is fine, because STRLEN("/dev/") << 32 (UT_LINESIZE) */
+                /* This access is fine, because strlen("/dev/") < 32 (UT_LINESIZE) */
                 if (path_startswith(u->ut_line, "/dev/"))
                         path = u->ut_line;
                 else {
                         if (asprintf(&buf, "/dev/%.*s", (int) sizeof(u->ut_line), u->ut_line) < 0)
                                 return -ENOMEM;
-
                         path = buf;
                 }
 
-                if (!match_tty || match_tty(path, userdata)) {
+                /* It seems that the address field is always set for remote logins.
+                 * For local logins and other local entries, we get [0,0,0,0]. */
+                bool is_local = memeqzero(u->ut_addr_v6, sizeof(u->ut_addr_v6));
+
+                if (!match_tty || match_tty(path, is_local, userdata)) {
                         q = write_to_terminal(path, text);
                         if (q < 0)
                                 r = q;

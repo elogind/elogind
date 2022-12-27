@@ -1,11 +1,21 @@
-//#include <errno.h>
-//#include <stdbool.h>
-//#include <stddef.h>
-//#include <stdlib.h>
-//#include <stdio.h>
-//#include <elogind/sd-bus.h>
+/* SPDX-License-Identifier: MIT-0 */
+
+#include <errno.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <elogind/sd-bus.h>
 
 #define _cleanup_(f) __attribute__((cleanup(f)))
+
+#define check(x) ({                             \
+  int r = (x);                                  \
+  errno = r < 0 ? -r : 0;                       \
+  printf(#x ": %m\n");                          \
+  if (r < 0)                                    \
+    return EXIT_FAILURE;                        \
+  })
 
 typedef struct object {
   char *name;
@@ -14,6 +24,16 @@ typedef struct object {
 
 static int method(sd_bus_message *m, void *userdata, sd_bus_error *error) {
   printf("Got called with userdata=%p\n", userdata);
+
+  if (sd_bus_message_is_method_call(m,
+                                    "org.freedesktop.elogind.VtableExample",
+                                    "Method4"))
+    return 1;
+
+  const char *string;
+  check(sd_bus_message_read(m, "s", &string));
+  check(sd_bus_reply_method_return(m, "s", string));
+
   return 1;
 }
 
@@ -62,14 +82,6 @@ static const sd_bus_vtable vtable[] = {
         SD_BUS_VTABLE_END
 };
 
-#define check(x) ({                             \
-  int r = x;                                    \
-  errno = r < 0 ? -r : 0;                       \
-  printf(#x ": %m\n");                          \
-  if (r < 0)                                    \
-    return EXIT_FAILURE;                        \
-  })
-
 int main(int argc, char **argv) {
   _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
 
@@ -78,16 +90,22 @@ int main(int argc, char **argv) {
   object object = { .number = 666 };
   check((object.name = strdup("name")) != NULL);
 
-  check(sd_bus_add_object_vtable(bus, NULL, "/object",
+  check(sd_bus_add_object_vtable(bus, NULL,
+                                 "/org/freedesktop/elogind/VtableExample",
                                  "org.freedesktop.elogind.VtableExample",
                                  vtable,
                                  &object));
+
+  check(sd_bus_request_name(bus,
+                            "org.freedesktop.elogind.VtableExample",
+                            0));
 
   for (;;) {
     check(sd_bus_wait(bus, UINT64_MAX));
     check(sd_bus_process(bus, NULL));
   }
 
+  check(sd_bus_release_name(bus, "org.freedesktop.elogind.VtableExample"));
   free(object.name);
 
   return 0;

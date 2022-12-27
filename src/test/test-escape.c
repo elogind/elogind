@@ -5,33 +5,35 @@
 #include "macro.h"
 #include "tests.h"
 
-static void test_cescape(void) {
+TEST(cescape) {
         _cleanup_free_ char *t;
 
         assert_se(t = cescape("abc\\\"\b\f\n\r\t\v\a\003\177\234\313"));
         assert_se(streq(t, "abc\\\\\\\"\\b\\f\\n\\r\\t\\v\\a\\003\\177\\234\\313"));
 }
 
-static void test_xescape(void) {
+TEST(xescape) {
         _cleanup_free_ char *t;
 
         assert_se(t = xescape("abc\\\"\b\f\n\r\t\v\a\003\177\234\313", ""));
         assert_se(streq(t, "abc\\x5c\"\\x08\\x0c\\x0a\\x0d\\x09\\x0b\\x07\\x03\\x7f\\x9c\\xcb"));
 }
 
-static void test_xescape_full(bool eight_bits) {
+static void test_xescape_full_one(bool eight_bits) {
         const char* escaped = !eight_bits ?
                 "a\\x62c\\x5c\"\\x08\\x0c\\x0a\\x0d\\x09\\x0b\\x07\\x03\\x7f\\x9c\\xcb" :
                 "a\\x62c\\x5c\"\\x08\\x0c\\x0a\\x0d\\x09\\x0b\\x07\\x03\177\234\313";
         const unsigned full_fit = !eight_bits ? 55 : 46;
         XEscapeFlags flags = eight_bits * XESCAPE_8_BIT;
 
+        log_info("/* %s */", __func__);
+
         for (unsigned i = 0; i < 60; i++) {
                 _cleanup_free_ char *t, *q;
 
                 assert_se(t = xescape_full("abc\\\"\b\f\n\r\t\v\a\003\177\234\313", "b", i, flags));
 
-                log_info("%02d: <%s>", i, t);
+                log_info("%02u: <%s>", i, t);
 
                 if (i >= full_fit)
                         assert_se(streq(t, escaped));
@@ -49,15 +51,20 @@ static void test_xescape_full(bool eight_bits) {
                 assert_se(q = xescape_full("abc\\\"\b\f\n\r\t\v\a\003\177\234\313", "b", i,
                                            flags | XESCAPE_FORCE_ELLIPSIS));
 
-                log_info("%02d: <%s>", i, q);
+                log_info("%02u: <%s>", i, q);
                 if (i > 0)
                         assert_se(endswith(q, "."));
-                assert(strlen(q) <= i);
-                assert(strlen(q) + 3 >= strlen(t));
+                assert_se(strlen(q) <= i);
+                assert_se(strlen(q) + 3 >= strlen(t));
         }
 }
 
-static void test_cunescape(void) {
+TEST(test_xescape_full) {
+        test_xescape_full_one(false);
+        test_xescape_full_one(true);
+}
+
+TEST(cunescape) {
         _cleanup_free_ char *unescaped;
 
         assert_se(cunescape("abc\\\\\\\"\\b\\f\\a\\n\\r\\t\\v\\003\\177\\234\\313\\000\\x00", 0, &unescaped) < 0);
@@ -133,7 +140,7 @@ static void test_shell_escape_one(const char *s, const char *bad, const char *ex
         assert_se(streq_ptr(r, expected));
 }
 
-static void test_shell_escape(void) {
+TEST(shell_escape) {
         test_shell_escape_one("", "", "");
         test_shell_escape_one("\\", "", "\\\\");
         test_shell_escape_one("foobar", "", "foobar");
@@ -150,8 +157,7 @@ static void test_shell_maybe_quote_one(const char *s, ShellEscapeFlags flags, co
         assert_se(streq(ret, expected));
 }
 
-static void test_shell_maybe_quote(void) {
-
+TEST(shell_maybe_quote) {
         test_shell_maybe_quote_one("", 0, "");
         test_shell_maybe_quote_one("", SHELL_ESCAPE_EMPTY, "\"\"");
         test_shell_maybe_quote_one("", SHELL_ESCAPE_POSIX, "");
@@ -194,18 +200,27 @@ static void test_shell_maybe_quote(void) {
 }
 #endif // 0
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
+static void test_quote_command_line_one(char **argv, const char *expected) {
+        _cleanup_free_ char *s;
 
-        test_cescape();
-        test_xescape();
-        test_xescape_full(false);
-        test_xescape_full(true);
-        test_cunescape();
-#if 0 /// UNNEEDED by elogind
-        test_shell_escape();
-        test_shell_maybe_quote();
-#endif // 0
-
-        return 0;
+        assert_se(s = quote_command_line(argv, SHELL_ESCAPE_EMPTY));
+        log_info("%s", s);
+        assert_se(streq(s, expected));
 }
+
+TEST(quote_command_line) {
+        test_quote_command_line_one(STRV_MAKE("true", "true"),
+                                    "true true");
+        test_quote_command_line_one(STRV_MAKE("true", "with a space"),
+                                    "true \"with a space\"");
+        test_quote_command_line_one(STRV_MAKE("true", "with a 'quote'"),
+                                    "true \"with a 'quote'\"");
+        test_quote_command_line_one(STRV_MAKE("true", "with a \"quote\""),
+                                    "true \"with a \\\"quote\\\"\"");
+        test_quote_command_line_one(STRV_MAKE("true", "$dollar"),
+                                    "true \"\\$dollar\"");
+}
+
+#if 0 /// UNNEEDED by elogind
+#endif // 0
+DEFINE_TEST_MAIN(LOG_DEBUG);

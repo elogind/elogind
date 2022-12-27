@@ -16,6 +16,7 @@ typedef enum TableDataType {
         TABLE_STRV_WRAPPED,
         TABLE_PATH,
         TABLE_BOOLEAN,
+        TABLE_BOOLEAN_CHECKMARK,
         TABLE_TIMESTAMP,
         TABLE_TIMESTAMP_UTC,
         TABLE_TIMESTAMP_RELATIVE,
@@ -33,9 +34,10 @@ typedef enum TableDataType {
         TABLE_UINT16,
         TABLE_UINT32,
         TABLE_UINT64,
+        TABLE_UINT64_HEX,
+#if 0 /// UNNEEDED by elogind
         TABLE_PERCENT,
         TABLE_IFINDEX,
-#if 0 /// UNNEEDED by elogind
         TABLE_IN_ADDR,  /* Takes a union in_addr_union (or a struct in_addr) */
         TABLE_IN6_ADDR, /* Takes a union in_addr_union (or a struct in6_addr) */
 #endif // 0
@@ -45,23 +47,36 @@ typedef enum TableDataType {
         TABLE_GID,
         TABLE_PID,
         TABLE_SIGNAL,
+        TABLE_MODE,     /* as in UNIX file mode (mode_t), in typical octal output */
         _TABLE_DATA_TYPE_MAX,
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
          * a cell just added. */
+#if 0 /// UNNEEDED by elogind
         TABLE_SET_MINIMUM_WIDTH,
         TABLE_SET_MAXIMUM_WIDTH,
         TABLE_SET_WEIGHT,
         TABLE_SET_ALIGN_PERCENT,
         TABLE_SET_ELLIPSIZE_PERCENT,
+#endif // 0
         TABLE_SET_COLOR,
+#if 0 /// UNNEEDED by elogind
         TABLE_SET_RGAP_COLOR,
         TABLE_SET_BOTH_COLORS,
         TABLE_SET_URL,
+#endif // 0
         TABLE_SET_UPPERCASE,
 
         _TABLE_DATA_TYPE_INVALID = -EINVAL,
 } TableDataType;
+
+typedef enum TableErsatz {
+        TABLE_ERSATZ_EMPTY,
+        TABLE_ERSATZ_DASH,
+        TABLE_ERSATZ_UNSET,
+        TABLE_ERSATZ_NA,
+        _TABLE_ERSATZ_MAX,
+} TableErsatz;
 
 typedef struct Table Table;
 typedef struct TableCell TableCell;
@@ -107,7 +122,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...);
 void table_set_header(Table *table, bool b);
 void table_set_width(Table *t, size_t width);
 void table_set_cell_height_max(Table *t, size_t height);
-int table_set_empty_string(Table *t, const char *empty);
+void table_set_ersatz_string(Table *t, TableErsatz ersatz);
 int table_set_display_internal(Table *t, size_t first_column, ...);
 #define table_set_display(...) table_set_display_internal(__VA_ARGS__, SIZE_MAX)
 int table_set_sort_internal(Table *t, size_t first_column, ...);
@@ -115,7 +130,8 @@ int table_set_sort_internal(Table *t, size_t first_column, ...);
 #if 0 /// UNNEEDED by elogind
 int table_set_reverse(Table *t, size_t column, bool b);
 #endif // 0
-int table_hide_column_from_display(Table *t, size_t column);
+int table_hide_column_from_display_internal(Table *t, ...);
+#define table_hide_column_from_display(t, ...) table_hide_column_from_display_internal(t, __VA_ARGS__, (size_t) -1)
 
 int table_print(Table *t, FILE *f);
 int table_format(Table *t, char **ret);
@@ -141,8 +157,10 @@ int table_print_json(Table *t, FILE *f, JsonFormatFlags json_flags);
 
 int table_print_with_pager(Table *t, JsonFormatFlags json_format_flags, PagerFlags pager_flags, bool show_header);
 
+int table_set_json_field_name(Table *t, size_t column, const char *name);
+
 #define table_log_add_error(r) \
-        log_error_errno(r, "Failed to add cell(s) to table: %m")
+        log_error_errno(r, "Failed to add cells to table: %m")
 
 #define table_log_print_error(r) \
         log_error_errno(r, "Failed to print table: %m")

@@ -5,6 +5,7 @@
 
 #include "string-util.h"
 
+#if 0 /// UNNEEDED by elogind
 const char *af_to_name(int id);
 int af_from_name(const char *name);
 
@@ -23,6 +24,9 @@ static inline const char* af_to_name_short(int id) {
 }
 
 const char* af_to_ipv4_ipv6(int id);
+#endif // 0
 int af_from_ipv4_ipv6(const char *af);
 
+#if 0 /// UNNEEDED by elogind
 int af_max(void);
+#endif // 0

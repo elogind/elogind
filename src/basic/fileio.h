@@ -2,33 +2,33 @@
 #pragma once
 
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <sys/stat.h>
-//#include <sys/fcntl.h>
 #include <sys/types.h>
 
 #include "macro.h"
 #include "time-util.h"
 
 /// Additional includes needed by elogind
-#include <fcntl.h>
 
 #define LONG_LINE_MAX (1U*1024U*1024U)
 
 typedef enum {
-        WRITE_STRING_FILE_CREATE                = 1 << 0,
-        WRITE_STRING_FILE_TRUNCATE              = 1 << 1,
-        WRITE_STRING_FILE_ATOMIC                = 1 << 2,
-        WRITE_STRING_FILE_AVOID_NEWLINE         = 1 << 3,
-        WRITE_STRING_FILE_VERIFY_ON_FAILURE     = 1 << 4,
-        WRITE_STRING_FILE_VERIFY_IGNORE_NEWLINE = 1 << 5,
-        WRITE_STRING_FILE_SYNC                  = 1 << 6,
-        WRITE_STRING_FILE_DISABLE_BUFFER        = 1 << 7,
-        WRITE_STRING_FILE_NOFOLLOW              = 1 << 8,
-        WRITE_STRING_FILE_MKDIR_0755            = 1 << 9,
-        WRITE_STRING_FILE_MODE_0600             = 1 << 10,
+        WRITE_STRING_FILE_CREATE                     = 1 << 0,
+        WRITE_STRING_FILE_TRUNCATE                   = 1 << 1,
+        WRITE_STRING_FILE_ATOMIC                     = 1 << 2,
+        WRITE_STRING_FILE_AVOID_NEWLINE              = 1 << 3,
+        WRITE_STRING_FILE_VERIFY_ON_FAILURE          = 1 << 4,
+        WRITE_STRING_FILE_VERIFY_IGNORE_NEWLINE      = 1 << 5,
+        WRITE_STRING_FILE_SYNC                       = 1 << 6,
+        WRITE_STRING_FILE_DISABLE_BUFFER             = 1 << 7,
+        WRITE_STRING_FILE_NOFOLLOW                   = 1 << 8,
+        WRITE_STRING_FILE_MKDIR_0755                 = 1 << 9,
+        WRITE_STRING_FILE_MODE_0600                  = 1 << 10,
+        WRITE_STRING_FILE_SUPPRESS_REDUNDANT_VIRTUAL = 1 << 11,
 
         /* And before you wonder, why write_string_file_atomic_label_ts() is a separate function instead of just one
            more flag here: it's about linking: we don't want to pull -lselinux into all users of write_string_file()
@@ -42,13 +42,16 @@ typedef enum {
         READ_FULL_FILE_UNHEX               = 1 << 2, /* hex decode what we read */
         READ_FULL_FILE_WARN_WORLD_READABLE = 1 << 3, /* if regular file, log at LOG_WARNING level if access mode above 0700 */
         READ_FULL_FILE_CONNECT_SOCKET      = 1 << 4, /* if socket inode, connect to it and read off it */
+        READ_FULL_FILE_FAIL_WHEN_LARGER    = 1 << 5, /* fail loading if file is larger than specified size */
 } ReadFullFileFlags;
 
 int fopen_unlocked(const char *path, const char *options, FILE **ret);
 int fdopen_unlocked(int fd, const char *options, FILE **ret);
 int take_fdopen_unlocked(int *fd, const char *options, FILE **ret);
 FILE* take_fdopen(int *fd, const char *options);
+#if 0 /// UNNEEDED by elogind
 DIR* take_fdopendir(int *dfd);
+#endif // 0
 FILE* open_memstream_unlocked(char **ptr, size_t *sizeloc);
 FILE* fmemopen_unlocked(void *buf, size_t size, const char *mode);
 
@@ -69,7 +72,11 @@ static inline int read_full_file(const char *filename, char **ret_contents, size
         return read_full_file_full(AT_FDCWD, filename, UINT64_MAX, SIZE_MAX, 0, NULL, ret_contents, ret_size);
 }
 
-int read_virtual_file(const char *filename, size_t max_size, char **ret_contents, size_t *ret_size);
+int read_virtual_file_fd(int fd, size_t max_size, char **ret_contents, size_t *ret_size);
+int read_virtual_file_at(int dir_fd, const char *filename, size_t max_size, char **ret_contents, size_t *ret_size);
+static inline int read_virtual_file(const char *filename, size_t max_size, char **ret_contents, size_t *ret_size) {
+        return read_virtual_file_at(AT_FDCWD, filename, max_size, ret_contents, ret_size);
+}
 static inline int read_full_virtual_file(const char *filename, char **ret_contents, size_t *ret_size) {
         return read_virtual_file(filename, SIZE_MAX, ret_contents, ret_size);
 }
@@ -95,23 +102,15 @@ int search_and_fopen(const char *path, const char *mode, const char *root, const
 #endif // 0
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **ret, char **ret_path);
 
-int chase_symlinks_and_fopen_unlocked(
-                const char *path,
-                const char *root,
-                unsigned chase_flags,
-                const char *open_flags,
-                FILE **ret_file,
-                char **ret_path);
-
 int fflush_and_check(FILE *f);
 int fflush_sync_and_check(FILE *f);
 
 #if 0 /// UNNEEDED by elogind
 int write_timestamp_file_atomic(const char *fn, usec_t n);
 int read_timestamp_file(const char *fn, usec_t *ret);
+#endif // 0
 
 int fputs_with_space(FILE *f, const char *s, const char *separator, bool *space);
-#endif // 0
 
 typedef enum ReadLineFlags {
         READ_LINE_ONLY_NUL  = 1 << 0,
@@ -120,6 +119,12 @@ typedef enum ReadLineFlags {
 } ReadLineFlags;
 
 int read_line_full(FILE *f, size_t limit, ReadLineFlags flags, char **ret);
+
+static inline bool file_offset_beyond_memory_size(off_t x) {
+        if (x < 0) /* off_t is signed, filter that out */
+                return false;
+        return (uint64_t) x > (uint64_t) SIZE_MAX;
+}
 
 static inline int read_line(FILE *f, size_t limit, char **ret) {
         return read_line_full(f, limit, 0, ret);
@@ -133,6 +138,4 @@ int safe_fgetc(FILE *f, char *ret);
 
 int warn_file_is_world_accessible(const char *filename, struct stat *st, const char *unit, unsigned line);
 
-#if 0 /// UNNEEDED by elogind
-int rename_and_apply_smack_floor_label(const char *temp_path, const char *dest_path);
-#endif // 0
+int fopen_mode_to_flags(const char *mode);

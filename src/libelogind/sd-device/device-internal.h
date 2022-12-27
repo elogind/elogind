@@ -21,8 +21,6 @@ struct sd_device {
          */
         unsigned database_version;
 
-        int watch_handle;
-
         sd_device *parent;
 
         OrderedHashmap *properties;
@@ -49,13 +47,17 @@ struct sd_device {
         uint64_t devlinks_iterator_generation; /* generation when iteration was started */
         int devlink_priority;
 
+        Hashmap *children;
+        Iterator children_iterator;
+        bool children_enumerated;
+
         int ifindex;
         char *devtype;
         char *devname;
         dev_t devnum;
 
         char **properties_strv; /* the properties hashmap as a strv */
-        uint8_t *properties_nulstr; /* the same as a nulstr */
+        char *properties_nulstr; /* the same as a nulstr */
         size_t properties_nulstr_len;
 
         char *syspath;
@@ -74,6 +76,8 @@ struct sd_device {
         mode_t devmode;
         uid_t devuid;
         gid_t devgid;
+
+        uint64_t diskseq; /* Block device sequence number, monothonically incremented by the kernel on create/attach */
 
         /* only set when device is passed through netlink */
         sd_device_action_t action;
@@ -99,7 +103,6 @@ int device_add_property_aux(sd_device *device, const char *key, const char *valu
 static inline int device_add_property_internal(sd_device *device, const char *key, const char *value) {
         return device_add_property_aux(device, key, value, false);
 }
-int device_read_uevent_file(sd_device *device);
 
 int device_set_syspath(sd_device *device, const char *_syspath, bool verify);
 int device_set_ifindex(sd_device *device, const char *ifindex);
@@ -108,6 +111,7 @@ int device_set_devname(sd_device *device, const char *devname);
 int device_set_devtype(sd_device *device, const char *devtype);
 int device_set_devnum(sd_device *device, const char *major, const char *minor);
 int device_set_subsystem(sd_device *device, const char *subsystem);
+int device_set_diskseq(sd_device *device, const char *str);
 int device_set_drivers_subsystem(sd_device *device);
 int device_set_driver(sd_device *device, const char *driver);
 int device_set_usec_initialized(sd_device *device, usec_t when);

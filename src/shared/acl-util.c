@@ -6,9 +6,9 @@
 //#include <sys/types.h>
 
 #include "acl-util.h"
-#include "alloc-util.h"
-#include "string-util.h"
-#include "strv.h"
+//#include "alloc-util.h"
+//#include "string-util.h"
+//#include "strv.h"
 #include "user-util.h"
 #include "util.h"
 
@@ -213,7 +213,6 @@ int acl_search_groups(const char *path, char ***ret_groups) {
 int parse_acl(const char *text, acl_t *acl_access, acl_t *acl_default, bool want_mask) {
         _cleanup_free_ char **a = NULL, **d = NULL; /* strings are not freed */
         _cleanup_strv_free_ char **split = NULL;
-        char **entry;
         int r = -EINVAL;
         _cleanup_(acl_freep) acl_t a_acl = NULL, d_acl = NULL;
 
@@ -321,7 +320,7 @@ static int acl_entry_equal(acl_entry_t a, acl_entry_t b) {
                 return *gid_a == *gid_b;
         }
         default:
-                assert_not_reached("Unknown acl tag type");
+                assert_not_reached();
         }
 }
 

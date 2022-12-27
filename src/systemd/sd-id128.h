@@ -14,7 +14,7 @@
   Lesser General Public License for more details.
 
   You should have received a copy of the GNU Lesser General Public License
-  along with systemd; If not, see <http://www.gnu.org/licenses/>.
+  along with elogind; If not, see <https://www.gnu.org/licenses/>.
 ***/
 
 #include <inttypes.h>
@@ -34,10 +34,15 @@ union sd_id128 {
         uint64_t qwords[2];
 };
 
-#define SD_ID128_STRING_MAX 33
+#define SD_ID128_STRING_MAX 33U
+#define SD_ID128_UUID_STRING_MAX 37U
 
 char *sd_id128_to_string(sd_id128_t id, char s[_SD_ARRAY_STATIC SD_ID128_STRING_MAX]);
+char *sd_id128_to_uuid_string(sd_id128_t id, char s[_SD_ARRAY_STATIC SD_ID128_UUID_STRING_MAX]);
 int sd_id128_from_string(const char *s, sd_id128_t *ret);
+
+#define SD_ID128_TO_STRING(id) sd_id128_to_string((id), (char[SD_ID128_STRING_MAX]) {})
+#define SD_ID128_TO_UUID_STRING(id) sd_id128_to_uuid_string((id), (char[SD_ID128_UUID_STRING_MAX]) {})
 
 int sd_id128_randomize(sd_id128_t *ret);
 
@@ -111,8 +116,10 @@ int sd_id128_get_boot_app_specific(sd_id128_t app_id, sd_id128_t *ret);
         #a #b #c #d "-" #e #f "-" #g #h "-" #i #j "-" #k #l #m #n #o #p
 
 _sd_pure_ static __inline__ int sd_id128_equal(sd_id128_t a, sd_id128_t b) {
-        return memcmp(&a, &b, 16) == 0;
+        return a.qwords[0] == b.qwords[0] && a.qwords[1] == b.qwords[1];
 }
+
+int sd_id128_string_equal(const char *s, sd_id128_t id);
 
 _sd_pure_ static __inline__ int sd_id128_is_null(sd_id128_t a) {
         return a.qwords[0] == 0 && a.qwords[1] == 0;

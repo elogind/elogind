@@ -10,8 +10,6 @@
 # the logind.conf.d/ subdirectory. The latter is generally recommended.
 # Defaults can be restored by simply deleting this file and all drop-ins.
 #
-# Use 'elogind-analyze cat-config elogind/logind.conf' to display the full config.
-#
 # See logind.conf(5) for details.
 
 [Login]
@@ -21,12 +19,16 @@
 #InhibitDelayMaxSec=5
 #UserStopDelaySec=10
 #HandlePowerKey=poweroff
+#HandlePowerKeyLongPress=ignore
+#HandleRebootKey=reboot
+#HandleRebootKeyLongPress=poweroff
 #HandleSuspendKey=suspend
+#HandleSuspendKeyLongPress=hibernate
 #HandleHibernateKey=hibernate
+#HandleHibernateKeyLongPress=ignore
 #HandleLidSwitch=suspend
 #HandleLidSwitchExternalPower=suspend
 #HandleLidSwitchDocked=ignore
-#HandleRebootKey=reboot
 #PowerKeyIgnoreInhibited=no
 #SuspendKeyIgnoreInhibited=no
 #HibernateKeyIgnoreInhibited=no
@@ -36,25 +38,7 @@
 #IdleAction=ignore
 #IdleActionSec=30min
 #RuntimeDirectorySize=10%
-#RuntimeDirectoryInodes=400k
+#RuntimeDirectoryInodesMax=
 #RemoveIPC=yes
 #InhibitorsMax=8192
 #SessionsMax=8192
-
-[Sleep]
-#AllowSuspend=yes
-#AllowHibernation=yes
-#AllowSuspendThenHibernate=yes
-#AllowHybridSleep=yes
-#AllowPowerOffInterrupts=no
-#BroadcastPowerOffInterrupts=yes
-#AllowSuspendInterrupts=no
-#BroadcastSuspendInterrupts=yes
-#HandleNvidiaSleep=no
-#SuspendState=mem standby freeze
-#SuspendMode=
-#HibernateState=disk
-#HibernateMode=platform shutdown
-#HybridSleepState=disk
-#HybridSleepMode=suspend platform shutdown
-#HibernateDelaySec=10800

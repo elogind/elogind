@@ -30,9 +30,6 @@ int proc_cmdline_get_key_many_internal(ProcCmdlineFlags flags, ...);
 char *proc_cmdline_key_startswith(const char *s, const char *prefix);
 bool proc_cmdline_key_streq(const char *x, const char *y);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 /* A little helper call, to be used in proc_cmdline_parse_t callbacks */
 static inline bool proc_cmdline_value_missing(const char *key, const char *value) {
         if (!value) {

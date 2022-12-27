@@ -48,12 +48,18 @@ void manager_reset_config(Manager *m) {
         m->user_stop_delay = 0;
 #endif // 0
         m->handle_power_key = HANDLE_POWEROFF;
+        m->handle_power_key_long_press = HANDLE_IGNORE;
+        m->handle_reboot_key = HANDLE_REBOOT;
+        m->handle_reboot_key_long_press = HANDLE_POWEROFF;
         m->handle_suspend_key = HANDLE_SUSPEND;
+        m->handle_suspend_key_long_press = HANDLE_HIBERNATE;
         m->handle_hibernate_key = HANDLE_HIBERNATE;
+        m->handle_hibernate_key_long_press = HANDLE_IGNORE;
+
         m->handle_lid_switch = HANDLE_SUSPEND;
         m->handle_lid_switch_ep = _HANDLE_ACTION_INVALID;
         m->handle_lid_switch_docked = HANDLE_IGNORE;
-        m->handle_reboot_key = HANDLE_REBOOT;
+
         m->power_key_ignore_inhibited = false;
         m->suspend_key_ignore_inhibited = false;
         m->hibernate_key_ignore_inhibited = false;
@@ -74,6 +80,8 @@ void manager_reset_config(Manager *m) {
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
+
+        m->stop_idle_session_usec = USEC_INFINITY;
 }
 
 #if 1 /// Add-On for manager_reset_config() used by elogind
@@ -433,7 +441,7 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
                 if (r >= 0)
                         s = hashmap_get(m->session_units, unit);
 #else // 0
-                log_debug_elogind("Searching session for PID %u", pid);
+                log_debug_elogind("Searching session for PID %d", pid);
                 r = cg_pid_get_session(pid, &session_name);
 
                 if (r >= 0)
@@ -548,14 +556,13 @@ int config_parse_n_autovts(
                 void *data,
                 void *userdata) {
 
-        unsigned *n = data;
+        unsigned *n = ASSERT_PTR(data);
         unsigned o;
         int r;
 
         assert(filename);
         assert(lvalue);
         assert(rvalue);
-        assert(data);
 
         r = safe_atou(rvalue, &o);
         if (r < 0) {
@@ -763,17 +770,25 @@ bool manager_all_buttons_ignored(Manager *m) {
 
         if (m->handle_power_key != HANDLE_IGNORE)
                 return false;
+        if (m->handle_power_key_long_press != HANDLE_IGNORE)
+                return false;
         if (m->handle_suspend_key != HANDLE_IGNORE)
                 return false;
+        if (m->handle_suspend_key_long_press != HANDLE_IGNORE)
+                return false;
         if (m->handle_hibernate_key != HANDLE_IGNORE)
+                return false;
+        if (m->handle_hibernate_key_long_press != HANDLE_IGNORE)
+                return false;
+        if (m->handle_reboot_key != HANDLE_IGNORE)
+                return false;
+        if (m->handle_reboot_key_long_press != HANDLE_IGNORE)
                 return false;
         if (m->handle_lid_switch != HANDLE_IGNORE)
                 return false;
         if (!IN_SET(m->handle_lid_switch_ep, _HANDLE_ACTION_INVALID, HANDLE_IGNORE))
                 return false;
         if (m->handle_lid_switch_docked != HANDLE_IGNORE)
-                return false;
-        if (m->handle_reboot_key != HANDLE_IGNORE)
                 return false;
 
         return true;
@@ -782,7 +797,7 @@ bool manager_all_buttons_ignored(Manager *m) {
 int manager_read_utmp(Manager *m) {
 #if ENABLE_UTMP
         int r;
-        _cleanup_(utxent_cleanup) bool utmpx = false;
+        _unused_ _cleanup_(utxent_cleanup) bool utmpx = false;
 
         assert(m);
 
@@ -800,7 +815,9 @@ int manager_read_utmp(Manager *m) {
                 errno = 0;
                 u = getutxent();
                 if (!u) {
-                        if (errno != 0)
+                        if (errno == ENOENT)
+                                log_debug_errno(errno, _PATH_UTMPX " does not exist, ignoring.");
+                        else if (errno != 0)
                                 log_warning_errno(errno, "Failed to read " _PATH_UTMPX ", ignoring: %m");
                         return 0;
                 }
@@ -856,9 +873,7 @@ int manager_read_utmp(Manager *m) {
 
 #if ENABLE_UTMP
 static int manager_dispatch_utmp(sd_event_source *s, const struct inotify_event *event, void *userdata) {
-        Manager *m = userdata;
-
-        assert(m);
+        Manager *m = ASSERT_PTR(userdata);
 
         /* If there's indication the file itself might have been removed or became otherwise unavailable, then let's
          * reestablish the watch on whatever there's now. */

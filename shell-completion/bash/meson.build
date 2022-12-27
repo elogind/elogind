@@ -6,7 +6,7 @@ if bashcompletiondir == ''
         if bash_completion.found()
                 bashcompletiondir = bash_completion.get_pkgconfig_variable('completionsdir')
         else
-                bashcompletiondir = join_paths(datadir, 'bash-completion/completions')
+                bashcompletiondir = datadir / 'bash-completion/completions'
         endif
 endif
 
@@ -15,8 +15,7 @@ endif
 #         'systemctl',
 #         input : 'systemctl.in',
 #         output : 'systemctl',
-#         command : [meson_render_jinja2, config_h, '@INPUT@'],
-#         capture : true,
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : bashcompletiondir != 'no',
 #         install_dir : bashcompletiondir)
 #
@@ -33,8 +32,8 @@ endif
 #          ['systemd-path',        ''],
 #          ['systemd-run',         ''],
 #          ['udevadm',             ''],
-#          ['kernel-install',      ''],
-#          ['bootctl',             'ENABLE_EFI'],
+#          ['kernel-install',      'ENABLE_KERNEL_INSTALL'],
+#          ['bootctl',             'HAVE_GNU_EFI'],
 #          ['coredumpctl',         'ENABLE_COREDUMP'],
 #          ['homectl',             'ENABLE_HOMED'],
 #          ['hostnamectl',         'ENABLE_HOSTNAMED'],
@@ -42,8 +41,10 @@ endif
 #          ['loginctl',            'ENABLE_LOGIND'],
 #          ['machinectl',          'ENABLE_MACHINED'],
 #          ['networkctl',          'ENABLE_NETWORKD'],
+#          ['oomctl',              'ENABLE_OOMD'],
 #          ['portablectl',         'ENABLE_PORTABLED'],
 #          ['resolvectl',          'ENABLE_RESOLVE'],
+#          ['systemd-cryptenroll', 'HAVE_LIBCRYPTSETUP'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],
 #          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0

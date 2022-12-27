@@ -12,7 +12,7 @@
 #include "label.h"
 #include "limits-util.h"
 #include "main-func.h"
-#include "mkdir.h"
+#include "mkdir-label.h"
 #include "mount-util.h"
 #include "mountpoint-util.h"
 #include "path-util.h"
@@ -85,7 +85,9 @@ static int user_mkdir_runtime_path(
                          uid, gid, runtime_dir_size, runtime_dir_inodes,
                          mac_smack_use() ? ",smackfsroot=*" : "");
 
-                (void) mkdir_label(runtime_path, 0700);
+                r = mkdir_label(runtime_path, 0700);
+                if (r < 0 && r != -EEXIST)
+                        return log_error_errno(r, "Failed to create %s: %m", runtime_path);
 
                 r = mount_nofollow_verbose(LOG_DEBUG, "tmpfs", runtime_path, "tmpfs", MS_NODEV|MS_NOSUID, options);
                 if (r < 0) {
@@ -232,7 +234,7 @@ int user_runtime_dir(const char *verb, User *u) {
                 return do_mount(argv[2]);
         if (streq(argv[1], "stop"))
                 return do_umount(argv[2]);
-        assert_not_reached("Unknown verb!");
+        assert_not_reached();
 #else // 0
         if (streq(verb, "start"))
                 r = do_mount(u->runtime_path, u->manager->runtime_dir_size, u->manager->runtime_dir_inodes,
@@ -240,7 +242,7 @@ int user_runtime_dir(const char *verb, User *u) {
         else if (streq(verb, "stop"))
                 r = do_umount(u->runtime_path);
         else
-                assert_not_reached("Unknown verb!");
+                assert_not_reached();
 
         return r;
 #endif // 0

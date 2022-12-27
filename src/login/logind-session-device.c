@@ -10,6 +10,7 @@
 
 #include "alloc-util.h"
 #include "bus-util.h"
+#include "daemon-util.h"
 #include "fd-util.h"
 #include "logind-session-dbus.h"
 #include "logind-session-device.h"
@@ -48,7 +49,7 @@ static int session_device_notify(SessionDevice *sd, enum SessionDeviceNotificati
                         sd->session->manager->bus,
                         &m, path,
                         "org.freedesktop.login1.Session",
-                        (type == SESSION_DEVICE_RESUME) ? "ResumeDevice" : "PauseDevice");
+                        type == SESSION_DEVICE_RESUME ? "ResumeDevice" : "PauseDevice");
         if (!m)
                 return r;
 
@@ -105,20 +106,12 @@ static void sd_eviocrevoke(int fd) {
 
 static int sd_drmsetmaster(int fd) {
         assert(fd >= 0);
-
-        if (ioctl(fd, DRM_IOCTL_SET_MASTER, 0) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(ioctl(fd, DRM_IOCTL_SET_MASTER, 0));
 }
 
 static int sd_drmdropmaster(int fd) {
         assert(fd >= 0);
-
-        if (ioctl(fd, DRM_IOCTL_DROP_MASTER, 0) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(ioctl(fd, DRM_IOCTL_DROP_MASTER, 0));
 }
 
 static int session_device_open(SessionDevice *sd, bool active) {
@@ -128,7 +121,7 @@ static int session_device_open(SessionDevice *sd, bool active) {
         assert(sd->type != DEVICE_TYPE_UNKNOWN);
         assert(sd->node);
 
-        /* open device and try to get an udev_device from it */
+        /* open device and try to get a udev_device from it */
         fd = open(sd->node, O_RDWR|O_CLOEXEC|O_NOCTTY|O_NONBLOCK);
         if (fd < 0)
                 return -errno;
@@ -141,7 +134,7 @@ static int session_device_open(SessionDevice *sd, bool active) {
                          * that so fail at all times and let caller retry in inactive state. */
                         r = sd_drmsetmaster(fd);
                         if (r < 0) {
-                                close_nointr(fd);
+                                (void) close_nointr(fd);
                                 return r;
                         }
                 } else
@@ -195,7 +188,7 @@ static int session_device_start(SessionDevice *sd) {
 
                 /* For evdev devices, the file descriptor might be left uninitialized. This might happen while resuming
                  * into a session and logind has been restarted right before. */
-                CLOSE_AND_REPLACE(sd->fd, r);
+                close_and_replace(sd->fd, r);
                 break;
 
         case DEVICE_TYPE_UNKNOWN:
@@ -388,10 +381,7 @@ void session_device_free(SessionDevice *sd) {
 
         /* Make sure to remove the pushed fd. */
         if (sd->pushed_fd)
-                (void) sd_notifyf(false,
-                                  "FDSTOREREMOVE=1\n"
-                                  "FDNAME=session-%s-device-%u-%u",
-                                  sd->session->id, major(sd->dev), minor(sd->dev));
+                (void) notify_remove_fd_warnf("session-%s-device-%u-%u", sd->session->id, major(sd->dev), minor(sd->dev));
 
         session_device_stop(sd);
         session_device_notify(sd, SESSION_DEVICE_RELEASE);
@@ -472,7 +462,6 @@ unsigned session_device_try_pause_all(Session *s) {
 }
 
 int session_device_save(SessionDevice *sd) {
-        _cleanup_free_ char *m = NULL;
         const char *id;
         int r;
 
@@ -492,13 +481,7 @@ int session_device_save(SessionDevice *sd) {
         id = sd->session->id;
         assert(*(id + strcspn(id, "-\n")) == '\0');
 
-        r = asprintf(&m, "FDSTORE=1\n"
-                         "FDNAME=session-%s-device-%u-%u\n",
-                         id, major(sd->dev), minor(sd->dev));
-        if (r < 0)
-                return r;
-
-        r = sd_pid_notify_with_fds(0, false, m, &sd->fd, 1);
+        r = notify_push_fdf(sd->fd, "session-%s-device-%u-%u", id, major(sd->dev), minor(sd->dev));
         if (r < 0)
                 return r;
 

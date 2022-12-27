@@ -65,16 +65,9 @@ int fopen_temporary(const char *path, FILE **ret_f, char **ret_temp_path) {
 
 /* This is much like mkostemp() but is subject to umask(). */
 int mkostemp_safe(char *pattern) {
-        int fd = -1;  /* avoid false maybe-uninitialized warning */
-
         assert(pattern);
-
-        RUN_WITH_UMASK(0077)
-                fd = mkostemp(pattern, O_CLOEXEC);
-        if (fd < 0)
-                return -errno;
-
-        return fd;
+        BLOCK_WITH_UMASK(0077);
+        return RET_NERRNO(mkostemp(pattern, O_CLOEXEC));
 }
 
 int fmkostemp_safe(char *pattern, const char *mode, FILE **ret_f) {
@@ -93,12 +86,76 @@ int fmkostemp_safe(char *pattern, const char *mode, FILE **ret_f) {
         return 0;
 }
 
-int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
-        _cleanup_free_ char *d = NULL, *fn = NULL, *nf = NULL;
+static int tempfn_build(const char *p, const char *pre, const char *post, bool child, char **ret) {
+        _cleanup_free_ char *d = NULL, *fn = NULL, *nf = NULL, *result = NULL;
+        size_t len_pre, len_post, len_add;
         int r;
 
+        assert(p);
         assert(ret);
 
+        /*
+         * Turns this:
+         *         /foo/bar/waldo
+         *
+         * Into this :
+         *         /foo/bar/waldo/.#<pre><post> (child == true)
+         *         /foo/bar/.#<pre>waldo<post> (child == false)
+         */
+
+        if (pre && strchr(pre, '/'))
+                return -EINVAL;
+
+        if (post && strchr(post, '/'))
+                return -EINVAL;
+
+        len_pre = strlen_ptr(pre);
+        len_post = strlen_ptr(post);
+        /* NAME_MAX is counted *without* the trailing NUL byte. */
+        if (len_pre > NAME_MAX - STRLEN(".#") ||
+            len_post > NAME_MAX - STRLEN(".#") - len_pre)
+                return -EINVAL;
+
+        len_add = len_pre + len_post + STRLEN(".#");
+
+        if (child) {
+                d = strdup(p);
+                if (!d)
+                        return -ENOMEM;
+        } else {
+                r = path_extract_directory(p, &d);
+                if (r < 0 && r != -EDESTADDRREQ) /* EDESTADDRREQ → No directory specified, just a filename */
+                        return r;
+
+                r = path_extract_filename(p, &fn);
+                if (r < 0)
+                        return r;
+
+                if (strlen(fn) > NAME_MAX - len_add)
+                        /* We cannot simply prepend and append strings to the filename. Let's truncate the filename. */
+                        fn[NAME_MAX - len_add] = '\0';
+        }
+
+        nf = strjoin(".#", strempty(pre), strempty(fn), strempty(post));
+        if (!nf)
+                return -ENOMEM;
+
+        if (d) {
+                if (!path_extend(&d, nf))
+                        return -ENOMEM;
+
+                result = path_simplify(TAKE_PTR(d));
+        } else
+                result = TAKE_PTR(nf);
+
+        if (!path_is_valid(result)) /* New path is not valid? (Maybe because too long?) Refuse. */
+                return -EINVAL;
+
+        *ret = TAKE_PTR(result);
+        return 0;
+}
+
+int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
         /*
          * Turns this:
          *         /foo/bar/waldo
@@ -107,37 +164,14 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
          *         /foo/bar/.#<extra>waldoXXXXXX
          */
 
-        r = path_extract_directory(p, &d);
-        if (r < 0 && r != -EDESTADDRREQ) /* EDESTADDRREQ → No directory specified, just a filename */
-                return r;
-
-        r = path_extract_filename(p, &fn);
-        if (r < 0)
-                return r;
-
-        nf = strjoin(".#", strempty(extra), fn, "XXXXXX");
-        if (!nf)
-                return -ENOMEM;
-
-        if (!filename_is_valid(nf)) /* New name is not valid? (Maybe because too long?) Refuse. */
-                return -EINVAL;
-
-        if (d)  {
-                if (!path_extend(&d, nf))
-                        return -ENOMEM;
-
-                *ret = path_simplify(TAKE_PTR(d));
-        } else
-                *ret = TAKE_PTR(nf);
-
-        return 0;
+        return tempfn_build(p, extra, "XXXXXX", /* child = */ false, ret);
 }
 
 #if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret) {
-        _cleanup_free_ char *d = NULL, *fn = NULL, *nf = NULL;
-        int r;
+        _cleanup_free_ char *s = NULL;
 
+        assert(p);
         assert(ret);
 
         /*
@@ -148,37 +182,14 @@ int tempfn_random(const char *p, const char *extra, char **ret) {
          *         /foo/bar/.#<extra>waldobaa2a261115984a9
          */
 
-        r = path_extract_directory(p, &d);
-        if (r < 0 && r != -EDESTADDRREQ) /* EDESTADDRREQ → No directory specified, just a filename */
-                return r;
-
-        r = path_extract_filename(p, &fn);
-        if (r < 0)
-                return r;
-
-        if (asprintf(&nf, ".#%s%s%016" PRIx64,
-                     strempty(extra),
-                     fn,
-                     random_u64()) < 0)
+        if (asprintf(&s, "%016" PRIx64, random_u64()) < 0)
                 return -ENOMEM;
 
-        if (!filename_is_valid(nf)) /* Not valid? (maybe because too long now?) — refuse early */
-                return -EINVAL;
-
-        if (d) {
-                if (!path_extend(&d, nf))
-                        return -ENOMEM;
-
-                *ret = path_simplify(TAKE_PTR(d));
-        } else
-                *ret = TAKE_PTR(nf);
-
-        return 0;
+        return tempfn_build(p, extra, s, /* child = */ false, ret);
 }
 
 int tempfn_random_child(const char *p, const char *extra, char **ret) {
-        char *t, *x;
-        uint64_t u;
+        _cleanup_free_ char *s = NULL;
         int r;
 
         assert(ret);
@@ -195,27 +206,10 @@ int tempfn_random_child(const char *p, const char *extra, char **ret) {
                         return r;
         }
 
-        extra = strempty(extra);
-
-        t = new(char, strlen(p) + 3 + strlen(extra) + 16 + 1);
-        if (!t)
+        if (asprintf(&s, "%016" PRIx64, random_u64()) < 0)
                 return -ENOMEM;
 
-        if (isempty(p))
-                x = stpcpy(stpcpy(t, ".#"), extra);
-        else
-                x = stpcpy(stpcpy(stpcpy(t, p), "/.#"), extra);
-
-        u = random_u64();
-        for (unsigned i = 0; i < 16; i++) {
-                *(x++) = hexchar(u & 0xF);
-                u >>= 4;
-        }
-
-        *x = 0;
-
-        *ret = path_simplify(t);
-        return 0;
+        return tempfn_build(p, extra, s, /* child = */ true, ret);
 }
 #endif // 0
 
@@ -285,9 +279,29 @@ int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
         return fd;
 }
 
-int link_tmpfile(int fd, const char *path, const char *target) {
-        int r;
+int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE **ret_file) {
+        _cleanup_free_ char *path = NULL;
+        _cleanup_fclose_ FILE *f = NULL;
+        _cleanup_close_ int fd = -1;
 
+        assert(target);
+        assert(ret_file);
+        assert(ret_path);
+
+        fd = open_tmpfile_linkable(target, flags, &path);
+        if (fd < 0)
+                return fd;
+
+        f = take_fdopen(&fd, "w");
+        if (!f)
+                return -ENOMEM;
+
+        *ret_path = TAKE_PTR(path);
+        *ret_file = TAKE_PTR(f);
+        return 0;
+}
+
+int link_tmpfile(int fd, const char *path, const char *target) {
         assert(fd >= 0);
         assert(target);
 
@@ -298,20 +312,27 @@ int link_tmpfile(int fd, const char *path, const char *target) {
          * Note that in both cases we will not replace existing files. This is because linkat() does not support this
          * operation currently (renameat2() does), and there is no nice way to emulate this. */
 
-        if (path) {
-                r = rename_noreplace(AT_FDCWD, path, AT_FDCWD, target);
-                if (r < 0)
-                        return r;
-        } else {
-                char proc_fd_path[STRLEN("/proc/self/fd/") + DECIMAL_STR_MAX(fd) + 1];
+        if (path)
+                return rename_noreplace(AT_FDCWD, path, AT_FDCWD, target);
 
-                xsprintf(proc_fd_path, "/proc/self/fd/%i", fd);
+        return RET_NERRNO(linkat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), AT_FDCWD, target, AT_SYMLINK_FOLLOW));
+}
 
-                if (linkat(AT_FDCWD, proc_fd_path, AT_FDCWD, target, AT_SYMLINK_FOLLOW) < 0)
-                        return -errno;
-        }
+int flink_tmpfile(FILE *f, const char *path, const char *target) {
+        int fd, r;
 
-        return 0;
+        assert(f);
+        assert(target);
+
+        fd = fileno(f);
+        if (fd < 0) /* Not all FILE* objects encapsulate fds */
+                return -EBADF;
+
+        r = fflush_sync_and_check(f);
+        if (r < 0)
+                return r;
+
+        return link_tmpfile(fd, path, target);
 }
 #endif // 0
 

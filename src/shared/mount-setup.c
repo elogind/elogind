@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <ftw.h>
 #include <stdlib.h>
 #include <sys/mount.h>
 //#include <sys/statvfs.h>
@@ -9,9 +8,9 @@
 
 #include "alloc-util.h"
 #include "bus-util.h"
+#include "cgroup-setup.h"
 #include "cgroup-util.h"
 #include "conf-files.h"
-#include "cgroup-setup.h"
 #include "dev-setup.h"
 #include "dirent-util.h"
 #include "efi-loader.h"
@@ -21,12 +20,13 @@
 #include "label.h"
 #include "log.h"
 #include "macro.h"
-#include "mkdir.h"
+#include "mkdir-label.h"
 #include "mount-setup.h"
 #include "mount-util.h"
 #include "mountpoint-util.h"
 #include "nulstr-util.h"
 #include "path-util.h"
+#include "recurse-dir.h"
 #include "set.h"
 #include "smack-util.h"
 #include "strv.h"
@@ -119,9 +119,9 @@ static const MountPoint mount_table[] = {
         { "bpf",         "/sys/fs/bpf",               "bpf",        "mode=700",                                MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE,                  },
 #else // 0
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUPS_AGENT_PATH",xattr", MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER  },
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUP_AGENT_PATH,         MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,release_agent="SYSTEMD_CGROUPS_AGENT_PATH,         MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
 };
@@ -141,9 +141,6 @@ bool mount_point_is_api(const char *path) {
 }
 
 bool mount_point_ignore(const char *path) {
-
-        const char *i;
-
         /* These are API file systems that might be mounted by other software, we just list them here so that
          * we know that we should ignore them. */
         FOREACH_STRING(i,
@@ -205,7 +202,7 @@ static int mount_one(const MountPoint *p, bool relabel) {
                   strna(p->options));
 
         if (FLAGS_SET(p->mode, MNT_FOLLOW_SYMLINK))
-                r = mount(p->what, p->where, p->type, p->flags, p->options) < 0 ? -errno : 0;
+                r = RET_NERRNO(mount(p->what, p->where, p->type, p->flags, p->options));
         else
                 r = mount_nofollow(p->what, p->where, p->type, p->flags, p->options);
         if (r < 0) {
@@ -264,8 +261,6 @@ static const char *join_with(const char *controller) {
                 NULL
         };
 
-        const char *const *x, *const *y;
-
         assert(controller);
 
         /* This will lookup which controller to mount another controller with. Input is a controller name, and output
@@ -295,7 +290,7 @@ static int symlink_controller(const char *target, const char *alias) {
         if (r < 0)
                 return log_error_errno(r, "Failed to create symlink %s: %m", a);
 
-#ifdef SMACK_RUN_LABEL
+#if HAVE_SMACK_RUN_LABEL
         const char *p;
 
         p = strjoina("/sys/fs/cgroup/", target);
@@ -309,7 +304,7 @@ static int symlink_controller(const char *target, const char *alias) {
 }
 
 int mount_cgroup_controllers(void) {
-        _cleanup_set_free_free_ Set *controllers = NULL;
+        _cleanup_set_free_ Set *controllers = NULL;
         int r;
 
         if (!cg_is_legacy_wanted())
@@ -382,27 +377,46 @@ int mount_cgroup_controllers(void) {
 }
 
 #if HAVE_SELINUX || ENABLE_SMACK
-static int nftw_cb(
-                const char *fpath,
-                const struct stat *sb,
-                int tflag,
-                struct FTW *ftwbuf) {
+static int relabel_cb(
+                RecurseDirEvent event,
+                const char *path,
+                int dir_fd,
+                int inode_fd,
+                const struct dirent *de,
+                const struct statx *sx,
+                void *userdata) {
 
-        /* No need to label /dev twice in a row... */
-        if (_unlikely_(ftwbuf->level == 0))
-                return FTW_CONTINUE;
+        switch (event) {
 
-        (void) label_fix(fpath, 0);
+        case RECURSE_DIR_LEAVE:
+        case RECURSE_DIR_SKIP_MOUNT:
+                /* If we already saw this dirent when entering it or this is a dirent that on a different
+                 * mount, don't relabel it. */
+                return RECURSE_DIR_CONTINUE;
 
-        /* /run/initramfs is static data and big, no need to
-         * dynamically relabel its contents at boot... */
-        if (_unlikely_(ftwbuf->level == 1 &&
-                      tflag == FTW_D &&
-                      streq(fpath, "/run/initramfs")))
-                return FTW_SKIP_SUBTREE;
+        case RECURSE_DIR_ENTER:
+                /* /run/initramfs is static data and big, no need to dynamically relabel its contents at boot... */
+                if (path_equal(path, "/run/initramfs"))
+                        return RECURSE_DIR_SKIP_ENTRY;
 
-        return FTW_CONTINUE;
-};
+                _fallthrough_;
+
+        default:
+                /* Otherwise, label it, even if we had trouble stat()ing it and similar. SELinux can figure this out */
+                (void) label_fix(path, 0);
+                return RECURSE_DIR_CONTINUE;
+        }
+}
+
+static int relabel_tree(const char *path) {
+        int r;
+
+        r = recurse_dir_at(AT_FDCWD, path, 0, UINT_MAX, RECURSE_DIR_ENSURE_TYPE|RECURSE_DIR_SAME_MOUNT, relabel_cb, NULL);
+        if (r < 0)
+                log_debug_errno(r, "Failed to recursively relabel '%s': %m", path);
+
+        return r;
+}
 
 static int relabel_cgroup_filesystems(void) {
         int r;
@@ -421,7 +435,7 @@ static int relabel_cgroup_filesystems(void) {
                         (void) mount_nofollow(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT, NULL);
 
                 (void) label_fix("/sys/fs/cgroup", 0);
-                (void) nftw("/sys/fs/cgroup", nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
+                (void) relabel_tree("/sys/fs/cgroup");
 
                 if (st.f_flags & ST_RDONLY)
                         (void) mount_nofollow(NULL, "/sys/fs/cgroup", NULL, MS_REMOUNT|MS_RDONLY, NULL);
@@ -434,7 +448,6 @@ static int relabel_cgroup_filesystems(void) {
 
 static int relabel_extra(void) {
         _cleanup_strv_free_ char **files = NULL;
-        char **file;
         int r, c = 0;
 
         /* Support for relabelling additional files or directories after loading the policy. For this, code in the
@@ -485,7 +498,7 @@ static int relabel_extra(void) {
 
                         log_debug("Relabelling additional file/directory '%s'.", line);
                         (void) label_fix(line, 0);
-                        (void) nftw(line, nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
+                        (void) relabel_tree(line);
                         c++;
                 }
 
@@ -518,14 +531,12 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
          * use the same label for all their files. */
         if (loaded_policy) {
                 usec_t before_relabel, after_relabel;
-                char timespan[FORMAT_TIMESPAN_MAX];
-                const char *i;
                 int n_extra;
 
                 before_relabel = now(CLOCK_MONOTONIC);
 
                 FOREACH_STRING(i, "/dev", "/dev/shm", "/run")
-                        (void) nftw(i, nftw_cb, 64, FTW_MOUNT|FTW_PHYS|FTW_ACTIONRETVAL);
+                        (void) relabel_tree(i);
 
                 (void) relabel_cgroup_filesystems();
 
@@ -535,7 +546,7 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
 
                 log_info("Relabelled /dev, /dev/shm, /run, /sys/fs/cgroup%s in %s.",
                          n_extra > 0 ? ", additional files" : "",
-                         format_timespan(timespan, sizeof(timespan), after_relabel - before_relabel, 0));
+                         FORMAT_TIMESPAN(after_relabel - before_relabel, 0));
         }
 #endif
 

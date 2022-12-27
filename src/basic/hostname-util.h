@@ -7,14 +7,38 @@
 #include "macro.h"
 #include "strv.h"
 
+typedef enum GetHostnameFlags {
+        GET_HOSTNAME_ALLOW_LOCALHOST  = 1 << 0, /* accepts "localhost" or friends. */
+        GET_HOSTNAME_FALLBACK_DEFAULT = 1 << 1, /* use default hostname if no hostname is set. */
+        GET_HOSTNAME_SHORT            = 1 << 2, /* kills the FQDN part if present. */
+} GetHostnameFlags;
+
+int gethostname_full(GetHostnameFlags flags, char **ret);
+static inline int gethostname_strict(char **ret) {
+        return gethostname_full(0, ret);
+}
+
+static inline char* gethostname_malloc(void) {
+        char *s;
+
+        if (gethostname_full(GET_HOSTNAME_ALLOW_LOCALHOST | GET_HOSTNAME_FALLBACK_DEFAULT, &s) < 0)
+                return NULL;
+
+        return s;
+}
+
 #if 0 /// UNNEEDED by elogind
+static inline char* gethostname_short_malloc(void) {
+        char *s;
+
+        if (gethostname_full(GET_HOSTNAME_ALLOW_LOCALHOST | GET_HOSTNAME_FALLBACK_DEFAULT | GET_HOSTNAME_SHORT, &s) < 0)
+                return NULL;
+
+        return s;
+}
+#endif // 0
+
 char* get_default_hostname(void);
-#endif // 0
-char* gethostname_malloc(void);
-#if 0 /// UNNEEDED by elogind
-char* gethostname_short_malloc(void);
-#endif // 0
-int gethostname_strict(char **ret);
 
 bool valid_ldh_char(char c) _const_;
 
@@ -33,9 +57,11 @@ static inline bool is_gateway_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "gateway" host. */
         return STRCASE_IN_SET(hostname, "_gateway", "_gateway.");
 }
-#endif // 0
 
 static inline bool is_outbound_hostname(const char *hostname) {
         /* This tries to identify the valid syntaxes for the our synthetic "outbound" host. */
         return STRCASE_IN_SET(hostname, "_outbound", "_outbound.");
 }
+
+#endif // 0
+int get_pretty_hostname(char **ret);

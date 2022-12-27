@@ -23,6 +23,7 @@
 #include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
+#include "stat-util.h"
 #include "strv.h"
 #include "time-util.h"
 #include "util.h"
@@ -150,9 +151,7 @@ _public_ int sd_is_fifo(int fd, const char *path) {
                         return -errno;
                 }
 
-                return
-                        st_path.st_dev == st_fd.st_dev &&
-                        st_path.st_ino == st_fd.st_ino;
+                return stat_inode_same(&st_path, &st_fd);
         }
 
         return 1;
@@ -181,9 +180,7 @@ _public_ int sd_is_special(int fd, const char *path) {
                 }
 
                 if (S_ISREG(st_fd.st_mode) && S_ISREG(st_path.st_mode))
-                        return
-                                st_path.st_dev == st_fd.st_dev &&
-                                st_path.st_ino == st_fd.st_ino;
+                        return stat_inode_same(&st_path, &st_fd);
                 else if (S_ISCHR(st_fd.st_mode) && S_ISCHR(st_path.st_mode))
                         return st_path.st_rdev == st_fd.st_rdev;
                 else
@@ -193,7 +190,7 @@ _public_ int sd_is_special(int fd, const char *path) {
         return 1;
 }
 
-static int sd_is_socket_internal(int fd, int type, int listening) {
+static int is_socket_internal(int fd, int type, int listening) {
         struct stat st_fd;
 
         assert_return(fd >= 0, -EBADF);
@@ -242,7 +239,7 @@ _public_ int sd_is_socket(int fd, int family, int type, int listening) {
         assert_return(fd >= 0, -EBADF);
         assert_return(family >= 0, -EINVAL);
 
-        r = sd_is_socket_internal(fd, type, listening);
+        r = is_socket_internal(fd, type, listening);
         if (r <= 0)
                 return r;
 
@@ -270,7 +267,7 @@ _public_ int sd_is_socket_inet(int fd, int family, int type, int listening, uint
         assert_return(fd >= 0, -EBADF);
         assert_return(IN_SET(family, 0, AF_INET, AF_INET6), -EINVAL);
 
-        r = sd_is_socket_internal(fd, type, listening);
+        r = is_socket_internal(fd, type, listening);
         if (r <= 0)
                 return r;
 
@@ -310,7 +307,7 @@ _public_ int sd_is_socket_sockaddr(int fd, int type, const struct sockaddr* addr
         assert_return(addr_len >= sizeof(sa_family_t), -ENOBUFS);
         assert_return(IN_SET(addr->sa_family, AF_INET, AF_INET6), -EPFNOSUPPORT);
 
-        r = sd_is_socket_internal(fd, type, listening);
+        r = is_socket_internal(fd, type, listening);
         if (r <= 0)
                 return r;
 
@@ -365,7 +362,7 @@ _public_ int sd_is_socket_unix(int fd, int type, int listening, const char *path
 
         assert_return(fd >= 0, -EBADF);
 
-        r = sd_is_socket_internal(fd, type, listening);
+        r = is_socket_internal(fd, type, listening);
         if (r <= 0)
                 return r;
 
@@ -416,7 +413,7 @@ _public_ int sd_is_mq(int fd, const char *path) {
         }
 
         if (path) {
-                char fpath[PATH_MAX];
+                _cleanup_free_ char *fpath = NULL;
                 struct stat a, b;
 
                 assert_return(path_is_absolute(path), -EINVAL);
@@ -424,14 +421,14 @@ _public_ int sd_is_mq(int fd, const char *path) {
                 if (fstat(fd, &a) < 0)
                         return -errno;
 
-                strncpy(stpcpy(fpath, "/dev/mqueue"), path, sizeof(fpath) - 12);
-                fpath[sizeof(fpath)-1] = 0;
+                fpath = path_join("/dev/mqueue", path);
+                if (!fpath)
+                        return -ENOMEM;
 
                 if (stat(fpath, &b) < 0)
                         return -errno;
 
-                if (a.st_dev != b.st_dev ||
-                    a.st_ino != b.st_ino)
+                if (!stat_inode_same(&a, &b))
                         return 0;
         }
 
@@ -652,7 +649,7 @@ _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {
         r = safe_atou64(s, &u);
         if (r < 0)
                 goto finish;
-        if (u <= 0 || u >= USEC_INFINITY) {
+        if (!timestamp_is_set(u)) {
                 r = -EINVAL;
                 goto finish;
         }

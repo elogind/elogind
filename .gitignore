@@ -1,11 +1,6 @@
-*.a
 *.cache
-*.gch
-*.log
-*.o
 *.plist
 *.py[co]
-*.stamp
 *.swp
 *.trs
 *~
@@ -31,13 +26,15 @@ __pycache__/
 /.#image.raw.lck
 /image.raw.cache-pre-dev
 /image.raw.cache-pre-inst
+/image.raw.manifest
 /install-tree
 /.mkosi-*
 /mkosi.builddir/
 /mkosi.output/
 /mkosi.default
-mkosi.default.d/*
-!mkosi.default.d/10-elogind.conf
+/mkosi.installdir/
+# Ignore any mkosi config files with "local" in the name
+/mkosi.default.d/**/*local*.conf
 /tags
 
 #if 1 /// elogind specific stuff
@@ -73,3 +70,5 @@ mkosi.default.d/*
 cb/elogind.layout
 compile_commands.json
 #endif // 1
+.dir-locals-2.el
+.vscode/

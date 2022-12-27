@@ -70,7 +70,9 @@ int varlink_get_timeout(Varlink *v, usec_t *ret);
 
 int varlink_attach_event(Varlink *v, sd_event *e, int64_t priority);
 void varlink_detach_event(Varlink *v);
+#if 0 /// UNNEEDED by elogind
 sd_event *varlink_get_event(Varlink *v);
+#endif // 0
 
 int varlink_process(Varlink *v);
 #if 0 /// UNNEEDED by elogind
@@ -202,3 +204,4 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(VarlinkServer *, varlink_server_unref);
 #define VARLINK_ERROR_METHOD_NOT_IMPLEMENTED "org.varlink.service.MethodNotImplemented"
 #define VARLINK_ERROR_INVALID_PARAMETER "org.varlink.service.InvalidParameter"
 #define VARLINK_ERROR_SUBSCRIPTION_TAKEN "org.varlink.service.SubscriptionTaken"
+#define VARLINK_ERROR_PERMISSION_DENIED "org.varlink.service.PermissionDenied"

@@ -5,13 +5,16 @@
 #include <sys/mount.h>
 
 #include "alloc-util.h"
+#include "chase-symlinks.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "filesystems.h"
 #include "fs-util.h"
 #include "missing_stat.h"
 #include "missing_syscall.h"
 #include "mkdir.h"
 #include "mountpoint-util.h"
+#include "nulstr-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "stat-util.h"
@@ -153,8 +156,21 @@ static bool filename_possibly_with_slash_suffix(const char *s) {
         if (slash[strspn(slash, "/")] != 0) /* Check that the suffix consist only of one or more slashes */
                 return false;
 
-        copied = strndupa(s, slash - s);
+        copied = strndupa_safe(s, slash - s);
         return filename_is_valid(copied);
+}
+
+static bool is_name_to_handle_at_fatal_error(int err) {
+        /* name_to_handle_at() can return "acceptable" errors that are due to the context. For
+         * example the kernel does not support name_to_handle_at() at all (ENOSYS), or the syscall
+         * was blocked (EACCES/EPERM; maybe through seccomp, because we are running inside of a
+         * container), or the mount point is not triggered yet (EOVERFLOW, think nfs4), or some
+         * general name_to_handle_at() flakiness (EINVAL). However other errors are not supposed to
+         * happen and therefore are considered fatal ones. */
+
+        assert(err < 0);
+
+        return !IN_SET(err, -EOPNOTSUPP, -ENOSYS, -EACCES, -EPERM, -EOVERFLOW, -EINVAL);
 }
 
 int fd_is_mount_point(int fd, const char *filename, int flags) {
@@ -166,12 +182,18 @@ int fd_is_mount_point(int fd, const char *filename, int flags) {
         int r;
 
         assert(fd >= 0);
-        assert(filename);
-        assert((flags & ~(AT_SYMLINK_FOLLOW|AT_EMPTY_PATH)) == 0);
+        assert((flags & ~AT_SYMLINK_FOLLOW) == 0);
 
-        /* Insist that the specified filename is actually a filename, and not a path, i.e. some inode further
-         * up or down the tree then immediately below the specified directory fd. */
-        if (!filename_possibly_with_slash_suffix(filename))
+        if (!filename) {
+                /* If the file name is specified as NULL we'll see if the specified 'fd' is a mount
+                 * point. That's only supported if the kernel supports statx(), or if the inode specified via
+                 * 'fd' refers to a directory. Otherwise, we'll have to fail (ENOTDIR), because we have no
+                 * kernel API to query the information we need. */
+                flags |= AT_EMPTY_PATH;
+                filename = "";
+        } else if (!filename_possibly_with_slash_suffix(filename))
+                /* Insist that the specified filename is actually a filename, and not a path, i.e. some inode further
+                 * up or down the tree then immediately below the specified directory fd. */
                 return -EINVAL;
 
         /* First we will try statx()' STATX_ATTR_MOUNT_ROOT attribute, which is our ideal API, available
@@ -206,39 +228,43 @@ int fd_is_mount_point(int fd, const char *filename, int flags) {
                 return false; /* symlinks are never mount points */
 
         r = name_to_handle_at_loop(fd, filename, &h, &mount_id, flags);
-        if (IN_SET(r, -ENOSYS, -EACCES, -EPERM, -EOVERFLOW, -EINVAL))
-                /* This kernel does not support name_to_handle_at() at all (ENOSYS), or the syscall was blocked
-                 * (EACCES/EPERM; maybe through seccomp, because we are running inside of a container?), or the mount
-                 * point is not triggered yet (EOVERFLOW, think nfs4), or some general name_to_handle_at() flakiness
-                 * (EINVAL): fall back to simpler logic. */
-                goto fallback_fdinfo;
-        else if (r == -EOPNOTSUPP)
-                /* This kernel or file system does not support name_to_handle_at(), hence let's see if the upper fs
-                 * supports it (in which case it is a mount point), otherwise fall back to the traditional stat()
-                 * logic */
-                nosupp = true;
-        else if (r < 0)
-                return r;
-
-        r = name_to_handle_at_loop(fd, "", &h_parent, &mount_id_parent, AT_EMPTY_PATH);
-        if (r == -EOPNOTSUPP) {
-                if (nosupp)
-                        /* Neither parent nor child do name_to_handle_at()?  We have no choice but to fall back. */
+        if (r < 0) {
+                if (is_name_to_handle_at_fatal_error(r))
+                        return r;
+                if (r != -EOPNOTSUPP)
                         goto fallback_fdinfo;
-                else
-                        /* The parent can't do name_to_handle_at() but the directory we are interested in can?  If so,
-                         * it must be a mount point. */
-                        return 1;
-        } else if (r < 0)
-                return r;
 
-        /* The parent can do name_to_handle_at() but the directory we are interested in can't? If so, it must
-         * be a mount point. */
+                /* This kernel or file system does not support name_to_handle_at(), hence let's see
+                 * if the upper fs supports it (in which case it is a mount point), otherwise fall
+                 * back to the traditional stat() logic */
+                nosupp = true;
+        }
+
+        if (isempty(filename))
+                r = name_to_handle_at_loop(fd, "..", &h_parent, &mount_id_parent, 0); /* can't work for non-directories 😢 */
+        else
+                r = name_to_handle_at_loop(fd, "", &h_parent, &mount_id_parent, AT_EMPTY_PATH);
+        if (r < 0) {
+                if (is_name_to_handle_at_fatal_error(r))
+                        return r;
+                if (r != -EOPNOTSUPP)
+                        goto fallback_fdinfo;
+                if (nosupp)
+                        /* Both the parent and the directory can't do name_to_handle_at() */
+                        goto fallback_fdinfo;
+
+                /* The parent can't do name_to_handle_at() but the directory we are
+                 * interested in can?  If so, it must be a mount point. */
+                return 1;
+        }
+
+        /* The parent can do name_to_handle_at() but the directory we are interested in can't? If
+         * so, it must be a mount point. */
         if (nosupp)
                 return 1;
 
-        /* If the file handle for the directory we are interested in and its parent are identical, we assume
-         * this is the root directory, which is a mount point. */
+        /* If the file handle for the directory we are interested in and its parent are identical,
+         * we assume this is the root directory, which is a mount point. */
 
         if (h->handle_bytes == h_parent->handle_bytes &&
             h->handle_type == h_parent->handle_type &&
@@ -254,7 +280,10 @@ fallback_fdinfo:
         if (r < 0)
                 return r;
 
-        r = fd_fdinfo_mnt_id(fd, "", AT_EMPTY_PATH, &mount_id_parent);
+        if (isempty(filename))
+                r = fd_fdinfo_mnt_id(fd, "..", 0, &mount_id_parent); /* can't work for non-directories 😢 */
+        else
+                r = fd_fdinfo_mnt_id(fd, "", AT_EMPTY_PATH, &mount_id_parent);
         if (r < 0)
                 return r;
 
@@ -278,13 +307,15 @@ fallback_fstat:
         if (S_ISLNK(a.st_mode)) /* Symlinks are never mount points */
                 return false;
 
-        if (fstatat(fd, "", &b, AT_EMPTY_PATH) < 0)
+        if (isempty(filename))
+                r = fstatat(fd, "..", &b, 0);
+        else
+                r = fstatat(fd, "", &b, AT_EMPTY_PATH);
+        if (r < 0)
                 return -errno;
 
-        /* A directory with same device and inode as its parent? Must
-         * be the root directory */
-        if (a.st_dev == b.st_dev &&
-            a.st_ino == b.st_ino)
+        /* A directory with same device and inode as its parent? Must be the root directory */
+        if (stat_inode_same(&a, &b))
                 return 1;
 
         return check_st_dev && (a.st_dev != b.st_dev);
@@ -338,10 +369,10 @@ int path_get_mnt_id(const char *path, int *ret) {
         }
 
         r = name_to_handle_at_loop(AT_FDCWD, path, NULL, ret, 0);
-        if (IN_SET(r, -EOPNOTSUPP, -ENOSYS, -EACCES, -EPERM, -EOVERFLOW, -EINVAL)) /* kernel/fs don't support this, or seccomp blocks access, or untriggered mount, or name_to_handle_at() is flaky */
-                return fd_fdinfo_mnt_id(AT_FDCWD, path, 0, ret);
+        if (r == 0 || is_name_to_handle_at_fatal_error(r))
+                return r;
 
-        return r;
+        return fd_fdinfo_mnt_id(AT_FDCWD, path, 0, ret);
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -352,48 +383,59 @@ bool fstype_is_network(const char *fstype) {
         if (x)
                 fstype = x;
 
+        if (nulstr_contains(filesystem_sets[FILESYSTEM_SET_NETWORK].value, fstype))
+                return true;
+
+        /* Filesystems not present in the internal database */
         return STR_IN_SET(fstype,
-                          "afs",
-                          "ceph",
-                          "cifs",
-                          "smb3",
-                          "smbfs",
-                          "sshfs",
-                          "ncpfs",
-                          "ncp",
-                          "nfs",
-                          "nfs4",
-                          "gfs",
-                          "gfs2",
+                          "davfs",
                           "glusterfs",
-                          "pvfs2", /* OrangeFS */
-                          "ocfs2",
                           "lustre",
-                          "davfs");
+                          "sshfs");
+}
+
+bool fstype_needs_quota(const char *fstype) {
+       /* 1. quotacheck needs to be run for some filesystems after they are mounted
+        *    if the filesystem was not unmounted cleanly.
+        * 2. You may need to run quotaon to enable quota usage tracking and/or
+        *    enforcement.
+        * ext2     - needs 1) and 2)
+        * ext3     - needs 2) if configured using usrjquota/grpjquota mount options
+        * ext4     - needs 1) if created without journal, needs 2) if created without QUOTA
+        *            filesystem feature
+        * reiserfs - needs 2).
+        * jfs      - needs 2)
+        * f2fs     - needs 2) if configured using usrjquota/grpjquota/prjjquota mount options
+        * xfs      - nothing needed
+        * gfs2     - nothing needed
+        * ocfs2    - nothing needed
+        * btrfs    - nothing needed
+        * for reference see filesystem and quota manpages */
+        return STR_IN_SET(fstype,
+                          "ext2",
+                          "ext3",
+                          "ext4",
+                          "reiserfs",
+                          "jfs",
+                          "f2fs");
 }
 
 bool fstype_is_api_vfs(const char *fstype) {
+        const FilesystemSet *fs;
+
+        FOREACH_POINTER(fs,
+                filesystem_sets + FILESYSTEM_SET_BASIC_API,
+                filesystem_sets + FILESYSTEM_SET_AUXILIARY_API,
+                filesystem_sets + FILESYSTEM_SET_PRIVILEGED_API,
+                filesystem_sets + FILESYSTEM_SET_TEMPORARY)
+            if (nulstr_contains(fs->value, fstype))
+                    return true;
+
+        /* Filesystems not present in the internal database */
         return STR_IN_SET(fstype,
                           "autofs",
-                          "bpf",
-                          "cgroup",
-                          "cgroup2",
-                          "configfs",
                           "cpuset",
-                          "debugfs",
-                          "devpts",
-                          "devtmpfs",
-                          "efivarfs",
-                          "fusectl",
-                          "hugetlbfs",
-                          "mqueue",
-                          "proc",
-                          "pstore",
-                          "ramfs",
-                          "securityfs",
-                          "sysfs",
-                          "tmpfs",
-                          "tracefs");
+                          "devtmpfs");
 }
 
 bool fstype_is_blockdev_backed(const char *fstype) {
@@ -410,6 +452,8 @@ bool fstype_is_ro(const char *fstype) {
         /* All Linux file systems that are necessarily read-only */
         return STR_IN_SET(fstype,
                           "DM_verity_hash",
+                          "cramfs",
+                          "erofs",
                           "iso9660",
                           "squashfs");
 }
@@ -417,6 +461,7 @@ bool fstype_is_ro(const char *fstype) {
 bool fstype_can_discard(const char *fstype) {
         return STR_IN_SET(fstype,
                           "btrfs",
+                          "f2fs",
                           "ext4",
                           "vfat",
                           "xfs");
@@ -497,7 +542,6 @@ const char *mount_propagation_flags_to_string(unsigned long flags) {
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
 
         if (isempty(name))
@@ -512,4 +556,3 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
                 return -EINVAL;
         return 0;
 }
-#endif // 0

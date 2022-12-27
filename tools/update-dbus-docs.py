@@ -47,6 +47,14 @@ def print_method(declarations, elem, *, prefix, file, is_signal=False):
     klass = 'signal' if is_signal else 'method'
     declarations[klass].append(name)
 
+    # @org.freedesktop.elogind1.Privileged("true")
+    # SetShowStatus(in  s mode);
+
+    for anno in elem.findall('./annotation'):
+        anno_name = anno.get('name')
+        anno_value = anno.get('value')
+        print(f'''{prefix}@{anno_name}("{anno_value}")''', file=file)
+
     print(f'''{prefix}{name}(''', file=file, end='')
     lead = ',\n' + prefix + ' ' * len(name) + ' '
 
@@ -313,8 +321,13 @@ if __name__ == '__main__':
             print(item, file=sys.stderr)
             exit(77 if opts.test else 1)
 
-    if not os.path.exists(f'{opts.build_dir}/systemd'):
-        exit(f"{opts.build_dir}/systemd doesn't exist. Use --build-dir=.")
+#if 0 /// check for elogind instead
+#     if not os.path.exists(f'{opts.build_dir}/systemd'):
+#         exit(f"{opts.build_dir}/systemd doesn't exist. Use --build-dir=.")
+#else // 0
+    if not os.path.exists(f'{opts.build_dir}/elogind'):
+        exit(f"{opts.build_dir}/elogind doesn't exist. Use --build-dir=.")
+#endif // 0
 
     stats = {page.split('/')[-1] : process(page) for page in opts.pages}
 

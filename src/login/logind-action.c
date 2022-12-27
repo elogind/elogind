@@ -2,6 +2,8 @@
 
 #include <unistd.h>
 
+#include "sd-messages.h"
+
 #include "alloc-util.h"
 #include "bus-error.h"
 #include "bus-util.h"
@@ -11,7 +13,6 @@
 #include "logind-dbus.h"
 #include "logind-session-dbus.h"
 #include "process-util.h"
-#include "sleep-config.h"
 #include "special.h"
 #include "string-table.h"
 #include "terminal-util.h"
@@ -20,28 +21,110 @@
 /// Additional includes needed by elogind
 #include "fd-util.h"
 #include "fileio.h"
-#include "sd-messages.h"
 #include "strv.h"
 
-#if 0 /// elogind does this itself. No target table required
-const char* manager_target_for_action(HandleAction handle) {
-        static const char * const target_table[_HANDLE_ACTION_MAX] = {
-                [HANDLE_POWEROFF] = SPECIAL_POWEROFF_TARGET,
-                [HANDLE_REBOOT] = SPECIAL_REBOOT_TARGET,
-                [HANDLE_HALT] = SPECIAL_HALT_TARGET,
-                [HANDLE_KEXEC] = SPECIAL_KEXEC_TARGET,
-                [HANDLE_SUSPEND] = SPECIAL_SUSPEND_TARGET,
-                [HANDLE_HIBERNATE] = SPECIAL_HIBERNATE_TARGET,
-                [HANDLE_HYBRID_SLEEP] = SPECIAL_HYBRID_SLEEP_TARGET,
-                [HANDLE_SUSPEND_THEN_HIBERNATE] = SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
-        };
+static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
+        [HANDLE_POWEROFF] = {
+                .handle                          = HANDLE_POWEROFF,
+                .target                          = SPECIAL_POWEROFF_TARGET,
+                .inhibit_what                    = INHIBIT_SHUTDOWN,
+                .polkit_action                   = "org.freedesktop.login1.power-off",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.power-off-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.power-off-ignore-inhibit",
+                .sleep_operation                 = _SLEEP_OPERATION_INVALID,
+                .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
+                .message                         = "System is powering down",
+                .log_verb                        = "power-off",
+        },
+        [HANDLE_REBOOT] = {
+                .handle                          = HANDLE_REBOOT,
+                .target                          = SPECIAL_REBOOT_TARGET,
+                .inhibit_what                    = INHIBIT_SHUTDOWN,
+                .polkit_action                   = "org.freedesktop.login1.reboot",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.reboot-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.reboot-ignore-inhibit",
+                .sleep_operation                 = _SLEEP_OPERATION_INVALID,
+                .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
+                .message                         = "System is rebooting",
+                .log_verb                        = "reboot",
+        },
+        [HANDLE_HALT] = {
+                .handle                          = HANDLE_HALT,
+                .target                          = SPECIAL_HALT_TARGET,
+                .inhibit_what                    = INHIBIT_SHUTDOWN,
+                .polkit_action                   = "org.freedesktop.login1.halt",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.halt-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.halt-ignore-inhibit",
+                .sleep_operation                 = _SLEEP_OPERATION_INVALID,
+                .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
+                .message                         = "System is halting",
+                .log_verb                        = "halt",
+        },
+        [HANDLE_KEXEC] = {
+                .handle                          = HANDLE_KEXEC,
+                .target                          = SPECIAL_KEXEC_TARGET,
+                .inhibit_what                    = INHIBIT_SHUTDOWN,
+                .polkit_action                   = "org.freedesktop.login1.reboot",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.reboot-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.reboot-ignore-inhibit",
+                .sleep_operation                 = _SLEEP_OPERATION_INVALID,
+                .message_id                      = SD_MESSAGE_SHUTDOWN_STR,
+                .message                         = "System is rebooting with kexec",
+                .log_verb                        = "kexec",
+        },
+        [HANDLE_SUSPEND] = {
+                .handle                          = HANDLE_SUSPEND,
+                .target                          = SPECIAL_SUSPEND_TARGET,
+                .inhibit_what                    = INHIBIT_SLEEP,
+                .polkit_action                   = "org.freedesktop.login1.suspend",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.suspend-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.suspend-ignore-inhibit",
+                .sleep_operation                 = SLEEP_SUSPEND,
+        },
+        [HANDLE_HIBERNATE] = {
+                .handle                          = HANDLE_HIBERNATE,
+                .target                          = SPECIAL_HIBERNATE_TARGET,
+                .inhibit_what                    = INHIBIT_SLEEP,
+                .polkit_action                   = "org.freedesktop.login1.hibernate",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.hibernate-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.hibernate-ignore-inhibit",
+                .sleep_operation                 = SLEEP_HIBERNATE,
+        },
+        [HANDLE_HYBRID_SLEEP] = {
+                .handle                          = HANDLE_HYBRID_SLEEP,
+                .target                          = SPECIAL_HYBRID_SLEEP_TARGET,
+                .inhibit_what                    = INHIBIT_SLEEP,
+                .polkit_action                   = "org.freedesktop.login1.hibernate",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.hibernate-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.hibernate-ignore-inhibit",
+                .sleep_operation                 = SLEEP_HYBRID_SLEEP,
+        },
+        [HANDLE_SUSPEND_THEN_HIBERNATE] = {
+                .handle                          = HANDLE_SUSPEND_THEN_HIBERNATE,
+                .target                          = SPECIAL_SUSPEND_THEN_HIBERNATE_TARGET,
+                .inhibit_what                    = INHIBIT_SLEEP,
+                .polkit_action                   = "org.freedesktop.login1.hibernate",
+                .polkit_action_multiple_sessions = "org.freedesktop.login1.hibernate-multiple-sessions",
+                .polkit_action_ignore_inhibit    = "org.freedesktop.login1.hibernate-ignore-inhibit",
+                .sleep_operation                 = SLEEP_SUSPEND_THEN_HIBERNATE,
+        },
+        [HANDLE_FACTORY_RESET] = {
+                .handle                          = HANDLE_FACTORY_RESET,
+                .target                          = SPECIAL_FACTORY_RESET_TARGET,
+                .inhibit_what                    = _INHIBIT_WHAT_INVALID,
+                .sleep_operation                 = _SLEEP_OPERATION_INVALID,
+                .message_id                      = SD_MESSAGE_FACTORY_RESET_STR,
+                .message                         = "System is performing factory reset",
+        },
+};
 
-        assert(handle >= 0);
-        if (handle < (ssize_t) ELEMENTSOF(target_table))
-                return target_table[handle];
-        return NULL;
+const HandleActionData* handle_action_lookup(HandleAction action) {
+
+        if (action < 0 || (size_t) action >= ELEMENTSOF(handle_action_data_table))
+                return NULL;
+
+        return &handle_action_data_table[action];
 }
-#endif // 0
 
 int manager_handle_action(
                 Manager *m,
@@ -51,23 +134,21 @@ int manager_handle_action(
                 bool is_edge) {
 
         static const char * const message_table[_HANDLE_ACTION_MAX] = {
-                [HANDLE_POWEROFF] = "Powering Off...",
-                [HANDLE_REBOOT] = "Rebooting...",
-                [HANDLE_HALT] = "Halting...",
-                [HANDLE_KEXEC] = "Rebooting via kexec...",
-                [HANDLE_SUSPEND] = "Suspending...",
-                [HANDLE_HIBERNATE] = "Hibernating...",
-                [HANDLE_HYBRID_SLEEP] = "Hibernating and suspending...",
+                [HANDLE_POWEROFF]               = "Powering off...",
+                [HANDLE_REBOOT]                 = "Rebooting...",
+                [HANDLE_HALT]                   = "Halting...",
+                [HANDLE_KEXEC]                  = "Rebooting via kexec...",
+                [HANDLE_SUSPEND]                = "Suspending...",
+                [HANDLE_HIBERNATE]              = "Hibernating...",
+                [HANDLE_HYBRID_SLEEP]           = "Hibernating and suspending...",
                 [HANDLE_SUSPEND_THEN_HIBERNATE] = "Suspending, then hibernating...",
+                [HANDLE_FACTORY_RESET]          = "Performing factory reset...",
         };
 
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         InhibitWhat inhibit_operation;
         Inhibitor *offending = NULL;
         bool supported;
-#if 0 /// elogind uses its own variant, which can use the handle directly.
-        const char *target;
-#endif // 0
         int r;
 
         assert(m);
@@ -152,20 +233,13 @@ int manager_handle_action(
                 return log_warning_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
                                          "Requested %s operation not supported, ignoring.", handle_action_to_string(handle));
 
-        if (m->action_what > 0)
+        if (m->delayed_action)
                 return log_debug_errno(SYNTHETIC_ERRNO(EALREADY),
                                        "Action already in progress (%s), ignoring requested %s operation.",
-                                       inhibit_what_to_string(m->action_what),
+                                       inhibit_what_to_string(m->delayed_action->inhibit_what),
                                        handle_action_to_string(handle));
 
-
-#if 0 /// elogind uses its own variant, which can use the handle directly.
-        assert_se(target = manager_target_for_action(handle));
-#endif // 0
-
-        inhibit_operation = IN_SET(handle, HANDLE_SUSPEND, HANDLE_HIBERNATE,
-                                           HANDLE_HYBRID_SLEEP,
-                                           HANDLE_SUSPEND_THEN_HIBERNATE) ? INHIBIT_SLEEP : INHIBIT_SHUTDOWN;
+        inhibit_operation = handle_action_lookup(handle)->inhibit_what;
 
         /* If the actual operation is inhibited, warn and fail */
         if (!ignore_inhibited &&
@@ -188,11 +262,7 @@ int manager_handle_action(
 
         log_info("%s", message_table[handle]);
 
-#if 0 /// elogind uses its own variant, which can use the handle directly.
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, target, inhibit_operation, &error);
-#else // 0
-        r = bus_manager_shutdown_or_sleep_now_or_later(m, handle, inhibit_operation, &error);
-#endif // 0
+        r = bus_manager_shutdown_or_sleep_now_or_later(m, handle_action_lookup(handle), &error);
         if (r < 0)
                 return log_error_errno(r, "Failed to execute %s operation: %s",
                                        handle_action_to_string(handle),
@@ -201,17 +271,34 @@ int manager_handle_action(
         return 1;
 }
 
+static const char* const handle_action_verb_table[_HANDLE_ACTION_MAX] = {
+        [HANDLE_IGNORE]                 = "do nothing",
+        [HANDLE_POWEROFF]               = "power off",
+        [HANDLE_REBOOT]                 = "reboot",
+        [HANDLE_HALT]                   = "halt",
+        [HANDLE_KEXEC]                  = "kexec",
+        [HANDLE_SUSPEND]                = "suspend",
+        [HANDLE_HIBERNATE]              = "hibernate",
+        [HANDLE_HYBRID_SLEEP]           = "enter hybrid sleep",
+        [HANDLE_SUSPEND_THEN_HIBERNATE] = "suspend and later hibernate",
+        [HANDLE_FACTORY_RESET]          = "perform a factory reset",
+        [HANDLE_LOCK]                   = "be locked",
+};
+
+DEFINE_STRING_TABLE_LOOKUP_TO_STRING(handle_action_verb, HandleAction);
+
 static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
-        [HANDLE_IGNORE] = "ignore",
-        [HANDLE_POWEROFF] = "poweroff",
-        [HANDLE_REBOOT] = "reboot",
-        [HANDLE_HALT] = "halt",
-        [HANDLE_KEXEC] = "kexec",
-        [HANDLE_SUSPEND] = "suspend",
-        [HANDLE_HIBERNATE] = "hibernate",
-        [HANDLE_HYBRID_SLEEP] = "hybrid-sleep",
+        [HANDLE_IGNORE]                 = "ignore",
+        [HANDLE_POWEROFF]               = "poweroff",
+        [HANDLE_REBOOT]                 = "reboot",
+        [HANDLE_HALT]                   = "halt",
+        [HANDLE_KEXEC]                  = "kexec",
+        [HANDLE_SUSPEND]                = "suspend",
+        [HANDLE_HIBERNATE]              = "hibernate",
+        [HANDLE_HYBRID_SLEEP]           = "hybrid-sleep",
         [HANDLE_SUSPEND_THEN_HIBERNATE] = "suspend-then-hibernate",
-        [HANDLE_LOCK] = "lock",
+        [HANDLE_FACTORY_RESET]          = "factory-reset",
+        [HANDLE_LOCK]                   = "lock",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(handle_action, HandleAction);

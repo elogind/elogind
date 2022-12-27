@@ -77,7 +77,7 @@ int make_salt(char **ret) {
         log_debug("Generating fallback salt for hash prefix: $6$");
 
         /* Insist on the best randomness by setting RANDOM_BLOCK, this is about keeping passwords secret after all. */
-        r = genuine_random_bytes(raw, sizeof(raw), RANDOM_BLOCK);
+        r = crypto_random_bytes(raw, sizeof(raw));
         if (r < 0)
                 return r;
 
@@ -200,7 +200,6 @@ int test_password_one(const char *hashed_password, const char *password) {
 }
 
 int test_password_many(char **hashed_password, const char *password) {
-        char **hpw;
         int r;
 
         STRV_FOREACH(hpw, hashed_password) {

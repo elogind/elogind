@@ -6,6 +6,21 @@
 
 #include "macro.h"
 
+/* strerror(3) says that glibc uses a maximum length of 1024 bytes. */
+#define ERRNO_BUF_LEN 1024
+
+/* Note: the lifetime of the compound literal is the immediately surrounding block,
+ * see C11 §6.5.2.5, and
+ * https://stackoverflow.com/questions/34880638/compound-literal-lifetime-and-if-blocks
+ *
+ * Note that we use the GNU variant of strerror_r() here. */
+#define STRERROR(errnum) strerror_r(abs(errnum), (char[ERRNO_BUF_LEN]){}, ERRNO_BUF_LEN)
+
+/* A helper to print an error message or message for functions that return 0 on EOF.
+ * Note that we can't use ({ … }) to define a temporary variable, so errnum is
+ * evaluated twice. */
+#define STRERROR_OR_EOF(errnum) ((errnum) != 0 ? STRERROR(errnum) : "Unexpected EOF")
+
 static inline void _reset_errno_(int *saved_errno) {
         if (*saved_errno < 0) /* Invalidated by UNPROTECT_ERRNO? */
                 return;
@@ -13,7 +28,7 @@ static inline void _reset_errno_(int *saved_errno) {
         errno = *saved_errno;
 }
 
-#define PROTECT_ERRNO                                                   \
+#define PROTECT_ERRNO                           \
         _cleanup_(_reset_errno_) _unused_ int _saved_errno_ = errno
 
 #define UNPROTECT_ERRNO                         \
@@ -21,6 +36,10 @@ static inline void _reset_errno_(int *saved_errno) {
                 errno = _saved_errno_;          \
                 _saved_errno_ = -1;             \
         } while (false)
+
+#define LOCAL_ERRNO(value)                      \
+        PROTECT_ERRNO;                          \
+        errno = abs(value)
 
 static inline int negative_errno(void) {
         /* This helper should be used to shut up gcc if you know 'errno' is
@@ -31,9 +50,27 @@ static inline int negative_errno(void) {
         return -errno;
 }
 
-static inline const char *strerror_safe(int error) {
-        /* 'safe' here does NOT mean thread safety. */
-        return strerror(abs(error)); /* lgtm [cpp/potentially-dangerous-function] */
+static inline int RET_NERRNO(int ret) {
+
+        /* Helper to wrap system calls in to make them return negative errno errors. This brings system call
+         * error handling in sync with how we usually handle errors in our own code, i.e. with immediate
+         * returning of negative errno. Usage is like this:
+         *
+         *     …
+         *     r = RET_NERRNO(unlink(t));
+         *     …
+         *
+         * or
+         *
+         *     …
+         *     fd = RET_NERRNO(open("/etc/fstab", O_RDONLY|O_CLOEXEC));
+         *     …
+         */
+
+        if (ret < 0)
+                return negative_errno();
+
+        return ret;
 }
 
 static inline int errno_or_else(int fallback) {
@@ -45,6 +82,13 @@ static inline int errno_or_else(int fallback) {
                 return -errno;
 
         return -abs(fallback);
+}
+
+/* For send()/recv() or read()/write(). */
+static inline bool ERRNO_IS_TRANSIENT(int r) {
+        return IN_SET(abs(r),
+                      EAGAIN,
+                      EINTR);
 }
 
 /* Hint #1: ENETUNREACH happens if we try to connect to "non-existing" special IP addresses, such as ::5.
@@ -77,10 +121,8 @@ static inline bool ERRNO_IS_DISCONNECT(int r) {
  * the accept(2) man page. */
 static inline bool ERRNO_IS_ACCEPT_AGAIN(int r) {
         return ERRNO_IS_DISCONNECT(r) ||
-                IN_SET(abs(r),
-                       EAGAIN,
-                       EINTR,
-                       EOPNOTSUPP);
+                ERRNO_IS_TRANSIENT(r) ||
+                abs(r) == EOPNOTSUPP;
 }
 
 /* Resource exhaustion, could be our fault or general system trouble */
@@ -110,10 +152,25 @@ static inline bool ERRNO_IS_PRIVILEGE(int r) {
                       EPERM);
 }
 
-/* Three difference errors for "not enough disk space" */
+/* Three different errors for "not enough disk space" */
 static inline bool ERRNO_IS_DISK_SPACE(int r) {
         return IN_SET(abs(r),
                       ENOSPC,
                       EDQUOT,
                       EFBIG);
+}
+
+/* Three different errors for "this device does not quite exist" */
+static inline bool ERRNO_IS_DEVICE_ABSENT(int r) {
+        return IN_SET(abs(r),
+                      ENODEV,
+                      ENXIO,
+                      ENOENT);
+}
+
+/* Quite often we want to handle cases where the backing FS doesn't support extended attributes at all and
+ * where it simply doesn't have the requested xattr the same way */
+static inline bool ERRNO_IS_XATTR_ABSENT(int r) {
+        return abs(r) == ENODATA ||
+                ERRNO_IS_NOT_SUPPORTED(r);
 }

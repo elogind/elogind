@@ -10,26 +10,23 @@
 #include "string-util-fundamental.h"
 
 /* What is interpreted as whitespace? */
-#define WHITESPACE        " \t\n\r"
-#define NEWLINE           "\n\r"
-#define QUOTES            "\"\'"
-#define COMMENTS          "#;"
-#define GLOB_CHARS        "*?["
-#define DIGITS            "0123456789"
-#define LOWERCASE_LETTERS "abcdefghijklmnopqrstuvwxyz"
-#define UPPERCASE_LETTERS "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-#define LETTERS           LOWERCASE_LETTERS UPPERCASE_LETTERS
-#define ALPHANUMERICAL    LETTERS DIGITS
-#define HEXDIGITS         DIGITS "abcdefABCDEF"
+#define WHITESPACE          " \t\n\r"
+#define NEWLINE             "\n\r"
+#define QUOTES              "\"\'"
+#define COMMENTS            "#;"
+#define GLOB_CHARS          "*?["
+#define DIGITS              "0123456789"
+#define LOWERCASE_LETTERS   "abcdefghijklmnopqrstuvwxyz"
+#define UPPERCASE_LETTERS   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+#define LETTERS             LOWERCASE_LETTERS UPPERCASE_LETTERS
+#define ALPHANUMERICAL      LETTERS DIGITS
+#define HEXDIGITS           DIGITS "abcdefABCDEF"
+#define LOWERCASE_HEXDIGITS DIGITS "abcdef"
 
 static inline char* strstr_ptr(const char *haystack, const char *needle) {
         if (!haystack || !needle)
                 return NULL;
         return strstr(haystack, needle);
-}
-
-static inline const char* strempty(const char *s) {
-        return s ?: "";
 }
 
 static inline const char* strnull(const char *s) {
@@ -58,6 +55,10 @@ static inline const char* enable_disable(bool b) {
 
 static inline const char *empty_to_null(const char *p) {
         return isempty(p) ? NULL : p;
+}
+
+static inline const char *empty_to_na(const char *p) {
+        return isempty(p) ? "n/a" : p;
 }
 
 static inline const char *empty_to_dash(const char *str) {
@@ -153,11 +154,15 @@ char *cellescape(char *buf, size_t len, const char *s);
 /* This limit is arbitrary, enough to give some idea what the string contains */
 #define CELLESCAPE_DEFAULT_LENGTH 64
 
+#if 0 /// UNNEEDED by elogind
 char* strshorten(char *s, size_t l);
+
+int strgrowpad0(char **s, size_t l);
 
 char *strreplace(const char *text, const char *old_string, const char *new_string);
 
 char *strip_tab_ansi(char **ibuf, size_t *_isz, size_t highlight[2]);
+#endif // 0
 
 char *strextend_with_separator_internal(char **x, const char *separator, ...) _sentinel_;
 #define strextend_with_separator(x, separator, ...) strextend_with_separator_internal(x, separator, __VA_ARGS__, NULL)
@@ -166,26 +171,24 @@ char *strextend_with_separator_internal(char **x, const char *separator, ...) _s
 int strextendf_with_separator(char **x, const char *separator, const char *format, ...) _printf_(3,4);
 #define strextendf(x, ...) strextendf_with_separator(x, NULL, __VA_ARGS__)
 
+#if 0 /// UNNEEDED by elogind
 char *strrep(const char *s, unsigned n);
 
 int split_pair(const char *s, const char *sep, char **l, char **r);
+#endif // 0
 
 int free_and_strdup(char **p, const char *s);
 static inline int free_and_strdup_warn(char **p, const char *s) {
-        if (free_and_strdup(p, s) < 0)
+        int r;
+
+        r = free_and_strdup(p, s);
+        if (r < 0)
                 return log_oom();
-        return 0;
+        return r;
 }
 int free_and_strndup(char **p, const char *s, size_t l);
 
 bool string_is_safe(const char *p) _pure_;
-
-static inline size_t strlen_ptr(const char *s) {
-        if (!s)
-                return 0;
-
-        return strlen(s);
-}
 
 DISABLE_WARNING_STRINGOP_TRUNCATION;
 static inline void strncpy_exact(char *buf, const char *src, size_t buf_len) {
@@ -193,21 +196,6 @@ static inline void strncpy_exact(char *buf, const char *src, size_t buf_len) {
 }
 REENABLE_WARNING;
 
-/* Like startswith(), but operates on arbitrary memory blocks */
-static inline void *memory_startswith(const void *p, size_t sz, const char *token) {
-        assert(token);
-
-        size_t n = strlen(token);
-        if (sz < n)
-                return NULL;
-
-        assert(p);
-
-        if (memcmp(p, token, n) != 0)
-                return NULL;
-
-        return (uint8_t*) p + n;
-}
 
 #if 0 /// Not needed by elogind, only test-string-util uses this.
 /* Like startswith_no_case(), but operates on arbitrary memory blocks.
@@ -239,7 +227,9 @@ static inline char* str_realloc(char *p) {
         return realloc(p, strlen(p) + 1) ?: p;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* string_erase(char *x);
+#endif // 0
 
 int string_truncate_lines(const char *s, size_t n_lines, char **ret);
 int string_extract_line(const char *s, size_t i, char **ret);
@@ -248,3 +238,9 @@ int string_contains_word_strv(const char *string, const char *separators, char *
 static inline int string_contains_word(const char *string, const char *separators, const char *word) {
         return string_contains_word_strv(string, separators, STRV_MAKE(word), NULL);
 }
+
+bool streq_skip_trailing_chars(const char *s1, const char *s2, const char *ok);
+
+char *string_replace_char(char *str, char old_char, char new_char);
+
+size_t strspn_from_end(const char *str, const char *accept);

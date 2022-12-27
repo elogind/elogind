@@ -8,12 +8,12 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
+#include "env-file.h"
 #include "hostname-util.h"
-//#include "os-util.h"
+#include "os-util.h"
 #include "string-util.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 char* get_default_hostname(void) {
         int r;
 
@@ -36,84 +36,47 @@ char* get_default_hostname(void) {
 
         return strdup(FALLBACK_HOSTNAME);
 }
-#endif // 0
 
-char* gethostname_malloc(void) {
+int gethostname_full(GetHostnameFlags flags, char **ret) {
+        _cleanup_free_ char *buf = NULL, *fallback = NULL;
         struct utsname u;
         const char *s;
 
-        /* This call tries to return something useful, either the actual hostname
-         * or it makes something up. The only reason it might fail is OOM.
-         * It might even return "localhost" if that's set. */
-
-        assert_se(uname(&u) >= 0);
-
-#if 0 /// elogind has no hostnamed and such nonsense
-        s = u.nodename;
-        if (isempty(s) || streq(s, "(none)"))
-                return get_default_hostname();
-#else // 0
-        return strdup("localhost");
-#endif // 0
-
-        return strdup(s);
-}
-
-#if 0 /// UNNEEDED by elogind
-char* gethostname_short_malloc(void) {
-        struct utsname u;
-        const char *s;
-        _cleanup_free_ char *f = NULL;
-
-        /* Like above, but kills the FQDN part if present. */
+        assert(ret);
 
         assert_se(uname(&u) >= 0);
 
         s = u.nodename;
-        if (isempty(s) || streq(s, "(none)") || s[0] == '.') {
-                s = f = get_default_hostname();
+        if (isempty(s) || streq(s, "(none)") ||
+            (!FLAGS_SET(flags, GET_HOSTNAME_ALLOW_LOCALHOST) && is_localhost(s)) ||
+            (FLAGS_SET(flags, GET_HOSTNAME_SHORT) && s[0] == '.')) {
+                if (!FLAGS_SET(flags, GET_HOSTNAME_FALLBACK_DEFAULT))
+                        return -ENXIO;
+
+                s = fallback = get_default_hostname();
                 if (!s)
-                        return NULL;
+                        return -ENOMEM;
 
-                assert(s[0] != '.');
+                if (FLAGS_SET(flags, GET_HOSTNAME_SHORT) && s[0] == '.')
+                        return -ENXIO;
         }
 
-        return strndup(s, strcspn(s, "."));
-}
-#endif // 0
-
-int gethostname_strict(char **ret) {
-        struct utsname u;
-        char *k;
-
-        /* This call will rather fail than make up a name. It will not return "localhost" either. */
-
-        assert_se(uname(&u) >= 0);
-
-        if (isempty(u.nodename))
-                return -ENXIO;
-
-        if (streq(u.nodename, "(none)"))
-                return -ENXIO;
-
-        if (is_localhost(u.nodename))
-                return -ENXIO;
-
-        k = strdup(u.nodename);
-        if (!k)
+        if (FLAGS_SET(flags, GET_HOSTNAME_SHORT))
+                buf = strndup(s, strcspn(s, "."));
+        else
+                buf = strdup(s);
+        if (!buf)
                 return -ENOMEM;
 
-        *ret = k;
+        *ret = TAKE_PTR(buf);
         return 0;
 }
 
 bool valid_ldh_char(char c) {
         /* "LDH" → "Letters, digits, hyphens", as per RFC 5890, Section 2.3.1 */
 
-        return
-                (c >= 'a' && c <= 'z') ||
-                (c >= 'A' && c <= 'Z') ||
-                (c >= '0' && c <= '9') ||
+        return ascii_isalpha(c) ||
+                ascii_isdigit(c) ||
                 c == '-';
 }
 
@@ -228,5 +191,20 @@ bool is_localhost(const char *hostname) {
                 endswith_no_case(hostname, ".localhost.localdomain.");
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+int get_pretty_hostname(char **ret) {
+        _cleanup_free_ char *n = NULL;
+        int r;
+
+        assert(ret);
+
+        r = parse_env_file(NULL, "/etc/machine-info", "PRETTY_HOSTNAME", &n);
+        if (r < 0)
+                return r;
+
+        if (isempty(n))
+                return -ENXIO;
+
+        *ret = TAKE_PTR(n);
+        return 0;
+}

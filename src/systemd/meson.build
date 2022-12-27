@@ -1,43 +1,45 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-_systemd_headers = '''
-        sd-bus.h
-        sd-bus-protocol.h
-        sd-bus-vtable.h
-        sd-daemon.h
-        sd-device.h
-        sd-event.h
-        sd-hwdb.h
-        sd-id128.h
-        sd-journal.h
-        sd-login.h
-        sd-messages.h
-        sd-path.h
-'''.split()
+_systemd_headers = [
+        'sd-bus.h',
+        'sd-bus-protocol.h',
+        'sd-bus-vtable.h',
+        'sd-daemon.h',
+        'sd-device.h',
+        'sd-event.h',
+        'sd-gpt.h',
+        'sd-hwdb.h',
+        'sd-id128.h',
+        'sd-journal.h',
+        'sd-login.h',
+        'sd-messages.h',
+        'sd-path.h',
+]
 
 # https://github.com/mesonbuild/meson/issues/1633
 systemd_headers = files(_systemd_headers)
 
 #if 0 /// elogind does not need these
-# _not_installed_headers = '''
-#         sd-dhcp6-client.h
-#         sd-dhcp6-lease.h
-#         sd-dhcp-client.h
-#         sd-dhcp-lease.h
-#         sd-dhcp-option.h
-#         sd-dhcp6-option.h
-#         sd-dhcp-server.h
-#         sd-ipv4acd.h
-#         sd-ipv4ll.h
-#         sd-lldp.h
-#         sd-ndisc.h
-#         sd-netlink.h
-#         sd-network.h
-#         sd-radv.h
-#         sd-resolve.h
-#         sd-utf8.h
-# '''.split()
 #endif // 0
+_not_installed_headers = [
+        'sd-dhcp6-client.h',
+        'sd-dhcp6-lease.h',
+        'sd-dhcp-client.h',
+        'sd-dhcp-lease.h',
+        'sd-dhcp-option.h',
+        'sd-dhcp6-option.h',
+        'sd-dhcp-server.h',
+        'sd-ipv4acd.h',
+        'sd-ipv4ll.h',
+        'sd-lldp-rx.h',
+        'sd-lldp-tx.h',
+        'sd-lldp.h',
+        'sd-ndisc.h',
+        'sd-netlink.h',
+        'sd-network.h',
+        'sd-radv.h',
+        'sd-resolve.h',
+]
 
 install_headers(
         systemd_headers,
@@ -54,6 +56,10 @@ meson.add_install_script(meson_symlink_headers,
 #endif // 0
 
 ############################################################
+
+if want_tests == 'false'
+        subdir_done()
+endif
 
 opts = [['c'],
         ['c', '-ansi'],
@@ -88,13 +94,20 @@ foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
-                name = ''.join(['cc-', header.split('/')[-1], '_', opt[0], std_name])
-                if want_tests != 'false'
-                        test(name,
-                             check_compilation_sh,
-                             args : cc.cmd_array() + ['-c', '-x'] + opt +
-                                    ['-Werror', '-include',
-                                     join_paths(meson.current_source_dir(), header)])
-                endif
+                test('cc-' + header.split('/')[-1] + '_' + opt[0] + std_name,
+                     env,
+                     suite : 'headers',
+                     args : [cc.cmd_array(),
+                             '-c',
+                             '-x', opt,
+                             '-Wall',
+                             '-Wextra',
+                             '-Werror',
+                             '-pedantic',
+                             '-Wno-long-long',
+                             '-Wno-variadic-macros',
+                             '-include', meson.current_source_dir() / header,
+                             '-o/dev/null',
+                             '/dev/null'])
         endforeach
 endforeach

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+/* SPDX-License-Identifier: MIT-0 */
 
 #include <stdlib.h>
 #include <glib.h>

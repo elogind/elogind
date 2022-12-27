@@ -5,7 +5,7 @@
 #include <sys/inotify.h>
 #include <unistd.h>
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 //#include "device-nodes.h"
 #include "device-private.h"
 #include "device-util.h"
@@ -13,27 +13,29 @@
 #include "errno-util.h"
 #include "escape.h"
 #include "fd-util.h"
+#include "id128-util.h"
 #include "log.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "signal-util.h"
 #include "socket-util.h"
+#include "stat-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "strxcpyx.h"
 #include "udev-util.h"
-#include "utf8.h"
+//#include "utf8.h"
 
+#if 0 /// UNNEEDED by elogind
 static const char* const resolve_name_timing_table[_RESOLVE_NAME_TIMING_MAX] = {
         [RESOLVE_NAME_NEVER] = "never",
-        [RESOLVE_NAME_LATE] = "late",
+        [RESOLVE_NAME_LATE]  = "late",
         [RESOLVE_NAME_EARLY] = "early",
 };
 
 DEFINE_STRING_TABLE_LOOKUP(resolve_name_timing, ResolveNameTiming);
 
-#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
@@ -122,29 +124,6 @@ int udev_parse_config_full(
         return 0;
 }
 
-/* Note that if -ENOENT is returned, it will be logged at debug level rather than error,
- * because it's an expected, common occurrence that the caller will handle with a fallback */
-static int device_new_from_dev_path(const char *devlink, sd_device **ret_device) {
-        struct stat st;
-        int r;
-
-        assert(devlink);
-
-        if (stat(devlink, &st) < 0)
-                return log_full_errno(errno == ENOENT ? LOG_DEBUG : LOG_ERR, errno,
-                                      "Failed to stat() %s: %m", devlink);
-
-        if (!S_ISBLK(st.st_mode))
-                return log_error_errno(SYNTHETIC_ERRNO(ENOTBLK),
-                                       "%s does not point to a block device: %m", devlink);
-
-        r = sd_device_new_from_stat_rdev(ret_device, &st);
-        if (r < 0)
-                return log_error_errno(r, "Failed to initialize device from %s: %m", devlink);
-
-        return 0;
-}
-
 struct DeviceMonitorData {
         const char *sysname;
         const char *devlink;
@@ -158,11 +137,10 @@ static void device_monitor_data_free(struct DeviceMonitorData *d) {
 }
 
 static int device_monitor_handler(sd_device_monitor *monitor, sd_device *device, void *userdata) {
-        struct DeviceMonitorData *data = userdata;
+        struct DeviceMonitorData *data = ASSERT_PTR(userdata);
         const char *sysname;
 
         assert(device);
-        assert(data);
         assert(data->sysname || data->devlink);
         assert(!data->device);
 
@@ -207,11 +185,10 @@ static int device_wait_for_initialization_internal(
                 sd_device *_device,
                 const char *devlink,
                 const char *subsystem,
-                usec_t deadline,
+                usec_t timeout_usec,
                 sd_device **ret) {
 
         _cleanup_(sd_device_monitor_unrefp) sd_device_monitor *monitor = NULL;
-        _cleanup_(sd_event_source_unrefp) sd_event_source *timeout_source = NULL;
         _cleanup_(sd_event_unrefp) sd_event *event = NULL;
         /* Ensure that if !_device && devlink, device gets unrefd on errors since it will be new */
         _cleanup_(sd_device_unrefp) sd_device *device = sd_device_ref(_device);
@@ -224,9 +201,9 @@ static int device_wait_for_initialization_internal(
 
         /* Devlink might already exist, if it does get the device to use the sysname filtering */
         if (!device && devlink) {
-                r = device_new_from_dev_path(devlink, &device);
-                if (r < 0 && r != -ENOENT)
-                        return r;
+                r = sd_device_new_from_devname(&device, devlink);
+                if (r < 0 && !ERRNO_IS_DEVICE_ABSENT(r))
+                        return log_error_errno(r, "Failed to create sd-device object from %s: %m", devlink);
         }
 
         if (device) {
@@ -261,6 +238,15 @@ static int device_wait_for_initialization_internal(
                         return log_error_errno(r, "Failed to add %s subsystem match to monitor: %m", subsystem);
         }
 
+        _cleanup_free_ char *desc = NULL;
+        const char *sysname = NULL;
+        if (device)
+                (void) sd_device_get_sysname(device, &sysname);
+
+        desc = strjoin(sysname ?: subsystem, devlink ? ":" : ":initialization", devlink);
+        if (desc)
+                (void) sd_device_monitor_set_description(monitor, desc);
+
         r = sd_device_monitor_attach_event(monitor, event);
         if (r < 0)
                 return log_error_errno(r, "Failed to attach event to device monitor: %m");
@@ -269,21 +255,20 @@ static int device_wait_for_initialization_internal(
         if (r < 0)
                 return log_error_errno(r, "Failed to start device monitor: %m");
 
-        if (deadline != USEC_INFINITY) {
-                r = sd_event_add_time(
-                                event, &timeout_source,
-                                CLOCK_MONOTONIC, deadline, 0,
+        if (timeout_usec != USEC_INFINITY) {
+                r = sd_event_add_time_relative(
+                                event, NULL,
+                                CLOCK_MONOTONIC, timeout_usec, 0,
                                 NULL, INT_TO_PTR(-ETIMEDOUT));
                 if (r < 0)
                         return log_error_errno(r, "Failed to add timeout event source: %m");
         }
 
-        /* Check again, maybe things changed. Udev will re-read the db if the device wasn't initialized
-         * yet. */
+        /* Check again, maybe things changed. Udev will re-read the db if the device wasn't initialized yet. */
         if (!device && devlink) {
-                r = device_new_from_dev_path(devlink, &device);
-                if (r < 0 && r != -ENOENT)
-                        return r;
+                r = sd_device_new_from_devname(&device, devlink);
+                if (r < 0 && !ERRNO_IS_DEVICE_ABSENT(r))
+                        return log_error_errno(r, "Failed to create sd-device object from %s: %m", devlink);
         }
         if (device && sd_device_get_is_initialized(device) > 0) {
                 if (ret)
@@ -300,12 +285,12 @@ static int device_wait_for_initialization_internal(
         return 0;
 }
 
-int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t deadline, sd_device **ret) {
-        return device_wait_for_initialization_internal(device, NULL, subsystem, deadline, ret);
+int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t timeout_usec, sd_device **ret) {
+        return device_wait_for_initialization_internal(device, NULL, subsystem, timeout_usec, ret);
 }
 
-int device_wait_for_devlink(const char *devlink, const char *subsystem, usec_t deadline, sd_device **ret) {
-        return device_wait_for_initialization_internal(NULL, devlink, subsystem, deadline, ret);
+int device_wait_for_devlink(const char *devlink, const char *subsystem, usec_t timeout_usec, sd_device **ret) {
+        return device_wait_for_initialization_internal(NULL, devlink, subsystem, timeout_usec, ret);
 }
 
 int device_is_renaming(sd_device *dev) {
@@ -340,6 +325,7 @@ bool device_for_action(sd_device *dev, sd_device_action_t a) {
 #if 0 /// UNNEEDED by elogind
 void log_device_uevent(sd_device *device, const char *str) {
         sd_device_action_t action = _SD_DEVICE_ACTION_INVALID;
+        sd_id128_t event_id = SD_ID128_NULL;
         uint64_t seqnum = 0;
 
         if (!DEBUG_LOGGING)
@@ -347,14 +333,16 @@ void log_device_uevent(sd_device *device, const char *str) {
 
         (void) sd_device_get_seqnum(device, &seqnum);
         (void) sd_device_get_action(device, &action);
-        log_device_debug(device, "%s%s(SEQNUM=%"PRIu64", ACTION=%s)",
+        (void) sd_device_get_trigger_uuid(device, &event_id);
+        log_device_debug(device, "%s%s(SEQNUM=%"PRIu64", ACTION=%s%s%s)",
                          strempty(str), isempty(str) ? "" : " ",
-                         seqnum, strna(device_action_to_string(action)));
+                         seqnum, strna(device_action_to_string(action)),
+                         sd_id128_is_null(event_id) ? "" : ", UUID=",
+                         sd_id128_is_null(event_id) ? "" : SD_ID128_TO_UUID_STRING(event_id));
 }
 
 int udev_rule_parse_value(char *str, char **ret_value, char **ret_endpos) {
         char *i, *j;
-        int r;
         bool is_escaped;
 
         /* value must be double quotated */
@@ -376,6 +364,7 @@ int udev_rule_parse_value(char *str, char **ret_value, char **ret_endpos) {
                 j[0] = '\0';
         } else {
                 _cleanup_free_ char *unescaped = NULL;
+                ssize_t l;
 
                 /* find the end position of value */
                 for (i = str; *i != '"'; i++) {
@@ -386,11 +375,12 @@ int udev_rule_parse_value(char *str, char **ret_value, char **ret_endpos) {
                 }
                 i[0] = '\0';
 
-                r = cunescape_length(str, i - str, 0, &unescaped);
-                if (r < 0)
-                        return r;
-                assert(r <= i - str);
-                memcpy(str, unescaped, r + 1);
+                l = cunescape_length(str, i - str, 0, &unescaped);
+                if (l < 0)
+                        return l;
+
+                assert(l <= i - str);
+                memcpy(str, unescaped, l + 1);
         }
 
         *ret_value = str;
@@ -564,6 +554,19 @@ int udev_resolve_subsys_kernel(const char *string, char *result, size_t maxsize,
         return 0;
 }
 
+bool devpath_conflict(const char *a, const char *b) {
+        /* This returns true when two paths are equivalent, or one is a child of another. */
+
+        if (!a || !b)
+                return false;
+
+        for (; *a != '\0' && *b != '\0'; a++, b++)
+                if (*a != *b)
+                        return false;
+
+        return *a == '/' || *b == '/' || *a == *b;
+}
+
 int udev_queue_is_empty(void) {
         return access("/run/udev/queue", F_OK) < 0 ?
                 (errno == ENOENT ? true : -errno) : false;
@@ -580,5 +583,161 @@ int udev_queue_init(void) {
                 return -errno;
 
         return TAKE_FD(fd);
+}
+#endif // 0
+
+static int device_is_power_sink(sd_device *device) {
+        _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
+        bool found_source = false, found_sink = false;
+        sd_device *parent, *d;
+        int r;
+
+        assert(device);
+
+        /* USB-C power supply device has two power roles: source or sink. See,
+         * https://docs.kernel.org/admin-guide/abi-testing.html#abi-file-testing-sysfs-class-typec */
+
+        r = sd_device_enumerator_new(&e);
+        if (r < 0)
+                return r;
+
+        r = sd_device_enumerator_allow_uninitialized(e);
+        if (r < 0)
+                return r;
+
+        r = sd_device_enumerator_add_match_subsystem(e, "typec", true);
+        if (r < 0)
+                return r;
+
+        r = sd_device_get_parent(device, &parent);
+        if (r < 0)
+                return r;
+
+        r = sd_device_enumerator_add_match_parent(e, parent);
+        if (r < 0)
+                return r;
+
+        FOREACH_DEVICE(e, d) {
+                const char *val;
+
+                r = sd_device_get_sysattr_value(d, "power_role", &val);
+                if (r < 0) {
+                        if (r != -ENOENT)
+                                log_device_debug_errno(d, r, "Failed to read 'power_role' sysfs attribute, ignoring: %m");
+                        continue;
+                }
+
+                if (strstr(val, "[source]")) {
+                        found_source = true;
+                        log_device_debug(d, "The USB type-C port is in power source mode.");
+                } else if (strstr(val, "[sink]")) {
+                        found_sink = true;
+                        log_device_debug(d, "The USB type-C port is in power sink mode.");
+                }
+        }
+
+        if (found_sink)
+                log_device_debug(device, "The USB type-C device has at least one port in power sink mode.");
+        else if (!found_source)
+                log_device_debug(device, "The USB type-C device has no port in power source mode, assuming the device is in power sink mode.");
+        else
+                log_device_debug(device, "All USB type-C ports are in power source mode.");
+
+        return found_sink || !found_source;
+}
+
+int on_ac_power(void) {
+        _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
+        bool found_ac_online = false, found_battery = false;
+        sd_device *d;
+        int r;
+
+        r = sd_device_enumerator_new(&e);
+        if (r < 0)
+                return r;
+
+        r = sd_device_enumerator_allow_uninitialized(e);
+        if (r < 0)
+                return r;
+
+        r = sd_device_enumerator_add_match_subsystem(e, "power_supply", true);
+        if (r < 0)
+                return r;
+
+        FOREACH_DEVICE(e, d) {
+                /* See
+                 * https://github.com/torvalds/linux/blob/4eef766b7d4d88f0b984781bc1bcb574a6eafdc7/include/linux/power_supply.h#L176
+                 * for defined power source types. Also see:
+                 * https://docs.kernel.org/admin-guide/abi-testing.html#abi-file-testing-sysfs-class-power */
+
+                const char *val;
+                r = sd_device_get_sysattr_value(d, "type", &val);
+                if (r < 0) {
+                        log_device_debug_errno(d, r, "Failed to read 'type' sysfs attribute, ignoring device: %m");
+                        continue;
+                }
+
+                /* Ignore USB-C power supply in source mode. See issue #21988. */
+                if (streq(val, "USB")) {
+                        r = device_is_power_sink(d);
+                        if (r <= 0) {
+                                if (r < 0)
+                                        log_device_debug_errno(d, r, "Failed to determine the current power role, ignoring device: %m");
+                                else
+                                        log_device_debug(d, "USB power supply is in source mode, ignoring device.");
+                                continue;
+                        }
+                }
+
+                if (streq(val, "Battery")) {
+                        r = sd_device_get_sysattr_value(d, "scope", &val);
+                        if (r < 0) {
+                                if (r != -ENOENT)
+                                        log_device_debug_errno(d, r, "Failed to read 'scope' sysfs attribute, ignoring: %m");
+                        } else if (streq(val, "Device")) {
+                                log_device_debug(d, "The power supply is a device battery, ignoring device.");
+                                continue;
+                        }
+
+                        found_battery = true;
+                        log_device_debug(d, "The power supply is battery.");
+                        continue;
+                }
+
+                r = device_get_sysattr_unsigned(d, "online", NULL);
+                if (r < 0) {
+                        log_device_debug_errno(d, r, "Failed to query 'online' sysfs attribute, ignoring device: %m");
+                        continue;
+                } else if (r > 0)  /* At least 1 and 2 are defined as different types of 'online' */
+                        found_ac_online = true;
+
+                log_device_debug(d, "The power supply is currently %s.", r > 0 ? "online" : "offline");
+        }
+
+        if (found_ac_online) {
+                log_debug("Found at least one online non-battery power supply, system is running on AC.");
+                return true;
+        } else if (found_battery) {
+                log_debug("Found battery and no online power sources, assuming system is running from battery.");
+                return false;
+        } else {
+                log_debug("No power supply reported online and no battery, assuming system is running on AC.");
+                return true;
+        }
+}
+
+#if 0 /// UNNEEDED by elogind
+bool udev_available(void) {
+        static int cache = -1;
+
+        /* The service systemd-udevd is started only when /sys is read write.
+         * See systemd-udevd.service: ConditionPathIsReadWrite=/sys
+         * Also, our container interface (http://systemd.io/CONTAINER_INTERFACE/) states that /sys must
+         * be mounted in read-only mode in containers. */
+
+        if (cache >= 0)
+                return cache;
+
+        return (cache = (path_is_read_only_fs("/sys/") <= 0));
 }
 #endif // 0

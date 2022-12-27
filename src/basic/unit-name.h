@@ -47,6 +47,9 @@ int unit_name_replace_instance(const char *f, const char *i, char **ret);
 
 int unit_name_template(const char *f, char **ret);
 
+int unit_name_hash_long(const char *name, char **ret);
+bool unit_name_is_hashed(const char *name);
+
 int unit_name_from_path(const char *path, const char *suffix, char **ret);
 int unit_name_from_path_instance(const char *prefix, const char *path, const char *suffix, char **ret);
 int unit_name_to_path(const char *name, char **ret);
@@ -66,3 +69,7 @@ int slice_build_parent_slice(const char *slice, char **ret);
 #endif // 0
 int slice_build_subslice(const char *slice, const char *name, char **subslice);
 bool slice_name_is_valid(const char *name);
+
+#if 0 /// UNNEEDED by elogind
+bool unit_name_prefix_equal(const char *a, const char *b);
+#endif // 0

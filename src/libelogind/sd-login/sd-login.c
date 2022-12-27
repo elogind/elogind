@@ -154,7 +154,7 @@ _public_ int sd_pid_get_cgroup(pid_t pid, char **cgroup) {
 }
 
 _public_ int sd_peer_get_session(int fd, char **session) {
-        struct ucred ucred = {};
+        struct ucred ucred = UCRED_INVALID;
         int r;
 
         assert_return(fd >= 0, -EBADF);
@@ -299,13 +299,11 @@ _public_ int sd_uid_get_state(uid_t uid, char**state) {
                 return r;
 
         r = parse_env_file(NULL, p, "STATE", &s);
-        if (r == -ENOENT) {
+        if (r == -ENOENT)
                 r = free_and_strdup(&s, "offline");
-                if (r < 0)
-                        return r;
-        } else if (r < 0)
+        if (r < 0)
                 return r;
-        else if (isempty(s))
+        if (isempty(s))
                 return -EIO;
 
         *state = TAKE_PTR(s);
@@ -615,8 +613,8 @@ _public_ int sd_session_get_class(const char *session, char **class) {
 
 _public_ int sd_session_get_desktop(const char *session, char **desktop) {
         _cleanup_free_ char *escaped = NULL;
-        char *t;
         int r;
+        ssize_t l;
 
         assert_return(desktop, -EINVAL);
 
@@ -624,11 +622,9 @@ _public_ int sd_session_get_desktop(const char *session, char **desktop) {
         if (r < 0)
                 return r;
 
-        r = cunescape(escaped, 0, &t);
-        if (r < 0)
-                return r;
-
-        *desktop = t;
+        l = cunescape(escaped, 0, desktop);
+        if (l < 0)
+                return l;
         return 0;
 }
 
@@ -806,7 +802,6 @@ _public_ int sd_get_sessions(char ***sessions) {
 
 _public_ int sd_get_uids(uid_t **users) {
         _cleanup_closedir_ DIR *d = NULL;
-        struct dirent *de;
         int r = 0;
         unsigned n = 0;
         _cleanup_free_ uid_t *l = NULL;
@@ -1031,7 +1026,7 @@ _public_ int sd_login_monitor_new(const char *category, sd_login_monitor **m) {
 
 _public_ sd_login_monitor* sd_login_monitor_unref(sd_login_monitor *m) {
         if (m)
-                close_nointr(MONITOR_TO_FD(m));
+                (void) close_nointr(MONITOR_TO_FD(m));
 
         return NULL;
 }

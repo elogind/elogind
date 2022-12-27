@@ -1,7 +1,7 @@
 /***
   SPDX-License-Identifier: LGPL-2.1-or-later
 
-  systemd is free software; you can redistribute it and/or modify it
+  elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
   (at your option) any later version.
@@ -762,3 +762,37 @@ global:
         sd_device_new_from_ifname;
         sd_device_new_from_ifindex;
 } LIBSYSTEMD_248;
+
+LIBSYSTEMD_250 {
+global:
+        sd_device_get_diskseq;
+        sd_event_add_inotify_fd;
+        sd_event_source_set_ratelimit_expire_callback;
+} LIBSYSTEMD_249;
+
+LIBSYSTEMD_251 {
+global:
+        sd_id128_to_uuid_string;
+        sd_device_new_from_devname;
+        sd_device_new_from_path;
+        sd_device_open;
+        sd_device_enumerator_add_nomatch_sysname;
+} LIBSYSTEMD_250;
+
+LIBSYSTEMD_252 {
+global:
+        sd_bus_message_read_strv_extend;
+        sd_bus_error_setfv;
+
+        sd_device_new_child;
+        sd_device_get_child_first;
+        sd_device_get_child_next;
+        sd_device_monitor_set_description;
+        sd_device_monitor_get_description;
+
+        sd_event_set_signal_exit;
+
+        sd_id128_string_equal;
+
+        sd_hwdb_new_from_path;
+} LIBSYSTEMD_251;

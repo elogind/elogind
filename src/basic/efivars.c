@@ -17,6 +17,7 @@
 #include "fileio.h"
 #include "io-util.h"
 #include "macro.h"
+#include "memory-util.h"
 #include "stdio-util.h"
 #include "strv.h"
 #include "time-util.h"
@@ -120,13 +121,10 @@ int efi_get_variable(
                 n = st.st_size - 4;
 
         if (DEBUG_LOGGING) {
-                char ts[FORMAT_TIMESPAN_MAX];
-                usec_t end;
-
-                end = now(CLOCK_MONOTONIC);
+                usec_t end = now(CLOCK_MONOTONIC);
                 if (end > begin + EFI_RETRY_DELAY)
                         log_debug("Detected slow EFI variable read access on %s: %s",
-                                  variable, format_timespan(ts, sizeof(ts), end - begin, 1));
+                                  variable, FORMAT_TIMESPAN(end - begin, 1));
         }
 
         /* Note that efivarfs interestingly doesn't require ftruncate() to update an existing EFI variable
@@ -144,7 +142,7 @@ int efi_get_variable(
         return 0;
 }
 
-int efi_get_variable_string(const char *variable, char **p) {
+int efi_get_variable_string(const char *variable, char **ret) {
         _cleanup_free_ void *s = NULL;
         size_t ss = 0;
         int r;
@@ -158,8 +156,24 @@ int efi_get_variable_string(const char *variable, char **p) {
         if (!x)
                 return -ENOMEM;
 
-        *p = x;
+        *ret = x;
         return 0;
+}
+
+static int efi_verify_variable(const char *variable, uint32_t attr, const void *value, size_t size) {
+        _cleanup_free_ void *buf = NULL;
+        size_t n;
+        uint32_t a;
+        int r;
+
+        assert(variable);
+        assert(value || size == 0);
+
+        r = efi_get_variable(variable, &a, &buf, &n);
+        if (r < 0)
+                return r;
+
+        return a == attr && memcmp_nn(buf, n, value, size) == 0;
 }
 
 int efi_set_variable(const char *variable, const void *value, size_t size) {
@@ -168,6 +182,7 @@ int efi_set_variable(const char *variable, const void *value, size_t size) {
                 char buf[];
         } _packed_ * _cleanup_free_ buf = NULL;
         _cleanup_close_ int fd = -1;
+        uint32_t attr = EFI_VARIABLE_NON_VOLATILE|EFI_VARIABLE_BOOTSERVICE_ACCESS|EFI_VARIABLE_RUNTIME_ACCESS;
         bool saved_flags_valid = false;
         unsigned saved_flags;
         int r;
@@ -176,6 +191,12 @@ int efi_set_variable(const char *variable, const void *value, size_t size) {
         assert(value || size == 0);
 
         const char *p = strjoina("/sys/firmware/efi/efivars/", variable);
+
+        /* size 0 means removal, empty variable would not be enough for that */
+        if (size > 0 && efi_verify_variable(variable, attr, value, size) > 0) {
+                log_debug("Variable '%s' is already in wanted state, skipping write.", variable);
+                return 0;
+        }
 
         /* Newer efivarfs protects variables that are not in an allow list with FS_IMMUTABLE_FL by default,
          * to protect them for accidental removal and modification. We are not changing these variables
@@ -208,7 +229,7 @@ int efi_set_variable(const char *variable, const void *value, size_t size) {
                 goto finish;
         }
 
-        buf->attr = EFI_VARIABLE_NON_VOLATILE|EFI_VARIABLE_BOOTSERVICE_ACCESS|EFI_VARIABLE_RUNTIME_ACCESS;
+        buf->attr = attr;
         memcpy(buf->buf, value, size);
 
         r = loop_write(fd, buf, sizeof(uint32_t) + size, false);
@@ -289,27 +310,52 @@ static int read_flag(const char *variable) {
 
 bool is_efi_secure_boot(void) {
         static int cache = -1;
+        int r;
 
-        if (cache < 0)
-                cache = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+        if (cache < 0) {
+                r = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+                if (r == -ENOENT)
+                        cache = false;
+                else if (r < 0)
+                        log_debug_errno(r, "Error reading SecureBoot EFI variable, assuming not in SecureBoot mode: %m");
+                else
+                        cache = r;
+        }
 
         return cache > 0;
 }
 
-bool is_efi_secure_boot_setup_mode(void) {
-        static int cache = -1;
+SecureBootMode efi_get_secure_boot_mode(void) {
+        static SecureBootMode cache = _SECURE_BOOT_INVALID;
 
-        if (cache < 0)
-                cache = read_flag(EFI_GLOBAL_VARIABLE(SetupMode));
+        if (cache != _SECURE_BOOT_INVALID)
+                return cache;
 
-        return cache > 0;
+        int secure = read_flag(EFI_GLOBAL_VARIABLE(SecureBoot));
+        if (secure < 0) {
+                if (secure != -ENOENT)
+                        log_debug_errno(secure, "Error reading SecureBoot EFI variable, assuming not in SecureBoot mode: %m");
+
+                return (cache = SECURE_BOOT_UNSUPPORTED);
+        }
+
+        /* We can assume false for all these if they are abscent (AuditMode and
+         * DeployedMode may not exist on older firmware). */
+        int audit    = read_flag(EFI_GLOBAL_VARIABLE(AuditMode));
+        int deployed = read_flag(EFI_GLOBAL_VARIABLE(DeployedMode));
+        int setup    = read_flag(EFI_GLOBAL_VARIABLE(SetupMode));
+        log_debug("Secure boot variables: SecureBoot=%d AuditMode=%d DeployedMode=%d SetupMode=%d",
+                  secure, audit, deployed, setup);
+
+        return (cache = decode_secure_boot_mode(secure, audit > 0, deployed > 0, setup > 0));
 }
 
-static int read_efi_options_variable(char **line) {
+#if 0 /// UNNEEDED by elogind
+static int read_efi_options_variable(char **ret) {
         int r;
 
         /* In SecureBoot mode this is probably not what you want. As your cmdline is cryptographically signed
-         * like when using Type #2 EFI Unified Kernel Images (https://elogind.io/BOOT_LOADER_SPECIFICATION)
+         * like when using Type #2 EFI Unified Kernel Images (https://systemd.io/BOOT_LOADER_SPECIFICATION)
          * The user's intention is then that the cmdline should not be modified. You want to make sure that
          * the system starts up as exactly specified in the signed artifact.
          *
@@ -325,7 +371,7 @@ static int read_efi_options_variable(char **line) {
                 return -EPERM;
         }
 
-        r = efi_get_variable_string(EFI_SYSTEMD_VARIABLE(SystemdOptions), line);
+        r = efi_get_variable_string(EFI_SYSTEMD_VARIABLE(SystemdOptions), ret);
         if (r == -ENOENT)
                 return -ENODATA;
         return r;
@@ -342,14 +388,15 @@ int cache_efi_options_variable(void) {
         return write_string_file(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), line,
                                  WRITE_STRING_FILE_ATOMIC|WRITE_STRING_FILE_CREATE|WRITE_STRING_FILE_MKDIR_0755);
 }
+#endif // 0
 
-int elogind_efi_options_variable(char **line) {
+int elogind_efi_options_variable(char **ret) {
         const char *e;
         int r;
 
         /* Returns the contents of the variable for current boot from the cache. */
 
-        assert(line);
+        assert(ret);
 
         /* For testing purposes it is sometimes useful to be able to override this */
         e = secure_getenv("SYSTEMD_EFI_OPTIONS");
@@ -360,11 +407,11 @@ int elogind_efi_options_variable(char **line) {
                 if (!m)
                         return -ENOMEM;
 
-                *line = m;
+                *ret = m;
                 return 0;
         }
 
-        r = read_one_line_file(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), line);
+        r = read_one_line_file(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), ret);
         if (r == -ENOENT)
                 return -ENODATA;
         return r;
@@ -374,7 +421,8 @@ static inline int compare_stat_mtime(const struct stat *a, const struct stat *b)
         return CMP(timespec_load(&a->st_mtim), timespec_load(&b->st_mtim));
 }
 
-int elogind_efi_options_efivarfs_if_newer(char **line) {
+#if 0 /// UNNEEDED by elogind
+int systemd_efi_options_efivarfs_if_newer(char **ret) {
         struct stat a = {}, b;
         int r;
 
@@ -382,21 +430,22 @@ int elogind_efi_options_efivarfs_if_newer(char **line) {
                 return log_debug_errno(errno, "Failed to stat EFI variable SystemdOptions: %m");
 
         if (stat(EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions)), &b) < 0) {
-                if (errno != -ENOENT)
+                if (errno != ENOENT)
                         log_debug_errno(errno, "Failed to stat "EFIVAR_CACHE_PATH(EFI_SYSTEMD_VARIABLE(SystemdOptions))": %m");
         } else if (compare_stat_mtime(&a, &b) > 0)
                 log_debug("Variable SystemdOptions in evifarfs is newer than in cache.");
         else {
                 log_debug("Variable SystemdOptions in cache is up to date.");
-                *line = NULL;
+                *ret = NULL;
                 return 0;
         }
 
-        r = read_efi_options_variable(line);
+        r = read_efi_options_variable(ret);
         if (r < 0)
-                log_warning_errno(r, "Failed to read SystemdOptions EFI variable: %m");
-        if (r == -ENOENT)
-                return -ENODATA;
-        return r;
+                return log_debug_errno(r, "Failed to read SystemdOptions EFI variable: %m");
+
+        return 0;
 }
+#endif // 0
+
 #endif

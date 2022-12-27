@@ -38,7 +38,6 @@
 elogind_action arg_action            = _ACTION_INVALID;
 bool           arg_ask_password      = true;
 bool           arg_dry_run           = false;
-bool           arg_quiet             = false;
 bool           arg_ignore_inhibitors = false;
 bool           arg_no_wall           = false;
 BusTransport   arg_transport         = BUS_TRANSPORT_LOCAL;
@@ -84,7 +83,6 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
         const char *what, *who, *why, *mode;
         uint32_t uid, pid;
         unsigned c = 0;
-        char **s;
         int r;
 
         if (arg_ignore_inhibitors)
@@ -421,9 +419,6 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
                 return log_warning_errno(r,
                                 "Failed to call ScheduleShutdown in logind, proceeding with immediate shutdown: %s",
                                 bus_error_message(&error, r));
-
-        if (!arg_quiet)
-                log_info("Shutdown scheduled for %s, use 'shutdown -c' to cancel.", format_timestamp(date, sizeof(date), arg_when));
 
         return 0;
 }

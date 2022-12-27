@@ -161,7 +161,7 @@
           datagram. This field is only included if the <varname>MESSAGE=</varname>
           field was modified compared to the original payload or the timestamp could
           not be located properly and is not included in
-          <varname>SYSLOG_TIMESTAMP=</varname>. Message truncation occurs when when
+          <varname>SYSLOG_TIMESTAMP=</varname>. Message truncation occurs when
           the message contains leading or trailing whitespace (trailing and leading
           whitespace is stripped), or it contains an embedded
           <constant>NUL</constant> byte (the <constant>NUL</constant> byte and
@@ -179,7 +179,7 @@
         <listitem>
           <para>A documentation URL with further information about the topic of the log message. Tools such
           as <command>journalctl</command> will include a hyperlink to an URL specified this way in their
-          output. Should be a <literal>http://</literal>, <literal>https://</literal>,
+          output. Should be an <literal>http://</literal>, <literal>https://</literal>,
           <literal>file:/</literal>, <literal>man:</literal> or <literal>info:</literal> URL.</para>
         </listitem>
       </varlistentry>
@@ -188,6 +188,21 @@
         <term><varname>TID=</varname></term>
         <listitem>
           <para>The numeric thread ID (TID) the log message originates from.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>UNIT=</varname></term>
+        <term><varname>USER_UNIT=</varname></term>
+        <listitem>
+          <para>The name of a unit. Used by the system and user managers when logging about specific
+          units.</para>
+
+          <para>When <option>--unit=<replaceable>name</replaceable></option> or
+          <option>--user-unit=<replaceable>name</replaceable></option> are used with
+          <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>, a
+          match pattern that includes <literal>UNIT=<replaceable>name</replaceable>.service</literal> or
+          <literal>USER_UNIT=<replaceable>name</replaceable>.service</literal> will be generated.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -418,6 +433,14 @@
         for details about journal namespaces.</para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term><varname>_RUNTIME_SCOPE=</varname></term>
+
+        <listitem><para>A string field that specifies the runtime scope in which the message was logged. If
+        <literal>initrd</literal>, the log message was processed while the system was running inside the
+        initrd. If <literal>system</literal>, the log message was generated after the system switched
+        execution to the host root filesystem.</para></listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
   // 0 -->
@@ -556,11 +579,10 @@
     <title>Address Fields</title>
 
     <para>During serialization into external formats, such as the
-    <ulink
-    url="https://www.freedesktop.org/wiki/Software/systemd/export">Journal
-    Export Format</ulink> or the <ulink
-    url="https://www.freedesktop.org/wiki/Software/systemd/json">Journal
-    JSON Format</ulink>, the addresses of journal entries are
+    <ulink url="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-export-format">Journal Export Format</ulink>
+    or the
+    <ulink url="https://systemd.io/JOURNAL_EXPORT_FORMATS#journal-json-format">Journal JSON Format</ulink>,
+    the addresses of journal entries are
     serialized into fields prefixed with double underscores. Note that
     these are not proper fields when stored in the journal but for
     addressing metadata of entries. They cannot be written as part of

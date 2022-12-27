@@ -2,6 +2,7 @@
 #pragma once
 
 #include <dirent.h>
+#include <fcntl.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -34,6 +35,10 @@ typedef enum CGroupController {
         CGROUP_CONTROLLER_BPF_DEVICES,
         CGROUP_CONTROLLER_BPF_FOREIGN,
         CGROUP_CONTROLLER_BPF_SOCKET_BIND,
+        CGROUP_CONTROLLER_BPF_RESTRICT_NETWORK_INTERFACES,
+        /* The BPF hook implementing RestrictFileSystems= is not defined here.
+         * It's applied as late as possible in exec_child() so we don't block
+         * our own unit setup code. */
 
         _CGROUP_CONTROLLER_MAX,
         _CGROUP_CONTROLLER_INVALID = -EINVAL,
@@ -55,6 +60,7 @@ typedef enum CGroupMask {
         CGROUP_MASK_BPF_DEVICES = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BPF_DEVICES),
         CGROUP_MASK_BPF_FOREIGN = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BPF_FOREIGN),
         CGROUP_MASK_BPF_SOCKET_BIND = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BPF_SOCKET_BIND),
+        CGROUP_MASK_BPF_RESTRICT_NETWORK_INTERFACES = CGROUP_CONTROLLER_TO_MASK(CGROUP_CONTROLLER_BPF_RESTRICT_NETWORK_INTERFACES),
 
         /* All real cgroup v1 controllers */
         CGROUP_MASK_V1 = CGROUP_MASK_CPU|CGROUP_MASK_CPUACCT|CGROUP_MASK_BLKIO|CGROUP_MASK_MEMORY|CGROUP_MASK_DEVICES|CGROUP_MASK_PIDS,
@@ -63,7 +69,7 @@ typedef enum CGroupMask {
         CGROUP_MASK_V2 = CGROUP_MASK_CPU|CGROUP_MASK_CPUSET|CGROUP_MASK_IO|CGROUP_MASK_MEMORY|CGROUP_MASK_PIDS,
 
         /* All cgroup v2 BPF pseudo-controllers */
-        CGROUP_MASK_BPF = CGROUP_MASK_BPF_FIREWALL|CGROUP_MASK_BPF_DEVICES|CGROUP_MASK_BPF_FOREIGN|CGROUP_MASK_BPF_SOCKET_BIND,
+        CGROUP_MASK_BPF = CGROUP_MASK_BPF_FIREWALL|CGROUP_MASK_BPF_DEVICES|CGROUP_MASK_BPF_FOREIGN|CGROUP_MASK_BPF_SOCKET_BIND|CGROUP_MASK_BPF_RESTRICT_NETWORK_INTERFACES,
 
         _CGROUP_MASK_ALL = CGROUP_CONTROLLER_TO_MASK(_CGROUP_CONTROLLER_MAX) - 1
 } CGroupMask;
@@ -84,6 +90,7 @@ bool cpu_accounting_is_cheap(void);
 
 /* Special values for all weight knobs on unified hierarchy */
 #define CGROUP_WEIGHT_INVALID UINT64_MAX
+#define CGROUP_WEIGHT_IDLE UINT64_C(0)
 #define CGROUP_WEIGHT_MIN UINT64_C(1)
 #define CGROUP_WEIGHT_MAX UINT64_C(10000)
 #define CGROUP_WEIGHT_DEFAULT UINT64_C(100)
@@ -128,6 +135,20 @@ static inline bool CGROUP_CPU_SHARES_IS_OK(uint64_t x) {
             (x >= CGROUP_CPU_SHARES_MIN && x <= CGROUP_CPU_SHARES_MAX);
 }
 #endif // 0
+
+/* Special values for the special {blkio,io}.bfq.weight attribute */
+#define CGROUP_BFQ_WEIGHT_INVALID UINT64_MAX
+#define CGROUP_BFQ_WEIGHT_MIN UINT64_C(1)
+#define CGROUP_BFQ_WEIGHT_MAX UINT64_C(1000)
+#define CGROUP_BFQ_WEIGHT_DEFAULT UINT64_C(100)
+
+/* Convert the normal io.weight value to io.bfq.weight */
+static inline uint64_t BFQ_WEIGHT(uint64_t io_weight) {
+        return
+            io_weight <= CGROUP_WEIGHT_DEFAULT ?
+            CGROUP_BFQ_WEIGHT_DEFAULT - (CGROUP_WEIGHT_DEFAULT - io_weight) * (CGROUP_BFQ_WEIGHT_DEFAULT - CGROUP_BFQ_WEIGHT_MIN) / (CGROUP_WEIGHT_DEFAULT - CGROUP_WEIGHT_MIN) :
+            CGROUP_BFQ_WEIGHT_DEFAULT + (io_weight - CGROUP_WEIGHT_DEFAULT) * (CGROUP_BFQ_WEIGHT_MAX - CGROUP_BFQ_WEIGHT_DEFAULT) / (CGROUP_WEIGHT_MAX - CGROUP_WEIGHT_DEFAULT);
+}
 
 /* Special values for the blkio.weight attribute */
 #define CGROUP_BLKIO_WEIGHT_INVALID UINT64_MAX
@@ -182,10 +203,13 @@ typedef enum CGroupFlags {
 typedef int (*cg_kill_log_func_t)(pid_t pid, int sig, void *userdata);
 
 int cg_kill(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
+int cg_kill_kernel_sigkill(const char *controller, const char *path);
 int cg_kill_recursive(const char *controller, const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata);
 
+#if 0 /// UNNEEDED by elogind
 int cg_split_spec(const char *spec, char **ret_controller, char **ret_path);
 int cg_mangle_path(const char *path, char **result);
+#endif // 0
 
 int cg_get_path(const char *controller, const char *path, const char *suffix, char **fs);
 int cg_get_path_and_check(const char *controller, const char *path, const char *suffix, char **fs);
@@ -193,6 +217,8 @@ int cg_get_path_and_check(const char *controller, const char *path, const char *
 int cg_pid_get_path(const char *controller, pid_t pid, char **path);
 
 int cg_rmdir(const char *controller, const char *path);
+
+int cg_is_threaded(const char *controller, const char *path);
 
 typedef enum  {
         CG_KEY_MODE_GRACEFUL = 1 << 0,
@@ -220,11 +246,9 @@ static inline int cg_get_keyed_attribute_graceful(
                 char **ret_values) {
         return cg_get_keyed_attribute_full(controller, path, attribute, keys, ret_values, CG_KEY_MODE_GRACEFUL);
 }
-#endif // 0
 
 int cg_get_attribute_as_uint64(const char *controller, const char *path, const char *attribute, uint64_t *ret);
 
-#if 0 /// UNNEEDED by elogind
 /* Does a parse_boolean() on the attribute contents and sets ret accordingly */
 int cg_get_attribute_as_bool(const char *controller, const char *path, const char *attribute, bool *ret);
 
@@ -247,10 +271,13 @@ int cg_is_empty_recursive(const char *controller, const char *path);
 
 int cg_get_root_path(char **path);
 
+#if 0 /// UNNEEDED by elogind
+int cg_path_get_cgroupid(const char *path, uint64_t *ret);
+#endif // 0
 int cg_path_get_session(const char *path, char **session);
 int cg_path_get_owner_uid(const char *path, uid_t *uid);
-int cg_path_get_unit(const char *path, char **unit);
 #if 0 /// UNNEEDED by elogind
+int cg_path_get_unit(const char *path, char **unit);
 int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
@@ -262,17 +289,19 @@ int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
 
 int cg_pid_get_session(pid_t pid, char **session);
 int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
-int cg_pid_get_unit(pid_t pid, char **unit);
 #if 0 /// UNNEEDED by elogind
+int cg_pid_get_unit(pid_t pid, char **unit);
 int cg_pid_get_user_unit(pid_t pid, char **unit);
 int cg_pid_get_machine_name(pid_t pid, char **machine);
 #endif // 0
 int cg_pid_get_slice(pid_t pid, char **slice);
 int cg_pid_get_user_slice(pid_t pid, char **slice);
 
+#if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit);
 
 char *cg_escape(const char *p);
+#endif // 0
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
@@ -282,18 +311,21 @@ int cg_slice_to_path(const char *unit, char **ret);
 
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
-#endif // 0
 int cg_mask_supported(CGroupMask *ret);
+#endif // 0
 int cg_mask_supported_subtree(const char *root, CGroupMask *ret);
 int cg_mask_from_string(const char *s, CGroupMask *ret);
+#if 0 /// UNNEEDED by elogind
 int cg_mask_to_string(CGroupMask mask, char **ret);
 
-#if 0 /// UNNEEDED by elogind
 int cg_kernel_controllers(Set **controllers);
 #endif // 0
 
 bool cg_ns_supported(void);
+#if 0 /// UNNEEDED by elogind
 bool cg_freezer_supported(void);
+#endif // 0
+bool cg_kill_supported(void);
 
 int cg_all_unified(void);
 int cg_hybrid_unified(void);
@@ -307,6 +339,7 @@ const char* cgroup_controller_to_string(CGroupController c) _const_;
 CGroupController cgroup_controller_from_string(const char *s) _pure_;
 
 bool is_cgroup_fs(const struct statfs *s);
+#if 0 /// UNNEEDED by elogind
 bool fd_is_cgroup_fs(int fd);
 
 typedef enum ManagedOOMMode {
@@ -329,3 +362,13 @@ typedef enum ManagedOOMPreference {
 
 const char* managed_oom_preference_to_string(ManagedOOMPreference a) _const_;
 ManagedOOMPreference managed_oom_preference_from_string(const char *s) _pure_;
+
+/* The structure to pass to name_to_handle_at() on cgroupfs2 */
+typedef union {
+        struct file_handle file_handle;
+        uint8_t space[offsetof(struct file_handle, f_handle) + sizeof(uint64_t)];
+} cg_file_handle;
+
+#define CG_FILE_HANDLE_INIT { .file_handle.handle_bytes = sizeof(uint64_t) }
+#define CG_FILE_HANDLE_CGROUPID(fh) (*(uint64_t*) (fh).file_handle.f_handle)
+#endif // 0

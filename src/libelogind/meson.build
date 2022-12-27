@@ -6,8 +6,6 @@ sd_journal_sources = files(
 #         'sd-journal/audit-type.h',
 #         'sd-journal/catalog.c',
 #         'sd-journal/catalog.h',
-#         'sd-journal/compress.c',
-#         'sd-journal/compress.h',
 #endif // 0
         'sd-journal/journal-def.h',
 #if 0 /// UNNEEDED by elogind
@@ -16,6 +14,7 @@ sd_journal_sources = files(
         'sd-journal/journal-file.h',
         'sd-journal/journal-internal.h',
         'sd-journal/journal-send.c',
+        'sd-journal/journal-send.h',
 #if 0 /// UNNEEDED by elogind
 #         'sd-journal/journal-vacuum.c',
 #         'sd-journal/journal-vacuum.h',
@@ -26,7 +25,8 @@ sd_journal_sources = files(
 #endif // 0
         'sd-journal/mmap-cache.c',
         'sd-journal/mmap-cache.h',
-        'sd-journal/sd-journal.c')
+        'sd-journal/sd-journal.c',
+)
 
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_GCRYPT') == 1
@@ -34,7 +34,8 @@ sd_journal_sources = files(
 #                 'sd-journal/fsprg.c',
 #                 'sd-journal/fsprg.h',
 #                 'sd-journal/journal-authenticate.c',
-#                 'sd-journal/journal-authenticate.h')
+#                 'sd-journal/journal-authenticate.h',
+#         )
 # endif
 #
 # audit_type_includes = [config_h,
@@ -63,171 +64,168 @@ sd_journal_sources = files(
 
 ############################################################
 
-id128_sources = files('''
-        sd-id128/id128-util.c
-        sd-id128/id128-util.h
-        sd-id128/sd-id128.c
-'''.split())
+id128_sources = files(
+        'sd-id128/id128-util.c',
+        'sd-id128/id128-util.h',
+        'sd-id128/sd-id128.c',
+)
 
 ############################################################
 
 sd_daemon_sources = files('sd-daemon/sd-daemon.c')
 
-#if 0 /// event-util is not needed in elogind
-# ############################################################
-#
-# sd_event_sources = files('''
-#         sd-event/event-source.h
-#         sd-event/event-util.c
-#         sd-event/event-util.h
-#         sd-event/sd-event.c
-# '''.split())
-#
-# ############################################################
-#else // 0
-sd_event_sources = files('''
-        sd-event/event-source.h
-        sd-event/sd-event.c
-'''.split())
-#endif // 0
+############################################################
+
+sd_event_sources = files(
+        'sd-event/event-source.h',
+        'sd-event/event-util.c',
+        'sd-event/event-util.h',
+        'sd-event/sd-event.c',
+)
+
+############################################################
 
 sd_login_sources = files('sd-login/sd-login.c')
 
 #if 0 /// elogind has a shorter list, of course...
 # ############################################################
 #
-# libsystemd_sources = files('''
-#         sd-bus/bus-common-errors.c
-#         sd-bus/bus-common-errors.h
-#         sd-bus/bus-container.c
-#         sd-bus/bus-container.h
-#         sd-bus/bus-control.c
-#         sd-bus/bus-control.h
-#         sd-bus/bus-convenience.c
-#         sd-bus/bus-creds.c
-#         sd-bus/bus-creds.h
-#         sd-bus/bus-dump.c
-#         sd-bus/bus-dump.h
-#         sd-bus/bus-error.c
-#         sd-bus/bus-error.h
-#         sd-bus/bus-gvariant.c
-#         sd-bus/bus-gvariant.h
-#         sd-bus/bus-internal.c
-#         sd-bus/bus-internal.h
-#         sd-bus/bus-introspect.c
-#         sd-bus/bus-introspect.h
-#         sd-bus/bus-kernel.c
-#         sd-bus/bus-kernel.h
-#         sd-bus/bus-match.c
-#         sd-bus/bus-match.h
-#         sd-bus/bus-message.c
-#         sd-bus/bus-message.h
-#         sd-bus/bus-objects.c
-#         sd-bus/bus-objects.h
-#         sd-bus/bus-protocol.h
-#         sd-bus/bus-signature.c
-#         sd-bus/bus-signature.h
-#         sd-bus/bus-slot.c
-#         sd-bus/bus-slot.h
-#         sd-bus/bus-socket.c
-#         sd-bus/bus-socket.h
-#         sd-bus/bus-track.c
-#         sd-bus/bus-track.h
-#         sd-bus/bus-type.c
-#         sd-bus/bus-type.h
-#         sd-bus/sd-bus.c
-#         sd-device/device-enumerator-private.h
-#         sd-device/device-enumerator.c
-#         sd-device/device-internal.h
-#         sd-device/device-monitor-private.h
-#         sd-device/device-monitor.c
-#         sd-device/device-private.c
-#         sd-device/device-private.h
-#         sd-device/device-util.c
-#         sd-device/device-util.h
-#         sd-device/sd-device.c
-#         sd-hwdb/hwdb-internal.h
-#         sd-hwdb/sd-hwdb.c
-#         sd-netlink/generic-netlink.c
-#         sd-netlink/generic-netlink.h
-#         sd-netlink/netlink-internal.h
-#         sd-netlink/netlink-message.c
-#         sd-netlink/netlink-slot.c
-#         sd-netlink/netlink-slot.h
-#         sd-netlink/netlink-socket.c
-#         sd-netlink/netlink-types.c
-#         sd-netlink/netlink-types.h
-#         sd-netlink/netlink-util.c
-#         sd-netlink/netlink-util.h
-#         sd-netlink/nfnl-message.c
-#         sd-netlink/rtnl-message.c
-#         sd-netlink/sd-netlink.c
-#         sd-network/network-util.c
-#         sd-network/network-util.h
-#         sd-network/sd-network.c
-#         sd-path/sd-path.c
-#         sd-resolve/resolve-private.h
-#         sd-resolve/sd-resolve.c
-#         sd-utf8/sd-utf8.c
-# '''.split()) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
+# libsystemd_sources = files(
+#         'sd-bus/bus-common-errors.c',
+#         'sd-bus/bus-common-errors.h',
+#         'sd-bus/bus-container.c',
+#         'sd-bus/bus-container.h',
+#         'sd-bus/bus-control.c',
+#         'sd-bus/bus-control.h',
+#         'sd-bus/bus-convenience.c',
+#         'sd-bus/bus-creds.c',
+#         'sd-bus/bus-creds.h',
+#         'sd-bus/bus-dump.c',
+#         'sd-bus/bus-dump.h',
+#         'sd-bus/bus-error.c',
+#         'sd-bus/bus-error.h',
+#         'sd-bus/bus-internal.c',
+#         'sd-bus/bus-internal.h',
+#         'sd-bus/bus-introspect.c',
+#         'sd-bus/bus-introspect.h',
+#         'sd-bus/bus-kernel.c',
+#         'sd-bus/bus-kernel.h',
+#         'sd-bus/bus-match.c',
+#         'sd-bus/bus-match.h',
+#         'sd-bus/bus-message.c',
+#         'sd-bus/bus-message.h',
+#         'sd-bus/bus-objects.c',
+#         'sd-bus/bus-objects.h',
+#         'sd-bus/bus-protocol.h',
+#         'sd-bus/bus-signature.c',
+#         'sd-bus/bus-signature.h',
+#         'sd-bus/bus-slot.c',
+#         'sd-bus/bus-slot.h',
+#         'sd-bus/bus-socket.c',
+#         'sd-bus/bus-socket.h',
+#         'sd-bus/bus-track.c',
+#         'sd-bus/bus-track.h',
+#         'sd-bus/bus-type.c',
+#         'sd-bus/bus-type.h',
+#         'sd-bus/sd-bus.c',
+#         'sd-device/device-enumerator-private.h',
+#         'sd-device/device-enumerator.c',
+#         'sd-device/device-filter.c',
+#         'sd-device/device-filter.h',
+#         'sd-device/device-internal.h',
+#         'sd-device/device-monitor-private.h',
+#         'sd-device/device-monitor.c',
+#         'sd-device/device-private.c',
+#         'sd-device/device-private.h',
+#         'sd-device/device-util.c',
+#         'sd-device/device-util.h',
+#         'sd-device/sd-device.c',
+#         'sd-hwdb/hwdb-internal.h',
+#         'sd-hwdb/sd-hwdb.c',
+#         'sd-netlink/netlink-genl.c',
+#         'sd-netlink/netlink-genl.h',
+#         'sd-netlink/netlink-internal.h',
+#         'sd-netlink/netlink-message-nfnl.c',
+#         'sd-netlink/netlink-message-rtnl.c',
+#         'sd-netlink/netlink-message.c',
+#         'sd-netlink/netlink-slot.c',
+#         'sd-netlink/netlink-slot.h',
+#         'sd-netlink/netlink-socket.c',
+#         'sd-netlink/netlink-types-genl.c',
+#         'sd-netlink/netlink-types-internal.h',
+#         'sd-netlink/netlink-types-nfnl.c',
+#         'sd-netlink/netlink-types-rtnl.c',
+#         'sd-netlink/netlink-types.c',
+#         'sd-netlink/netlink-types.h',
+#         'sd-netlink/netlink-util.c',
+#         'sd-netlink/netlink-util.h',
+#         'sd-netlink/sd-netlink.c',
+#         'sd-network/network-util.c',
+#         'sd-network/network-util.h',
+#         'sd-network/sd-network.c',
+#         'sd-path/sd-path.c',
+#         'sd-resolve/resolve-private.h',
+#         'sd-resolve/sd-resolve.c',
+# ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #else // 0
-libelogind_sources = files('''
-        sd-bus/bus-common-errors.c
-        sd-bus/bus-common-errors.h
-        sd-bus/bus-container.c
-        sd-bus/bus-container.h
-        sd-bus/bus-control.c
-        sd-bus/bus-control.h
-        sd-bus/bus-convenience.c
-        sd-bus/bus-creds.c
-        sd-bus/bus-creds.h
-        sd-bus/bus-dump.c
-        sd-bus/bus-dump.h
-        sd-bus/bus-error.c
-        sd-bus/bus-error.h
-        sd-bus/bus-gvariant.c
-        sd-bus/bus-gvariant.h
-        sd-bus/bus-internal.c
-        sd-bus/bus-internal.h
-        sd-bus/bus-introspect.c
-        sd-bus/bus-introspect.h
-        sd-bus/bus-kernel.c
-        sd-bus/bus-kernel.h
-        sd-bus/bus-match.c
-        sd-bus/bus-match.h
-        sd-bus/bus-message.c
-        sd-bus/bus-message.h
-        sd-bus/bus-objects.c
-        sd-bus/bus-objects.h
-        sd-bus/bus-protocol.h
-        sd-bus/bus-signature.c
-        sd-bus/bus-signature.h
-        sd-bus/bus-slot.c
-        sd-bus/bus-slot.h
-        sd-bus/bus-socket.c
-        sd-bus/bus-socket.h
-        sd-bus/bus-track.c
-        sd-bus/bus-track.h
-        sd-bus/bus-type.c
-        sd-bus/bus-type.h
-        sd-bus/sd-bus.c
-        sd-device/device-enumerator-private.h
-        sd-device/device-enumerator.c
-        sd-device/device-internal.h
-        sd-device/device-monitor-private.h
-        sd-device/device-monitor.c
-        sd-device/device-private.c
-        sd-device/device-private.h
-        sd-device/device-util.c
-        sd-device/device-util.h
-        sd-device/sd-device.c
-        sd-hwdb/hwdb-internal.h
-        sd-hwdb/sd-hwdb.c
-        sd-path/sd-path.c
-'''.split()) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
+libelogind_sources = files(
+        'sd-bus/bus-common-errors.c',
+        'sd-bus/bus-common-errors.h',
+        'sd-bus/bus-container.c',
+        'sd-bus/bus-container.h',
+        'sd-bus/bus-control.c',
+        'sd-bus/bus-control.h',
+        'sd-bus/bus-convenience.c',
+        'sd-bus/bus-creds.c',
+        'sd-bus/bus-creds.h',
+        'sd-bus/bus-dump.c',
+        'sd-bus/bus-dump.h',
+        'sd-bus/bus-error.c',
+        'sd-bus/bus-error.h',
+        'sd-bus/bus-gvariant.c',
+        'sd-bus/bus-gvariant.h',
+        'sd-bus/bus-internal.c',
+        'sd-bus/bus-internal.h',
+        'sd-bus/bus-introspect.c',
+        'sd-bus/bus-introspect.h',
+        'sd-bus/bus-kernel.c',
+        'sd-bus/bus-kernel.h',
+        'sd-bus/bus-match.c',
+        'sd-bus/bus-match.h',
+        'sd-bus/bus-message.c',
+        'sd-bus/bus-message.h',
+        'sd-bus/bus-objects.c',
+        'sd-bus/bus-objects.h',
+        'sd-bus/bus-protocol.h',
+        'sd-bus/bus-signature.c',
+        'sd-bus/bus-signature.h',
+        'sd-bus/bus-slot.c',
+        'sd-bus/bus-slot.h',
+        'sd-bus/bus-socket.c',
+        'sd-bus/bus-socket.h',
+        'sd-bus/bus-track.c',
+        'sd-bus/bus-track.h',
+        'sd-bus/bus-type.c',
+        'sd-bus/bus-type.h',
+        'sd-bus/sd-bus.c',
+        'sd-device/device-enumerator-private.h',
+        'sd-device/device-enumerator.c',
+        'sd-device/device-filter.c',
+        'sd-device/device-filter.h',
+        'sd-device/device-internal.h',
+        'sd-device/device-monitor-private.h',
+        'sd-device/device-monitor.c',
+        'sd-device/device-private.c',
+        'sd-device/device-private.h',
+        'sd-device/device-util.c',
+        'sd-device/device-util.h',
+        'sd-device/sd-device.c',
+        'sd-hwdb/hwdb-internal.h',
+        'sd-hwdb/sd-hwdb.c',
+        'sd-path/sd-path.c',
+) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
-disable_mempool_c = files('disable-mempool.c')
 
 libsystemd_c_args = ['-fvisibility=default']
 
@@ -235,170 +233,143 @@ libsystemd_c_args = ['-fvisibility=default']
 # libsystemd_static = static_library(
 #         'systemd_static',
 #         libsystemd_sources,
-#         install : false,
 #         include_directories : libsystemd_includes,
-#         link_with : libbasic,
+#         c_args : libsystemd_c_args,
+#         link_with : [libbasic,
+#                      libbasic_compress],
 #         dependencies : [threads,
 #                         librt],
-#         c_args : libsystemd_c_args)
+#         build_by_default : false)
 #
 # libsystemd_sym = files('libsystemd.sym')
-# libsystemd_sym_path = join_paths(meson.current_source_dir(), 'libsystemd.sym')
+# libsystemd_sym_path = meson.current_source_dir() / 'libsystemd.sym'
 #
 # static_libsystemd = get_option('static-libsystemd')
 # static_libsystemd_pic = static_libsystemd == 'true' or static_libsystemd == 'pic'
 #
-# custom_target(
+# libsystemd_pc = custom_target(
 #         'libsystemd.pc',
 #         input : 'libsystemd.pc.in',
 #         output : 'libsystemd.pc',
-#         command : [meson_render_jinja2, config_h, '@INPUT@'],
-#         capture : true,
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : pkgconfiglibdir != 'no',
+#         install_tag : 'devel',
 #         install_dir : pkgconfiglibdir)
 #
 # ############################################################
 #
 # tests += [
-#         [['src/libsystemd/sd-journal/test-journal.c']],
+#         [files('sd-journal/test-journal-send.c')],
 #
-#         [['src/libsystemd/sd-journal/test-journal-send.c']],
+#         [files('sd-journal/test-journal-match.c')],
 #
-#         [['src/libsystemd/sd-journal/test-journal-match.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-enum.c'],
+#         [files('sd-journal/test-journal-enum.c'),
 #          [], [], [], '', 'timeout=360'],
 #
-#         [['src/libsystemd/sd-journal/test-journal-stream.c']],
+#         [files('sd-journal/test-journal-init.c')],
 #
-#         [['src/libsystemd/sd-journal/test-journal-flush.c']],
+#         [files('sd-journal/test-mmap-cache.c')],
 #
-#         [['src/libsystemd/sd-journal/test-journal-init.c']],
+#         [files('sd-journal/test-catalog.c')],
 #
-#         [['src/libsystemd/sd-journal/test-journal-verify.c']],
-#
-#         [['src/libsystemd/sd-journal/test-journal-interleaving.c']],
-#
-#         [['src/libsystemd/sd-journal/test-mmap-cache.c']],
-#
-#         [['src/libsystemd/sd-journal/test-catalog.c']],
-#
-#         [['src/libsystemd/sd-journal/test-compress.c'],
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz]],
-#
-#         [['src/libsystemd/sd-journal/test-compress-benchmark.c'],
-#          [],
-#          [liblz4,
-#           libzstd,
-#           libxz],
-#          [], '', 'timeout=90'],
-#
-#         [['src/libsystemd/sd-journal/test-audit-type.c']],
+#         [files('sd-journal/test-audit-type.c')],
 # ]
 #
 # ############################################################
 #
 # tests += [
-#         [['src/libsystemd/sd-bus/test-bus-address.c'],
+#         [files('sd-bus/test-bus-address.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-marshal.c'],
+#         [files('sd-bus/test-bus-marshal.c'),
 #          [],
 #          [threads,
 #           libglib,
 #           libgobject,
 #           libgio,
-#           libdbus]],
+#           libdbus,
+#           libm]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-signature.c'],
+#         [files('sd-bus/test-bus-signature.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-queue-ref-cycle.c'],
+#         [files('sd-bus/test-bus-queue-ref-cycle.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-watch-bind.c'],
+#         [files('sd-bus/test-bus-watch-bind.c'),
 #          [],
 #          [threads],
 #          [], '', 'timeout=120'],
 #
-#         [['src/libsystemd/sd-bus/test-bus-chat.c'],
+#         [files('sd-bus/test-bus-chat.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-cleanup.c'],
+#         [files('sd-bus/test-bus-cleanup.c'),
 #          [],
 #          [threads,
 #           libseccomp]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-track.c'],
+#         [files('sd-bus/test-bus-track.c'),
 #          [],
 #          [libseccomp]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-server.c'],
+#         [files('sd-bus/test-bus-server.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-objects.c'],
+#         [files('sd-bus/test-bus-objects.c'),
 #          [],
 #          [threads]],
 #
-#         [['src/libsystemd/sd-bus/test-bus-vtable.c',
-#           'src/libsystemd/sd-bus/test-vtable-data.h']],
+#         [files('sd-bus/test-bus-vtable.c',
+#                'sd-bus/test-vtable-data.h')],
 #
-#         [['src/libsystemd/sd-bus/test-bus-gvariant.c'],
-#          [],
-#          [libglib,
-#           libgobject,
-#           libgio]],
+#         [files('sd-bus/test-bus-creds.c')],
 #
-#         [['src/libsystemd/sd-bus/test-bus-creds.c']],
+#         [files('sd-bus/test-bus-match.c')],
 #
-#         [['src/libsystemd/sd-bus/test-bus-match.c']],
-#
-#         [['src/libsystemd/sd-bus/test-bus-benchmark.c'],
+#         [files('sd-bus/test-bus-benchmark.c'),
 #          [],
 #          [threads],
 #          [], '', 'manual'],
 #
-#         [['src/libsystemd/sd-bus/test-bus-introspect.c',
-#           'src/libsystemd/sd-bus/test-vtable-data.h']],
+#         [files('sd-bus/test-bus-introspect.c',
+#                'sd-bus/test-vtable-data.h')],
 #
-#         [['src/libsystemd/sd-event/test-event.c']],
+#         [files('sd-event/test-event.c')],
 #
-#         [['src/libsystemd/sd-netlink/test-netlink.c']],
+#         [files('sd-netlink/test-netlink.c')],
 #
-#         [['src/libsystemd/sd-resolve/test-resolve.c'],
+#         [files('sd-resolve/test-resolve.c'),
 #          [],
 #          [threads],
 #          [], '', 'timeout=120'],
 #
-#         [['src/libsystemd/sd-login/test-login.c']],
+#         [files('sd-login/test-login.c')],
 #
-#         [['src/libsystemd/sd-device/test-sd-device.c']],
+#         [files('sd-device/test-sd-device.c')],
 #
-#         [['src/libsystemd/sd-device/test-device-util.c']],
+#         [files('sd-device/test-device-util.c')],
 #
-#         [['src/libsystemd/sd-device/test-sd-device-monitor.c']],
+#         [files('sd-device/test-sd-device-monitor.c')],
 # ]
 #
 # if cxx_cmd != ''
 #         tests += [
-#                 [['src/libsystemd/sd-bus/test-bus-vtable-cc.cc']],
+#                 [files('sd-bus/test-bus-vtable-cc.cc')],
 #         ]
 # endif
 #
 # ############################################################
 #
 # fuzzers += [
-#         [['src/libsystemd/sd-bus/fuzz-bus-message.c']],
+#         [files('sd-bus/fuzz-bus-message.c')],
 #
-#         [['src/libsystemd/sd-bus/fuzz-bus-match.c']],
+#         [files('sd-bus/fuzz-bus-match.c')],
 # ]
 #else // 0
 libelogind_static = static_library(
@@ -416,10 +387,11 @@ libelogind_sym_path = join_paths(meson.current_source_dir(), 'libelogind.sym')
 static_libelogind = get_option('static-libelogind')
 static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
 
-libelogind_pc = configure_file(
+libelogind_pc = custom_target(
+        'libelogind.pc',
         input : 'libelogind.pc.in',
         output : 'libelogind.pc',
-        configuration : conf)
-install_data(libelogind_pc,
-             install_dir : pkgconfiglibdir)
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+        install : pkgconfiglibdir != 'no',
+        install_dir : pkgconfiglibdir)
 #endif // 0

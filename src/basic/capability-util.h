@@ -30,6 +30,7 @@ int drop_capability(cap_value_t cv);
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(cap_t, cap_free, NULL);
 #define _cleanup_cap_free_ _cleanup_(cap_freep)
 
+#if 0 /// UNNEEDED by elogind
 static inline void cap_free_charpp(char **p) {
         if (*p)
                 cap_free(*p);
@@ -44,7 +45,6 @@ static inline bool cap_test_all(uint64_t caps) {
         return FLAGS_SET(caps, all_capabilities());
 }
 
-#if 0 /// UNNEEDED by elogind
 bool ambient_capabilities_supported(void);
 #endif // 0
 

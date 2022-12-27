@@ -139,8 +139,6 @@ static bool value_node_test(
                         return true;
 
                 if (m->creds.mask & SD_BUS_CREDS_WELL_KNOWN_NAMES) {
-                        char **i;
-
                         /* on kdbus we have the well known names list
                          * in the credentials, let's make use of that
                          * for an accurate match */
@@ -174,8 +172,6 @@ static bool value_node_test(
                 return false;
 
         case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST: {
-                char **i;
-
                 STRV_FOREACH(i, value_strv)
                         if (streq_ptr(node->value.str, *i))
                                 return true;
@@ -199,7 +195,7 @@ static bool value_node_test(
                 return false;
 
         default:
-                assert_not_reached("Invalid node type");
+                assert_not_reached();
         }
 }
 
@@ -234,7 +230,7 @@ static bool value_node_same(
                 return streq(node->value.str, value_str);
 
         default:
-                assert_not_reached("Invalid node type");
+                assert_not_reached();
         }
 }
 
@@ -375,7 +371,7 @@ int bus_match_run(
                 break;
 
         default:
-                assert_not_reached("Unknown match type.");
+                assert_not_reached();
         }
 
         if (BUS_MATCH_CAN_HASH(node->type)) {
@@ -386,8 +382,6 @@ int bus_match_run(
                 if (test_str)
                         found = hashmap_get(node->compare.children, test_str);
                 else if (test_strv) {
-                        char **i;
-
                         STRV_FOREACH(i, test_strv) {
                                 found = hashmap_get(node->compare.children, *i);
                                 if (found) {
@@ -999,20 +993,16 @@ const char* bus_match_node_type_to_string(enum bus_match_node_type t, char buf[]
                 return "path_namespace";
 
         case BUS_MATCH_ARG ... BUS_MATCH_ARG_LAST:
-                snprintf(buf, l, "arg%i", t - BUS_MATCH_ARG);
-                return buf;
+                return snprintf_ok(buf, l, "arg%i", t - BUS_MATCH_ARG);
 
         case BUS_MATCH_ARG_PATH ... BUS_MATCH_ARG_PATH_LAST:
-                snprintf(buf, l, "arg%ipath", t - BUS_MATCH_ARG_PATH);
-                return buf;
+                return snprintf_ok(buf, l, "arg%ipath", t - BUS_MATCH_ARG_PATH);
 
         case BUS_MATCH_ARG_NAMESPACE ... BUS_MATCH_ARG_NAMESPACE_LAST:
-                snprintf(buf, l, "arg%inamespace", t - BUS_MATCH_ARG_NAMESPACE);
-                return buf;
+                return snprintf_ok(buf, l, "arg%inamespace", t - BUS_MATCH_ARG_NAMESPACE);
 
         case BUS_MATCH_ARG_HAS ... BUS_MATCH_ARG_HAS_LAST:
-                snprintf(buf, l, "arg%ihas", t - BUS_MATCH_ARG_HAS);
-                return buf;
+                return snprintf_ok(buf, l, "arg%ihas", t - BUS_MATCH_ARG_HAS);
 
         default:
                 return NULL;
@@ -1025,7 +1015,7 @@ void bus_match_dump(FILE *out, struct bus_match_node *node, unsigned level) {
         if (!node)
                 return;
 
-        fprintf(out, "%*s[%s]", 2 * level, "", bus_match_node_type_to_string(node->type, buf, sizeof(buf)));
+        fprintf(out, "%*s[%s]", 2 * (int) level, "", bus_match_node_type_to_string(node->type, buf, sizeof(buf)));
 
         if (node->type == BUS_MATCH_VALUE) {
                 if (node->parent->type == BUS_MATCH_MESSAGE_TYPE)

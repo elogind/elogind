@@ -7,6 +7,7 @@
 #include "af-list.h"
 #include "macro.h"
 
+#if 0 /// UNNEEDED by elogind
 static const struct af_name* lookup_af(register const char *str, register GPERF_LEN_TYPE len);
 
 #include "af-from-name.h"
@@ -45,6 +46,7 @@ const char *af_to_ipv4_ipv6(int id) {
         return id == AF_INET ? "ipv4" :
                 id == AF_INET6 ? "ipv6" : NULL;
 }
+#endif // 0
 
 int af_from_ipv4_ipv6(const char *af) {
         return streq_ptr(af, "ipv4") ? AF_INET :

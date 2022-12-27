@@ -39,14 +39,16 @@ int execute_directories(
                 char *envp[],
                 ExecDirFlags flags);
 
+#if 0 /// UNNEEDED in elogind
 int exec_command_flags_from_strv(char **ex_opts, ExecCommandFlags *flags);
 int exec_command_flags_to_strv(ExecCommandFlags flags, char ***ex_opts);
 
-#if 0 /// UNNEEDED by elogind
 extern const gather_stdout_callback_t gather_environment[_STDOUT_CONSUME_MAX];
 
 const char* exec_command_flags_to_string(ExecCommandFlags i);
 ExecCommandFlags exec_command_flags_from_string(const char *s);
-#endif // 0
 
 int fexecve_or_execve(int executable_fd, const char *executable, char *const argv[], char *const envp[]);
+#endif // 0
+
+int fork_agent(const char *name, const int except[], size_t n_except, pid_t *ret_pid, const char *path, ...) _sentinel_;

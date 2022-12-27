@@ -4,11 +4,6 @@ Bugfixes:
   manager or system manager can be always set. It would be better to reject
   them when parsing config.
 
-* userdbctl: "Password OK: yes" is shown even when there are no passwords
-  or the password is locked.
-
-* Get rid of nftw(). We should refuse to use such useless APIs on principle.
-
 * Jun 01 09:43:02 krowka elogind[1]: Unit user@1000.service has alias user@.service.
   Jun 01 09:43:02 krowka elogind[1]: Unit user@6.service has alias user@.service.
   Jun 01 09:43:02 krowka elogind[1]: Unit user-runtime-dir@6.service has alias user-runtime-dir@.service.
@@ -32,6 +27,11 @@ External:
 * fedora: update policy to declare access mode and ownership of unit files to root:root 0644, and add an rpmlint check for it
 
 * register catalog database signature as file magic
+
+* zsh shell completion:
+  - <command> <verb> -<TAB> should complete options, but currently does not
+  - systemctl add-wants,add-requires
+  - systemctl reboot --boot-loader-entry=
 
 * systemctl status should know about 'elogind-analyze calendar ... --iterations='
 * If timer has just OnInactiveSec=..., it should fire after a specified time
@@ -77,13 +77,953 @@ Janitorial Clean-ups:
 * rework mount.c and swap.c to follow proper state enumeration/deserialization
   semantics, like we do for device.c now
 
+* get rid of prefix_roota() and similar, only use chase_symlinks() and related
+  calls instead.
+
+* get rid of basename() and replace by path_extract_filename()
+
+Deprecations and removals:
+
+* Remove any support for booting without /usr pre-mounted in the initrd entirely.
+  Update INITRD_INTERFACE.md accordingly.
+
+* 2019-10 – Remove POINTINGSTICK_CONST_ACCEL references from the hwdb, see #9573
+
+* remove cgrouspv1 support EOY 2023. As per
+  https://lists.freedesktop.org/archives/elogind-devel/2022-July/048120.html
+  and then rework cgroupsv2 support around fds, i.e. keep one fd per active
+  unit around, and always operate on that, instead of cgroup fs paths.
+
+* drop support for kernels that lack ambient capabilities support (i.e. make
+  4.3 new baseline). Then drop support for "!!" modifier for ExecStart= which
+  is only supported for such old kernels.
+
+* drop support for getrandom()-less kernels. (GRND_INSECURE means once kernel
+  5.6 becomes our baseline). See
+  https://github.com/systemd/systemd/pull/24101#issuecomment-1193966468 for
+  details. Maybe before that: at taint-flags/warn about kernels that lack
+  getrandom()/environments where it is blocked.
+
+* drop support for LOOP_CONFIGURE-less loopback block devices, once kernel
+  baseline is 5.8.
+
+* drop fd_is_mount_point() fallback mess once we can rely on
+  STATX_ATTR_MOUNT_ROOT to exist i.e. kernel baseline 5.8
+
+* rework our PID tracking in services and so on, to be strictly based on pidfd,
+  once kernel baseline is 5.13.
+
+* ~2023: remove support for TPM_PCR_INDEX_KERNEL_PARAMETERS_COMPAT
+
+* H2 2023: remove support for unmerged-usr
+
 Features:
 
+* sd-stub: add ".bootcfg" section for kernel bootconfig data (as per
+
+* tpm2: add (optional) support for generating a local signing key from PCR 15
+  state. use private key part to sign PCR 7+14 policies. stash signatures for
+  expected PCR7+14 policies in EFI var. use public key part in disk encryption.
+  generate new sigs whenever db/dbx/mok/mokx gets updated. that way we can
+  securely bind against SecureBoot/shim state, without having to renroll
+  everything on each update (but we still have to generate one sig on each
+  update, but that should be robust/idempotent). needs rollback protection, as
+  usual.
+
+* Lennart: big blog story about DDIs
+
+* Lennart: big blog story about building initrds
+
+* Lennart: big blog story about "why elogind-boot"
+
+* bpf: see if we can use BPF to solve the syslog message cgroup source problem:
+  one idea would be to patch source sockaddr of all AF_UNIX/SOCK_DGRAM to
+  implicitly contain the source cgroup id. Another idea would be to patch
+  sendto()/connect()/sendmsg() sockaddr on-the-fly to use a different target
+  sockaddr.
+
+* bpf: see if we can address opportunistic inode sharing of immutable fs images
+  with BPF. i.e. if bpf gives us power to hook into openat() and return a
+  different inode than is requested for which we however it has same contents
+  then we can use that to implement opportunistic inode sharing among DDIs:
+  make all DDIs ship xattr on all reg files with a SHA256 hash. Then, also
+  dictate that DDIs should come with a top-level subdir where all reg files are
+  linked into by their SHA256 sum. Then, whenever an inode is opened with the
+  xattr set, check bpf table to find dirs with hashes for other prior DDIs and
+  try to use inode from there.
+
+* dissect too: add --with switch that will invoke a command with the image
+  mounted, and as current working directory. Terminate once done.
+
+* extend the verity signature partition to permit multiple signatures for the
+  same root hash, so that people can sign a single image with multiple keys.
+
+* consider adding a new partition type, just for /opt/ for usage in system
+  extensions
+
+* gpt-auto-discovery: also use the pkcs7 signature stuff, and pass signature to
+  kernel. So far we only did this for the various --image= switches, but not
+  for the root fs or /usr/.
+
+* extend elogind-measure with an --append= mode when signing expected PCR
+  measurements. In this mode the tool should read an existing signature JSON
+  object (which primarily contains an array with the actual signature data),
+  and then append the new signature to it instead of writing out an entirely
+  JSON object. Usecase: it might make sense to to sign a UKI's expected PCRs
+  with different keys for different boot phases. i.e. use keypair X for signing
+  the expected PCR in the initrd boot phase and keypair Y for signing the
+  expected PCR in the main boot phase. Via the --append logic we could merge
+  these signatures into one object, and then include the result in the UKI.
+  Then, if you bind a LUKS volume to public key X it really only can be
+  unlocked during early boot, and you bind a LUKS volume to public key Y it
+  really only can be unlocked during later boot, and so on.
+
+* dissection policy should enforce that unlocking can only take place by
+  certain means, i.e. only via pw, only via tpm2, or only via fido, or a
+  combination thereof.
+
+* make the elogind-repart "seed" value provisionable via credentials, so that
+  confidential computing environments can set it and deterministically
+  enforce the uuids for partitions created, so that they can calculate PCR 15
+  ahead of time.
+
+* elogind-repart: also derive the volume key from the seed value, for the
+  aforementioned purpose.
+
+* in the initrd: derive the default machine ID to pass to the host PID 1 via
+  $machine_id from the same seed credential.
+
+* Add elogind-sysupdate-initrd.service or so that runs elogind-sysupdate in the
+  initrd to bootstrap the initrd to populate the initial partitions. Some things
+  to figure out:
+  - Should it run on firstboot or on every boot?
+  - If run on every boot, should it use the sysupdate config from the host on
+    subsequent boots?
+
+* hook up journald with TPMs? measure new journal records to the TPM in regular
+  intervals, validate the journal against current TPM state with that. (taking
+  inspiration from IMA log)
+
+* provide an API to apps to encrypt/decrypt credentials. usecase: allow
+  bluez bluetooth daemon to pass pairings to initrd that way, without shelling
+  out to our tools.
+
+* revisit default PCR bindings in cryptenroll and elogind-creds. Currently they
+  use PCR 7 which should contain secureboot state db/dbx. Which sounded like a
+  safe bet, given that it should change only on policy changes, and not
+  software updates. But that's wrong. Recent fwupd (rightfully) contains code
+  for updating the dbx denylist. This means even without any active policy
+  change PCR 7 might change. Hence, better idea might be in elogind-creds to
+  default to PCR 15 at least if sd-stub is used (i.e. bind to system identity),
+  and in cryptsetup simply the empty list? Also, PCR 14 almost certainly should
+  be included as much as PCR 7 (as it contains shim's policy, which is
+  certainly as relevant as PCR 7 on many systems)
+
+* move discoverable partition spec and boot loader spec over to uapi group
+
+* maybe measure UUIDs of important mounted file systems (after mount, via the
+  new ioctls to query them) into PCR 15? Add "x-elogind.measure-pcr=" or so for
+  this that pulls in a per mount service?
+
+* measure /etc/machine-id during early boot into PCR 15?
+
+* To mimic the new tpm2-measure-pcr= crypttab option add the same to veritytab
+  (measuring the root hash) and integritytab (measuring the HMAC key if one is
+  used)
+
+* We should start measuring all services, containers, and system extensions we
+  activate. probably into PCR 13. i.e. add --tpm2-measure-pcr= or so to
+  elogind-nspawn, and MeasurePCR= to unit files. Should contain a measurement
+  of the activated configuration and the image that is being activated (in case
+  verity is used, hash of the root hash).
+
+* whenever we measure something into a TPM PCR from userspace, write a record in
+  TCG's "Canonical Event Log" format to some file, so that we can reason about
+  how PCR values we manage came to
+  be. https://trustedcomputinggroup.org/resource/canonical-event-log-format/
+
+* bootspec: permit graceful "update" from type #2 to type #1. If both a type #1
+  and a type #2 entry exist under otherwise the exact same name, then use the
+  type #1 entry, and ignore the type #2 entry. This way, people can "upgrade"
+  from the UKI with all parameters baked in to a Type #1 .conf file with manual
+  parametrization, if needed. This matches our usual rule that admin config
+  should win over vendor defaults.
+
+* sd-stub: optionally allow users to configure manual kernel command line even
+  in SecureBoot by authenticating it via shim's APIs, integrating with MOK and
+  similar: instead of authenticating just PE code shim should be capable of
+  authenticating any kind of data for us, including files containing kernel
+  command lines.
+
+* write a "search path" spec, that documents the prefixes to search in
+  (i.e. the usual /etc/, /run/, /usr/lib/ dance, potentially /usr/etc/), how to
+  sort found entries, how masking works and overriding.
+
+* automatic boot assessment: add one more default success check that just waits
+  for a bit after boot, and blesses the boot if the system stayed up that long.
+
+* implement concept of "versioned" resources inside a dir, and write a spec for
+  it. Make all tools in elogind, in particular
+  RootImage=/RootDirectory=/--image=/--directory= implement this. Idea:
+  directories ending in ".v/" indicate a directory with versioned resources in
+  them. Versioned resources inside a .v dir are always named in the pattern
+  <prefix>_<version>[+<tries-left>[-<tries-done>]].<suffix>
+
+* add support for using this .v/ logic on the root fs itself: in the initrd,
+  after mounting the rootfs, look for root-<arch>.v/ in the root fs, and then
+  apply the logic, moving the switch root logic there.
+
+* elogind-repart: add support for generating ISO9660 images
+
+* elogind-repart: in addition to the existing "factory reset" mode (which
+  simply empties existing partitions marked for that). add a mode where
+  partitions marked for it are entirely removed. Usecase: remove secondary OS
+  copy, and redundant partitions entirely, and recreate them anew.
+
+* elogind-boot: maybe add support for collapsing menu entries of the same OS
+  into one item that can be opened (like in a "tree view" UI element) or
+  collapsed. If only a single OS is installed, disable this mode, but if
+  multiple OSes are installed might make sense to default to it, so that user
+  is not immediately bombarded with a multitude of Linux kernel versions but
+  only one for each OS.
+
+* elogind-repart: if the GPT *disk* UUID (i.e. the one global for the entire
+  disk) is set to all FFFFF then use this as trigger for factory reset, in
+  addition to the existing mechanisms via EFI variables and kernel command
+  line. Benefit: works also on non-EFI systems, and can be requested on one
+  boot, for the next.
+
+* figure out a sane way when building UKIs how to extract SBAT data from inner
+  kernel, extend it with component info, and add to outer kernel.
+
+* elogind-sysupdate: make transport pluggable, so people can plug casync or
+  similar behind it, instead of http.
+
+* elogind-tmpfiles: add concept for conditionalizing lines on factory reset
+  boot, or on first boot.
+
+* in UKIs: add way to define allowlist of additional words that can be added to
+  the kernel cmdline even in SecureBoot mode
+
+* we probably needs .pcrpkeyrd or so as additional PE section in UKIs,
+  which contains a separate public key for PCR values that only apply in the
+  initrd, i.e. in the boot phase "enter-initrd". Then, consumers in userspace
+  can easily bind resources to just the initrd. Similar, maybe one more for
+  "enter-initrd:leave-initrd" for resources that shall be accessible only
+  before unprivileged user code is allowed. (we only need this for .pcrpkey,
+  not for .pcrsig, since the latter is a list of signatures anyway). With that,
+  when you enroll a LUKS volume or similar, pick either the .pcrkey (for
+  coverage through all phases of the boot, but excluding shutdown), the
+  .pcrpkeyrd (for coverage in the initrd only) and .pcrpkeybt (for coverage
+  until users are allowed to log in).
+
+* Once the root fs LUKS volume key is measured into PCR 15, default to binding
+  credentials to PCR 15 in "elogind-creds"
+
+* add support for asymmetric LUKS2 TPM based encryption. i.e. allow preparing
+  an encrypted image on some host given a public key belonging to a specific
+  other host, so that only hosts possessing the private key in the TPM2 chip
+  can decrypt the volume key and activate the volume. Usecase: elogind-syscfg
+  for a central orchestrator to generate syscfg images securely that can only
+  be activated on one specific host (which can be used for installing a bunch
+  of creds in /etc/credstore/ for example). Extending on this: allow binding
+  LUKS2 TPM based encryption also to the TPM2 internal clock. Net result:
+  prepare a syscfg image that can only be activated on a specific host that
+  runs a specific software in a specific time window. syscfg would be
+  automatically invalidated outside of it.
+
+* maybe add a "elogind-report" tool, that generates a TPM2-backed "report" of
+  current system state, i.e. a combination of PCR information, local system
+  time and TPM clock, running services, recent high-priority log
+  messages/coredumps, system load/PSI, signed by the local TPM chip, to form an
+  enhanced remote attestation quote. Usecase: a simple orchestrator could use
+  this: have the report tool upload these reports every 3min somewhere. Then
+  have the orchestrator collect these reports centrally over a 3min time
+  window, and use them to determine what which node should now start/stop what,
+  and generate a small syscfg for each node, that uses Uphold= to pin services
+  on each node.  The syscfg would be encrypted using the asymmetric encryption
+  proposed above, so that it can only be activated on the specific host, if the
+  software is in a good state, and within a specific time frame. Then run a
+  loop on each node that sends report to orchestrator and then sysupdate to
+  update syscfg.  Orchestrator would be stateless, i.e. operate on desired
+  config and collected reports in the last 3min time window only, and thus can
+  be trivially scaled up since all instances of the orchestrator should come to
+  the same conclusions given the same inputs of reports/desired workload info.
+  Could also be used to deliver Wireguard secrets and thus to clients, thus
+  permitting zero-trust networking: secrets are rolled over via syscfg updates,
+  and via the time window TPM logic invalidated if node doesn't keep itself
+  updated, or becomes corrupted in some way.
+
+* Always measure the LUKS rootfs volume key into PCR 15, and derive the machine
+  ID from it securely. This would then allow us to bind secrets a specific
+  system securely.
+
+* nspawn: maybe allow TPM passthrough, backed by swtpm, and measure --image=
+  hash into its PCR 11, so that nspawn instances can be TPM enabled, and
+  partake in measurements/remote attestation and such. swtpm would run outside
+  of control of container, and ideally would itself bind its encryption keys to
+  host TPM.
+
+* tree-wide: convert as much as possible over to use sd_event_set_signal_exit(), instead
+  of manually hooking into SIGINT/SIGTERM
+
+* tree-wide: convert as much as possible over to SD_EVENT_SIGNAL_PROCMASK
+  instead of manual blocking.
+
+* sd-boot: for each installed OS, grey out older entries (i.e. all but the
+  newest), to indicate they are obsolete
+
+* automatically propagate LUKS password credential into cryptsetup from host
+  (i.e. SMBIOS type #11, …), so that one can unlock LUKS via VM hypervisor
+  supplied password.
+
+* add ability to path_is_valid() to classify paths that refer to a dir from
+  those which may refer to anything, and use that in various places to filter
+  early. i.e. stuff ending in "/", "/." and "/.." definitely refers to a
+  directory, and paths ending that way can be refused early in many contexts.
+
+* elogind-measure: allow operating with PEM certificates in addition to PEM
+  public keys when signing PCR values. SecureBoot and our Verity signatures
+  operate with certificates already, hence I guess we should also just deal for
+  convencience with certificates for the PCR stuff too.
+
+* elogind-measure: add --pcrpkey-auto as an alternative to --pcrpkey=, where it
+  would just use the same public key specified with --public-key= (or the one
+  automatically derived from --private-key=).
+
+* tmpfiles: add new line type for setting btrfs subvolume attributes (i.e. rw/ro)
+
+* tmpfiles: add new line type for setting fcaps
+
+* push people to use ".sysext.raw" as suffix for sysext DDIs (DDI =
+  discoverable disk images, i.e. the new name for gpt disk images following the
+  discoverable disk spec). [Also: just ".sysext/" for directory-based sysext]
+
+* Add "purpose" flag to partition flags in discoverable partition spec that
+  indicate if partition is intended for sysext, for portable service, for
+  booting and so on. Then, when dissecting DDI allow specifying a purpose to
+  use as additional search condition. Usecase: images that combined a sysext
+  partition with a portable service partition in one.
+
+* On boot, auto-generate an asymmetric key pair from the TPM,
+  and use it for validating DDIs and credentials. Maybe upload it to the kernel
+  keyring, so that the kernel does this validation for us for verity and kernel
+  modules
+
+* for elogind-syscfg: add a tool that can generate suitable DDIs with verity +
+  sig using squashfs-tools-ng's library. Maybe just elogind-repart called under
+  a new name with a built-in config?
+
+* gpt-auto: generate mount units that reference partitions via
+  /dev/disk/by-diskseq/… so that they can't be swapped out behind our back.
+
+* lock down acceptable encrypted credentials at boot, via simple allowlist,
+  maybe on kernel command line:
+  elogind.import_encrypted_creds=foobar.waldo,tmpfiles.extra to protect locked
+  down kernels from credentials generated on the host with a weak kernel
+
+* Add support for extra verity configuration options to elogind-repart (FEC,
+  hash type, etc)
+
+* chase_symlinks(): take inspiraton from path_extract_filename() and return
+  O_DIRECTORY if input path contains trailing slash.
+
+* chase_symlinks(): refuse resolution if trailing slash is specified on input,
+  but final node is not a directory
+
+* chase_symlinks(): add new flag that simply refuses all symlink use in a path,
+  then use that for accessing XBOOTLDR/ESP
+
+* document in boot loader spec that symlinks in XBOOTLDR/ESP are not OK even if
+  non-VFAT fs is used.
+
+* measure credentials picked up from SMBIOS to some suitable PCR
+
+* measure GPT and LUKS headers somewhere when we use them (i.e. in
+  elogind-gpt-auto-generator/elogind-repart and in elogind-cryptsetup?)
+
+* pick up creds from EFI vars
+
+* sd-stub/sd-boot: write RNG seed to LINUX_EFI_RANDOM_SEED_TABLE_GUID config
+  table as well. (and possibly drop our efi var). Current kernels will pick up
+  the seed from there already, if EFI_RNG_PROTOCOL is not implemented by
+  firmware.
+
+* sd-boot: include domain specific hash string in hash function for random seed
+  plus sizes of everything. also include DMI/SMBIOS blob
+
+* sd-stub: invoke random seed logic the same way as in sd-boot, except if
+  random seed EFI variable is already set. That way, the variable set will be
+  set in all cases: if you just use sd-stub, or just sd-boot, or both.
+
+* sd-boot: we probably should include all BootXY EFI variable defined boot
+  entries in our menu, and then suppress ourselves. Benefit: instant
+  compatibility with all other OSes which register things there, in particular
+  on other disks. Always boot into them via NextBoot EFI variable, to not
+  affect PCR values.
+
+* elogind-measure tool:
+  - pre-calculate PCR 12 (command line) + PCR 13 (sysext) the same way we can precalculate PCR 11
+
+* in sd-boot: load EFI drivers from a new PE section. That way, one can have a
+  "supercharged" sd-boot binary, that could carry ext4 drivers built-in.
+
+* sd-bus: document that sd_bus_process() only returns messages that non of the
+  filters/handlers installed on the connection took possession of.
+
+* sd-device: add an API for acquiring list of child devices, given a device
+  objects (i.e. all child dirents that dirs or symlinks to dirs)
+
+* sd-device: maybe pin the sysfs dir with an fd, during the entire runtime of
+  an sd_device, then always work based on that.
+
+* add small wrapper around qemu that implements sd_notify/AF_VSOCK + machined and
+  maybe some other stuff and boots it
+
+* maybe add new flags to gpt partition tables for rootfs and usrfs indicating
+  purpose, i.e. whether something is supposed to be bootable in a VM, on
+  baremetal, on an nspawn-style container, if it is a portable service image,
+  or a sysext for initrd, for host os, or for portable container. Then hook
+  portabled/… up to udev to watch block devices coming up with the flags set, and
+  use it.
+
+* sd-boot should look for information what to boot in SMBIOS, too, so that VM
+  managers can tell sd-boot what to boot into and suchlike
+
+* PID 1 should look for an SMBIOS variable that encodes an AF_VSOCK address it
+  should send sd_notify() ready notifications to. That way a VMM can boot up a
+  system, and generically know when it finished booting.
+
+* add "elogind-sysext identify" verb, that you can point on any file in /usr/
+  and that determines from which overlayfs layer it originates, which image, and with
+  what it was signed.
+
+* journald: generate recognizable log events whenever we shutdown journald
+  cleanly, and when we migrate run → var. This way tools can verify that a
+  previous boot terminated cleanly, because either of these two messages must
+  be safely written to disk, then.
+
+* elogind-creds: extend encryption logic to support asymmetric
+  encryption/authentication. Idea: add new verb "elogind-creds public-key"
+  which generates a priv/pub key pair on the TPM2 and stores the priv key
+  locally in /var. It then outputs a certificate for the pub part to stdout.
+  This can then be copied/taken elsewhere, and can be used for encrypting creds
+  that only the host on its specific hw can decrypt. Then, support a drop-in
+  dir with certificates that can be used to authenticate credentials. Flow of
+  operations is then this: build image with owner certificate, then after
+  boot up issue "elogind-creds public-key" to acquire pubkey of the machine.
+  Then, when passing data to the machine, sign with privkey belonging to one of
+  the dropped in certs and encrypted with machine pubkey, and pass to machine.
+  Machine is then able to authenticate you, and confidentiality is guaranteed.
+
+* building on top of the above, the pub/priv key pair generated on the TPM2
+  should probably also one you can use to get a remote attestation quote.
+
+* bootctl: add "gc" verb that loads all type #1 .conf files, and then removes
+  all files from the set of files from the ESP/XBOOTLDR matching the entry
+  token that are not referenced by any. Then, change kernel-install to use only
+  this to remove auxiliary files, and never remove them explicitly. Benefit:
+  resources such as initrds/kernels/dtb can be shared between entries.
+
+* Process credentials in:
+  • networkd/udevd: add a way to define additional .link, .network, .netdev files
+    via the credentials logic.
+  • fstab-generator: allow defining additional fstab-like mounts via
+    credentials (similar: crypttab-generator, verity-generator,
+    integrity-generator)
+  • getty-generator: allow defining additional getty instances via a credential
+  • run-generator: allow defining additional commands to run via a credential
+  • resolved: allow defining additional /etc/hosts entries via a credential (it
+    might make sense to then synthesize a new combined /etc/hosts file in /run
+    and bind mount it on /etc/hosts for other clients that want to read it.
+    Similar, allow picking up DNS server IP addresses from credential.
+  • repart: allow defining additional partitions via credential
+  • timesyncd: pick NTP server info from credential
+  • portabled: read a credential "portable.extra" or so, that takes a list of
+    file system paths to enable on start.
+  • make elogind-fstab-generator look for a system credential encoding root= or
+    usr=
+  • elogind-homed: when initializing, look for a credential
+    elogind.homed.register or so with JSON user records to automatically
+    register if not registered yet.  Usecase: deploy a system, and add an
+    account one can directly log into.
+  • initialize machine ID from elogind credential picked up from the ESP via
+    sd-stub, so that machine ID is stable even on systems where unified kernels
+    are used, and hence kernel cmdline cannot be modified locally
+  • in gpt-auto-generator: check partition uuids against such uuids supplied via
+    sd-stub credentials. That way, we can support parallel OS installations with
+    pre-built kernels.
+
+* define a JSON format for units, separating out unit definitions from unit
+  runtime state. Then, expose it:
+
+  1. Add Describe() method to Unit D-Bus object that returns a JSON object
+     about the unit.
+  2. Expose this natively via Varlink, in similar style
+  3. Use it when invoking binaries (i.e. make PID 1 fork off elogind-executor
+     binary which reads the JSON definition and runs it), to address the cow
+     trap issue and the fact that NSS is actually forbidden in
+     forked-but-not-exec'ed children
+  4. Add varlink API to run transient units based on provided JSON definitions
+
+* show SUPPORT_END= data in "hostnamectl" output (and thus also expose a prop
+  for this on dbus)
+
+* Add SUPPORT_END_URL= field to os-release with more *actionable* information
+  what to do if support ended
+
+* pam_elogind: on interactive logins, maybe show SUPPORT_END information at
+  login time, á la motd
+
+* sd-boot: instead of unconditionally deriving the ESP to search boot loader
+  spec entries in from the paths of sd-boot binary, let's optionally allow it
+  to be configured on sd-boot cmdline + efi var. Usecase: embed sd-boot in the
+  UEFI firmware (for example, ovmf supports that via qemu cmdline option), and
+  use it to load stuff from the ESP.
+
+* mount /var/ from initrd, so that we can apply sysext and stuff before the
+  initrd transition. Specifically:
+  1. There should be a var= kernel cmdline option, matching root= and usr=
+  2. elogind-gpt-auto-generator should auto-mount /var if it finds it on disk
+  3. mount.x-initrd mount option in fstab should be implied for /var
+
+* implement varlink introspection
+
+* we should probably drop all use of prefix_roota() and friends, and use
+  chase_symlinks() instead
+
+* make persistent restarts easier by adding a new setting OpenPersistentFile=
+  or so, which allows opening one or more files that is "persistent" across
+  service restarts, hot reboot, cold reboots (depending on configuration): the
+  files are created empty on first invocation, and on subsequent invocations
+  the files are reboot. The files would be backed by tmpfs, pmem or /var
+  depending on desired level of persistency.
+
+* sd-event: add ability to "chain" event sources. Specifically, add a call
+  sd_event_source_chain(x, y), which will automatically enable event source y
+  in oneshit mode once x is triggered. Use case: in src/core/mount.c implement
+  the /proc/self/mountinfo rescan on SIGCHLD with this: whenever a SIGCHLD is
+  seen, trigger the rescan defer event source automatically, and allow it to be
+  dispatched *before* the SIGCHLD is handled (based on priorities). Benefit:
+  dispatch order is strictly controlled by priorities again. (next step: chain
+  event sources to the ratelimit being over)
+
+* if we fork of a service with StandardOutput=journal, and it forks off a
+  subprocess that quickly dies, we might not be able to identify the cgroup it
+  comes from, but we can still derive that from the stdin socket its output
+  came from. We apparently don't do that right now.
+
+* add ability to set hostname with suffix derived from machine id at boot
+
+* add PR_SET_DUMPABLE service setting
+
+* homed/userdb: maybe define a "companion" dir for home directories where apps
+  can safely put privileged stuff in. Would not be writable by the user, but
+  still conceptually belong to the user. Would be included in user's quota if
+  possible, even if files are not owned by UID of user. Usecase: container
+  images that owned by arbitrary UIDs, and are owned/managed by the users, but
+  are not directly belonging to the user's UID. Goal: we shouldn't place more
+  privileged dirs inside of unprivileged dirs, and thus containers really
+  should not be placed inside of traditional UNIX home dirs (which are owned by
+  users themselves) but somewhere else, that is separate, but still close
+  by. Inform user code about path to this companion dir via env var, so that
+  container managers find it. the ~/.identity file is also a candidate for a
+  file to move there, since it is managed by privileged code (i.e. homed) and
+  not unprivileged code.
+
+* given that /etc/ssh/ssh_config.d/ is a thing now, ship a drop-in for that
+  that hooks up userbdctl ssh-key stuff.
+
+* maybe add support for binding and connecting AF_UNIX sockets in the file
+  system outside of the 108ch limit. When connecting, open O_PATH fd to socket
+  inode first, then connect to /proc/self/fd/XYZ. When binding, create symlink
+  to target dir in /tmp, and bind through it.
+
+* add a proper concept of a "developer" mode, i.e. where cryptographic
+  protections of the root OS are weakened after interactive confirmation, to
+  allow hackers to allow their own stuff. idea: allow entering developer mode
+  only via explicit choice in boot menu: i.e. add explicit boot menu item for
+  it. when developer mode is entered generate a key pair in the TPM2, and add
+  the public part of it automatically to keychain of valid code signature keys
+  on subsequent boots. Then provide a tool to sign code with the key in the
+  TPM2. Ensure that boot menu item is only way to enter developer mode, by
+  binding it to locality/PCRs so that that keys cannot be generated otherwise.
+
+* services: add support for cryptographically unlocking per-service directories
+  via TPM2. Specifically, for StateDirectory= (and related dirs) use fscrypt to
+  set up the directory so that it can only be accessed if host and app are in
+  order.
+
+* TPM2: extend unlock policy to protect against version downgrades in signed
+  policies: policy probably must take some nvram based generation counter into
+  account that can only monotonically increase and can be used to invalidate
+  old PCR signatures. Otherwise people could downgrade to old signed PCR sets
+  whenever they want.
+
+* update HACKING.md to suggest developing elogind with the ideas from:
+  https://0pointer.net/blog/testing-my-system-code-in-usr-without-modifying-usr.html
+  https://0pointer.net/blog/running-an-container-off-the-host-usr.html
+
+* add a clear concept how the initrd can make up credentials on their own to
+  pass to the system when transitioning into the host OS. usecase: things like
+  cloud-init/ignitation and similar can parameterize the host with data they
+  acquire.
+
+* sd-event: compat wd reuse in inotify code: keep a set of removed watch
+  descriptors, and clear this set piecemeal when we see the IN_IGNORED event
+  for it, or when read() returns EAGAIN or on IN_Q_OVERFLOW. Then, whenever we
+  see an inotify wd event check against this set, and if it is contained ignore
+  the event. (to be fully correct this would have to count the occurrences, in
+  case the same wd is reused multiple times before we start processing
+  IN_IGNORED again)
+
+* elogind-fstab-generator: support addition mount specifications via kernel
+  cmdline. Usecase: invoke a VM, and mount a host homedir into it via
+  virtio-fs.
+
+* for vendor-built signed initrds:
+  - make sysext run in the initrd
+  - sysext should pick up sysext images from /.extra/ in the initrd, and insist
+    on verification if in secureboot mode
+  - kernel-install should be able to install pre-built unified kernel images in
+    type #2 drop-in dir in the ESP.
+  - kernel-install should be able install encrypted creds automatically for
+    machine id, root pw, rootfs uuid, resume partition uuid, and place next to
+    EFI kernel, for sd-stub to pick them up. These creds should be locked to
+    the TPM, and bind to the right PCR the kernel is measured to.
+  - kernel-install should be able to pick up initrd sysexts automatically and
+    place them next to EFI kernel, for sd-stub to pick them up.
+  - elogind-fstab-generator should look for rootfs device to mount in creds
+  - pid 1 should look for machine ID in creds
+  - elogind-resume-generator should look for resume partition uuid in creds
+  - sd-stub: automatically pick up microcode from ESP (/loader/microcode/*)
+    and synthesize initrd from it, and measure it. Signing is not necessary, as
+    microcode does that on its own. Pass as first initrd to kernel.
+
+* Add a new service type very similar to Type=notify, that goes one step
+  further and extends the protocol to cover reloads. Specifically, SIGHUP will
+  become the official way to reload, and daemon has to respond with sd_notify()
+  to report when it starts reloading, and when it is complete reloading. Care
+  must be taken to remove races from this model. I.e. PID 1 needs to take
+  CLOCK_MONOTONIC, then send SIGHUP, then wait for at least one RELOADING=1
+  message that comes with a newer timestamp, then wait for a READY=1 message.
+  while we are at it, also maybe extend the logic to require handling of some
+  specific SIGRT signal for setting debug log level, that carries the level via
+  the sigqueue() data parameter. With that we extended with minimal logic the
+  service runtime logic quite substantially.
+
+* firstboot: maybe just default to C.UTF-8 locale if nothing is set, so that we
+  don't query this unnecessarily in entirely uninitialized
+  containers. (i.e. containers with empty /etc).
+
+* beef up sd_notify() to support AV_VSOCK in $NOTIFY_SOCKET, so that VM
+  managers can get ready notifications from VMs, just like container managers
+  from their payload. Also pick up address from qemu/fw_cfg if set there.
+  (which has benefits, given SecureBoot and kernel cmdline are not necessarily
+  friends.)
+
+* mirroring this: maybe support binding to AV_VSOCK in Type=notify services,
+  then passing $NOTIFY_SOCKET and $NOTIFY_GUESTCID with PID1's cid (typically
+  fixed to "2", i.e. the official host cid) and the expected guest cid, for the
+  two sides of the channel. The latter env var could then be used in an
+  appropriate qemu cmdline. That way qemu payloads could talk sd_notify()
+  directly to host service manager.
+
+* maybe write a tool that binds an AF_VFSOCK socket, then invokes qemu,
+  extending the command line to enable vsock on the VM, and using fw_cfg to
+  configure socket address.
+
+* sd-boot: rework random seed handling following recent kernel changes: always
+  pass seed to kernel, but credit only if secure boot is used
+
+* sd-boot: also include the hyperv "vm generation id" in the random seed hash,
+  to cover nicely for machine clones. It's found in the ACPI tables, which
+  should be easily accessible from UEFI.
+
+* sd-boot: add menu item for shutdown? or hotkey?
+
+* sd-device has an API to create an sd_device object from a device id, but has
+  no api to query the device id
+
+* sd-device should return the devnum type (i.e. 'b' or 'c') via some API for an
+  sd_device object, so that data passed into sd_device_new_from_devnum() can
+  also be queried.
+
+* sd-event: optionally, if per-event source rate limit is hit, downgrade
+  priority, but leave enabled, and once ratelimit window is over, upgrade
+  priority again. That way we can combat event source starvation without
+  stopping processing events from one source entirely.
+
+* sd-event: similar to existing inotify support add fanotify support (given
+  that apparently new features in this area are only going to be added to the
+  latter).
+
+* sd-event: add 1st class event source for clock changes
+
+* sd-event: add 1st class event source for timezone changes
+
+* support uefi/http boots with sd-boot: instead of looking for dropin files in
+  /loader/entries/ dir, look for a file /loader/entries/SHA256SUMS and use that
+  as directory manifest. The file would be a standard directory listing as
+  generated by GNU sha256sums.
+
+* sd-boot: maybe add support for embedding the various auxiliary resources we
+  look for right in the sd-boot binary. i.e. take inspiration from sd-stub
+  logic: allow combining sd-boot via objcopy with kernels to enumerate, .conf
+  files, drivers, keys to enroll and so on. Then, add whatever we find that way
+  to the menu. Usecase: allow building a single PE image you can boot into via
+  UEFI HTTP boot.
+
+* maybe add a new UEFI stub binary "sd-http". It works similar to sd-stub, but
+  all it does is download a file from a http server, and execute it, after
+  optionally checking its hash sum. idea would be: combine this "sd-http" stub
+  binary with some minimal info about an URL + hash sum, plus .osrel data, and
+  drop it into the unified kernel dir in the ESP. And bam you have something
+  that is tiny, feels a lot like a unified kernel, but all it does is chainload
+  the real kernel. benefit: downloading these stubs would be tiny and quick,
+  hence cheap for enumeration.
+
+* sysext: measure all activated sysext into a TPM PCR
+
+* maybe add a "syscfg" concept, that is almost entirely identical to "sysext",
+  but operates on /etc/ instead of /usr/ and /opt/. Use case would be: trusted,
+  authenticated, atomic, additive configuration management primitive: drop in a
+  configuration bundle, and activate it, so that it is instantly visible,
+  comprehensively.
+
+* elogind-dissect: show available versions inside of a disk image, i.e. if
+  multiple versions are around of the same resource, show which ones. (in other
+  words: show partition labels).
+
+* elogind-nspawn: make boot assessment do something sensible in a
+  container. i.e send an sd_notify() from payload to container manager once
+  boot-up is completed successfully, and use that in nspawn for dealing with
+  boot counting, implemented in the partition table labels and directory names.
+
+* maybe add a generator that reads /proc/cmdline, looks for
+  elogind.pull-raw-portable=, elogind-pull-raw-sysext= and similar switches
+  that take an URL as parameter. It then generates service units for
+  elogind-pull calls that download these URLs if not installed yet. usecase:
+  invoke a VM or nspawn container in a way it automatically deploys/runs these
+  images as OS payloads. i.e. have a generic OS image you can point to any
+  payload you like, which is then downloaded, securely verified and run.
+
+* improve scope units to support creation by pidfd instead of by PID
+
+* deprecate cgroupsv1 further (print log message at boot)
+
+* elogind-dissect: add --cat switch for dumping files such as /etc/os-release
+
+* per-service sandboxing option: ProtectIds=. If used, will overmount
+  /etc/machine-id and /proc/sys/kernel/random/boot_id with synthetic files, to
+  make it harder for the service to identify the host. Depending on the user
+  setting it should be fully randomized at invocation time, or a hash of the
+  real thing, keyed by the unit name or so. Of course, there are other ways to
+  get these IDs (e.g. journal) or similar ids (e.g. MAC addresses, DMI ids, CPU
+  ids), so this knob would only be useful in combination with other lockdown
+  options. Particularly useful for portable services, and anything else that
+  uses RootDirectory= or RootImage=. (Might also over-mount
+  /sys/class/dmi/id/*{uuid,serial} with /dev/null).
+
+* journalctl/timesyncd: whenever timesyncd acquires a synchronization from NTP,
+  create a structured log entry that contains boot ID, monotonic clock and
+  realtime clock (I mean, this requires no special work, as these three fields
+  are implicit). Then in journalctl when attempting to display the realtime
+  timestamp of a log entry, first search for the closest later log entry
+  of this kinda that has a matching boot id, and convert the monotonic clock
+  timestamp of the entry to the realtime clock using this info. This way we can
+  retroactively correct the wallclock timestamps, in particular for systems
+  without RTC, i.e. where initially wallclock timestamps carry rubbish, until
+  an NTP sync is acquired.
+
+* kernel-install:
+  - add --all switch for rerunning kernel-install for all installed kernels
+  - maybe add env var that shortcuts kernel-install for installers that want to
+    call it at the end only
+
+* doc: prep a document explaining resolved's internal objects, i.e. Query
+  vs. Question vs. Transaction vs. Stream and so on.
+
+* doc: prep a document explaining PID 1's internal logic, i.e. transactions,
+  jobs, units
+
+* bootspec: bring UEFI and userspace enumeration of bootspec entries back into
+  sync, i.e. parse out architecture field in sd-boot (currently only done in
+  userspace)
+
+* automatically ignore threaded cgroups in cg_xyz().
+
+* add linker script that implicitly adds symbol for build ID and new coredump
+  json package metadata, and use that when logging
+
+* elogind-dissect: show GPT disk UUID in output
+
+* Enable RestrictFileSystems= for all our long-running services (similar:
+  RestrictNetworkInterfaces=)
+
+* Add elogind-analyze security checks for RestrictFileSystems= and
+  RestrictNetworkInterfaces=
+
+* cryptsetup/homed: implement TOTP authentication backed by TPM2 and its
+  internal clock.
+
+* nspawn: optionally set up nftables/iptables routes that forward UDP/TCP
+  traffic on port 53 to resolved stub 127.0.0.54
+
+* man: rework os-release(5), and clearly separate our extension-release.d/ and
+  initrd-release parts, i.e. list explicitly which fields are about what.
+
+* sysext: before applying a sysext, do a superficial validation run so that
+  things are not rearranged to wildy. I.e. protect against accidental fuckups,
+  such as masking out /usr/lib/ or so. We should probably refuse if existing
+  inodes are replaced by other types of inodes or so.
+
+* userdb: when synthesizing NSS records, pick "best" password from defined
+  passwords, not just the first. i.e. if there are multiple defined, prefer
+  unlocked over locked and prefer non-empty over empty.
+
+* maybe add a tool inspired by the GPT auto discovery spec that runs in the
+  initrd and rearranges the rootfs hierarchy via bind mounts, if
+  enabled. Specifically in some top-level dir /@auto/ it will look for
+  dirs/symlinks/subvolumes that are named after their purpose, and optionally
+  encode a version as well as assessment counters, and then mount them into the
+  file system tree to boot into, similar to how we do that for the gpt auto
+  logic. Maybe then bind mount the original root into /.superior or something
+  like that (so that update tools can look there). Further discussion in this
+  thread:
+  https://lists.freedesktop.org/archives/elogind-devel/2021-November/047059.html
+  The GPT dissection logic should automatically enable this tool whenever we
+  detect a specially marked root fs (i.e introduce a new generic root gpt type
+  for this, that is arch independent). The also implement this in the image
+  dissection logic, so that nspawn/RootImage= and so on grok it. Maybe make
+  generic enough so that it can also work for ostrees arrangements.
+
+* if a path ending in ".auto.d/" is set for RootDirectory=/RootImage= then do a
+  strverscmp() of everything inside that dir and use that. i.e. implement very
+  simple version control. Also use this in elogind-nspawn --image= and so on.
+
+* homed: while a home dir is not activated generate slightly different NSS
+  records for it, that reports the home dir as "/" and the shell as some binary
+  provided by us. Then, when an SSH login happens and SSH permits it our binary
+  is invoked. This binary can then talk to homed and activate the homedir if
+  it's not around yet, prompting the user for a password. Once that succeeded
+  we'll switch to the real user record, i.e. home dir and shell, and our tool
+  exec()s the latter. Net effect: ssh'ing into a homed account will just work:
+  we'll neatly prompt for the homedir's password if its needed. –– Building on
+  this we could take this even further: since this tool will potentially have
+  access to the client's ssh-agent (if ssh-agent forwarding is enabled) we
+  could implement SSH unlocking of a homedir with that: when enrolling a new
+  ssh pubkey in a user record we'd ask the ssh-agent to sign some random value
+  with the privkey, then use that as luks key to unlock the home dir. Will not
+  work for ECDSA keys since their signatures contain a random component, but
+  will work for RSA and Ed25519 keys.
+
+* add tiny service that decrypts encrypted user records passed via initrd
+  credential logic and drops them into /run where nss-elogind can pick them up,
+  similar to /run/host/userdb/. Usecase: drop a root user JSON record there,
+  and use it in the initrd to log in as root with locally selected password,
+  for debugging purposes. Other usecase: boot into qemu with regular user
+  mounted from host. maybe put this in elogind-user-sessions.service?
+
+* drop dependency on libcap, replace by direct syscalls based on
+  CapabilityQuintet we already have. (This likely allows us drop drop libcap
+  dep in the base OS image)
+
+* sysext: automatically activate sysext images dropped in via new sd-stub
+  sysext pickup logic. (must insist on verity + signature on those though)
+
+* add concept for "exitrd" as inverse of "initrd", that we can transition to at
+  shutdown, and has similar security semantics. This should then take the place
+  of dracut's shutdown logic. Should probably support sysexts too. Care needs
+  to be taken that the resulting logic ends up in RAM, i.e. is copied out of
+  on-disk storage.
+
+* userdbd: implement an additional varlink service socket that provides the
+  host user db in restricted form, then allow this to be bind mounted into
+  sandboxed environments that want the host database in minimal form. All
+  records would be stripped of all meta info, except the basic UID/name
+  info. Then use this in portabled environments that do not use PrivateUsers=1.
+
+* logind introduce two types of sessions: "heavy" and "light". The former would
+  be our current sessions. But the latter would be a new type of session that
+  is mostly the same but does not pull in user@.service or wait for it. Then,
+  allow configuration which type of session is desired via pam_elogind
+  parameters, and then make user@.service's session one of these "light" ones.
+  People could then choose to make FTP sessions and suchlike "light" if they
+  don't want the service manager to be started for that.
+
+* /etc/veritytab: allow that the roothash column can be specified as fs path
+  including a path to an AF_UNIX path, similar to how we do things with the
+  keys of /etc/crypttab. That way people can store/provide the roothash
+  externally and provide to us on demand only.
+
+* add high-level lockdown level for GPT dissection logic: e.g. an enum that can
+  be ANY (to mount anything), TRUSTED (to require that /usr is on signed
+  verity, but rest doesn't matter), LOCKEDDOWN (to require that everything is
+  on signed verity, except for ESP), SUPERLOCKDOWN (like LOCKEDDOWN but ESP not
+  allowed). And then maybe some flavours of that that declare what is expected
+  from home/srv/var… Then, add a new cmdline flag to all tools that parse such
+  images, to configure this. Also, add a kernel cmdline option for this, to be
+  honoured by the gpt auto generator.
+
+  Alternative idea: add "elogind.gpt_auto_policy=rhvs" to allow gpt-auto to
+  only mount root dir, /home/ dir, /var/ and /srv/, but nothing else. And then
+  minor extension to this, insisting on encryption, for example
+  "elogind.gpt_auto_policy=r+v+h" to require encryption for root and var but not
+  for /home/, and similar. Similar add --image-dissect-policy= to tools that
+  take --image= that take the same short string.
+
+* nspawn: maybe optionally insert .nspawn file as GPT partition into images, so
+  that such container images are entirely stand-alone and can be updated as
+  one.
+
+* we probably should extend the root verity hash of the root fs into some PCR
+  on boot. (i.e. maybe add a veritytab option tpm2-measure=12 or so to measure
+  it into PCR 12); Similar: we probably should extend the LUKS volume key of
+  the root fs into some PCR on boot. (i.e. maybe add a crypttab option
+  tpm2-measure=15 or so to measure it into PCR 15); once both are in place
+  update gpt-auto-discovery to generate these by default for the partitions it
+  discovers. Static vendor stuff should probably end up in PCR 12 (i.e. the
+  verity hash), with local keys in PCR 15 (i.e. the encryption volume
+  key). That way, we nicely distinguish resources supplied by the OS vendor
+  (i.e. sysext, root verity) from those inherently local (i.e. encryption key),
+  which is useful if they shall be signed separately.
+
+* add a "policy" to the dissection logic. i.e. a bit mask what is OK to mount,
+  what must be read-only, what requires encryption, and what requires
+  authentication.
+
+* in uefi stub: query firmware regarding which PCR banks are being used, store
+  that in EFI var. then use this when enrolling TPM2 in cryptsetup to verify
+  that the selected PCRs actually are used by firmware.
+
+* rework recursive read-only remount to use new mount API
+
+* PAM: pick up authentication token from credentials
+
+* when mounting disk images: if IMAGE_ID/IMAGE_VERSION is set in os-release
+  data in the image, make sure the image filename actually matches this, so
+  that images cannot be misused.
+
 * New udev block device symlink names:
-  /dev/disk/by-parttypelabel/<pttype>/<ptlabel>. Use case: if pt label is used
+  /dev/disk/by-parttypelabel/<pttype>-<ptlabel>. Use case: if pt label is used
   as partition image version string, this is a safe way to reference a specific
   version of a specific partition type, in particular where related partitions
   are processed (e.g. verity + rootfs both named "LennartOS_0.7").
+
+* sysupdate:
+  - add fuzzing to the pattern parser
+  - support casync as download mechanism
+  - "elogind-sysupdate update --all" support, that iterates through all components
+    defined on the host, plus all images installed into /var/lib/machines/,
+    /var/lib/portable/ and so on.
+  - figure out what to do about system extensions (i.e. they need to imply an
+    update component, since otherwise system extenion' sysupdate.d/ files would
+    override the host's update files.)
+  - Allow invocation with a single transfer definition, i.e. with
+    --definitions= pointing to a file rather than a dir.
+  - add ability to disable implicit decompression of downloaded artifacts,
+    i.e. a Compress=no option in the transfer definitions
 
 * in sd-id128: also parse UUIDs in RFC4122 URN syntax (i.e. chop off urn:uuid: prefix)
 
@@ -99,11 +1039,6 @@ Features:
   https://github.com/dvdhrm/docs/blob/master/drm-howto/modeset.c for an example
   for doing that.
 
-* pass elogind-detect-virt result to generators as env var. Modifying behaviour
-  based on whether we are virtualized or not is a pretty common thing, hence
-  maybe just pass that info along for free in an env var. We cache the result
-  anyway, so it's basically free.
-
 * introduce /dev/disk/root/* symlinks that allow referencing partitions on the
   disk the rootfs is on in a reasonably secure way. (or maybe: add
   /dev/gpt-auto-{home,srv,boot,…} similar in style to /dev/gpt-auto-root as we
@@ -117,6 +1052,13 @@ Features:
   our usual socket activation protocol. If passed path refers to AF_UNIX
   socket: connect() to it.
 
+* Similar, ConnectStream= which takes IP addresses and connects to them.
+
+* Similar, Load= which takes literal data in text or base64 format, and puts it
+  into a memfd, and passes that. This enables some fun stuff, such as embedding
+  bash scripts in unit files, by combining Load= with ExecStart=/bin/bash
+  /proc/self/fd/3
+
 * add a ConnectSocket= setting to service unit files, that may reference a
   socket unit, and which will connect to the socket defined therein, and pass
   the resulting fd to the service program via socket activation proto.
@@ -127,9 +1069,6 @@ Features:
 * importd: support image signature verification with PKCS#7 + OpenBSD signify
   logic, as alternative to crummy gpg
 
-* sysext: optionally, if the merged trees allow it use bind mounts instead of
-  overlayfs
-
 * add "elogind-analyze debug" + AttachDebugger= in unit files: The former
   specifies a command to execute; the latter specifies that an already running
   "elogind-analyze debug" instance shall be contacted and execution paused
@@ -138,43 +1077,33 @@ Features:
 
 * expose MS_NOSYMFOLLOW in various places
 
-* ability to insert trusted configuration and secrets into the boot parameters
-  of a kernel booting in a VM or on baremetal some way, via TPM
-  protection. idea:
-  1. pass via /proc/bootconfig
-  2. for secrets: put secrets in node of /proc/bootconfig, decrypt them via
-     TPM early on in PID 1, put them in $CREDENTIAL_PATH logic
-  3. for config: put signed data in node /proc/booconfig, validate via TPM
-     early on in PID 1, put data into /run/bootconfig/ as individual files
-  4. boot loader/stub should pick these up automatically from the boot loader
-     file systems
+* credentials system:
+  - acquire from EFI variable?
+  - acquire via via ask-password?
+  - acquire creds via keyring?
+  - pass creds via keyring?
+  - pass creds via memfd?
+  - acquire + decrypt creds from pkcs11?
+  - make elogind-cryptsetup acquire pw via creds logic
+  - make PAMName= acquire pw via creds logic
+  - make macsec/wireguard code in networkd read key via creds logic
+  - make gatwayd/remote read key via creds logic
+  - add sd_notify() command for flushing out creds not needed anymore
+  - make user manager instances create and use a user-specific key (the one in
+    /var/lib is root-only) and add --user switch to elogind-creds to use it
 
-* tpm2: support a PIN policy, i.e. allowing windows-style short authentication
-  passwords by using the TPM2 to enforce ratelimiting and such, use for
-  cryptsetup and homed
-
-* Add concept for upgrading TPM2 enrollments, maybe a new switch
-  --pcrs=4:<hash> or so, i.e. select a PCR to include in the hash, and then
-  override its hash
+* add tpm.target or so which is delayed until TPM2 device showed up in case
+  firmware indicates there is one.
 
 * TPM2: auto-reenroll in cryptsetup, as fallback for hosed firmware upgrades
   and such
 
 * introduce a new group to own TPM devices
 
-* cryptenroll: politely refuse enrolling new keys to homed volumes, since we
-  we cannot update identity info
-
-* cryptsetup: if only recovery keys are registered and no regular passphrases,
-  ask user for "recovery key", not "passphrase"
-
 * cyptsetup: add option for automatically removing empty password slot on boot
 
 * cryptsetup: optionally, when run during boot-up and password is never
   entered, and we are on battery power (or so), power off machine again
-
-* cryptsetup: when FIDO2/PKCS#11/TPM2 token/chip didn't show up after some
-  time, abort the attempt, fallback to asking for pw
 
 * cryptsetup: when waiting for FIDO2/PKCS#11 token, tell plymouth that, and
   allow plymouth to abort the waiting and enter pw instead
@@ -191,19 +1120,6 @@ Features:
   - cryptsetup-generator: allow specification of passwords in crypttab itself
   - support rd.luks.allow-discards= kernel cmdline params in cryptsetup generator
 
-* credentials system:
-  - maybe add AcquireCredential= for querying a cred via ask-password
-  - maybe try to acquire creds via keyring?
-  - maybe try to pass creds via keyring?
-  - maybe optionally pass creds via memfd
-  - maybe add support for decrypting creds via TPM
-  - maybe add support for decrypting/importing creds via pkcs11
-  - make elogind-cryptsetup acquire pw via creds logic
-  - make PAMName= acquire pw via creds logic
-  - make macsec/wireguard code in networkd read key via creds logic
-  - make gatwayd/remote read key via creds logic
-  - add sd_notify() command for flushing out creds not needed anymore
-
 * when configuring loopback netif, and it fails due to EPERM, eat up error if
   it happens to be set up alright already.
 
@@ -219,9 +1135,6 @@ Features:
   address as conduit for some minimal connection metainfo, and use it to
   restore the "description" logic that kdbus used to have.
 
-* teach LoadCredential= the ability to load all files from a specified dir as
-  individual creds
-
 * elogind-analyze netif that explains predictable interface (or networkctl)
 
 * Add service setting to run a service within the specified VRF. i.e. do the
@@ -234,20 +1147,12 @@ Features:
 * special case some calls of chase_symlinks() to use openat2() internally, so
   that the kernel does what we otherwise do.
 
+* add a new flag to chase_symlinks() that stops chasing once the first missing
+  component is found and then allows the caller to create the rest.
+
 * make use of new glibc 2.32 APIs sigabbrev_np() and strerrorname_np().
 
-* add /etc/integritytab, to support dm-integrity setups. In particular those
-  with HMAC as hash function, so that we can have a protected /home without
-  encryption (leaving encryption to the individual dirs/homed).
-
-* complement root=, rootflags=, rootfstype= with rootsubdir= which allows
-  mounting a subdir of the root fs as actual root. This can be used as
-  fstype-agnostic version of btrfs' rootflags=subvol=foobar.
-
 * if /usr/bin/swapoff fails due to OOM, log a friendly explanatory message about it
-
-* Remove any support for booting without /usr pre-mounted in the initrd entirely.
-  Update INITRD_INTERFACE.md accordingly.
 
 * pid1: Move to tracking of main pid/control pid of units per pidfd
 
@@ -258,7 +1163,6 @@ Features:
 
 * make us use dynamically fewer deps for containers in general purpose distros:
   o turn into dlopen() deps:
-    - elfutils (always)
     - p11-kit-trust (always)
     - kmod-libs (only when called from PID 1)
     - libblkid (only in RootImage= handling in PID 1, but not elsewhere)
@@ -276,16 +1180,14 @@ Features:
   mapping to $RUNTIME_DIRECTORY, $STATE_DIRECTORY and such
 
 * All tools that support --root= should also learn --image= so that they can
-  operate on disk images directly. Specifically: bootctl, systemctl,
-  coredumpctl. (Already done: elogind-nspawn, elogind-firstboot,
+  operate on disk images directly. Specifically: systemctl, coredumpctl.
+  (Already done: bootctl, elogind-nspawn, elogind-firstboot,
   elogind-repart, elogind-tmpfiles, elogind-sysusers, journalctl)
 
 * seccomp: by default mask x32 ABI system wide on x86-64. it's on its way out
 
 * seccomp: don't install filters for ABIs that are masked anyway for the
   specific service
-
-* seccomp: maybe merge all filters we install into one with that libseccomp API that allows merging.
 
 * busctl: maybe expose a verb "ping" for pinging a dbus service to see if it
   exists and responds.
@@ -294,20 +1196,14 @@ Features:
   for "hibernate" partitions, that are exactly like swap partitions but only
   activated right before hibernation and thus never used for regular swapping.
 
-* by default, in elogind --user service bump the OOMAdjust to 100, as privs
-  allow so that elogind survives
-
 * socket units: allow creating a udev monitor socket with ListenDevices= or so,
   with matches, then activate app through that passing socket over
 
-* unify on openssl (as soon as OpenSSL 3.0 is out, and the Debian license
-  confusion is gone)
-  - port sd_id128_get_machine_app_specific() over from khash
-  - port resolved over from libgcrypt (DNSSEC code)
-  - port journald + fsprg over from libgcrypt
-  - port importd over from libgcrypt
-  - when that's done: kill khash.c
-  - when that's done: kill gnutls support in resolved
+* unify on openssl:
+  - kill gnutls support in resolved
+  - figure out what to do about libmicrohttpd, which has a hard dependency on
+    gnutls
+  - port fsprg over to a dlopen lib, then switch it to openssl
 
 * add growvol and makevol options for /etc/crypttab, similar to
   x-elogind.growfs and x-elogind-makefs.
@@ -367,9 +1263,8 @@ Features:
   https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/modern-standby-wake-sources
   at the end).
 
-* We should probably replace /var/log/README, /etc/rc.d/README with symlinks
-  that are linked to these places instead of copied. After all they are
-  constant vendor data.
+* We should probably replace /etc/rc.d/README with a symlink to doc
+  content. After all it is constant vendor data.
 
 * maybe add kernel cmdline params: to force random seed crediting
 
@@ -416,11 +1311,9 @@ Features:
 * paranoia: whenever we process passwords, call mlock() on the memory
   first. i.e. look for all places we use free_and_erasep() and
   augment them with mlock(). Also use MADV_DONTDUMP.
+  Alternatively (preferably?) use memfd_secret().
 
 * Move RestrictAddressFamily= to the new cgroup create socket
-
-* support the bind/connect/sendmsg cgroup stuff for sandboxing, and possibly
-  patching around
 
 * maybe implicitly attach monotonic+realtime timestamps to outgoing messages in
   log.c and sd-journal-send
@@ -428,9 +1321,6 @@ Features:
 * optionally: turn on cgroup delegation for per-session scope units
 
 * introduce per-unit (i.e. per-slice, per-service) journal log size limits.
-
-* sd-boot: automatically load EFI modules from some drop-in dir, so that people
-  can add in file system drivers and such
 
 * sd-boot: optionally, show boot menu when previous default boot item has
   non-zero "tries done" count
@@ -477,9 +1367,7 @@ Features:
   selected user is resolvable in the service even if it ships its own /etc/passwd)
 
 * Fix DECIMAL_STR_MAX or DECIMAL_STR_WIDTH. One includes a trailing NUL, the
-  other doesn't. What a disaster. Probably to exclude it. Also
-  DECIMAL_STR_WIDTH should probably add an extra "-" into account for negative
-  numbers.
+  other doesn't. What a disaster. Probably to exclude it.
 
 * Check that users of inotify's IN_DELETE_SELF flag are using it properly, as
   usually IN_ATTRIB is the right way to watch deleted files, as the former only
@@ -547,8 +1435,6 @@ Features:
   systemd-journald writes to /var/log/journal, which could be useful when we
   doing disk usage calculations and so on.
 
-* taint elogind if there are fewer than 65536 users assigned (userns) to the system.
-
 * deprecate RootDirectoryStartOnly= in favour of a new ExecStart= prefix char
 
 * add a new RuntimeDirectoryPreserve= mode that defines a similar lifecycle for
@@ -579,7 +1465,7 @@ Features:
 * beef up pam_systemd to take unit file settings such as cgroups properties as
   parameters
 
-* maybe hook of xfs/ext4 quotactl() with services? i.e. automatically manage
+* maybe hook up xfs/ext4 quotactl() with services? i.e. automatically manage
   the quota of the user indicated in User= via unit file settings, like the
   other resource management concepts. Would mix nicely with DynamicUser=1. Or
   alternatively, do this with projids, so that we can also cover services
@@ -602,10 +1488,6 @@ Features:
 
   ReadWritePaths=:/var/lib/foobar
 
-* hostnamed: populate form factor data from a new hwdb database, so that old
-  yogas can be recognized as "convertible" too, even if they predate the DMI
-  "convertible" form factor
-
 * Add ExecMonitor= setting. May be used multiple times. Forks off a process in
   the service cgroup, which is supposed to monitor the service, and when it
   exits the service is considered failed by its monitor.
@@ -619,7 +1501,8 @@ Features:
   "systemd-gdb" for attaching to the start-up of any system service in its
   natural habitat.
 
-* gpt-auto logic: support encrypted swap, add kernel cmdline option to force it, and honour a gpt bit about it, plus maybe a configuration file
+* gpt-auto logic: support encrypted swap, add kernel cmdline option to force
+  it, and honour a gpt bit about it, plus maybe a configuration file
 
 * add a percentage syntax for TimeoutStopSec=, e.g. TimeoutStopSec=150%, and
   then use that for the setting used in user@.service. It should be understood
@@ -680,27 +1563,21 @@ Features:
 
 * when we detect that there are waiting jobs but no running jobs, do something
 
-* push CPUAffinity= also into the "cpuset" cgroup controller
-
 * PID 1 should send out sd_notify("WATCHDOG=1") messages (for usage in the --user mode, and when run via nspawn)
 
 * there's probably something wrong with having user mounts below /sys,
   as we have for debugfs. for example, src/core/mount.c handles mounts
   prefixed with /sys generally special.
-  http://lists.freedesktop.org/archives/systemd-devel/2015-June/032962.html
+  https://lists.freedesktop.org/archives/elogind-devel/2015-June/032962.html
 
 * fstab-generator: default to tmpfs-as-root if only usr= is specified on the kernel cmdline
 
-* initrd-parse-etc.service: can we skip daemon-reload if /sysroot/etc/fstab is missing?
-  Note that we start initrd-fs.target and initrd-cleanup.target there, so a straightforward
-  ConditionPathExists= is not enough.
-
-* docs: bring http://www.freedesktop.org/wiki/Software/systemd/MyServiceCantGetRealtime up to date
+* docs: bring https://www.freedesktop.org/wiki/Software/elogind/MyServiceCantGetRealtime up to date
 
 * add a job mode that will fail if a transaction would mean stopping
   running units. Use this in timedated to manage the NTP service
   state.
-  http://lists.freedesktop.org/archives/systemd-devel/2015-April/030229.html
+  https://lists.freedesktop.org/archives/elogind-devel/2015-April/030229.html
 
 * The udev blkid built-in should expose a property that reflects
   whether media was sensed in USB CF/SD card readers. This should then
@@ -711,13 +1588,13 @@ Features:
 * hostnamectl: show root image uuid
 
 * Find a solution for SMACK capabilities stuff:
-  http://lists.freedesktop.org/archives/systemd-devel/2014-December/026188.html
+  https://lists.freedesktop.org/archives/elogind-devel/2014-December/026188.html
 
 * synchronize console access with BSD locks:
-  http://lists.freedesktop.org/archives/systemd-devel/2014-October/024582.html
+  https://lists.freedesktop.org/archives/elogind-devel/2014-October/024582.html
 
 * as soon as we have sender timestamps, revisit coalescing multiple parallel daemon reloads:
-  http://lists.freedesktop.org/archives/systemd-devel/2014-December/025862.html
+  https://lists.freedesktop.org/archives/elogind-devel/2014-December/025862.html
 
 * figure out when we can use the coarse timers
 
@@ -785,6 +1662,8 @@ Features:
   - when reloading configuration, apply new cgroup configuration
   - when recursively showing the cgroup hierarchy, optionally also show
     the hierarchies of child processes
+- add settings for cgroup.max.descendants and cgroup.max.depth,
+  maybe use them for user@.service
 
 * transient units:
   - add field to transient units that indicate whether systemd or somebody else saves/restores its settings, for integration with libvirt
@@ -836,9 +1715,9 @@ Features:
     log both units as UNIT=, so that journalctl -u triggers on both.
   - generate better errors when people try to set transient properties
     that are not supported...
-    http://lists.freedesktop.org/archives/elogind-devel/2015-February/028076.html
+    https://lists.freedesktop.org/archives/elogind-devel/2015-February/028076.html
   - maybe introduce WantsMountsFor=? Usecase:
-    http://lists.freedesktop.org/archives/elogind-devel/2015-January/027729.html
+    https://lists.freedesktop.org/archives/elogind-devel/2015-January/027729.html
   - recreate elogind's D-Bus private socket file on SIGUSR2
   - move PAM code into its own binary
   - when we automatically restart a service, ensure we restart its rdeps, too.
@@ -873,8 +1752,7 @@ Features:
   - add verification of [Install] section to elogind-analyze verify
 
 * timer units:
-  - timer units should get the ability to trigger when:
-    o DST changes
+  - timer units should get the ability to trigger when DST changes
   - Modulate timer frequency based on battery state
 
 * add libelogind-password or so to query passwords during boot using the password agent logic
@@ -884,8 +1762,6 @@ Features:
 * on shutdown: move utmp, wall, audit logic all into PID 1 (or logind?), get rid of elogind-update-utmp-runlevel
 
 * make repeated alt-ctrl-del presses printing a dump
-
-* hostnamed: before returning information from /etc/machine-info.conf check the modification data and reread. Similar for localed, ...
 
 * currently x-elogind.timeout is lost in the initrd, since crypttab is copied into dracut, but fstab is not
 
@@ -910,10 +1786,8 @@ Features:
   ConditionConfigSearchPathNotEmpty= or different syntax? See the discussion starting at
   https://github.com/systemd/systemd/pull/15109#issuecomment-607740136.
 
-* BootLoaderSpec: Clarify that the kernel has to be in $BOOT. Clarify
-  that the boot loader should be installed to the ESP. Define a way
-  how an installer can figure out whether a BLS compliant boot loader
-  is installed.
+* BootLoaderSpec: Define a way how an installer can figure out whether a BLS
+  compliant boot loader is installed.
 
 * think about requeuing jobs when daemon-reload is issued? usecase:
   the initrd issues a reload after fstab from the host is accessible
@@ -927,9 +1801,6 @@ Features:
 * shutdown logging: store to EFI var, and store to USB stick?
 
 * merge unit_kill_common() and unit_kill_context()
-
-* hw watchdog: optionally try to use the preset watchdog timeout instead of always overriding it
-  https://bugs.freedesktop.org/show_bug.cgi?id=54712
 
 * add a dependency on standard-conf.xml and other included files to man pages
 
@@ -949,7 +1820,6 @@ Features:
   - longer term: priority inheritance
   - dbus spec updates:
        - NameLost/NameAcquired obsolete
-       - GVariant
        - path escaping
   - update elogind.special(7) to mention that dbus.socket is only about the compatibility socket now
 
@@ -971,31 +1841,10 @@ Features:
 
 * mount: turn dependency information from /proc/self/mountinfo into dependency information between elogind units.
 
-* firstboot: allow provisioning of /etc/hosts entries, so that we can via the
-  credentials logic insert host name to resolve into containers/hosts. Usecase:
-  fork a container, and make it ping some specific address which is defined by
-  the host on invocation
-
 * elogind-firstboot: make sure to always use chase_symlinks() before
   reading/writing files
 
 * firstboot: make it useful to be run immediately after yum --installroot to set up a machine. (most specifically, make --copy-root-password work even if /etc/passwd already exists
-
-* sd-boot: define a drop-in dir in the ESP that may contain X.509
-  certificates. If the firmware is detected to be in setup mode, automatically
-  enroll them as PK/KEK/db, turn off setup mode and proceed. Optionally,
-  instead of auto-enrolling them add them to the sd-boot menu, giving the user
-  the option to manually enroll them, after selecting the menu entry. This way,
-  installer images can just drop the certfiicates in the ESP, and on first boot
-  can easily enroll the keys without ever booting up.
-
-* efi stub: optionally, load initrd from disk as a separate file, HMAC check it
-  with key from TPM, bound to PCR, refusing if failing. This would then allow
-  traditional distros that generate initrds locally to secure them with TPM:
-  after generating the initrd, do the HMAC calculation, put result in initrd
-  filename, done. This would then bind the validity of the initrd to the local
-  host, and used kernel, and means people cannot change initrd or kernel
-  without booting the kernel + initrd.
 
 * EFI:
   - honor language efi variables for default language selection (if there are any?)
@@ -1006,14 +1855,13 @@ Features:
 
 * bootctl,sd-boot: actually honour the "architecture" key
 
-* sd-boot: add service that automatically runs "bootctl update" on every boot,
-  in a graceful way, so that updated /usr trees automatically propagate into
-  updated boot loaders on reboot.
-
 * bootctl:
+  - show whether UEFI audit mode is available
   - teach it to prepare an ESP wholesale, i.e. with mkfs.vfat invocation
   - teach it to copy in unified kernel images and maybe type #1 boot loader spec entries from host
-  - make it operate on loopback files, dissecting enough to find ESP to operate on
+
+* kernel-install:
+  - optionally, support generating type #2 entries instead of type #1, including signing them
 
 * logind:
   - logind: optionally, ignore idle-hint logic for autosuspend, block suspend as long as a session is around
@@ -1040,8 +1888,9 @@ Features:
   - follow PropertiesChanged state more closely, to deal with quick logouts and
     relogins
   - (optionally?) spawn seat-manager@$SEAT.service whenever a seat shows up that as CanGraphical set
-
-* move logind udev rules to top-level rule.d/ directory
+  - expose details of boot entries on the bus. In particular, it should be possible
+    to query the list of boot entry titles that bootctl / sd-boot would show.
+    Currently we only expose their identifiers.
 
 * move multiseat vid/pid matches from logind udev rule to hwdb
 
@@ -1151,8 +2000,6 @@ Features:
   - when user tries to log into record signed by unrecognized key, automatically add key to our chain after polkit auth
   - rollback when resize fails mid-operation
   - GNOME's side for forget key on suspend (requires rework so that lock screen runs outside of uid)
-  - resize on login?
-  - shrink fs on logout?
   - update LUKS password on login if we find there's a password that unlocks the JSON record but not the LUKS device.
   - create on activate?
   - properties: icon url?, preferred session type?, administrator bool (which translates to 'wheel' membership)?, address?, telephone?, vcard?, samba stuff?, parental controls?
@@ -1169,63 +2016,49 @@ Features:
   - make size of $XDG_RUNTIME_DIR configurable in user record
   - query password from kernel keyring first
   - update even if record is "absent"
-  - add a "access mode" + "fstype" field to the "status" section of json identity records reflecting the actually used access mode and fstype, even on non-luks backends
   - move acct mgmt stuff from pam_elogind_home to pam_elogind?
   - when "homectl --pkcs11-token-uri=" is used, synthesize ssh-authorized-keys records for all keys we have private keys on the stick for
   - make slice for users configurable (requires logind rework)
   - logind: populate auto-login list bus property from PKCS#11 token
   - when determining state of a LUKS home directory, check DM suspended sysfs file
-  - introduce API for "making room", that grows/shrinks home directory
-    according to elastic parameters, discards blocks, and removes additional snapshots. Call it
-    either from UI when disk space gets low
-
-* homed: during login resize fs automatically towards size goal. Specifically,
-  resize to diskSize if possible, but leave a certain amount (configured by a
-  new value diskLeaveFreeSize) of space free on the backing fs.
-
-* homed: permit multiple user record signing keys to be used locally, and pick
-  the right one for signing records automatically depending on a pre-existing
-  signature
-
-* homed: add a way to "adopt" a home directory, i.e. strip foreign signatures
-  and insert a local signature instead.
-
-* homed: as an extension to the directory+subvolume backend: if located on
-  especially marked fs, then sync down password into LUKS header of that fs,
-  and always verify passwords against it too. Bootstrapping is a problem
-  though: if no one is logged in (or no other user even exists yet), how do you
-  unlock the volume in order to create the first user and add the first pw.
-
-* homed: support new FS_IOC_ADD_ENCRYPTION_KEY ioctl for setting up fscrypt
-
-* homed: maybe pre-create ~/.cache as subvol so that it can have separate quota
-  easily?
-
-* homed: if kernel 5.12 uid mapping mounts exist, use that instead of recursive
-  chowns.
-
-* add a switch to homectl (maybe called --first-boot) where it will check if
-  any non-system users exist, and if not prompts interactively for basic user
-  info, mimicking elogind-firstboot. Then, place this in a service that runs
-  after elogind-homed, but before gdm and friends, as a simple, barebones
-  fallback logic to get a regular user created on uninitialized systems.
-
-* homed: store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
-  elogind-cryptsetup, so that it can unlock homed volumes
-
-* homed: try to unmount in regular intervals when home dir was busy when we
-  tried because idle.
-
-* homed: keep an fd to the homedir open at all times, to keep the fs pinned
-  (autofs and such) while user is logged in.
-
-* when we resize disks (homed?) always round up to 4K sectors, not 512K
+  - when homed is in use, maybe start the user session manager in a mount namespace with MS_SLAVE,
+    so that mounts propagate down but not up - eg, user A setting up a backup volume
+    doesn't mean user B sees it
+  - use credentials logic/TPM2 logic to store homed signing key
+  - permit multiple user record signing keys to be used locally, and pick
+    the right one for signing records automatically depending on a pre-existing
+    signature
+  - add a way to "adopt" a home directory, i.e. strip foreign signatures
+    and insert a local signature instead.
+  - as an extension to the directory+subvolume backend: if located on
+    especially marked fs, then sync down password into LUKS header of that fs,
+    and always verify passwords against it too. Bootstrapping is a problem
+    though: if no one is logged in (or no other user even exists yet), how do you
+    unlock the volume in order to create the first user and add the first pw.
+  - support new FS_IOC_ADD_ENCRYPTION_KEY ioctl for setting up fscrypt
+  - maybe pre-create ~/.cache as subvol so that it can have separate quota
+    easily?
+  - add a switch to homectl (maybe called --first-boot) where it will check if
+    any non-system users exist, and if not prompts interactively for basic user
+    info, mimicking elogind-firstboot. Then, place this in a service that runs
+    after elogind-homed, but before gdm and friends, as a simple, barebones
+    fallback logic to get a regular user created on uninitialized systems.
+  - store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
+    elogind-cryptsetup, so that it can unlock homed volumes
+  - maybe make all *.home files owned by `elogind-home` user or so, so that we
+    can easily set overall quota for all users
+  - on login, if we can't fallocate initially, but rebalance is on, then allow
+    login in discard mode, then immediately rebalance, then turn off discard
+  - extend user records with optional "bulk" data. Specifically, a user
+    avatar/photo or so. This data should be stored along with the user record,
+    but probably shouldn't be part of the record itself, since it might be
+    large.
 
 * add a new switch --auto-definitions=yes/no or so to elogind-repart. If
   specified, synthesize a definition automatically if we can: enlarge last
   partition on disk, but only if it is marked for growing and not read-only.
 
-* elogind-repart: read LUKS encryption key from $CREDENTIALS_PATH
+* elogind-repart: read LUKS encryption key from $CREDENTIALS_DIRECTORY
 
 * elogind-repart: add a switch to factory reset the partition table without
   immediately applying the new configuration again. i.e. --factory-reset=leave
@@ -1270,9 +2103,16 @@ Features:
 
 * elogind-repart: allow disabling growing of specific partitions, or making
   them (think ESP: we don't ever want to grow it, since we cannot resize vfat)
+  Also add option to disable operation via kernel command line.
 
 * elogind-repart: make it a static checker during early boot for existence and
   absence of other partitions for trusted boot environments
+
+* elogind-repart: add support for SD_GPT_FLAG_GROWFS also on real systems, i.e.
+  generate some unit to actually enlarge the fs after growing the partition
+  during boot.
+
+* elogind-repart: do not print "Successfully resized …" when no change was done.
 
 * document:
   - document that deps in [Unit] sections ignore Alias= fields in
@@ -1356,9 +2196,6 @@ Features:
   - optionally automatically add FORWARD rules to iptables whenever nspawn is
     running, remove them when shut down.
 
-* nspawn: make --bind= work sanely with --private-users when uid mapping mounts
-  are used.
-
 * nspawn: add support for sysext extensions, too. i.e. a new --extension=
   switch that takes one or more arguments, and applies the extensions already
   during startup.
@@ -1407,10 +2244,13 @@ Features:
   - kill scsi_id
   - add trigger --subsystem-match=usb/usb_device device
   - reimport udev db after MOVE events for devices without dev_t
+  - re-enable ProtectClock= once only cgroupsv2 is supported.
+    See f562abe2963bad241d34e0b308e48cf114672c84.
 
 * coredump:
   - save coredump in Windows/Mozilla minidump format
   - when truncating coredumps, also log the full size that the process had, and make a metadata field so we can report truncated coredumps
+  - add examples for other distros in ELF_PACKAGE_METADATA
 
 * support crash reporting operation modes (https://live.gnome.org/GnomeOS/Design/Whiteboards/ProblemReporting)
 
@@ -1423,6 +2263,7 @@ Features:
   - add --test mode
   - teach tmpfiles.d q/Q logic something sensible in the context of XFS/ext4
     project quota
+  - teach tmpfiles.d m/M to move / atomic move + symlink old -> new
 
 * udev-link-config:
    - Make sure ID_PATH is always exported and complete for

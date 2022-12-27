@@ -173,6 +173,18 @@ int prioq_put(Prioq *q, void *data, unsigned *idx) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
+int prioq_ensure_put(Prioq **q, compare_func_t compare_func, void *data, unsigned *idx) {
+        int r;
+
+        r = prioq_ensure_allocated(q, compare_func);
+        if (r < 0)
+                return r;
+
+        return prioq_put(*q, data, idx);
+}
+#endif // 0
+
 static void remove_item(Prioq *q, struct prioq_item *i) {
         struct prioq_item *l;
 

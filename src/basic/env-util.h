@@ -40,7 +40,8 @@ char **strv_env_clean_with_callback(char **l, void (*invalid_callback)(const cha
 bool strv_env_name_is_valid(char **l);
 bool strv_env_name_or_assignment_is_valid(char **l);
 
-char **strv_env_merge(size_t n_lists, ...);
+char** _strv_env_merge(char **first, ...);
+#define strv_env_merge(first, ...) _strv_env_merge(first, __VA_ARGS__, POINTER_MAX)
 char **strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 
 #endif // 0
@@ -50,16 +51,21 @@ char **strv_env_unset_many(char **l, ...) _sentinel_;
 #endif // 0
 int strv_env_replace_consume(char ***l, char *p); /* In place ... */
 int strv_env_replace_strdup(char ***l, const char *assignment);
+#if 0 /// UNNEEDED by elogind
+int strv_env_replace_strdup_passthrough(char ***l, const char *assignment);
 int strv_env_assign(char ***l, const char *key, const char *value);
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 char *strv_env_get_n(char **l, const char *name, size_t k, unsigned flags) _pure_;
 char *strv_env_get(char **x, const char *n) _pure_;
-#endif // 0
 char *strv_env_pairs_get(char **l, const char *name) _pure_;
+#endif // 0
 
 int getenv_bool(const char *p);
 int getenv_bool_secure(const char *p);
+
+int getenv_uint64_secure(const char *p, uint64_t *ret);
 
 /* Like setenv, but calls unsetenv if value == NULL. */
 int set_unset_env(const char *name, const char *value, bool overwrite);
@@ -75,4 +81,7 @@ int setenv_elogind_exec_pid(bool update_only);
 /* Parses and does sanity checks on an environment variable containing
  * PATH-like colon-separated absolute paths */
 int getenv_path_list(const char *name, char ***ret_paths);
+
 #endif // 0
+
+int getenv_steal_erase(const char *name, char **ret);

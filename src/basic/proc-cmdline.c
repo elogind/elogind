@@ -124,9 +124,7 @@ int proc_cmdline_parse(proc_cmdline_parse_t parse_item, void *data, ProcCmdlineF
 
         /* We parse the EFI variable first, because later settings have higher priority. */
 
-        r = elogind_efi_options_variable(&line);
         if (!FLAGS_SET(flags, PROC_CMDLINE_IGNORE_EFI_OPTIONS)) {
-                r = elogind_efi_options_variable(&line);
                 r = elogind_efi_options_variable(&line);
                 if (r < 0) {
                         if (r != -ENODATA)
@@ -271,7 +269,6 @@ int proc_cmdline_get_key(const char *key, ProcCmdlineFlags flags, char **ret_val
         }
 
         line = mfree(line);
-        r = elogind_efi_options_variable(&line);
         r = elogind_efi_options_variable(&line);
         if (r == -ENODATA) {
                 if (ret_value)

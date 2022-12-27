@@ -9,9 +9,13 @@
 
 #include "sd-id128.h"
 
+//#include "ether-addr-util.h"
+//#include "in-addr-util.h"
+#include "log.h"
 #include "macro.h"
 #include "string-util.h"
-#include "log.h"
+#include "strv.h"
+#include "time-util.h"
 
 /*
   In case you wonder why we have our own JSON implementation, here are a couple of reasons why this implementation has
@@ -29,10 +33,10 @@
 
   Limitations:
   - Doesn't allow embedded NUL in strings
-  - Can't store integers outside of the -9223372036854775808…18446744073709551615 range (it will use 'long double' for
+  - Can't store integers outside of the -9223372036854775808…18446744073709551615 range (it will use 'double' for
     values outside this range, which is lossy)
   - Can't store negative zero (will be treated identical to positive zero, and not retained across serialization)
-  - Can't store non-integer numbers that can't be stored in "long double" losslessly
+  - Can't store non-integer numbers that can't be stored in "double" losslessly
   - Allows creation and parsing of objects with duplicate keys. The "dispatcher" will refuse them however. This means
     we can parse and pass around such objects, but will carefully refuse them when we convert them into our own data.
 
@@ -57,18 +61,24 @@ typedef enum JsonVariantType {
 } JsonVariantType;
 
 int json_variant_new_stringn(JsonVariant **ret, const char *s, size_t n);
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_base64(JsonVariant **ret, const void *p, size_t n);
+int json_variant_new_base32hex(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_hex(JsonVariant **ret, const void *p, size_t n);
-int json_variant_new_integer(JsonVariant **ret, intmax_t i);
-int json_variant_new_unsigned(JsonVariant **ret, uintmax_t u);
-int json_variant_new_real(JsonVariant **ret, long double d);
+int json_variant_new_octescape(JsonVariant **ret, const void *p, size_t n);
+#endif // 0
+int json_variant_new_integer(JsonVariant **ret, int64_t i);
+int json_variant_new_unsigned(JsonVariant **ret, uint64_t u);
+int json_variant_new_real(JsonVariant **ret, double d);
 int json_variant_new_boolean(JsonVariant **ret, bool b);
 int json_variant_new_array(JsonVariant **ret, JsonVariant **array, size_t n);
 int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_array_strv(JsonVariant **ret, char **l);
 int json_variant_new_object(JsonVariant **ret, JsonVariant **array, size_t n);
 int json_variant_new_null(JsonVariant **ret);
+#if 0 /// UNNEEDED by elogind
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id);
+#endif // 0
 
 static inline int json_variant_new_string(JsonVariant **ret, const char *s) {
         return json_variant_new_stringn(ret, s, SIZE_MAX);
@@ -78,12 +88,20 @@ JsonVariant *json_variant_ref(JsonVariant *v);
 JsonVariant *json_variant_unref(JsonVariant *v);
 void json_variant_unref_many(JsonVariant **array, size_t n);
 
+#define JSON_VARIANT_REPLACE(v, q)        \
+        do {                              \
+                typeof(v)* _v = &(v);     \
+                typeof(q) _q = (q);       \
+                json_variant_unref(*_v);  \
+                *_v = _q;                 \
+        } while(0)
+
 DEFINE_TRIVIAL_CLEANUP_FUNC(JsonVariant *, json_variant_unref);
 
 const char *json_variant_string(JsonVariant *v);
-intmax_t json_variant_integer(JsonVariant *v);
-uintmax_t json_variant_unsigned(JsonVariant *v);
-long double json_variant_real(JsonVariant *v);
+int64_t json_variant_integer(JsonVariant *v);
+uint64_t json_variant_unsigned(JsonVariant *v);
+double json_variant_real(JsonVariant *v);
 bool json_variant_boolean(JsonVariant *v);
 
 JsonVariantType json_variant_type(JsonVariant *v);
@@ -127,7 +145,9 @@ static inline bool json_variant_is_null(JsonVariant *v) {
 
 bool json_variant_is_negative(JsonVariant *v);
 bool json_variant_is_blank_object(JsonVariant *v);
+#if 0 /// UNNEEDED by elogind
 bool json_variant_is_blank_array(JsonVariant *v);
+#endif // 0
 bool json_variant_is_normalized(JsonVariant *v);
 bool json_variant_is_sorted(JsonVariant *v);
 
@@ -183,23 +203,26 @@ typedef enum JsonFormatFlags {
 } JsonFormatFlags;
 
 int json_variant_format(JsonVariant *v, JsonFormatFlags flags, char **ret);
-void json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix);
+int json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char *prefix);
 
 int json_variant_filter(JsonVariant **v, char **to_remove);
 
 int json_variant_set_field(JsonVariant **v, const char *field, JsonVariant *value);
 int json_variant_set_field_string(JsonVariant **v, const char *field, const char *value);
-int json_variant_set_field_integer(JsonVariant **v, const char *field, intmax_t value);
-int json_variant_set_field_unsigned(JsonVariant **v, const char *field, uintmax_t value);
+#if 0 /// UNNEEDED by elogind
+int json_variant_set_field_integer(JsonVariant **v, const char *field, int64_t value);
+int json_variant_set_field_unsigned(JsonVariant **v, const char *field, uint64_t value);
 int json_variant_set_field_boolean(JsonVariant **v, const char *field, bool b);
 int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l);
 
-/// elogind empty mask removed ()
 int json_variant_append_array(JsonVariant **v, JsonVariant *element);
+#endif // 0
 
 int json_variant_merge(JsonVariant **v, JsonVariant *m);
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_strv(JsonVariant *v, char ***ret);
+#endif // 0
 
 int json_variant_sort(JsonVariant **v);
 int json_variant_normalize(JsonVariant **v);
@@ -220,7 +243,9 @@ enum {
         _JSON_BUILD_STRING,
         _JSON_BUILD_INTEGER,
         _JSON_BUILD_UNSIGNED,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_REAL,
+#endif // 0
         _JSON_BUILD_BOOLEAN,
         _JSON_BUILD_ARRAY_BEGIN,
         _JSON_BUILD_ARRAY_END,
@@ -230,39 +255,115 @@ enum {
         _JSON_BUILD_PAIR_CONDITION,
         _JSON_BUILD_NULL,
         _JSON_BUILD_VARIANT,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_VARIANT_ARRAY,
+#endif // 0
         _JSON_BUILD_LITERAL,
         _JSON_BUILD_STRV,
+#if 0 /// UNNEEDED by elogind
         _JSON_BUILD_BASE64,
+        _JSON_BUILD_BASE32HEX,
         _JSON_BUILD_HEX,
+        _JSON_BUILD_OCTESCAPE,
         _JSON_BUILD_ID128,
         _JSON_BUILD_BYTE_ARRAY,
+        _JSON_BUILD_HW_ADDR,
+        _JSON_BUILD_PAIR_UNSIGNED_NON_ZERO,
+        _JSON_BUILD_PAIR_FINITE_USEC,
+        _JSON_BUILD_PAIR_STRING_NON_EMPTY,
+        _JSON_BUILD_PAIR_STRV_NON_EMPTY,
+        _JSON_BUILD_PAIR_VARIANT_NON_NULL,
+        _JSON_BUILD_PAIR_VARIANT_ARRAY_NON_EMPTY,
+        _JSON_BUILD_PAIR_IN4_ADDR_NON_NULL,
+        _JSON_BUILD_PAIR_IN6_ADDR_NON_NULL,
+        _JSON_BUILD_PAIR_IN_ADDR_NON_NULL,
+        _JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL,
+        _JSON_BUILD_PAIR_HW_ADDR_NON_NULL,
+#endif // 0
         _JSON_BUILD_MAX,
 };
 
-#define JSON_BUILD_STRING(s) _JSON_BUILD_STRING, ({ const char *_x = s; _x; })
-#define JSON_BUILD_INTEGER(i) _JSON_BUILD_INTEGER, ({ intmax_t _x = i; _x; })
-#define JSON_BUILD_UNSIGNED(u) _JSON_BUILD_UNSIGNED, ({ uintmax_t _x = u; _x; })
-#define JSON_BUILD_REAL(d) _JSON_BUILD_REAL, ({ long double _x = d; _x; })
-#define JSON_BUILD_BOOLEAN(b) _JSON_BUILD_BOOLEAN, ({ bool _x = b; _x; })
+#define JSON_BUILD_STRING(s) _JSON_BUILD_STRING, (const char*) { s }
+#define JSON_BUILD_INTEGER(i) _JSON_BUILD_INTEGER, (int64_t) { i }
+#define JSON_BUILD_UNSIGNED(u) _JSON_BUILD_UNSIGNED, (uint64_t) { u }
+#if 0 /// UNNEEDED by elogind
+#define JSON_BUILD_REAL(d) _JSON_BUILD_REAL, (double) { d }
+#endif // 0
+#define JSON_BUILD_BOOLEAN(b) _JSON_BUILD_BOOLEAN, (bool) { b }
 #define JSON_BUILD_ARRAY(...) _JSON_BUILD_ARRAY_BEGIN, __VA_ARGS__, _JSON_BUILD_ARRAY_END
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_EMPTY_ARRAY _JSON_BUILD_ARRAY_BEGIN, _JSON_BUILD_ARRAY_END
+#endif // 0
 #define JSON_BUILD_OBJECT(...) _JSON_BUILD_OBJECT_BEGIN, __VA_ARGS__, _JSON_BUILD_OBJECT_END
+#if 0 /// UNNEEDED by elogind
 #define JSON_BUILD_EMPTY_OBJECT _JSON_BUILD_OBJECT_BEGIN, _JSON_BUILD_OBJECT_END
-#define JSON_BUILD_PAIR(n, ...) _JSON_BUILD_PAIR, ({ const char *_x = n; _x; }), __VA_ARGS__
-#define JSON_BUILD_PAIR_CONDITION(c, n, ...) _JSON_BUILD_PAIR_CONDITION, ({ bool _x = c; _x; }), ({ const char *_x = n; _x; }), __VA_ARGS__
+#endif // 0
+#define JSON_BUILD_PAIR(n, ...) _JSON_BUILD_PAIR, (const char*) { n }, __VA_ARGS__
+#define JSON_BUILD_PAIR_CONDITION(c, n, ...) _JSON_BUILD_PAIR_CONDITION, (bool) { c }, (const char*) { n }, __VA_ARGS__
 #define JSON_BUILD_NULL _JSON_BUILD_NULL
-#define JSON_BUILD_VARIANT(v) _JSON_BUILD_VARIANT, ({ JsonVariant *_x = v; _x; })
-#define JSON_BUILD_VARIANT_ARRAY(v, n) _JSON_BUILD_VARIANT_ARRAY, ({ JsonVariant **_x = v; _x; }), ({ size_t _y = n; _y; })
-#define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, ({ const char *_x = l; _x; })
-#define JSON_BUILD_STRV(l) _JSON_BUILD_STRV, ({ char **_x = l; _x; })
-#define JSON_BUILD_BASE64(p, n) _JSON_BUILD_BASE64, ({ const void *_x = p; _x; }), ({ size_t _y = n; _y; })
-#define JSON_BUILD_HEX(p, n) _JSON_BUILD_HEX, ({ const void *_x = p; _x; }), ({ size_t _y = n; _y; })
-#define JSON_BUILD_ID128(id) _JSON_BUILD_ID128, ({ sd_id128_t _x = id; _x; })
-#define JSON_BUILD_BYTE_ARRAY(v, n) _JSON_BUILD_BYTE_ARRAY, ({ const void *_x = v; _x; }), ({ size_t _y = n; _y; })
+#define JSON_BUILD_VARIANT(v) _JSON_BUILD_VARIANT, (JsonVariant*) { v }
+#if 0 /// UNNEEDED by elogind
+#define JSON_BUILD_VARIANT_ARRAY(v, n) _JSON_BUILD_VARIANT_ARRAY, (JsonVariant **) { v }, (size_t) { n }
+#endif // 0
+#define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, (const char*) { l }
+#define JSON_BUILD_STRV(l) _JSON_BUILD_STRV, (char**) { l }
+#if 0 /// UNNEEDED by elogind
+#define JSON_BUILD_BASE64(p, n) _JSON_BUILD_BASE64, (const void*) { p }, (size_t) { n }
+#define JSON_BUILD_BASE32HEX(p, n) _JSON_BUILD_BASE32HEX, (const void*) { p }, (size_t) { n }
+#define JSON_BUILD_HEX(p, n) _JSON_BUILD_HEX, (const void*) { p }, (size_t) { n }
+#define JSON_BUILD_OCTESCAPE(p, n) _JSON_BUILD_OCTESCAPE, (const void*) { p }, (size_t) { n }
+#define JSON_BUILD_ID128(id) _JSON_BUILD_ID128, (const sd_id128_t*) { &(id) }
+#define JSON_BUILD_BYTE_ARRAY(v, n) _JSON_BUILD_BYTE_ARRAY, (const void*) { v }, (size_t) { n }
+#endif // 0
+#define JSON_BUILD_CONST_STRING(s) _JSON_BUILD_VARIANT, JSON_VARIANT_STRING_CONST(s)
+#if 0 /// UNNEEDED by elogind
+#define JSON_BUILD_IN4_ADDR(v) JSON_BUILD_BYTE_ARRAY((const struct in_addr*) { v }, sizeof(struct in_addr))
+#define JSON_BUILD_IN6_ADDR(v) JSON_BUILD_BYTE_ARRAY((const struct in6_addr*) { v }, sizeof(struct in6_addr))
+#define JSON_BUILD_IN_ADDR(v, f) JSON_BUILD_BYTE_ARRAY(((const union in_addr_union*) { v })->bytes, FAMILY_ADDRESS_SIZE_SAFE(f))
+#define JSON_BUILD_ETHER_ADDR(v) JSON_BUILD_BYTE_ARRAY(((const struct ether_addr*) { v })->ether_addr_octet, sizeof(struct ether_addr))
+#define JSON_BUILD_HW_ADDR(v) _JSON_BUILD_HW_ADDR, (const struct hw_addr_data*) { v }
+
+#define JSON_BUILD_PAIR_STRING(name, s) JSON_BUILD_PAIR(name, JSON_BUILD_STRING(s))
+#define JSON_BUILD_PAIR_INTEGER(name, i) JSON_BUILD_PAIR(name, JSON_BUILD_INTEGER(i))
+#define JSON_BUILD_PAIR_UNSIGNED(name, u) JSON_BUILD_PAIR(name, JSON_BUILD_UNSIGNED(u))
+#define JSON_BUILD_PAIR_REAL(name, d) JSON_BUILD_PAIR(name, JSON_BUILD_REAL(d))
+#define JSON_BUILD_PAIR_BOOLEAN(name, b) JSON_BUILD_PAIR(name, JSON_BUILD_BOOLEAN(b))
+#define JSON_BUILD_PAIR_ARRAY(name, ...) JSON_BUILD_PAIR(name, JSON_BUILD_ARRAY(__VA_ARGS__))
+#define JSON_BUILD_PAIR_EMPTY_ARRAY(name) JSON_BUILD_PAIR(name, JSON_BUILD_EMPTY_ARRAY)
+#define JSON_BUILD_PAIR_OBJECT(name, ...) JSON_BUILD_PAIR(name, JSON_BUILD_OBJECT(__VA_ARGS__))
+#define JSON_BUILD_PAIR_EMPTY_OBJECT(name) JSON_BUILD_PAIR(name, JSON_BUILD_EMPTY_OBJECT)
+#define JSON_BUILD_PAIR_NULL(name) JSON_BUILD_PAIR(name, JSON_BUILD_NULL)
+#define JSON_BUILD_PAIR_VARIANT(name, v) JSON_BUILD_PAIR(name, JSON_BUILD_VARIANT(v))
+#define JSON_BUILD_PAIR_VARIANT_ARRAY(name, v, n) JSON_BUILD_PAIR(name, JSON_BUILD_VARIANT_ARRAY(v, n))
+#define JSON_BUILD_PAIR_LITERAL(name, l) JSON_BUILD_PAIR(name, JSON_BUILD_LITERAL(l))
+#define JSON_BUILD_PAIR_STRV(name, l) JSON_BUILD_PAIR(name, JSON_BUILD_STRV(l))
+#define JSON_BUILD_PAIR_BASE64(name, p, n) JSON_BUILD_PAIR(name, JSON_BUILD_BASE64(p, n))
+#define JSON_BUILD_PAIR_HEX(name, p, n) JSON_BUILD_PAIR(name, JSON_BUILD_HEX(p, n))
+#define JSON_BUILD_PAIR_ID128(name, id) JSON_BUILD_PAIR(name, JSON_BUILD_ID128(id))
+#define JSON_BUILD_PAIR_BYTE_ARRAY(name, v, n) JSON_BUILD_PAIR(name, JSON_BUILD_BYTE_ARRAY(v, n))
+#define JSON_BUILD_PAIR_IN4_ADDR(name, v) JSON_BUILD_PAIR(name, JSON_BUILD_IN4_ADDR(v))
+#define JSON_BUILD_PAIR_IN6_ADDR(name, v) JSON_BUILD_PAIR(name, JSON_BUILD_IN6_ADDR(v))
+#define JSON_BUILD_PAIR_IN_ADDR(name, v, f) JSON_BUILD_PAIR(name, JSON_BUILD_IN_ADDR(v, f))
+#define JSON_BUILD_PAIR_ETHER_ADDR(name, v) JSON_BUILD_PAIR(name, JSON_BUILD_ETHER_ADDR(v))
+#define JSON_BUILD_PAIR_HW_ADDR(name, v) JSON_BUILD_PAIR(name, JSON_BUILD_HW_ADDR(v))
+
+#define JSON_BUILD_PAIR_UNSIGNED_NON_ZERO(name, u) _JSON_BUILD_PAIR_UNSIGNED_NON_ZERO, (const char*) { name }, (uint64_t) { u }
+#define JSON_BUILD_PAIR_FINITE_USEC(name, u) _JSON_BUILD_PAIR_FINITE_USEC, (const char*) { name }, (usec_t) { u }
+#define JSON_BUILD_PAIR_STRING_NON_EMPTY(name, s) _JSON_BUILD_PAIR_STRING_NON_EMPTY, (const char*) { name }, (const char*) { s }
+#define JSON_BUILD_PAIR_STRV_NON_EMPTY(name, l) _JSON_BUILD_PAIR_STRV_NON_EMPTY, (const char*) { name }, (char**) { l }
+#define JSON_BUILD_PAIR_VARIANT_NON_NULL(name, v) _JSON_BUILD_PAIR_VARIANT_NON_NULL, (const char*) { name }, (JsonVariant*) { v }
+#define JSON_BUILD_PAIR_IN4_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_IN4_ADDR_NON_NULL, (const char*) { name }, (const struct in_addr*) { v }
+#define JSON_BUILD_PAIR_IN6_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_IN6_ADDR_NON_NULL, (const char*) { name }, (const struct in6_addr*) { v }
+#define JSON_BUILD_PAIR_IN_ADDR_NON_NULL(name, v, f) _JSON_BUILD_PAIR_IN_ADDR_NON_NULL, (const char*) { name }, (const union in_addr_union*) { v }, (int) { f }
+#define JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_ETHER_ADDR_NON_NULL, (const char*) { name }, (const struct ether_addr*) { v }
+#define JSON_BUILD_PAIR_HW_ADDR_NON_NULL(name, v) _JSON_BUILD_PAIR_HW_ADDR_NON_NULL, (const char*) { name }, (const struct hw_addr_data*) { v }
+#endif // 0
 
 int json_build(JsonVariant **ret, ...);
 int json_buildv(JsonVariant **ret, va_list ap);
+ /* These two functions below are equivalent to json_build() (or json_buildv()) and json_variant_merge(). */
+int json_append(JsonVariant **v, ...);
+int json_appendv(JsonVariant **v, va_list ap);
 
 /* A bitmask of flags used by the dispatch logic. Note that this is a combined bit mask, that is generated from the bit
  * mask originally passed into json_dispatch(), the individual bitmask associated with the static JsonDispatch callout
@@ -275,9 +376,9 @@ typedef enum JsonDispatchFlags {
         JSON_SAFE       = 1 << 3, /* Don't accept "unsafe" strings in json_dispatch_string() + json_dispatch_string() */
         JSON_RELAX      = 1 << 4, /* Use relaxed user name checking in json_dispatch_user_group_name */
 
-        /* The following two may be passed into log_json() in addition to the three above */
-        JSON_DEBUG      = 1 << 4, /* Indicates that this log message is a debug message */
-        JSON_WARNING    = 1 << 5, /* Indicates that this log message is a warning message */
+        /* The following two may be passed into log_json() in addition to those above */
+        JSON_DEBUG      = 1 << 5, /* Indicates that this log message is a debug message */
+        JSON_WARNING    = 1 << 6, /* Indicates that this log message is a warning message */
 } JsonDispatchFlags;
 
 typedef int (*JsonDispatchCallback)(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
@@ -298,20 +399,18 @@ int json_dispatch_strv(const char *name, JsonVariant *variant, JsonDispatchFlags
 int json_dispatch_boolean(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
-int json_dispatch_intmax(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
-int json_dispatch_uintmax(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#if 0 /// UNNEEDED by elogind
+int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#endif // 0
+int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+int json_dispatch_uint16(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+int json_dispatch_int16(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_uid_gid(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_user_group_name(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_id128(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_unsupported(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
-
-assert_cc(sizeof(uintmax_t) == sizeof(uint64_t));
-#define json_dispatch_uint64 json_dispatch_uintmax
-
-assert_cc(sizeof(intmax_t) == sizeof(int64_t));
-#define json_dispatch_int64 json_dispatch_intmax
 
 assert_cc(sizeof(uint32_t) == sizeof(unsigned));
 #define json_dispatch_uint json_dispatch_uint32
@@ -359,8 +458,10 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
                 (JsonVariant*) ((uintptr_t) UNIQ_T(json_string_const, xq) + 1); \
         })
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size);
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size);
+#endif // 0
 
 const char *json_variant_type_to_string(JsonVariantType t);
 JsonVariantType json_variant_type_from_string(const char *s);

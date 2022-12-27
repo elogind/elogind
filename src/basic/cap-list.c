@@ -12,9 +12,11 @@
 #include "stdio-util.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
 
 #include "cap-from-name.h"
+#endif // 0
 #include "cap-to-name.h"
 
 const char *capability_to_name(int id) {
@@ -27,6 +29,7 @@ const char *capability_to_name(int id) {
         return capability_names[id];
 }
 
+#if 0 /// UNNEEDED by elogind
 int capability_from_name(const char *name) {
         const struct capability_name *sc;
         int r, i;
@@ -56,6 +59,7 @@ int capability_from_name(const char *name) {
 int capability_list_length(void) {
         return (int) ELEMENTSOF(capability_names);
 }
+#endif // 0
 
 int capability_set_to_string_alloc(uint64_t set, char **s) {
         _cleanup_free_ char *str = NULL;
@@ -94,6 +98,7 @@ int capability_set_to_string_alloc(uint64_t set, char **s) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int capability_set_from_string(const char *s, uint64_t *set) {
         uint64_t val = 0;
 
@@ -120,3 +125,4 @@ int capability_set_from_string(const char *s, uint64_t *set) {
 
         return 0;
 }
+#endif // 0

@@ -5,7 +5,7 @@
 #include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
-static void test_parse_percent(void) {
+TEST(parse_percent) {
         assert_se(parse_percent("") == -EINVAL);
         assert_se(parse_percent("foo") == -EINVAL);
         assert_se(parse_percent("0") == -EINVAL);
@@ -25,12 +25,12 @@ static void test_parse_percent(void) {
         assert_se(parse_percent("3.2%") == -EINVAL);
 }
 
-static void test_parse_percent_unbounded(void) {
+TEST(parse_percent_unbounded) {
         assert_se(parse_percent_unbounded("101%") == 101);
         assert_se(parse_percent_unbounded("400%") == 400);
 }
 
-static void test_parse_permille(void) {
+TEST(parse_permille) {
         assert_se(parse_permille("") == -EINVAL);
         assert_se(parse_permille("foo") == -EINVAL);
         assert_se(parse_permille("0") == -EINVAL);
@@ -68,7 +68,7 @@ static void test_parse_permille(void) {
         assert_se(parse_permille("0.1%") == 1);
 }
 
-static void test_parse_permille_unbounded(void) {
+TEST(parse_permille_unbounded) {
         assert_se(parse_permille_unbounded("1001‰") == 1001);
         assert_se(parse_permille_unbounded("4000‰") == 4000);
         assert_se(parse_permille_unbounded("2147483647‰") == 2147483647);
@@ -85,7 +85,7 @@ static void test_parse_permille_unbounded(void) {
 }
 #endif // 0
 
-static void test_parse_permyriad(void) {
+TEST(parse_permyriad) {
         assert_se(parse_permyriad("") == -EINVAL);
         assert_se(parse_permyriad("foo") == -EINVAL);
         assert_se(parse_permyriad("0") == -EINVAL);
@@ -130,7 +130,7 @@ static void test_parse_permyriad(void) {
         assert_se(parse_permyriad("3.212%") == -EINVAL);
 }
 
-static void test_parse_permyriad_unbounded(void) {
+TEST(parse_permyriad_unbounded) {
         assert_se(parse_permyriad_unbounded("1001‱") == 1001);
         assert_se(parse_permyriad_unbounded("4000‱") == 4000);
         assert_se(parse_permyriad_unbounded("2147483647‱") == 2147483647);
@@ -153,8 +153,9 @@ static void test_parse_permyriad_unbounded(void) {
         assert_se(parse_permyriad_unbounded("42949672.96%") == -ERANGE);
 }
 
-static void test_scale(void) {
+TEST(scale) {
         /* Check some fixed values */
+#if 0 /// UNNEEDED by elogind
         assert_se(UINT32_SCALE_FROM_PERCENT(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERCENT(50) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERCENT(100) == UINT32_MAX);
@@ -162,11 +163,13 @@ static void test_scale(void) {
         assert_se(UINT32_SCALE_FROM_PERMILLE(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERMILLE(500) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERMILLE(1000) == UINT32_MAX);
+#endif // 0
 
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(0) == 0);
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(5000) == UINT32_MAX/2+1);
         assert_se(UINT32_SCALE_FROM_PERMYRIAD(10000) == UINT32_MAX);
 
+#if 0 /// UNNEEDED by elogind
         /* Make sure there's no numeric noise on the 0%…100% scale when converting from percent and back. */
         for (int percent = 0; percent <= 100; percent++) {
                 log_debug("%i%% → %" PRIu32 " → %i%%",
@@ -186,6 +189,7 @@ static void test_scale(void) {
 
                 assert_se(UINT32_SCALE_TO_PERMILLE(UINT32_SCALE_FROM_PERMILLE(permille)) == permille);
         }
+#endif // 0
 
         /* Make sure there's no numeric noise on the 0‱…10000‱ scale when converting from permyriad and back. */
         for (int permyriad = 0; permyriad <= 10000; permyriad++) {
@@ -198,18 +202,4 @@ static void test_scale(void) {
         }
 }
 
-int main(int argc, char *argv[]) {
-        test_setup_logging(LOG_DEBUG);
-
-#if 0 /// UNNEEDED by elogind
-        test_parse_percent();
-        test_parse_percent_unbounded();
-        test_parse_permille();
-        test_parse_permille_unbounded();
-#endif // 0
-        test_parse_permyriad();
-        test_parse_permyriad_unbounded();
-        test_scale();
-
-        return 0;
-}
+DEFINE_TEST_MAIN(LOG_DEBUG);

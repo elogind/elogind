@@ -9,16 +9,16 @@
  * interface with this. */
 
 typedef union JsonValue  {
-        /* Encodes a simple value. On x86-64 this structure is 16 bytes wide (as long double is 128bit). */
+        /* Encodes a simple value. This structure is generally 8 bytes wide (as double is 64bit). */
         bool boolean;
-        long double real;
-        intmax_t integer;
-        uintmax_t unsig;
+        double real;
+        int64_t integer;
+        uint64_t unsig;
 } JsonValue;
 
 /* Let's protect us against accidental structure size changes on our most relevant arch */
 #ifdef __x86_64__
-assert_cc(sizeof(JsonValue) == 16U);
+assert_cc(sizeof(JsonValue) == 8U);
 #endif
 
 #define JSON_VALUE_NULL ((JsonValue) {})
@@ -54,8 +54,8 @@ enum
  * architectures we support. That's because we rely on the fact that malloc() will never allocate from the first memory
  * page, as it is a faulting page for catching NULL pointer dereferences. */
 #ifdef __GLIBC__ /// If elogind is compiled against musl-libc, the casting causes this to fail
-#endif // __GLIBC__
 assert_cc((unsigned) __JSON_VARIANT_MAGIC_MAX < 4096U);
+#endif // __GLIBC__
 
 enum { /* JSON tokens */
         JSON_TOKEN_END,

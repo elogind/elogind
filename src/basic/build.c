@@ -50,7 +50,7 @@ const char* const elogind_features =
         " -SECCOMP"
 #endif
 
-        /* crypto libraries */
+        /* cryptographic libraries */
 
 #if HAVE_GCRYPT
         " +GCRYPT"
@@ -167,6 +167,12 @@ const char* const elogind_features =
         " -QRENCODE"
 #endif
 
+#if HAVE_TPM2
+        " +TPM2"
+#else
+        " -TPM2"
+#endif
+
         /* compressors */
 
 #if HAVE_BZIP2
@@ -200,6 +206,12 @@ const char* const elogind_features =
 #endif
 
         /* other stuff that doesn't fit above */
+
+#if BPF_FRAMEWORK
+        " +BPF_FRAMEWORK"
+#else
+        " -BPF_FRAMEWORK"
+#endif
 
 #if HAVE_XKBCOMMON
         " +XKBCOMMON"

@@ -2,6 +2,7 @@
 title: Code Quality Tools
 category: Contributing
 layout: default
+SPDX-License-Identifier: LGPL-2.1-or-later
 ---
 
 # Code Quality Tools
@@ -37,26 +38,30 @@ available functionality:
    `./tools/find-tabs.sh recpatch` to fix them. (Again, grain of salt, foreign
    headers should usually be left unmodified.)
 
-6. Use `meson compile -C build check-api-docs` to compare the list of exported
-   symbols of `libsystemd.so` and `libudev.so` with the list of man pages. Symbols
+6. Use `ninja -C build check-api-docs` to compare the list of exported symbols
+   of `libelogind.so` and `libudev.so` with the list of man pages. Symbols
    lacking documentation are highlighted.
 
-7. Use `meson compile -C build update-hwdb` to automatically download and import the
-   PCI, USB and OUI databases into hwdb.
+7. Use `ninja -C build update-hwdb` and `ninja -C build update-hwdb-autosuspend`
+   to automatically download and import the PCI, USB, and OUI databases and the
+   autosuspend quirks into the hwdb.
 
-8. Use `meson compile -C build update-man-rules` to update the meson rules for
-   building man pages automatically from the docbook XML files included in
-   `man/`.
+8. Use `ninja -C build update-man-rules` to update the meson rules for building
+   man pages automatically from the docbook XML files included in `man/`.
 
-9. There are multiple CI systems in use that run on every github PR submission.
+9. There are multiple CI systems in use that run on every github pull request
+   submission or update.
 
-10. [Coverity](https://scan.coverity.com/) is analyzing systemd master in
-    regular intervals. The reports are available
+10. [Coverity](https://scan.coverity.com/) is analyzing elogind `main` branch
+    in regular intervals. The reports are available
     [online](https://scan.coverity.com/projects/systemd).
 
-11. [oss-fuzz](https://oss-fuzz.com/) is continuously fuzzing the
+11. [OSS-Fuzz](https://github.com/google/oss-fuzz) is continuously fuzzing the
     codebase. Reports are available
-    [online](https://oss-fuzz.com/v2/testcases?project=systemd).
+    [online](https://oss-fuzz.com/testcases?project=elogind&open=yes).
+    It also builds
+    [coverage reports](https://oss-fuzz.com/coverage-report/job/libfuzzer_asan_elogind/latest)
+    daily.
 
 12. Our tree includes `.editorconfig`, `.dir-locals.el` and `.vimrc` files, to
     ensure that editors follow the right indentiation styles automatically.
@@ -64,17 +69,17 @@ available functionality:
 13. When building systemd from a git checkout the build scripts will
     automatically enable a git commit hook that ensures whitespace cleanliness.
 
-14. [LGTM](https://lgtm.com/) analyzes every commit pushed to master. The list
-    of active alerts can be found
-    [here](https://lgtm.com/projects/g/systemd/systemd/alerts/?mode=list).
+14. [CodeQL](https://codeql.github.com/) analyzes each PR and every commit
+    pushed to `main`. The list of active alerts can be found
+    [here](https://github.com/systemd/systemd/security/code-scanning).
 
 15. Each PR is automatically tested with [Address Sanitizer](https://clang.llvm.org/docs/AddressSanitizer.html)
     and [Undefined Behavior Sanitizer](https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html).
-    See [Testing elogind using sanitizers](https://elogind.io/TESTING_WITH_SANITIZERS)
+    See [Testing elogind using sanitizers](TESTING_WITH_SANITIZERS.md)
     for more information.
 
 16. Fossies provides [source code misspelling reports](https://fossies.org/features.html#codespell).
-    The elogind report can be found [here](https://fossies.org/linux/test/elogind-master.tar.gz/codespell.html).
+    The elogind report can be found [here](https://fossies.org/linux/misc/elogind/codespell.html).
 
 Access to Coverity and oss-fuzz reports is limited. Please reach out to the
 maintainers if you need access.

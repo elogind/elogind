@@ -24,17 +24,36 @@
 
 #if 0 /// UNNEEDED by elogind
 static int name_owner_change_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
-        sd_event *e = userdata;
+        sd_event *e = ASSERT_PTR(userdata);
 
         assert(m);
-        assert(e);
 
         sd_bus_close(sd_bus_message_get_bus(m));
         sd_event_exit(e, 0);
 
         return 1;
 }
+#endif // 0
 
+int bus_log_address_error(int r, BusTransport transport) {
+        bool hint = transport == BUS_TRANSPORT_LOCAL && r == -ENOMEDIUM;
+
+        return log_error_errno(r,
+                               hint ? "Failed to set bus address: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)" :
+                                      "Failed to set bus address: %m");
+}
+
+int bus_log_connect_error(int r, BusTransport transport) {
+        bool hint_vars = transport == BUS_TRANSPORT_LOCAL && r == -ENOMEDIUM,
+             hint_addr = transport == BUS_TRANSPORT_LOCAL && ERRNO_IS_PRIVILEGE(r);
+
+        return log_error_errno(r,
+                               r == hint_vars ? "Failed to connect to bus: $DBUS_SESSION_BUS_ADDRESS and $XDG_RUNTIME_DIR not defined (consider using --machine=<user>@.host --user to connect to bus of other user)" :
+                               r == hint_addr ? "Failed to connect to bus: Operation not permitted (consider using --machine=<user>@.host --user to connect to bus of other user)" :
+                                                "Failed to connect to bus: %m");
+}
+
+#if 0 /// UNNEEDED by elogind
 int bus_async_unregister_and_exit(sd_event *e, sd_bus *bus, const char *name) {
         const char *match;
         const char *unique;
@@ -182,14 +201,14 @@ int bus_check_peercred(sd_bus *c) {
         return 1;
 }
 
-int bus_connect_system_systemd(sd_bus **_bus) {
+int bus_connect_system_systemd(sd_bus **ret_bus) {
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         int r;
 
-        assert(_bus);
+        assert(ret_bus);
 
         if (geteuid() != 0)
-                return sd_bus_default_system(_bus);
+                return sd_bus_default_system(ret_bus);
 
         /* If we are root then let's talk directly to the system
          * instance, instead of going via the bus */
@@ -204,28 +223,27 @@ int bus_connect_system_systemd(sd_bus **_bus) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return sd_bus_default_system(_bus);
+                return sd_bus_default_system(ret_bus);
 
         r = bus_check_peercred(bus);
         if (r < 0)
                 return r;
 
-        *_bus = TAKE_PTR(bus);
-
+        *ret_bus = TAKE_PTR(bus);
         return 0;
 }
 
-int bus_connect_user_systemd(sd_bus **_bus) {
+int bus_connect_user_systemd(sd_bus **ret_bus) {
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
         const char *e;
         int r;
 
-        assert(_bus);
+        assert(ret_bus);
 
         e = secure_getenv("XDG_RUNTIME_DIR");
         if (!e)
-                return sd_bus_default_user(_bus);
+                return sd_bus_default_user(ret_bus);
 
         ee = bus_address_escape(e);
         if (!ee)
@@ -241,26 +259,23 @@ int bus_connect_user_systemd(sd_bus **_bus) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return sd_bus_default_user(_bus);
+                return sd_bus_default_user(ret_bus);
 
         r = bus_check_peercred(bus);
         if (r < 0)
                 return r;
 
-        *_bus = TAKE_PTR(bus);
-
+        *ret_bus = TAKE_PTR(bus);
         return 0;
 }
 #endif // 0
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int bus_connect_transport(
                 BusTransport transport,
                 const char *host,
                 bool user,
                 sd_bus **ret) {
 
-/// elogind empty mask removed (UNNEEDED by elogind)
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         int r;
 
@@ -299,7 +314,7 @@ int bus_connect_transport(
                 break;
 
         default:
-                assert_not_reached("Hmm, unknown transport type.");
+                assert_not_reached();
         }
         if (r < 0)
                 return r;
@@ -314,8 +329,6 @@ int bus_connect_transport(
 
 #if 0 /// elogind is never used with systemd.
 int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus) {
-        int r;
-
         assert(transport >= 0);
         assert(transport < _BUS_TRANSPORT_MAX);
         assert(bus);
@@ -327,29 +340,23 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
 
         case BUS_TRANSPORT_LOCAL:
                 if (user)
-                        r = bus_connect_user_systemd(bus);
-                else {
-                        if (sd_booted() <= 0)
-                                /* Print a friendly message when the local system is actually not running systemd as PID 1. */
-                                return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
-                                                       "System has not been booted with systemd as init system (PID 1). Can't operate.");
-                        r = bus_connect_system_systemd(bus);
-                }
-                break;
+                        return bus_connect_user_systemd(bus);
+
+                if (sd_booted() <= 0)
+                        /* Print a friendly message when the local system is actually not running systemd as PID 1. */
+                        return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
+                                               "System has not been booted with systemd as init system (PID 1). Can't operate.");
+                return bus_connect_system_systemd(bus);
 
         case BUS_TRANSPORT_REMOTE:
-                r = sd_bus_open_system_remote(bus, host);
-                break;
+                return sd_bus_open_system_remote(bus, host);
 
         case BUS_TRANSPORT_MACHINE:
-                r = sd_bus_open_system_machine(bus, host);
-                break;
+                return sd_bus_open_system_machine(bus, host);
 
         default:
-                assert_not_reached("Hmm, unknown transport type.");
+                assert_not_reached();
         }
-
-        return r;
 }
 #endif // 0
 
@@ -486,7 +493,6 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
 
 int bus_track_add_name_many(sd_bus_track *t, char **l) {
         int r = 0;
-        char **i;
 
         assert(t);
 
@@ -560,7 +566,6 @@ int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *descri
 #if 0 /// UNNEEDED by elogind
 int bus_reply_pair_array(sd_bus_message *m, char **l) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-        char **k, **v;
         int r;
 
         assert(m);

@@ -20,6 +20,7 @@
 #define BUS_ERROR_UNIT_MASKED                  "org.freedesktop.elogind1.UnitMasked"
 #define BUS_ERROR_UNIT_GENERATED               "org.freedesktop.elogind1.UnitGenerated"
 #define BUS_ERROR_UNIT_LINKED                  "org.freedesktop.elogind1.UnitLinked"
+#define BUS_ERROR_UNIT_BAD_PATH                "org.freedesktop.elogind1.UnitBadPath"
 #define BUS_ERROR_JOB_TYPE_NOT_APPLICABLE      "org.freedesktop.elogind1.JobTypeNotApplicable"
 #define BUS_ERROR_NO_ISOLATION                 "org.freedesktop.elogind1.NoIsolation"
 #define BUS_ERROR_SHUTTING_DOWN                "org.freedesktop.elogind1.ShuttingDown"
@@ -126,5 +127,7 @@
 #define BUS_ERROR_TOO_MANY_OPERATIONS          "org.freedesktop.home1.TooManyOperations"
 #define BUS_ERROR_AUTHENTICATION_LIMIT_HIT     "org.freedesktop.home1.AuthenticationLimitHit"
 #define BUS_ERROR_HOME_CANT_AUTHENTICATE       "org.freedesktop.home1.HomeCantAuthenticate"
+#define BUS_ERROR_HOME_IN_USE                  "org.freedesktop.home1.HomeInUse"
+#define BUS_ERROR_REBALANCE_NOT_NEEDED         "org.freedesktop.home1.RebalanceNotNeeded"
 
 BUS_ERROR_MAP_ELF_USE(bus_common_errors);

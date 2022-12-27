@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <syslog.h>
+//#include <syslog.h>
 
-#include "sd-id128.h"
+//#include "sd-id128.h"
 
 //#include "glob-util.h"
-#include "hexdecoct.h"
-#include "macro.h"
+//#include "hexdecoct.h"
+//#include "macro.h"
 #include "path-util.h"
 #include "string-table.h"
 #include "syslog-util.h"
-#include "unit-name.h"
+//#include "unit-name.h"
 
 #if 0 /// UNNEEDED by elogind
 int syslog_parse_priority(const char **p, int *priority, bool with_facility) {
@@ -56,7 +56,6 @@ int syslog_parse_priority(const char **p, int *priority, bool with_facility) {
         *p += k + 1;
         return 1;
 }
-#endif // 0
 
 static const char *const log_facility_unshifted_table[LOG_NFACILITIES] = {
         [LOG_FAC(LOG_KERN)]     = "kern",
@@ -83,7 +82,6 @@ static const char *const log_facility_unshifted_table[LOG_NFACILITIES] = {
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_FALLBACK(log_facility_unshifted, int, LOG_FAC(~0));
 
-#if 0 /// UNNEEDED by elogind
 bool log_facility_unshifted_is_valid(int facility) {
         return facility >= 0 && facility <= LOG_FAC(~0);
 }

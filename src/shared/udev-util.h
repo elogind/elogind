@@ -10,6 +10,7 @@
 
 #include "time-util.h"
 
+#if 0 /// UNNEEDED by elogind
 #define UDEV_NAME_SIZE   512
 #define UDEV_PATH_SIZE  1024
 #define UDEV_LINE_SIZE 16384
@@ -25,7 +26,6 @@ typedef enum ResolveNameTiming {
 ResolveNameTiming resolve_name_timing_from_string(const char *s) _pure_;
 const char *resolve_name_timing_to_string(ResolveNameTiming i) _const_;
 
-#if 0 /// UNNEEDED by elogind
 int udev_parse_config_full(
                 unsigned *ret_children_max,
                 usec_t *ret_exec_delay_usec,
@@ -37,8 +37,8 @@ static inline int udev_parse_config(void) {
         return udev_parse_config_full(NULL, NULL, NULL, NULL, NULL);
 }
 
-int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t deadline, sd_device **ret);
-int device_wait_for_devlink(const char *path, const char *subsystem, usec_t deadline, sd_device **ret);
+int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t timeout_usec, sd_device **ret);
+int device_wait_for_devlink(const char *path, const char *subsystem, usec_t timeout_usec, sd_device **ret);
 int device_is_renaming(sd_device *dev);
 #endif // 0
 
@@ -53,9 +53,16 @@ size_t udev_replace_ifname(char *str);
 size_t udev_replace_chars(char *str, const char *allow);
 int udev_resolve_subsys_kernel(const char *string, char *result, size_t maxsize, bool read_value);
 
+bool devpath_conflict(const char *a, const char *b);
+
 int udev_queue_is_empty(void);
 int udev_queue_init(void);
 #endif // 0
+
+int on_ac_power(void);
+
+#if 0 /// UNNEEDED by elogind
+bool udev_available(void);
 
 #if HAVE_SYS_SDT_H
 
@@ -79,7 +86,8 @@ int udev_queue_init(void);
                 (void) sd_device_get_syspath(_d, &_p);                                                     \
                 (void) sd_device_get_subsystem(_d, &_s);                                                   \
                 STAP_PROBEV(udev, name, device_action_to_string(_a), _n, _p, _s __VA_OPT__(,) __VA_ARGS__);\
-        } while(false);
+        } while (false);
 #else
 #define DEVICE_TRACE_POINT(name, dev, ...) ((void) 0)
 #endif
+#endif // 0

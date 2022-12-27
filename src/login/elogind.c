@@ -286,7 +286,7 @@ int elogind_setup_cgroups_agent( Manager* m ) {
                 if ( fd < 0 )
                         return log_error_errno( errno, "Failed to allocate cgroups agent socket: %m" );
 
-                fd_inc_rcvbuf( fd, CGROUPS_AGENT_RCVBUF_SIZE );
+                fd_increase_rxbuf( fd, CGROUPS_AGENT_RCVBUF_SIZE );
 
                 (void) unlink( sa.un.sun_path );
 
@@ -330,9 +330,9 @@ int elogind_startup(int argc, char *argv[], bool *has_forked) {
         int i, r;
         pid_t pid;
 
-        /* if elogind was called with -h/--help, skip all checks */
+        /* if elogind was called with -h/--help or --bus-introspect, skip all checks */
         for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
-                if (streq("-h", argv[i]) || streq("--help", argv[i]))
+                if (streq("-h", argv[i]) || streq("--help", argv[i]) || startswith(argv[i], "--bus-introspect") )
                         return 0;
         }
 

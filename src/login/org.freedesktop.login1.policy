@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?> <!--*-nxml-*-->
 <!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
-        "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+        "https://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
 
 <!--
   SPDX-License-Identifier: LGPL-2.1-or-later
@@ -16,7 +16,7 @@
 <policyconfig>
 
         <vendor>The systemd Project</vendor>
-        <vendor_url>http://www.freedesktop.org/wiki/Software/systemd</vendor_url>
+        <vendor_url>https://elogind.io</vendor_url>
 
         <action id="org.freedesktop.login1.inhibit-block-shutdown">
                 <description gettext-domain="systemd">Allow applications to inhibit system shutdown</description>

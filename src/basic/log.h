@@ -8,6 +8,7 @@
 #include <syslog.h>
 
 #include "macro.h"
+#include "ratelimit.h"
 
 /* Some structures we reference but don't want to pull in headers for */
 struct iovec;
@@ -31,10 +32,23 @@ typedef enum LogTarget{
         _LOG_TARGET_INVALID = -EINVAL,
 } LogTarget;
 
-/* Note to readers: << and >> have lower precedence than & and | */
+/* This log level disables logging completely. It can only be passed to log_set_max_level() and cannot be
+ * used a regular log level. */
+#define LOG_NULL (LOG_EMERG - 1)
+
+/* Note to readers: << and >> have lower precedence (are evaluated earlier) than & and | */
 #define SYNTHETIC_ERRNO(num)                (1 << 30 | (num))
 #define IS_SYNTHETIC_ERRNO(val)             ((val) >> 30 & 1)
-#define ERRNO_VALUE(val)                    (abs(val) & 255)
+#define ERRNO_VALUE(val)                    (abs(val) & ~(1 << 30))
+
+/* The callback function to be invoked when syntax warnings are seen
+ * in the unit files. */
+typedef void (*log_syntax_callback_t)(const char *unit, int level, void *userdata);
+void set_log_syntax_callback(log_syntax_callback_t cb, void *userdata);
+
+static inline void clear_log_syntax_callback(dummy_t *dummy) {
+          set_log_syntax_callback(/* cb= */ NULL, /* userdata= */ NULL);
+}
 
 const char *log_target_to_string(LogTarget target) _const_;
 LogTarget log_target_from_string(const char *s) _pure_;
@@ -75,6 +89,7 @@ void log_close(void);
 void log_forget_fds(void);
 #endif // 0
 
+void log_parse_environment_variables(void);
 void log_parse_environment(void);
 
 int log_dispatch_internal(
@@ -182,7 +197,6 @@ _noreturn_ void log_assert_failed(
                 const char *func);
 
 _noreturn_ void log_assert_failed_unreachable(
-                const char *text,
                 const char *file,
                 int line,
                 const char *func);
@@ -268,9 +282,11 @@ int log_emergency_level(void);
         })
 
 #if LOG_TRACE
-#  define log_trace(...) log_debug(__VA_ARGS__)
+#  define log_trace(...)          log_debug(__VA_ARGS__)
+#  define log_trace_errno(...)    log_debug_errno(__VA_ARGS__)
 #else
-#  define log_trace(...) do {} while (0)
+#  define log_trace(...)          do {} while (0)
+#  define log_trace_errno(e, ...) (-ERRNO_VALUE(e))
 #endif
 
 #if ENABLE_DEBUG_ELOGIND
@@ -310,8 +326,16 @@ int log_emergency_level(void);
 
 bool log_on_console(void) _pure_;
 
-/* Helper to prepare various field for structured logging */
-#define LOG_MESSAGE(fmt, ...) "MESSAGE=" fmt, ##__VA_ARGS__
+/* Helper to wrap the main message in structured logging. The macro doesn't do much,
+ * except to provide visual grouping of the format string and its arguments. */
+#if LOG_MESSAGE_VERIFICATION || defined(__COVERITY__)
+/* Do a fake formatting of the message string to let the scanner verify the arguments against the format
+ * message. The variable will never be set to true, but we don't tell the compiler that :) */
+extern bool _log_message_dummy;
+#  define LOG_MESSAGE(fmt, ...) "MESSAGE=%.0d" fmt, (_log_message_dummy && printf(fmt, ##__VA_ARGS__)), ##__VA_ARGS__
+#else
+#  define LOG_MESSAGE(fmt, ...) "MESSAGE=" fmt, ##__VA_ARGS__
+#endif
 
 #if 0 /// UNNEEDED by elogind
 void log_received_signal(int level, const struct signalfd_siginfo *si);
@@ -375,3 +399,41 @@ int log_syntax_invalid_utf8_internal(
 #define DEBUG_LOGGING _unlikely_(log_get_max_level() >= LOG_DEBUG)
 
 void log_setup(void);
+
+typedef struct LogRateLimit {
+        int error;
+        int level;
+        RateLimit ratelimit;
+} LogRateLimit;
+
+#define log_ratelimit_internal(_level, _error, _format, _file, _line, _func, ...)        \
+({                                                                              \
+        int _log_ratelimit_error = (_error);                                    \
+        int _log_ratelimit_level = (_level);                                    \
+        static LogRateLimit _log_ratelimit = {                                  \
+                .ratelimit = {                                                  \
+                        .interval = 1 * USEC_PER_SEC,                           \
+                        .burst = 1,                                             \
+                },                                                              \
+        };                                                                      \
+        unsigned _num_dropped_errors = ratelimit_num_dropped(&_log_ratelimit.ratelimit); \
+        if (_log_ratelimit_error != _log_ratelimit.error || _log_ratelimit_level != _log_ratelimit.level) { \
+                ratelimit_reset(&_log_ratelimit.ratelimit);                     \
+                _log_ratelimit.error = _log_ratelimit_error;                    \
+                _log_ratelimit.level = _log_ratelimit_level;                    \
+        }                                                                       \
+        if (ratelimit_below(&_log_ratelimit.ratelimit))                         \
+                _log_ratelimit_error = _num_dropped_errors > 0                  \
+                ? log_internal(_log_ratelimit_level, _log_ratelimit_error, _file, _line, _func, _format " (Dropped %u similar message(s))", __VA_ARGS__, _num_dropped_errors) \
+                : log_internal(_log_ratelimit_level, _log_ratelimit_error, _file, _line, _func, _format, __VA_ARGS__); \
+        _log_ratelimit_error;                                                   \
+})
+
+#define log_ratelimit_full_errno(level, error, format, ...)             \
+        ({                                                              \
+                int _level = (level), _e = (error);                     \
+                _e = (log_get_max_level() >= LOG_PRI(_level))           \
+                        ? log_ratelimit_internal(_level, _e, format, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__) \
+                        : -ERRNO_VALUE(_e);                             \
+                _e < 0 ? _e : -ESTRPIPE;                                \
+        })

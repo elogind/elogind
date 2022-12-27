@@ -6,8 +6,10 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <syslog.h>
+#include <sys/stat.h>
 
 #include "alloc-util.h"
+#include "hashmap.h"
 #include "log.h"
 #include "macro.h"
 #include "time-util.h"
@@ -67,18 +69,18 @@ typedef int (*ConfigItemLookup)(
                 const void *table,
                 const char *section,
                 const char *lvalue,
-                ConfigParserCallback *func,
-                int *ltype,
-                void **data,
+                ConfigParserCallback *ret_func,
+                int *ret_ltype,
+                void **ret_data,
                 void *userdata);
 
 /* Linear table search implementation of ConfigItemLookup, based on
  * ConfigTableItem arrays */
-int config_item_table_lookup(const void *table, const char *section, const char *lvalue, ConfigParserCallback *func, int *ltype, void **data, void *userdata);
+int config_item_table_lookup(const void *table, const char *section, const char *lvalue, ConfigParserCallback *ret_func, int *ret_ltype, void **ret_data, void *userdata);
 
 /* gperf implementation of ConfigItemLookup, based on gperf
  * ConfigPerfItem tables */
-int config_item_perf_lookup(const void *table, const char *section, const char *lvalue, ConfigParserCallback *func, int *ltype, void **data, void *userdata);
+int config_item_perf_lookup(const void *table, const char *section, const char *lvalue, ConfigParserCallback *ret_func, int *ret_ltype, void **ret_data, void *userdata);
 
 int config_parse(
                 const char *unit,
@@ -89,7 +91,7 @@ int config_parse(
                 const void *table,
                 ConfigParseFlags flags,
                 void *userdata,
-                usec_t *latest_mtime);      /* input/output, possibly NULL */
+                struct stat *ret_stat);     /* possibly NULL */
 
 int config_parse_many_nulstr(
                 const char *conf_file,      /* possibly NULL */
@@ -99,7 +101,7 @@ int config_parse_many_nulstr(
                 const void *table,
                 ConfigParseFlags flags,
                 void *userdata,
-                usec_t *ret_mtime);         /* possibly NULL */
+                Hashmap **ret_stats_by_path);   /* possibly NULL */
 
 #if 0 /// UNNEEDED by elogind
 int config_parse_many(
@@ -111,9 +113,61 @@ int config_parse_many(
                 const void *table,
                 ConfigParseFlags flags,
                 void *userdata,
-                usec_t *ret_mtime);         /* possibly NULL */
+                Hashmap **ret_stats_by_path,  /* possibly NULL */
+                char ***ret_drop_in_files);   /* possibly NULL */
 #endif // 0
 
+int config_get_stats_by_path(
+                const char *suffix,
+                const char *root,
+                unsigned flags,
+                const char* const* dirs,
+                bool check_dropins,
+                Hashmap **ret);
+
+int hashmap_put_stats_by_path(Hashmap **stats_by_path, const char *path, const struct stat *st);
+bool stats_by_path_equal(Hashmap *a, Hashmap *b);
+
+typedef struct ConfigSection {
+        unsigned line;
+        bool invalid;
+        char filename[];
+} ConfigSection;
+
+static inline ConfigSection* config_section_free(ConfigSection *cs) {
+        return mfree(cs);
+}
+DEFINE_TRIVIAL_CLEANUP_FUNC(ConfigSection*, config_section_free);
+
+#if 0 /// UNNEEDED by elogind
+int config_section_new(const char *filename, unsigned line, ConfigSection **s);
+extern const struct hash_ops config_section_hash_ops;
+unsigned hashmap_find_free_section_line(Hashmap *hashmap);
+#endif // 0
+
+static inline bool section_is_invalid(ConfigSection *section) {
+        /* If this returns false, then it does _not_ mean the section is valid. */
+
+        if (!section)
+                return false;
+
+        return section->invalid;
+}
+
+#define DEFINE_SECTION_CLEANUP_FUNCTIONS(type, free_func)               \
+        static inline type* free_func##_or_set_invalid(type *p) {       \
+                assert(p);                                              \
+                                                                        \
+                if (p->section)                                         \
+                        p->section->invalid = true;                     \
+                else                                                    \
+                        free_func(p);                                   \
+                return NULL;                                            \
+        }                                                               \
+        DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func);                  \
+        DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func##_or_set_invalid);
+
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_int);
 CONFIG_PARSER_PROTOTYPE(config_parse_unsigned);
 CONFIG_PARSER_PROTOTYPE(config_parse_long);
@@ -121,18 +175,26 @@ CONFIG_PARSER_PROTOTYPE(config_parse_uint8);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint16);
 CONFIG_PARSER_PROTOTYPE(config_parse_uint32);
 CONFIG_PARSER_PROTOTYPE(config_parse_int32);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_uint64);
 CONFIG_PARSER_PROTOTYPE(config_parse_double);
 #if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_size);
 CONFIG_PARSER_PROTOTYPE(config_parse_si_uint64);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64);
+#if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64_infinity);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
-CONFIG_PARSER_PROTOTYPE(config_parse_id128);
-CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
-CONFIG_PARSER_PROTOTYPE(config_parse_string);
 #if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_id128);
+#endif // 0
+CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
+#if 0 /// UNNEEDED by elogind
+CONFIG_PARSER_PROTOTYPE(config_parse_string);
+CONFIG_PARSER_PROTOTYPE(config_parse_dns_name);
+CONFIG_PARSER_PROTOTYPE(config_parse_hostname);
 CONFIG_PARSER_PROTOTYPE(config_parse_path);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_strv);
@@ -154,18 +216,29 @@ CONFIG_PARSER_PROTOTYPE(config_parse_ip_port);
 CONFIG_PARSER_PROTOTYPE(config_parse_mtu);
 CONFIG_PARSER_PROTOTYPE(config_parse_rlimit);
 CONFIG_PARSER_PROTOTYPE(config_parse_vlanprotocol);
-CONFIG_PARSER_PROTOTYPE(config_parse_hwaddr);
-CONFIG_PARSER_PROTOTYPE(config_parse_hwaddrs);
+CONFIG_PARSER_PROTOTYPE(config_parse_hw_addr);
+CONFIG_PARSER_PROTOTYPE(config_parse_hw_addrs);
+CONFIG_PARSER_PROTOTYPE(config_parse_ether_addr);
+CONFIG_PARSER_PROTOTYPE(config_parse_ether_addrs);
 CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_non_null);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
+#endif // 0
+CONFIG_PARSER_PROTOTYPE(config_parse_pid);
+CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
         DISABLED_LEGACY,
         DISABLED_EXPERIMENTAL,
 } Disabled;
+
+typedef enum ConfigParseStringFlags {
+        CONFIG_PARSE_STRING_SAFE  = 1 << 0,
+        CONFIG_PARSE_STRING_ASCII = 1 << 1,
+
+        CONFIG_PARSE_STRING_SAFE_AND_ASCII = CONFIG_PARSE_STRING_SAFE | CONFIG_PARSE_STRING_ASCII,
+} ConfigParseStringFlags;
 
 #define DEFINE_CONFIG_PARSE(function, parser, msg)                      \
         CONFIG_PARSER_PROTOTYPE(function) {                             \
@@ -189,13 +262,12 @@ typedef enum Disabled {
 
 #define DEFINE_CONFIG_PARSE_PTR(function, parser, type, msg)            \
         CONFIG_PARSER_PROTOTYPE(function) {                             \
-                type *i = data;                                         \
+                type *i = ASSERT_PTR(data);                             \
                 int r;                                                  \
                                                                         \
                 assert(filename);                                       \
                 assert(lvalue);                                         \
                 assert(rvalue);                                         \
-                assert(data);                                           \
                                                                         \
                 r = parser(rvalue, i);                                  \
                 if (r < 0)                                              \
@@ -255,7 +327,7 @@ typedef enum Disabled {
 
 #define DEFINE_CONFIG_PARSE_ENUMV(function, name, type, invalid, msg)          \
         CONFIG_PARSER_PROTOTYPE(function) {                                    \
-                type **enums = data;                                           \
+                type **enums = ASSERT_PTR(data);                               \
                 _cleanup_free_ type *xs = NULL;                                \
                 size_t i = 0;                                                  \
                 int r;                                                         \
@@ -263,7 +335,6 @@ typedef enum Disabled {
                 assert(filename);                                              \
                 assert(lvalue);                                                \
                 assert(rvalue);                                                \
-                assert(data);                                                  \
                                                                                \
                 xs = new0(type, 1);                                            \
                 if (!xs)                                                       \

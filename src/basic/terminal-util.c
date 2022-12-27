@@ -22,10 +22,12 @@
 
 #include "alloc-util.h"
 #include "def.h"
+#include "devnum-util.h"
 #include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
+#include "inotify-util.h"
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
@@ -73,10 +75,7 @@ int chvt(int vt) {
                 vt = tiocl[0] <= 0 ? 1 : tiocl[0];
         }
 
-        if (ioctl(fd, VT_ACTIVATE, vt) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(ioctl(fd, VT_ACTIVATE, vt));
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -354,6 +353,7 @@ int open_terminal(const char *name, int mode) {
         return TAKE_FD(fd);
 }
 
+#if 0 /// UNNEEDED by elogind
 int acquire_terminal(
                 const char *name,
                 AcquireTerminalFlags flags,
@@ -410,8 +410,7 @@ int acquire_terminal(
                 assert_se(sigaction(SIGHUP, &sa_new, &sa_old) == 0);
 
                 /* First, try to get the tty */
-                r = ioctl(fd, TIOCSCTTY,
-                          (flags & ~ACQUIRE_TERMINAL_PERMISSIVE) == ACQUIRE_TERMINAL_FORCE) < 0 ? -errno : 0;
+                r = RET_NERRNO(ioctl(fd, TIOCSCTTY, (flags & ~ACQUIRE_TERMINAL_PERMISSIVE) == ACQUIRE_TERMINAL_FORCE));
 
                 /* Reset signal handler to old value */
                 assert_se(sigaction(SIGHUP, &sa_old, NULL) == 0);
@@ -437,7 +436,6 @@ int acquire_terminal(
 
                 for (;;) {
                         union inotify_event_buffer buffer;
-                        struct inotify_event *e;
                         ssize_t l;
 
                         if (timeout != USEC_INFINITY) {
@@ -458,7 +456,7 @@ int acquire_terminal(
 
                         l = read(notify, &buffer, sizeof(buffer));
                         if (l < 0) {
-                                if (IN_SET(errno, EINTR, EAGAIN))
+                                if (ERRNO_IS_TRANSIENT(errno))
                                         continue;
 
                                 return -errno;
@@ -483,7 +481,6 @@ int acquire_terminal(
         return TAKE_FD(fd);
 }
 
-#if 0 /// UNNEEDED by elogind
 int release_terminal(void) {
         static const struct sigaction sa_new = {
                 .sa_handler = SIG_IGN,
@@ -502,7 +499,7 @@ int release_terminal(void) {
          * by our own TIOCNOTTY */
         assert_se(sigaction(SIGHUP, &sa_new, &sa_old) == 0);
 
-        r = ioctl(fd, TIOCNOTTY) < 0 ? -errno : 0;
+        r = RET_NERRNO(ioctl(fd, TIOCNOTTY));
 
         assert_se(sigaction(SIGHUP, &sa_old, NULL) == 0);
 
@@ -511,11 +508,7 @@ int release_terminal(void) {
 
 int terminal_vhangup_fd(int fd) {
         assert(fd >= 0);
-
-        if (ioctl(fd, TIOCVHANGUP) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(ioctl(fd, TIOCVHANGUP));
 }
 
 int terminal_vhangup(const char *name) {
@@ -635,7 +628,7 @@ int vtnr_from_tty(const char *tty) {
         if (!startswith(tty, "tty") )
                 return -EINVAL;
 
-        if (tty[3] < '0' || tty[3] > '9')
+        if (!ascii_isdigit(tty[3]))
                 return -EINVAL;
 
         r = safe_atoi(tty+3, &i);
@@ -862,13 +855,45 @@ unsigned lines(void) {
         return cached_lines;
 }
 
-/* intended to be used as a SIGWINCH sighandler */
 #if 0 /// UNNEEDED by elogind
+int terminal_set_size_fd(int fd, const char *ident, unsigned rows, unsigned cols) {
+        struct winsize ws;
+
+        if (rows == UINT_MAX && cols == UINT_MAX)
+                return 0;
+
+        if (ioctl(fd, TIOCGWINSZ, &ws) < 0)
+                return log_debug_errno(errno,
+                                       "TIOCGWINSZ ioctl for getting %s size failed, not setting terminal size: %m",
+                                       ident ?: "TTY");
+
+        if (rows == UINT_MAX)
+                rows = ws.ws_row;
+        else if (rows > USHRT_MAX)
+                rows = USHRT_MAX;
+
+        if (cols == UINT_MAX)
+                cols = ws.ws_col;
+        else if (cols > USHRT_MAX)
+                cols = USHRT_MAX;
+
+        if (rows == ws.ws_row && cols == ws.ws_col)
+                return 0;
+
+        ws.ws_row = rows;
+        ws.ws_col = cols;
+
+        if (ioctl(fd, TIOCSWINSZ, &ws) < 0)
+                return log_debug_errno(errno, "TIOCSWINSZ ioctl for setting %s size failed: %m", ident ?: "TTY");
+
+        return 0;
+}
+
+/* intended to be used as a SIGWINCH sighandler */
 void columns_lines_cache_reset(int signum) {
         cached_columns = 0;
         cached_lines = 0;
 }
-#endif // 0
 
 void reset_terminal_feature_caches(void) {
         cached_columns = 0;
@@ -878,6 +903,7 @@ void reset_terminal_feature_caches(void) {
         cached_underline_enabled = -1;
         cached_on_tty = -1;
 }
+#endif // 0
 
 bool on_tty(void) {
 
@@ -1263,7 +1289,7 @@ ColorMode get_color_mode(void) {
                         cached_color_mode = COLOR_OFF;
 
 #if 0 /// elogind is never init!
-                else if (getpid_cached() == 1)
+                else if (getpid_cached() == 1) {
                         /* PID1 outputs to the console without holding it open all the time.
                          *
                          * Note that the Linux console can only display 16 colors. We still enable 256 color
@@ -1272,10 +1298,26 @@ ColorMode get_color_mode(void) {
                          * map them to the closest color in the 16 color palette (since kernel 3.16). Doing
                          * 256 colors is nice for people who invoke systemd in a container or via a serial
                          * link or such, and use a true 256 color terminal to do so. */
-                        cached_color_mode = getenv_terminal_is_dumb() ? COLOR_OFF : COLOR_256;
-                else
+                        if (getenv_terminal_is_dumb())
+                                cached_color_mode = COLOR_OFF;
+                } else {
+#else // 0
+                else {
 #endif // 0
-                        cached_color_mode = terminal_is_dumb() ? COLOR_OFF : COLOR_256;
+                        if (terminal_is_dumb())
+                                cached_color_mode = COLOR_OFF;
+                }
+
+                if (cached_color_mode < 0) {
+                        /* We failed to figure out any reason to *disable* colors.
+                         * Let's see how many colors we shall use. */
+                        if (STRPTR_IN_SET(getenv("COLORTERM"),
+                                          "truecolor",
+                                          "24bit"))
+                                cached_color_mode = COLOR_24BIT;
+                        else
+                                cached_color_mode = COLOR_256;
+                }
         }
 
         return cached_color_mode;
@@ -1342,10 +1384,7 @@ int vt_reset_keyboard(int fd) {
         /* If we can't read the default, then default to unicode. It's 2017 after all. */
         kb = vt_default_utf8() != 0 ? K_UNICODE : K_XLATE;
 
-        if (ioctl(fd, KDSKBMODE, kb) < 0)
-                return -errno;
-
-        return 0;
+        return RET_NERRNO(ioctl(fd, KDSKBMODE, kb));
 }
 
 int vt_restore(int fd) {

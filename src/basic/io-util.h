@@ -22,7 +22,9 @@ int pipe_eof(int fd);
 int ppoll_usec(struct pollfd *fds, size_t nfds, usec_t timeout);
 int fd_wait_for_event(int fd, int event, usec_t timeout);
 
+#if 0 /// UNNEEDED by elogind
 ssize_t sparse_write(int fd, const void *p, size_t sz, size_t run_length);
+#endif // 0
 
 static inline size_t IOVEC_TOTAL_SIZE(const struct iovec *i, size_t n) {
         size_t r = 0;
@@ -56,6 +58,7 @@ static inline bool IOVEC_INCREMENT(struct iovec *i, size_t n, size_t k) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool FILE_SIZE_VALID(uint64_t l) {
         /* ftruncate() and friends take an unsigned file size, but actually cannot deal with file sizes larger than
          * 2^63 since the kernel internally handles it as signed value. This call allows checking for this early. */
@@ -73,12 +76,14 @@ static inline bool FILE_SIZE_VALID_OR_INFINITY(uint64_t l) {
         return FILE_SIZE_VALID(l);
 
 }
+#endif // 0
 
 #define IOVEC_INIT(base, len) { .iov_base = (base), .iov_len = (len) }
 #define IOVEC_MAKE(base, len) (struct iovec) IOVEC_INIT(base, len)
 #define IOVEC_INIT_STRING(string) IOVEC_INIT((char*) string, strlen(string))
 #define IOVEC_MAKE_STRING(string) (struct iovec) IOVEC_INIT_STRING(string)
 
+#if 0 /// UNNEEDED by elogind
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value);
 char* set_iovec_string_field_free(struct iovec *iovec, size_t *n_iovec, const char *field, char *value);
 
@@ -96,3 +101,4 @@ int iovw_put_string_field(struct iovec_wrapper *iovw, const char *field, const c
 int iovw_put_string_field_free(struct iovec_wrapper *iovw, const char *field, char *value);
 void iovw_rebase(struct iovec_wrapper *iovw, char *old, char *new);
 size_t iovw_size(struct iovec_wrapper *iovw);
+#endif // 0

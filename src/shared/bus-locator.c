@@ -3,6 +3,7 @@
 #include "bus-locator.h"
 #include "macro.h"
 
+#if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_home_mgr = &(BusLocator){
         .destination = "org.freedesktop.home1",
         .path = "/org/freedesktop/home1",
@@ -20,6 +21,7 @@ const BusLocator* const bus_locale = &(BusLocator){
         .path = "/org/freedesktop/locale1",
         .interface = "org.freedesktop.locale1"
 };
+#endif // 0
 
 const BusLocator* const bus_login_mgr = &(BusLocator){
         .destination = "org.freedesktop.login1",
@@ -27,6 +29,7 @@ const BusLocator* const bus_login_mgr = &(BusLocator){
         .interface = "org.freedesktop.login1.Manager"
 };
 
+#if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_machine_mgr = &(BusLocator){
         .destination ="org.freedesktop.machine1",
         .path = "/org/freedesktop/machine1",
@@ -51,16 +54,23 @@ const BusLocator* const bus_resolve_mgr = &(BusLocator){
         .interface = "org.freedesktop.resolve1.Manager"
 };
 
-const BusLocator* const bus_elogind_mgr = &(BusLocator){
-        .destination = "org.freedesktop.elogind1",
-        .path = "/org/freedesktop/elogind1",
-        .interface = "org.freedesktop.elogind1.Manager"
+const BusLocator* const bus_systemd_mgr = &(BusLocator){
+        .destination = "org.freedesktop.systemd1",
+        .path = "/org/freedesktop/systemd1",
+        .interface = "org.freedesktop.systemd1.Manager"
 };
 
 const BusLocator* const bus_timedate = &(BusLocator){
         .destination = "org.freedesktop.timedate1",
         .path = "/org/freedesktop/timedate1",
         .interface = "org.freedesktop.timedate1"
+};
+#endif // 0
+
+const BusLocator* const bus_hostname = &(BusLocator){
+        .destination = "org.freedesktop.hostname1",
+        .path = "/org/freedesktop/hostname1",
+        .interface = "org.freedesktop.hostname1"
 };
 
 /* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface strings encapsulated
@@ -106,6 +116,7 @@ int bus_call_method(
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_get_property(
                 sd_bus *bus,
                 const BusLocator *locator,
@@ -130,6 +141,7 @@ int bus_get_property_trivial(
 
         return sd_bus_get_property_trivial(bus, locator->destination, locator->path, locator->interface, member, error, type, ptr);
 }
+#endif // 0
 
 int bus_get_property_string(
                 sd_bus *bus,
@@ -143,6 +155,7 @@ int bus_get_property_string(
         return sd_bus_get_property_string(bus, locator->destination, locator->path, locator->interface, member, error, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_get_property_strv(
                 sd_bus *bus,
                 const BusLocator *locator,
@@ -200,6 +213,7 @@ int bus_match_signal_async(
 
         return sd_bus_match_signal_async(bus, ret, locator->destination, locator->path, locator->interface, member, callback, install_callback, userdata);
 }
+#endif // 0
 
 int bus_message_new_method_call(
                 sd_bus *bus,

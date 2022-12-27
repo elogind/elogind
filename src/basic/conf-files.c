@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "chase-symlinks.h"
 #include "conf-files.h"
 #include "def.h"
 #include "dirent-util.h"
@@ -28,24 +29,19 @@ static int files_add(
                 unsigned flags,
                 const char *path) {
 
+        _cleanup_free_ char *dirpath = NULL;
         _cleanup_closedir_ DIR *dir = NULL;
-        const char *dirpath;
-        struct dirent *de;
         int r;
 
         assert(h);
         assert((flags & CONF_FILES_FILTER_MASKED) == 0 || masked);
         assert(path);
 
-        dirpath = prefix_roota(root, path);
-
-        dir = opendir(dirpath);
-        if (!dir) {
-                if (errno == ENOENT)
-                        return 0;
-
-                return log_debug_errno(errno, "Failed to open directory '%s': %m", dirpath);
-        }
+        r = chase_symlinks_and_opendir(path, root, CHASE_PREFIX_ROOT, &dirpath, &dir);
+        if (r == -ENOENT)
+                return 0;
+        if (r < 0)
+                return log_debug_errno(r, "Failed to open directory '%s/%s': %m", empty_or_root(root) ? "" : root, dirpath);
 
         FOREACH_DIRENT(de, dir, return -errno) {
                 struct stat st;
@@ -137,13 +133,19 @@ static int base_cmp(char * const *a, char * const *b) {
         return strcmp(basename(*a), basename(*b));
 }
 
-static int conf_files_list_strv_internal(char ***strv, const char *suffix, const char *root, unsigned flags, char **dirs) {
+static int conf_files_list_strv_internal(
+                char ***ret,
+                const char *suffix,
+                const char *root,
+                unsigned flags,
+                char **dirs) {
+
         _cleanup_hashmap_free_ Hashmap *fh = NULL;
         _cleanup_set_free_free_ Set *masked = NULL;
-        char **files, **p;
+        char **files;
         int r;
 
-        assert(strv);
+        assert(ret);
 
         /* This alters the dirs string array */
         if (!path_strv_resolve_uniq(dirs, root))
@@ -172,11 +174,12 @@ static int conf_files_list_strv_internal(char ***strv, const char *suffix, const
                 return -ENOMEM;
 
         typesafe_qsort(files, hashmap_size(fh), base_cmp);
-        *strv = files;
+        *ret = files;
 
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_insert(char ***strv, const char *root, char **dirs, const char *path) {
         /* Insert a path into strv, at the place honouring the usual sorting rules:
          * - we first compare by the basename
@@ -197,11 +200,8 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                 int c;
 
                 c = base_cmp((char* const*) *strv + i, (char* const*) &path);
-                if (c == 0) {
-                        char **dir;
-
+                if (c == 0)
                         /* Oh, there already is an entry with a matching name (the last component). */
-
                         STRV_FOREACH(dir, dirs) {
                                 _cleanup_free_ char *rdir = NULL;
                                 char *p1, *p2;
@@ -228,7 +228,7 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
                                 }
                         }
 
-                } else if (c > 0)
+                else if (c > 0)
                         /* Following files have lower priority, let's go insert our
                          * new entry. */
                         break;
@@ -247,57 +247,59 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
 
         return r;
 }
+#endif // 0
 
-int conf_files_list_strv(char ***strv, const char *suffix, const char *root, unsigned flags, const char* const* dirs) {
+int conf_files_list_strv(char ***ret, const char *suffix, const char *root, unsigned flags, const char* const* dirs) {
         _cleanup_strv_free_ char **copy = NULL;
 
-        assert(strv);
+        assert(ret);
 
         copy = strv_copy((char**) dirs);
         if (!copy)
                 return -ENOMEM;
 
-        return conf_files_list_strv_internal(strv, suffix, root, flags, copy);
+        return conf_files_list_strv_internal(ret, suffix, root, flags, copy);
 }
 
-int conf_files_list(char ***strv, const char *suffix, const char *root, unsigned flags, const char *dir) {
+int conf_files_list(char ***ret, const char *suffix, const char *root, unsigned flags, const char *dir) {
         _cleanup_strv_free_ char **dirs = NULL;
 
-        assert(strv);
+        assert(ret);
 
         dirs = strv_new(dir);
         if (!dirs)
                 return -ENOMEM;
 
-        return conf_files_list_strv_internal(strv, suffix, root, flags, dirs);
+        return conf_files_list_strv_internal(ret, suffix, root, flags, dirs);
 }
 
-int conf_files_list_nulstr(char ***strv, const char *suffix, const char *root, unsigned flags, const char *dirs) {
+int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, unsigned flags, const char *dirs) {
         _cleanup_strv_free_ char **d = NULL;
 
-        assert(strv);
+        assert(ret);
 
         d = strv_split_nulstr(dirs);
         if (!d)
                 return -ENOMEM;
 
-        return conf_files_list_strv_internal(strv, suffix, root, flags, d);
+        return conf_files_list_strv_internal(ret, suffix, root, flags, d);
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list_with_replacement(
                 const char *root,
                 char **config_dirs,
                 const char *replacement,
-                char ***files,
-                char **replace_file) {
+                char ***ret_files,
+                char **ret_replace_file) {
 
         _cleanup_strv_free_ char **f = NULL;
         _cleanup_free_ char *p = NULL;
         int r;
 
         assert(config_dirs);
-        assert(files);
-        assert(replace_file || !replacement);
+        assert(ret_files);
+        assert(ret_replace_file || !replacement);
 
         r = conf_files_list_strv(&f, ".conf", root, 0, (const char* const*) config_dirs);
         if (r < 0)
@@ -313,11 +315,10 @@ int conf_files_list_with_replacement(
                         return log_oom();
         }
 
-        *files = TAKE_PTR(f);
-        if (replace_file)
-                *replace_file = TAKE_PTR(p);
+        *ret_files = TAKE_PTR(f);
+        if (ret_replace_file)
+                *ret_replace_file = TAKE_PTR(p);
+
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
 #endif // 0

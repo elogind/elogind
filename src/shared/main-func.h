@@ -12,12 +12,13 @@
 #include "static-destruct.h"
 #include "util.h"
 
-#if 1 /// elogind has no onw password agent, so do nothing.
+#if 1 /// elogind has no password agent, so do nothing.
 #define ask_password_agent_close() while(0){}
 #endif // 1
 #define _DEFINE_MAIN_FUNCTION(intro, impl, ret)                         \
         int main(int argc, char *argv[]) {                              \
                 int r;                                                  \
+                assert_se(argc > 0 && !isempty(argv[0]));               \
                 save_argc_argv(argc, argv);                             \
                 intro;                                                  \
                 r = impl;                                               \

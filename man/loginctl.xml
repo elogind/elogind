@@ -135,7 +135,7 @@
         <term><command>kill-session</command> <replaceable>ID</replaceable>…</term>
 
         <listitem><para>Send a signal to one or more processes of the session. Use
-        <option>--kill-who=</option> to select which process to kill. Use <option>--signal=</option> to
+        <option>--kill-whom=</option> to select which process to kill. Use <option>--signal=</option> to
         select the signal to send. If the argument is specified as empty string the signal is sent to the
         session invoking the command.</para></listitem>
       </varlistentry>
@@ -475,7 +475,7 @@
       </varlistentry>
 
       <varlistentry>
-        <term><option>--kill-who=</option></term>
+        <term><option>--kill-whom=</option></term>
 
         <listitem><para>When used with
         <command>kill-session</command>, choose which processes to
@@ -526,7 +526,7 @@
 
       <!-- 1 /// elogind has a few options on its own. -->
       <varlistentry>
-        <term><option>-</option></term>
+        <term><option>-c</option></term>
 
         <listitem><para>Cancel a pending shutdown or reboot.</para></listitem>
       </varlistentry>
@@ -543,6 +543,25 @@
           list of active locks is printed. However, if <option>--ignore-inhibitors</option> is specified, the
           established locks are ignored and not shown, and the operation attempted anyway, possibly requiring
           additional privileges.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--dry-run</option></term>
+
+        <listitem>
+          <para>Just print what would be done. Currently supported by verbs
+          <command>halt</command>, <command>poweroff</command>, <command>reboot</command>,
+          <command>suspend</command>, <command>hibernate</command>, <command>hybrid-sleep</command>,
+          and <command>suspend-then-hibernate</command>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><option>--no-wall</option></term>
+
+        <listitem>
+          <para>Do not send wall messages before halt, power-off and reboot.</para>
         </listitem>
       </varlistentry>
       <!-- // 1 -->

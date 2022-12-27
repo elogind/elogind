@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
-//#include <linux/keyctl.h>
+#include <inttypes.h>
+#include <linux/keyctl.h>
 
 #ifndef KEYCTL_JOIN_SESSION_KEYRING
 #define KEYCTL_JOIN_SESSION_KEYRING 1

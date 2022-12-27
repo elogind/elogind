@@ -15,6 +15,8 @@
 
 bool session_id_valid(const char *id);
 
+#if 0 /// If elogind is not running, yet, dbus will start it when it is needed. (#188)
 static inline bool logind_running(void) {
         return access("/run/systemd/seats/", F_OK) >= 0;
 }
+#endif // 0

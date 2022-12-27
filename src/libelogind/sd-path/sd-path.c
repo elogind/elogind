@@ -534,7 +534,7 @@ static int get_search(uint64_t type, char ***list) {
 
         assert(list);
 
-        switch(type) {
+        switch (type) {
 
         case SD_PATH_SEARCH_BINARIES:
                 return search_from_environment(list,
@@ -620,8 +620,8 @@ static int get_search(uint64_t type, char ***list) {
         case SD_PATH_SYSTEMD_SEARCH_SYSTEM_UNIT:
         case SD_PATH_SYSTEMD_SEARCH_USER_UNIT: {
                 _cleanup_(lookup_paths_free) LookupPaths lp = {};
-                const UnitFileScope scope = type == SD_PATH_SYSTEMD_SEARCH_SYSTEM_UNIT ?
-                                                    UNIT_FILE_SYSTEM : UNIT_FILE_USER;
+                const LookupScope scope = type == SD_PATH_SYSTEMD_SEARCH_SYSTEM_UNIT ?
+                                                    LOOKUP_SCOPE_SYSTEM : LOOKUP_SCOPE_USER;
 
                 r = lookup_paths_init(&lp, scope, 0, NULL);
                 if (r < 0)
@@ -634,8 +634,8 @@ static int get_search(uint64_t type, char ***list) {
         case SD_PATH_SYSTEMD_SEARCH_SYSTEM_GENERATOR:
         case SD_PATH_SYSTEMD_SEARCH_USER_GENERATOR: {
                 char **t;
-                const UnitFileScope scope = type == SD_PATH_SYSTEMD_SEARCH_SYSTEM_GENERATOR ?
-                                                    UNIT_FILE_SYSTEM : UNIT_FILE_USER;
+                const LookupScope scope = type == SD_PATH_SYSTEMD_SEARCH_SYSTEM_GENERATOR ?
+                                                    LOOKUP_SCOPE_SYSTEM : LOOKUP_SCOPE_USER;
 
                 t = generator_binary_paths(scope);
                 if (!t)
@@ -689,7 +689,7 @@ _public_ int sd_path_lookup_strv(uint64_t type, const char *suffix, char ***path
         if (!n)
                 return -ENOMEM;
 
-        char **i, **j = n;
+        char **j = n;
         STRV_FOREACH(i, l) {
                 *j = path_join(*i, suffix);
                 if (!*j)

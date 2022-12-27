@@ -5,6 +5,7 @@
 #include "strv.h"
 #include "bus-message.h"
 
+#if 0 /// UNNEEDED by elogind
 int bus_map_id128(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus_error *error, void *userdata) {
         sd_id128_t *p = userdata;
         const void *v;
@@ -30,7 +31,7 @@ int bus_map_strv_sort(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus
         char ***p = userdata;
         int r;
 
-        r = bus_message_read_strv_extend(m, &l);
+        r = sd_bus_message_read_strv_extend(m, &l);
         if (r < 0)
                 return r;
 
@@ -41,6 +42,7 @@ int bus_map_strv_sort(sd_bus *bus, const char *member, sd_bus_message *m, sd_bus
         strv_sort(*p);
         return 0;
 }
+#endif // 0
 
 static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigned flags, sd_bus_error *error, void *userdata) {
         char type;
@@ -75,7 +77,7 @@ static int map_basic(sd_bus *bus, const char *member, sd_bus_message *m, unsigne
                 _cleanup_strv_free_ char **l = NULL;
                 char ***p = userdata;
 
-                r = bus_message_read_strv_extend(m, &l);
+                r = sd_bus_message_read_strv_extend(m, &l);
                 if (r < 0)
                         return r;
 

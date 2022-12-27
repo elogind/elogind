@@ -49,11 +49,10 @@ int flush_fd(int fd) {
 }
 
 ssize_t loop_read(int fd, void *buf, size_t nbytes, bool do_poll) {
-        uint8_t *p = buf;
+        uint8_t *p = ASSERT_PTR(buf);
         ssize_t n = 0;
 
         assert(fd >= 0);
-        assert(buf);
 
         /* If called with nbytes == 0, let's call read() at least
          * once, to validate the operation */
@@ -108,10 +107,9 @@ int loop_read_exact(int fd, void *buf, size_t nbytes, bool do_poll) {
 }
 
 int loop_write(int fd, const void *buf, size_t nbytes, bool do_poll) {
-        const uint8_t *p = buf;
+        const uint8_t *p = ASSERT_PTR(buf);
 
         assert(fd >= 0);
-        assert(buf);
 
         if (_unlikely_(nbytes > (size_t) SSIZE_MAX))
                 return -EINVAL;
@@ -159,7 +157,6 @@ int pipe_eof(int fd) {
 }
 
 int ppoll_usec(struct pollfd *fds, size_t nfds, usec_t timeout) {
-        struct timespec ts;
         int r;
 
         assert(fds || nfds == 0);
@@ -167,7 +164,7 @@ int ppoll_usec(struct pollfd *fds, size_t nfds, usec_t timeout) {
         if (nfds == 0)
                 return 0;
 
-        r = ppoll(fds, nfds, timeout == USEC_INFINITY ? NULL : timespec_store(&ts, timeout), NULL);
+        r = ppoll(fds, nfds, timeout == USEC_INFINITY ? NULL : TIMESPEC_STORE(timeout), NULL);
         if (r < 0)
                 return -errno;
         if (r == 0)
@@ -198,6 +195,7 @@ int fd_wait_for_event(int fd, int event, usec_t timeout) {
         return pollfd.revents;
 }
 
+#if 0 /// UNNEEDED by elogind
 static size_t nul_length(const uint8_t *p, size_t sz) {
         size_t n = 0;
 
@@ -260,7 +258,6 @@ ssize_t sparse_write(int fd, const void *p, size_t sz, size_t run_length) {
         return q - (const uint8_t*) p;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value) {
         char *x;
 

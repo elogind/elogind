@@ -12,6 +12,7 @@
 #include "bus-internal.h"
 #include "bus-message.h"
 #include "bus-socket.h"
+#include "escape.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "fs-util.h"
@@ -123,107 +124,87 @@ bool bus_socket_auth_needs_write(sd_bus *b) {
         return false;
 }
 
-static int bus_socket_write_auth(sd_bus *b) {
-        ssize_t k;
-
-        assert(b);
-        assert(b->state == BUS_AUTHENTICATING);
-
-        if (!bus_socket_auth_needs_write(b))
-                return 0;
-
-        if (b->prefer_writev)
-                k = writev(b->output_fd, b->auth_iovec + b->auth_index, ELEMENTSOF(b->auth_iovec) - b->auth_index);
-        else {
-                struct msghdr mh = {
-                        .msg_iov = b->auth_iovec + b->auth_index,
-                        .msg_iovlen = ELEMENTSOF(b->auth_iovec) - b->auth_index,
-                };
-
-                k = sendmsg(b->output_fd, &mh, MSG_DONTWAIT|MSG_NOSIGNAL);
-                if (k < 0 && errno == ENOTSOCK) {
-                        b->prefer_writev = true;
-                        k = writev(b->output_fd, b->auth_iovec + b->auth_index, ELEMENTSOF(b->auth_iovec) - b->auth_index);
-                }
-        }
-
-        if (k < 0)
-                return errno == EAGAIN ? 0 : -errno;
-
-        iovec_advance(b->auth_iovec, &b->auth_index, (size_t) k);
-        return 1;
-}
-
 static int bus_socket_auth_verify_client(sd_bus *b) {
-        char *d, *e, *f, *start;
+        char *l, *lines[4] = {};
         sd_id128_t peer;
+        size_t i, n;
         int r;
 
         assert(b);
 
         /*
-         * We expect three response lines:
-         *   "DATA\r\n"
+         * We expect up to three response lines:
+         *   "DATA\r\n"                 (optional)
          *   "OK <server-id>\r\n"
          *   "AGREE_UNIX_FD\r\n"        (optional)
          */
 
-        d = memmem_safe(b->rbuffer, b->rbuffer_size, "\r\n", 2);
-        if (!d)
-                return 0;
-
-        e = memmem(d + 2, b->rbuffer_size - (d - (char*) b->rbuffer) - 2, "\r\n", 2);
-        if (!e)
-                return 0;
-
-        if (b->accept_fd) {
-                f = memmem(e + 2, b->rbuffer_size - (e - (char*) b->rbuffer) - 2, "\r\n", 2);
-                if (!f)
-                        return 0;
-
-                start = f + 2;
-        } else {
-                f = NULL;
-                start = e + 2;
+        n = 0;
+        lines[n] = b->rbuffer;
+        for (i = 0; i < 3; ++i) {
+                l = memmem_safe(lines[n], b->rbuffer_size - (lines[n] - (char*) b->rbuffer), "\r\n", 2);
+                if (l)
+                        lines[++n] = l + 2;
+                else
+                        break;
         }
 
-        /* Nice! We got all the lines we need. First check the DATA line. */
+        /*
+         * If we sent a non-empty initial response, then we just expect an OK
+         * reply. We currently do this if, and only if, we picked ANONYMOUS.
+         * If we did not send an initial response, then we expect a DATA
+         * challenge, reply with our own DATA, and expect an OK reply. We do
+         * this for EXTERNAL.
+         * If FD negotiation was requested, we additionally expect
+         * an AGREE_UNIX_FD response in all cases.
+         */
+        if (n < (b->anonymous_auth ? 1U : 2U) + !!b->accept_fd)
+                return 0; /* wait for more data */
 
-        if (d - (char*) b->rbuffer == 4) {
-                if (memcmp(b->rbuffer, "DATA", 4))
+        i = 0;
+
+        /* In case of EXTERNAL, verify the first response was DATA. */
+        if (!b->anonymous_auth) {
+                l = lines[i++];
+                if (lines[i] - l == 4 + 2) {
+                        if (memcmp(l, "DATA", 4))
+                                return -EPERM;
+                } else if (lines[i] - l == 3 + 32 + 2) {
+                        /*
+                         * Old versions of the server-side implementation of
+                         * `sd-bus` replied with "OK <id>" to "AUTH" requests
+                         * from a client, even if the "AUTH" line did not
+                         * contain inlined arguments. Therefore, we also accept
+                         * "OK <id>" here, even though it is technically the
+                         * wrong reply. We ignore the "<id>" parameter, though,
+                         * since it has no real value.
+                         */
+                        if (memcmp(l, "OK ", 3))
+                                return -EPERM;
+                } else
                         return -EPERM;
-        } else if (d - (char*) b->rbuffer == 3 + 32) {
-                /*
-                 * Old versions of the server-side implementation of `sd-bus` replied with "OK <id>" to
-                 * "AUTH" requests from a client, even if the "AUTH" line did not contain inlined
-                 * arguments. Therefore, we also accept "OK <id>" here, even though it is technically the
-                 * wrong reply. We ignore the "<id>" parameter, though, since it has no real value.
-                 */
-                if (memcmp(b->rbuffer, "OK ", 3))
-                        return -EPERM;
-        } else
-                return -EPERM;
+        }
 
         /* Now check the OK line. */
+        l = lines[i++];
 
-        if (e - d != 2 + 3 + 32)
+        if (lines[i] - l != 3 + 32 + 2)
                 return -EPERM;
-
-        if (memcmp(d + 2, "OK ", 3))
+        if (memcmp(l, "OK ", 3))
                 return -EPERM;
 
         b->auth = b->anonymous_auth ? BUS_AUTH_ANONYMOUS : BUS_AUTH_EXTERNAL;
 
-        for (unsigned i = 0; i < 32; i += 2) {
+        for (unsigned j = 0; j < 32; j += 2) {
                 int x, y;
 
-                x = unhexchar(d[2 + 3 + i]);
-                y = unhexchar(d[2 + 3 + i + 1]);
+                x = unhexchar(l[3 + j]);
+                y = unhexchar(l[3 + j + 1]);
 
                 if (x < 0 || y < 0)
                         return -EINVAL;
 
-                peer.bytes[i/2] = ((uint8_t) x << 4 | (uint8_t) y);
+                peer.bytes[j/2] = ((uint8_t) x << 4 | (uint8_t) y);
         }
 
         if (!sd_id128_is_null(b->server_id) &&
@@ -233,15 +214,15 @@ static int bus_socket_auth_verify_client(sd_bus *b) {
         b->server_id = peer;
 
         /* And possibly check the third line, too */
+        if (b->accept_fd) {
+                l = lines[i++];
+                b->can_fds = !!memory_startswith(l, lines[i] - l, "AGREE_UNIX_FD");
+        }
 
-        if (f)
-                b->can_fds =
-                        (f - e == STRLEN("\r\nAGREE_UNIX_FD")) &&
-                        memcmp(e + 2, "AGREE_UNIX_FD",
-                               STRLEN("AGREE_UNIX_FD")) == 0;
+        assert(i == n);
 
-        b->rbuffer_size -= (start - (char*) b->rbuffer);
-        memmove(b->rbuffer, start, b->rbuffer_size);
+        b->rbuffer_size -= (lines[i] - (char*) b->rbuffer);
+        memmove(b->rbuffer, lines[i], b->rbuffer_size);
 
         r = bus_start_running(b);
         if (r < 0)
@@ -300,8 +281,8 @@ static int verify_external_token(sd_bus *b, const char *p, size_t l) {
         uid_t u;
         int r;
 
-        /* We don't do any real authentication here. Instead, we if
-         * the owner of this bus wanted authentication he should have
+        /* We don't do any real authentication here. Instead, if 
+         * the owner of this bus wanted authentication they should have
          * checked SO_PEERCRED before even creating the bus object. */
 
         if (!b->anonymous_auth && !b->ucred_valid)
@@ -398,7 +379,7 @@ static int bus_socket_auth_verify_server(sd_bus *b) {
         for (;;) {
                 /* Check if line is complete */
                 line = (char*) b->rbuffer + b->auth_rbegin;
-                e = memmem(line, b->rbuffer_size - b->auth_rbegin, "\r\n", 2);
+                e = memmem_safe(line, b->rbuffer_size - b->auth_rbegin, "\r\n", 2);
                 if (!e)
                         return processed;
 
@@ -510,6 +491,41 @@ static int bus_socket_auth_verify(sd_bus *b) {
                 return bus_socket_auth_verify_client(b);
 }
 
+static int bus_socket_write_auth(sd_bus *b) {
+        ssize_t k;
+
+        assert(b);
+        assert(b->state == BUS_AUTHENTICATING);
+
+        if (!bus_socket_auth_needs_write(b))
+                return 0;
+
+        if (b->prefer_writev)
+                k = writev(b->output_fd, b->auth_iovec + b->auth_index, ELEMENTSOF(b->auth_iovec) - b->auth_index);
+        else {
+                struct msghdr mh = {
+                        .msg_iov = b->auth_iovec + b->auth_index,
+                        .msg_iovlen = ELEMENTSOF(b->auth_iovec) - b->auth_index,
+                };
+
+                k = sendmsg(b->output_fd, &mh, MSG_DONTWAIT|MSG_NOSIGNAL);
+                if (k < 0 && errno == ENOTSOCK) {
+                        b->prefer_writev = true;
+                        k = writev(b->output_fd, b->auth_iovec + b->auth_index, ELEMENTSOF(b->auth_iovec) - b->auth_index);
+                }
+        }
+
+        if (k < 0)
+                return ERRNO_IS_TRANSIENT(errno) ? 0 : -errno;
+
+        iovec_advance(b->auth_iovec, &b->auth_index, (size_t) k);
+
+        /* Now crank the state machine since we might be able to make progress after writing. For example,
+         * the server only processes "BEGIN" when the write buffer is empty.
+         */
+        return bus_socket_auth_verify(b);
+}
+
 static int bus_socket_read_auth(sd_bus *b) {
         struct msghdr mh;
         struct iovec iov = {};
@@ -564,10 +580,11 @@ static int bus_socket_read_auth(sd_bus *b) {
                 } else
                         handle_cmsg = true;
         }
-        if (k == -EAGAIN)
-                return 0;
-        if (k < 0)
+        if (k < 0) {
+                if (ERRNO_IS_TRANSIENT(k))
+                        return 0;
                 return (int) k;
+        }
         if (k == 0) {
                 if (handle_cmsg)
                         cmsg_close_all(&mh); /* paranoia, we shouldn't have gotten any fds on EOF */
@@ -606,7 +623,7 @@ void bus_socket_setup(sd_bus *b) {
         assert(b);
 
         /* Increase the buffers to 8 MB */
-        (void) fd_inc_rcvbuf(b->input_fd, SNDBUF_SIZE);
+        (void) fd_increase_rxbuf(b->input_fd, SNDBUF_SIZE);
         (void) fd_inc_sndbuf(b->output_fd, SNDBUF_SIZE);
 
         b->message_version = 1;
@@ -644,9 +661,8 @@ static int bus_socket_start_auth_client(sd_bus *b) {
                  * message broker to aid debugging of clients. We fully anonymize the connection and use a
                  * static default.
                  */
-                "\0AUTH ANONYMOUS\r\n"
-                /* HEX a n o n y m o u s */
-                "DATA 616e6f6e796d6f7573\r\n"
+                /*            HEX a n o n y m o u s */
+                "\0AUTH ANONYMOUS 616e6f6e796d6f7573\r\n"
         };
         static const char sasl_auth_external[] = {
                 "\0AUTH EXTERNAL\r\n"
@@ -725,7 +741,8 @@ static int bus_socket_inotify_setup(sd_bus *b) {
         }
 
         /* Make sure the path is NUL terminated */
-        p = strndupa(b->sockaddr.un.sun_path, sizeof(b->sockaddr.un.sun_path));
+        p = strndupa_safe(b->sockaddr.un.sun_path,
+                          sizeof(b->sockaddr.un.sun_path));
 
         /* Make sure the path is absolute */
         r = path_make_absolute_cwd(p, &absolute);
@@ -962,8 +979,17 @@ int bus_socket_exec(sd_bus *b) {
         assert(b->exec_path);
         assert(b->busexec_pid == 0);
 
-        log_debug("sd-bus: starting bus%s%s with %s...",
-                  b->description ? " " : "", strempty(b->description), b->exec_path);
+        if (DEBUG_LOGGING) {
+                _cleanup_free_ char *line = NULL;
+
+                if (b->exec_argv)
+                        line = quote_command_line(b->exec_argv, SHELL_ESCAPE_EMPTY);
+
+                log_debug("sd-bus: starting bus%s%s with %s%s",
+                          b->description ? " " : "", strempty(b->description),
+                          line ?: b->exec_path,
+                          b->exec_argv && !line ? "…" : "");
+        }
 
         r = socketpair(AF_UNIX, SOCK_STREAM|SOCK_NONBLOCK|SOCK_CLOEXEC, 0, s);
         if (r < 0)
@@ -977,17 +1003,17 @@ int bus_socket_exec(sd_bus *b) {
         if (r == 0) {
                 /* Child */
 
-                if (rearrange_stdio(s[1], s[1], STDERR_FILENO) < 0)
+                r = rearrange_stdio(s[1], s[1], STDERR_FILENO);
+                TAKE_FD(s[1]);
+                if (r < 0)
                         _exit(EXIT_FAILURE);
 
                 (void) rlimit_nofile_safe();
 
                 if (b->exec_argv)
                         execvp(b->exec_path, b->exec_argv);
-                else {
-                        const char *argv[] = { b->exec_path, NULL };
-                        execvp(b->exec_path, (char**) argv);
-                }
+                else
+                        execvp(b->exec_path, STRV_MAKE(b->exec_path));
 
                 _exit(EXIT_FAILURE);
         }
@@ -1062,7 +1088,7 @@ int bus_socket_write_message(sd_bus *bus, sd_bus_message *m, size_t *idx) {
         }
 
         if (k < 0)
-                return errno == EAGAIN ? 0 : -errno;
+                return ERRNO_IS_TRANSIENT(errno) ? 0 : -errno;
 
         *idx += (size_t) k;
         return 1;
@@ -1112,7 +1138,7 @@ static int bus_socket_read_message_need(sd_bus *bus, size_t *need) {
         } else
                 return -EBADMSG;
 
-        sum = (uint64_t) sizeof(struct bus_header) + (uint64_t) ALIGN_TO(b, 8) + (uint64_t) a;
+        sum = (uint64_t) sizeof(struct bus_header) + (uint64_t) ALIGN8(b) + (uint64_t) a;
         if (sum >= BUS_MESSAGE_SIZE_MAX)
                 return -ENOBUFS;
 
@@ -1219,10 +1245,11 @@ int bus_socket_read_message(sd_bus *bus) {
                 } else
                         handle_cmsg = true;
         }
-        if (k == -EAGAIN)
-                return 0;
-        if (k < 0)
+        if (k < 0) {
+                if (ERRNO_IS_TRANSIENT(k))
+                        return 0;
                 return (int) k;
+        }
         if (k == 0) {
                 if (handle_cmsg)
                         cmsg_close_all(&mh); /* On EOF we shouldn't have gotten an fd, but let's make sure */

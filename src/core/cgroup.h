@@ -3,9 +3,9 @@
 
 //#include <stdbool.h>
 
+//#include "bpf-lsm.h"
 #include "cgroup-util.h"
 //#include "cpu-set-util.h"
-//#include "ip-address-access.h"
 #include "list.h"
 #include "time-util.h"
 
@@ -133,7 +133,9 @@ struct CGroupContext {
         usec_t cpu_quota_period_usec;
 
         CPUSet cpuset_cpus;
+        CPUSet startup_cpuset_cpus;
         CPUSet cpuset_mems;
+        CPUSet startup_cpuset_mems;
 
         uint64_t io_weight;
         uint64_t startup_io_weight;
@@ -149,17 +151,24 @@ struct CGroupContext {
         uint64_t memory_max;
         uint64_t memory_swap_max;
 
-        bool default_memory_min_set;
-        bool default_memory_low_set;
-        bool memory_min_set;
-        bool memory_low_set;
+        bool default_memory_min_set:1;
+        bool default_memory_low_set:1;
+        bool memory_min_set:1;
+        bool memory_low_set:1;
 
-        LIST_HEAD(IPAddressAccessItem, ip_address_allow);
-        LIST_HEAD(IPAddressAccessItem, ip_address_deny);
+        Set *ip_address_allow;
+        Set *ip_address_deny;
+        /* These two flags indicate that redundant entries have been removed from
+         * ip_address_allow/ip_address_deny, i.e. in_addr_prefixes_reduce() has already been called. */
+        bool ip_address_allow_reduced;
+        bool ip_address_deny_reduced;
 
         char **ip_filters_ingress;
         char **ip_filters_egress;
         LIST_HEAD(CGroupBPFForeignProgram, bpf_foreign_programs);
+
+        Set *restrict_network_interfaces;
+        bool restrict_network_interfaces_is_allow_list;
 
         /* For legacy hierarchies */
         uint64_t cpu_shares;
@@ -310,6 +319,8 @@ int unit_reset_accounting(Unit *u);
 #if 0 /// UNNEEDED by elogind
 bool manager_owns_host_root_cgroup(Manager *m);
 bool unit_has_host_root_cgroup(Unit *u);
+
+bool unit_has_startup_cgroup_constraints(Unit *u);
 #endif // 0
 
 int manager_notify_cgroup_empty(Manager *m, const char *group);
@@ -322,6 +333,8 @@ void manager_invalidate_startup_units(Manager *m);
 
 const char* cgroup_device_policy_to_string(CGroupDevicePolicy i) _const_;
 CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
+
+void unit_cgroup_catchup(Unit *u);
 
 bool unit_cgroup_delegate(Unit *u);
 
