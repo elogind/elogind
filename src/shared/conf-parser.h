@@ -115,7 +115,6 @@ int config_parse_many(
                 void *userdata,
                 Hashmap **ret_stats_by_path,  /* possibly NULL */
                 char ***ret_drop_in_files);   /* possibly NULL */
-#endif // 0
 
 int config_get_stats_by_path(
                 const char *suffix,
@@ -124,9 +123,12 @@ int config_get_stats_by_path(
                 const char* const* dirs,
                 bool check_dropins,
                 Hashmap **ret);
+#endif // 0
 
 int hashmap_put_stats_by_path(Hashmap **stats_by_path, const char *path, const struct stat *st);
+#if 0 /// UNNEEDED by elogind
 bool stats_by_path_equal(Hashmap *a, Hashmap *b);
+#endif // 0
 
 typedef struct ConfigSection {
         unsigned line;
@@ -143,7 +145,6 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(ConfigSection*, config_section_free);
 int config_section_new(const char *filename, unsigned line, ConfigSection **s);
 extern const struct hash_ops config_section_hash_ops;
 unsigned hashmap_find_free_section_line(Hashmap *hashmap);
-#endif // 0
 
 static inline bool section_is_invalid(ConfigSection *section) {
         /* If this returns false, then it does _not_ mean the section is valid. */
@@ -167,7 +168,6 @@ static inline bool section_is_invalid(ConfigSection *section) {
         DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func);                  \
         DEFINE_TRIVIAL_CLEANUP_FUNC(type*, free_func##_or_set_invalid);
 
-#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_int);
 CONFIG_PARSER_PROTOTYPE(config_parse_unsigned);
 CONFIG_PARSER_PROTOTYPE(config_parse_long);
@@ -227,6 +227,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
 
+#if 0 /// UNNEEDED by elogind
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
         DISABLED_LEGACY,
@@ -239,6 +240,7 @@ typedef enum ConfigParseStringFlags {
 
         CONFIG_PARSE_STRING_SAFE_AND_ASCII = CONFIG_PARSE_STRING_SAFE | CONFIG_PARSE_STRING_ASCII,
 } ConfigParseStringFlags;
+#endif // 0
 
 #define DEFINE_CONFIG_PARSE(function, parser, msg)                      \
         CONFIG_PARSER_PROTOTYPE(function) {                             \
