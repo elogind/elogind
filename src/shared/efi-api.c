@@ -175,6 +175,7 @@ int efi_set_reboot_to_firmware(bool value) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static ssize_t utf16_size(const uint16_t *s, size_t buf_len_bytes) {
         size_t l = 0;
 
@@ -541,5 +542,6 @@ bool efi_has_tpm2(void) {
 
         return cache;
 }
+#endif // 0
 
 #endif
