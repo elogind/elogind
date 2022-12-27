@@ -4413,6 +4413,7 @@ int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFla
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uint32_t *u = ASSERT_PTR(userdata);
 
@@ -4472,6 +4473,7 @@ int json_dispatch_uint16(const char *name, JsonVariant *variant, JsonDispatchFla
         *i = (uint16_t) json_variant_unsigned(variant);
         return 0;
 }
+#endif // 0
 
 int json_dispatch_string(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         char **s = ASSERT_PTR(userdata);

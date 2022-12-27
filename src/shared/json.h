@@ -232,7 +232,9 @@ typedef enum JsonParseFlags {
 } JsonParseFlags;
 
 int json_parse(const char *string, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
+#if 0 /// UNNEEDED by elogind
 int json_parse_continue(const char **p, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
+#endif // 0
 int json_parse_file_at(FILE *f, int dir_fd, const char *path, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 
 static inline int json_parse_file(FILE *f, const char *path, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column) {
@@ -403,20 +405,26 @@ int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFl
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 #endif // 0
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_uint16(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int16(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
+#endif // 0
 int json_dispatch_uid_gid(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_user_group_name(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_id128(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_unsupported(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 
 assert_cc(sizeof(uint32_t) == sizeof(unsigned));
+#if 0 /// UNNEEDED by elogind
 #define json_dispatch_uint json_dispatch_uint32
+#endif // 0
 
 assert_cc(sizeof(int32_t) == sizeof(int));
+#if 0 /// UNNEEDED by elogind
 #define json_dispatch_int json_dispatch_int32
+#endif // 0
 
 static inline int json_dispatch_level(JsonDispatchFlags flags) {
 
