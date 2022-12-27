@@ -286,6 +286,7 @@ int mac_smack_copy(const char *dest, const char *src) {
 #endif // 0
 #endif
 
+#if 0 /// UNNEEDED by elogind
 int rename_and_apply_smack_floor_label(const char *from, const char *to) {
 
         if (rename(from, to) < 0)
@@ -297,3 +298,4 @@ int rename_and_apply_smack_floor_label(const char *from, const char *to) {
         return 0;
 #endif
 }
+#endif // 0
