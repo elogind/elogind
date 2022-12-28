@@ -314,9 +314,6 @@ int unit_reset_accounting(Unit *u);
         cc ? cc->name : false;                          \
         })
 
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 bool manager_owns_host_root_cgroup(Manager *m);
 bool unit_has_host_root_cgroup(Unit *u);
 
