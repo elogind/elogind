@@ -8,7 +8,9 @@ fundamental_headers = files(
         'macro-fundamental.h',
         'sha256.h',
         'string-util-fundamental.h',
-        'tpm-pcr.h',
+#if 0 /// Nowhere used in elogind
+#         'tpm-pcr.h',
+#endif // 0
 )
 
 # for sd-boot
@@ -17,7 +19,9 @@ fundamental_source_paths = files(
         'efivars-fundamental.c',
         'sha256.c',
         'string-util-fundamental.c',
-        'tpm-pcr.c',
+#if 0 /// Nowhere used in elogind
+#         'tpm-pcr.c',
+#endif // 0
 )
 
 # for libbasic
