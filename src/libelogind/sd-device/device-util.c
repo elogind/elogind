@@ -33,6 +33,7 @@ int devname_from_devnum(mode_t mode, dev_t devnum, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_open_from_devnum(mode_t mode, dev_t devnum, int flags, char **ret) {
         _cleanup_(sd_device_unrefp) sd_device *dev = NULL;
         _cleanup_close_ int fd = -1;
@@ -63,3 +64,4 @@ int device_open_from_devnum(mode_t mode, dev_t devnum, int flags, char **ret) {
 
         return TAKE_FD(fd);
 }
+#endif // 0
