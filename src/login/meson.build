@@ -89,16 +89,14 @@ loginctl_sources += files(
 )
 #endif // 1
 
-#if 0 /// elogind builds itself unconditionally
+#if 0 /// elogind calls the functions directly and does not need an extra executable.
 # user_runtime_dir_sources = files('user-runtime-dir.c')
-#else // 0
-enable_logind = true
 #endif // 0
 
 pam_elogind_sym = 'src/login/pam_elogind.sym'
 pam_elogind_c = files('pam_elogind.c')
 
-#if 0 /// This is elogind
+#if 0 /// elogind builds itself unconditionally
 # enable_logind = conf.get('ENABLE_LOGIND') == 1
 #else // 0
 enable_logind = true
@@ -128,10 +126,10 @@ if enable_logind
 #                      install_dir : dbussystemservicedir)
 #else // 0
         custom_target(
+                'org.freedesktop.login1.service',
                 input: 'org.freedesktop.login1.service.in',
                 output: 'org.freedesktop.login1.service',
                 command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-                install : enable_logind,
                 install_dir : dbussystemservicedir)
 #endif // 0
         install_data('org.freedesktop.login1.policy',
