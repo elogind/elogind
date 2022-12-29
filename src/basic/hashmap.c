@@ -1867,6 +1867,7 @@ int _set_put_strndup_full(Set **s, const struct hash_ops *hash_ops, const char *
         return set_consume(*s, c);
 }
 
+#if 0 /// UNNEEDED by elogind
 int _set_put_strdupv_full(Set **s, const struct hash_ops *hash_ops, char **l  HASHMAP_DEBUG_PARAMS) {
         int n = 0, r;
 
@@ -1883,7 +1884,6 @@ int _set_put_strdupv_full(Set **s, const struct hash_ops *hash_ops, char **l  HA
         return n;
 }
 
-#if 0 /// UNNEEDED by elogind
 int set_put_strsplit(Set *s, const char *v, const char *separators, ExtractFlags flags) {
         const char *p = ASSERT_PTR(v);
         int r;
