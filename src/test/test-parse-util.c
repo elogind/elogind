@@ -553,6 +553,7 @@ TEST(safe_atoi16) {
         assert_se(r == -EINVAL);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(safe_atoux16) {
         int r;
         uint16_t l;
@@ -597,6 +598,7 @@ TEST(safe_atoux16) {
         r = safe_atoux16("", &l);
         assert_se(r == -EINVAL);
 }
+#endif // 0
 
 TEST(safe_atou64) {
         int r;
@@ -687,6 +689,7 @@ TEST(safe_atoi64) {
         assert_se(r == -EINVAL);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(safe_atoux64) {
         int r;
         uint64_t l;
@@ -731,6 +734,7 @@ TEST(safe_atoux64) {
         r = safe_atoux64("", &l);
         assert_se(r == -EINVAL);
 }
+#endif // 0
 
 TEST(safe_atod) {
         int r;
