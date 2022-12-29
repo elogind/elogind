@@ -7,6 +7,7 @@
 #include "tests.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 TEST(strpcpy) {
         char target[25];
         char *s = target;
@@ -47,8 +48,8 @@ TEST(strpcpy) {
         assert_se(space_left == 0);
         assert_se(streq(target, "12345hey hey heywaldobar"));
 }
+#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 TEST(strpcpyf) {
         char target[25];
         char *s = target;
@@ -97,6 +98,7 @@ TEST(strpcpyf) {
         assert_se(target[12] == '2');
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strpcpyl) {
         char target[25];
         char *s = target;
@@ -175,6 +177,4 @@ TEST(sd_event_code_migration) {
         assert_se(streq(b, c));
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_TEST_MAIN(LOG_INFO);
