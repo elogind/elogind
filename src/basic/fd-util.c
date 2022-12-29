@@ -528,6 +528,7 @@ int fd_get_path(int fd, char **ret) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int move_fd(int from, int to, int cloexec) {
         int r;
 
@@ -571,6 +572,7 @@ int move_fd(int from, int to, int cloexec) {
 
         return to;
 }
+#endif // 0
 
 int fd_move_above_stdio(int fd) {
         int flags, copy;
@@ -783,9 +785,6 @@ int read_nr_open(void) {
         /* If we fail, fall back to the hard-coded kernel limit of 1024 * 1024. */
         return 1024 * 1024;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 int fd_get_diskseq(int fd, uint64_t *ret) {
         uint64_t diskseq;

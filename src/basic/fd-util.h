@@ -76,7 +76,9 @@ bool fdname_is_valid(const char *s);
 
 int fd_get_path(int fd, char **ret);
 
+#if 0 /// UNNEEDED by elogind
 int move_fd(int from, int to, int cloexec);
+#endif // 0
 
 enum {
         ACQUIRE_NO_DEV_NULL = 1 << 0,
@@ -114,8 +116,6 @@ static inline int make_null_stdio(void) {
 
 int fd_reopen(int fd, int flags);
 int read_nr_open(void);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int fd_get_diskseq(int fd, uint64_t *ret);
 
 /* The maximum length a buffer for a /proc/self/fd/<fd> path needs */
