@@ -982,7 +982,6 @@ TEST(open_mkdir_at) {
         subsubdir_fd = open_mkdir_at(fd, "xxx/yyy", O_CLOEXEC, 0700);
         assert_se(subsubdir_fd >= 0);
 }
-#endif // 0
 
 TEST(openat_report_new) {
         _cleanup_free_ char *j = NULL;
@@ -1051,6 +1050,7 @@ TEST(openat_report_new) {
         fd = safe_close(fd);
         assert_se(b);
 }
+#endif // 0
 
 static int intro(void) {
         arg_test_dir = saved_argv[1];

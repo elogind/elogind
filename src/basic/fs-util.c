@@ -1077,7 +1077,6 @@ int open_mkdir_at(int dirfd, const char *path, int flags, mode_t mode) {
 
         return TAKE_FD(fd);
 }
-#endif // 0
 
 int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, bool *ret_newly_created) {
         unsigned attempts = 7;
@@ -1125,3 +1124,4 @@ int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, b
                         return -EEXIST;
         }
 }
+#endif // 0
