@@ -340,7 +340,6 @@ int load_extension_release_pairs(const char *root, const char *extension, bool r
 
         return load_env_file_pairs(f, p, ret);
 }
-#endif // 0
 
 int os_release_support_ended(const char *support_end, bool quiet) {
         _cleanup_free_ char *_support_end_alloc = NULL;
@@ -376,3 +375,4 @@ int os_release_support_ended(const char *support_end, bool quiet) {
         usec_t ts = now(CLOCK_REALTIME);
         return DIV_ROUND_UP(ts, USEC_PER_SEC) > (usec_t) eol;
 }
+#endif // 0
