@@ -18,10 +18,14 @@ char *utf8_is_valid_n(const char *str, size_t len_bytes) _pure_;
 static inline char *utf8_is_valid(const char *s) {
         return utf8_is_valid_n(s, SIZE_MAX);
 }
+#if 0 /// UNNEEDED by elogind
 char *ascii_is_valid(const char *s) _pure_;
+#endif // 0
 char *ascii_is_valid_n(const char *str, size_t len);
 
+#if 0 /// UNNEEDED by elogind
 int utf8_to_ascii(const char *str, char replacement_char, char **ret);
+#endif // 0
 
 bool utf8_is_printable_newline(const char* str, size_t length, bool allow_newline) _pure_;
 #define utf8_is_printable(str, length) utf8_is_printable_newline(str, length, true)
@@ -55,5 +59,7 @@ static inline char32_t utf16_surrogate_pair_to_unichar(char16_t lead, char16_t t
         return ((((char32_t) lead - 0xd800U) << 10) + ((char32_t) trail - 0xdc00U) + 0x10000U);
 }
 
+#if 0 /// UNNEEDED by elogind
 size_t utf8_n_codepoints(const char *str);
+#endif // 0
 size_t utf8_console_width(const char *str);
