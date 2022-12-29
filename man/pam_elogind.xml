@@ -276,17 +276,19 @@
         <listitem><para>Sets unit <varname>TasksMax=</varname>.</para></listitem>
       </varlistentry>
 
+      <!-- 0 /// elogind does not regulate either
       <varlistentry>
-        <term><varname>elogind.cpu_weight=</varname></term>
+        <term><varname>systemd.cpu_weight=</varname></term>
 
         <listitem><para>Sets unit <varname>CPUWeight=</varname>.</para></listitem>
       </varlistentry>
 
       <varlistentry>
-        <term><varname>elogind.io_weight=</varname></term>
+        <term><varname>systemd.io_weight=</varname></term>
 
         <listitem><para>Sets unit <varname>IOWeight=</varname>.</para></listitem>
       </varlistentry>
+      // 0 -->
 
       <varlistentry>
         <term><varname>elogind.runtime_max_sec=</varname></term>
@@ -296,13 +298,21 @@
     </variablelist>
 
     <para>Example data as can be provided from an another PAM module:
+      <!-- 0 /// elogind does not regulate io_weight or cpu_weight
+      <programlisting>
+pam_set_data(handle, "systemd.memory_max", (void *)"200M", cleanup);
+pam_set_data(handle, "systemd.tasks_max",  (void *)"50",   cleanup);
+pam_set_data(handle, "systemd.cpu_weight", (void *)"100",  cleanup);
+pam_set_data(handle, "systemd.io_weight",  (void *)"340",  cleanup);
+pam_set_data(handle, "systemd.runtime_max_sec", (void *)"3600", cleanup);
+      </programlisting>
+    --><!-- else // 0 -->
       <programlisting>
 pam_set_data(handle, "elogind.memory_max", (void *)"200M", cleanup);
 pam_set_data(handle, "elogind.tasks_max",  (void *)"50",   cleanup);
-pam_set_data(handle, "elogind.cpu_weight", (void *)"100",  cleanup);
-pam_set_data(handle, "elogind.io_weight",  (void *)"340",  cleanup);
 pam_set_data(handle, "elogind.runtime_max_sec", (void *)"3600", cleanup);
       </programlisting>
+    <!-- // 0 -->
     </para>
 
   </refsect1>

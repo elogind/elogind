@@ -171,7 +171,7 @@ by contributors.
 
 ## Documentation
 
-## systemd.io
+### systemd.io
 
 Markdown files found under `docs/` are automatically published on the
 [systemd.io](https://systemd.io) website using Github Pages. A minimal unit test
