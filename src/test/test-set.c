@@ -126,6 +126,7 @@ TEST(set_put_strdup) {
         assert_se(set_size(m) == 2);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(set_put_strdupv) {
         _cleanup_set_free_ Set *m = NULL;
 
@@ -138,6 +139,7 @@ TEST(set_put_strdupv) {
 
         assert_se(set_size(m) == 3);
 }
+#endif // 0
 
 TEST(set_ensure_allocated) {
         _cleanup_set_free_ Set *m = NULL;
