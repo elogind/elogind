@@ -1047,11 +1047,11 @@ bool is_main_thread(void) {
         return cached > 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool oom_score_adjust_is_valid(int oa) {
         return oa >= OOM_SCORE_ADJ_MIN && oa <= OOM_SCORE_ADJ_MAX;
 }
 
-#if 0 /// UNNEEDED by elogind
 unsigned long personality_from_string(const char *p) {
         Architecture architecture;
 
@@ -1621,14 +1621,14 @@ bool invoked_as(char *argv[], const char *token) {
 }
 #endif // 0
 
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
+         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
 bool invoked_by_elogind(void) {
         int r;
 
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), elogind-importd,
-         * or elogind-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
+         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         const char *e = getenv("SYSTEMD_EXEC_PID");
         if (!e)
                 return false;
@@ -1669,6 +1669,7 @@ _noreturn_ void freeze(void) {
                 pause();
 }
 
+#if 0 /// UNNEEDED by elogind
 bool argv_looks_like_help(int argc, char **argv) {
         char **l;
 
@@ -1694,7 +1695,6 @@ bool argv_looks_like_help(int argc, char **argv) {
                 strv_contains(l, "-h");
 }
 
-#if 0 /// UNNEEDED by elogind
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
         [CLD_KILLED] = "killed",

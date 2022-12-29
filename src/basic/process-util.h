@@ -87,7 +87,9 @@ int pid_from_same_root_fs(pid_t pid);
 
 bool is_main_thread(void);
 
+#if 0 /// UNNEEDED by elogind
 bool oom_score_adjust_is_valid(int oa);
+#endif // 0
 
 #ifndef PERSONALITY_INVALID
 /* personality(7) documents that 0xffffffffUL is used for querying the
@@ -107,8 +109,8 @@ const char *sigchld_code_to_string(int i) _const_;
 int sigchld_code_from_string(const char *s) _pure_;
 #endif // 0
 
-int sched_policy_to_string_alloc(int i, char **s);
 #if 0 /// UNNEEDED by elogind
+int sched_policy_to_string_alloc(int i, char **s);
 int sched_policy_from_string(const char *s);
 #endif // 0
 
@@ -214,4 +216,6 @@ bool invoked_by_elogind(void);
 
 _noreturn_ void freeze(void);
 
+#if 0 /// UNNEEDED by elogind
 bool argv_looks_like_help(int argc, char **argv);
+#endif // 0
