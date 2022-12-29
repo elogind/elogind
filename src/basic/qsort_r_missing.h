@@ -1,6 +1,6 @@
 #pragma once
-#ifndef ELOGIND_SRC_SHARED_QSORT_R_MISSING_H_INCLUDED
-#define ELOGIND_SRC_SHARED_QSORT_R_MISSING_H_INCLUDED
+#ifndef ELOGIND_SRC_BASIC_QSORT_R_MISSING_H_INCLUDED
+#define ELOGIND_SRC_BASIC_QSORT_R_MISSING_H_INCLUDED 1
 
 /***
   This file is part of elogind.
@@ -31,4 +31,4 @@ void qsort_r (void *base_, size_t nmemb_, size_t size_, compare_fn_t comp_, void
 
 #endif // qsort_r() missing
 
-#endif // ELOGIND_SRC_SHARED_QSORT_R_MISSING_H_INCLUDED
+#endif // ELOGIND_SRC_BASIC_QSORT_R_MISSING_H_INCLUDED
