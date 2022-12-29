@@ -71,12 +71,11 @@ int in_addr_prefix_range(
                 unsigned prefixlen,
                 union in_addr_union *ret_start,
                 union in_addr_union *ret_end);
-#endif // 0
-
 int in_addr_to_string(int family, const union in_addr_union *u, char **ret);
 static inline int in6_addr_to_string(const struct in6_addr *u, char **ret) {
         return in_addr_to_string(AF_INET6, (const union in_addr_union*) u, ret);
 }
+#endif // 0
 
 static inline const char* typesafe_inet_ntop(int family, const union in_addr_union *a, char *buf, size_t len) {
         return inet_ntop(family, a, buf, len);

@@ -439,7 +439,6 @@ int in_addr_prefix_range(
 
         return 0;
 }
-#endif // 0
 
 int in_addr_to_string(int family, const union in_addr_union *u, char **ret) {
         _cleanup_free_ char *x = NULL;
@@ -467,7 +466,6 @@ int in_addr_to_string(int family, const union in_addr_union *u, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int in_addr_prefix_to_string(
                 int family,
                 const union in_addr_union *u,
