@@ -393,6 +393,7 @@ static int append_session_tasks_max(pam_handle_t *handle, sd_bus_message *m, con
         return PAM_SUCCESS;
 }
 
+#if 0 /// elogind neither handles io_weight nor cpu_weight
 static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, const char *limit, const char *field) {
         uint64_t val;
         int r;
@@ -408,12 +409,13 @@ static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, con
                 if (r < 0)
                         return pam_bus_log_create_error(handle, r);
         } else if (is_cpu_weight)
-                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight, ignoring: %s", limit);
+                pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.cpu_weight, ignoring: %s", limit);
         else
-                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.io_weight, ignoring: %s", limit);
+                pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.io_weight, ignoring: %s", limit);
 
         return PAM_SUCCESS;
 }
+#endif // 0
 
 static const char* getenv_harder(pam_handle_t *handle, const char *key, const char *fallback) {
         const char *v;
@@ -810,12 +812,14 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         r = pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.tasks_max data: @PAMERR@");
-        r = pam_get_data(handle, "elogind.cpu_weight", (const void **)&cpu_weight);
+#if 0 /// elogind neither handles io_weight nor cpu_weight
+        r = pam_get_data(handle, "systemd.cpu_weight", (const void **)&cpu_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
-                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.cpu_weight data: @PAMERR@");
-        r = pam_get_data(handle, "elogind.io_weight",  (const void **)&io_weight);
+                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.cpu_weight data: @PAMERR@");
+        r = pam_get_data(handle, "systemd.io_weight",  (const void **)&io_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
-                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.io_weight data: @PAMERR@");
+                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.io_weight data: @PAMERR@");
+#endif // 0
         r = pam_get_data(handle, "elogind.runtime_max_sec", (const void **)&runtime_max_sec);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.runtime_max_sec data: @PAMERR@");
@@ -876,6 +880,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (r != PAM_SUCCESS)
                 return r;
 
+#if 0 /// elogind neither handles io_weight nor cpu_weight
         r = append_session_cg_weight(handle, m, cpu_weight, "CPUWeight");
         if (r != PAM_SUCCESS)
                 return r;
@@ -883,6 +888,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         r = append_session_cg_weight(handle, m, io_weight, "IOWeight");
         if (r != PAM_SUCCESS)
                 return r;
+#endif // 0
 
         r = sd_bus_message_close_container(m);
         if (r < 0)
