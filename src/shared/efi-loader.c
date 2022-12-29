@@ -220,7 +220,6 @@ int efi_stub_get_features(uint64_t *ret) {
 
                 } else if (first_word(info, "systemd-stub")) {
 
-                        /* An older elogind-stub version. Let's hardcode the feature set, since it was pretty
                         /* An older systemd-stub version. Let's hardcode the feature set, since it was pretty
                          * static in all its versions. */
 
