@@ -41,6 +41,7 @@ typedef enum LogTarget{
 #define IS_SYNTHETIC_ERRNO(val)             ((val) >> 30 & 1)
 #define ERRNO_VALUE(val)                    (abs(val) & ~(1 << 30))
 
+#if 0 /// UNNEEDED by elogind
 /* The callback function to be invoked when syntax warnings are seen
  * in the unit files. */
 typedef void (*log_syntax_callback_t)(const char *unit, int level, void *userdata);
@@ -49,6 +50,7 @@ void set_log_syntax_callback(log_syntax_callback_t cb, void *userdata);
 static inline void clear_log_syntax_callback(dummy_t *dummy) {
           set_log_syntax_callback(/* cb= */ NULL, /* userdata= */ NULL);
 }
+#endif // 0
 
 const char *log_target_to_string(LogTarget target) _const_;
 LogTarget log_target_from_string(const char *s) _pure_;
@@ -160,6 +162,7 @@ int log_oom_internal(
                 int line,
                 const char *func);
 
+#if 0 /// UNNEEDED by elogind
 int log_format_iovec(
                 struct iovec *iovec,
                 size_t iovec_len,
@@ -169,7 +172,6 @@ int log_format_iovec(
                 const char *format,
                 va_list ap) _printf_(6, 0);
 
-#if 0 /// UNNEEDED by elogind
 int log_struct_iovec_internal(
                 int level,
                 int error,
@@ -207,8 +209,10 @@ void log_assert_failed_return(
                 int line,
                 const char *func);
 
+#if 0 /// UNNEEDED by elogind
 #define log_dispatch(level, error, buffer)                              \
         log_dispatch_internal(level, error, PROJECT_FILE, __LINE__, __func__, NULL, NULL, NULL, NULL, buffer)
+#endif // 0
 
 /* Logging with level */
 #define log_full_errno_zerook(level, error, ...)                        \
@@ -240,7 +244,9 @@ void log_assert_failed_return(
                 (void) log_full_errno_zerook(level, 0, fmt, ##__VA_ARGS__); \
         })
 
+#if 0 /// UNNEEDED by elogind
 int log_emergency_level(void);
+#endif // 0
 
 /* Normal logging */
 #define log_debug(...)     log_full(LOG_DEBUG,   __VA_ARGS__)
@@ -248,7 +254,9 @@ int log_emergency_level(void);
 #define log_notice(...)    log_full(LOG_NOTICE,  __VA_ARGS__)
 #define log_warning(...)   log_full(LOG_WARNING, __VA_ARGS__)
 #define log_error(...)     log_full(LOG_ERR,     __VA_ARGS__)
+#if 0 /// UNNEEDED by elogind
 #define log_emergency(...) log_full(log_emergency_level(), __VA_ARGS__)
+#endif // 0
 
 /* Logging triggered by an errno-like error */
 #define log_debug_errno(error, ...)     log_full_errno(LOG_DEBUG,   error, __VA_ARGS__)
@@ -256,6 +264,7 @@ int log_emergency_level(void);
 #define log_notice_errno(error, ...)    log_full_errno(LOG_NOTICE,  error, __VA_ARGS__)
 #define log_warning_errno(error, ...)   log_full_errno(LOG_WARNING, error, __VA_ARGS__)
 #define log_error_errno(error, ...)     log_full_errno(LOG_ERR,     error, __VA_ARGS__)
+#if 0 /// UNNEEDED by elogind
 #define log_emergency_errno(error, ...) log_full_errno(log_emergency_level(), error, __VA_ARGS__)
 
 /* This logs at the specified level the first time it is called, and then
@@ -280,6 +289,7 @@ int log_emergency_level(void);
                         _err = -ERRNO_VALUE(_err);                       \
                 _err;                                                    \
         })
+#endif // 0
 
 #if LOG_TRACE
 #  define log_trace(...)          log_debug(__VA_ARGS__)
@@ -291,8 +301,8 @@ int log_emergency_level(void);
 
 #if ENABLE_DEBUG_ELOGIND
 #  define log_debug_elogind_full(...) do { \
-        log_set_max_level(LOG_DEBUG);              \
-        log_full(LOG_DEBUG, __VA_ARGS__); \
+        log_set_max_level(LOG_DEBUG);      \
+        log_full(LOG_DEBUG, __VA_ARGS__);  \
 } while(0)
 #  define log_debug_elogind(fmt, ...) \
           log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
@@ -400,6 +410,7 @@ int log_syntax_invalid_utf8_internal(
 
 void log_setup(void);
 
+#if 0 /// UNNEEDED by elogind
 typedef struct LogRateLimit {
         int error;
         int level;
@@ -437,3 +448,4 @@ typedef struct LogRateLimit {
                         : -ERRNO_VALUE(_e);                             \
                 _e < 0 ? _e : -ESTRPIPE;                                \
         })
+#endif // 0

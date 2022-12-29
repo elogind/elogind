@@ -39,8 +39,10 @@
 
 #define SNDBUF_SIZE (8*1024*1024)
 
+#if 0 /// Not used anywhere in elogind
 static log_syntax_callback_t log_syntax_callback = NULL;
 static void *log_syntax_callback_userdata = NULL;
+#endif // 0
 
 static LogTarget log_target = LOG_TARGET_CONSOLE;
 static int log_max_level = LOG_INFO;
@@ -912,6 +914,7 @@ int log_oom_internal(int level, const char *file, int line, const char *func) {
         return log_internal(level, ENOMEM, file, line, func, "Out of memory.");
 }
 
+#if 0 /// UNNEEDED by elogind
 int log_format_iovec(
                 struct iovec *iovec,
                 size_t iovec_len,
@@ -952,6 +955,7 @@ int log_format_iovec(
         }
         return 0;
 }
+#endif // 0
 
 int log_struct_internal(
                 int level,
@@ -1363,7 +1367,6 @@ void log_received_signal(int level, const struct signalfd_siginfo *si) {
                          signal_to_string(si->ssi_signo));
 }
 
-#endif // 0
 void set_log_syntax_callback(log_syntax_callback_t cb, void *userdata) {
         assert(!log_syntax_callback || !cb);
         assert(!log_syntax_callback_userdata || !userdata);
@@ -1371,6 +1374,7 @@ void set_log_syntax_callback(log_syntax_callback_t cb, void *userdata) {
         log_syntax_callback = cb;
         log_syntax_callback_userdata = userdata;
 }
+#endif // 0
 
 int log_syntax_internal(
                 const char *unit,
@@ -1385,8 +1389,10 @@ int log_syntax_internal(
 
         PROTECT_ERRNO;
 
+#if 0 /// Not used anywhere in elogind
         if (log_syntax_callback)
                 log_syntax_callback(unit, level, log_syntax_callback_userdata);
+#endif // 0
 
         if (_likely_(LOG_PRI(level) > log_max_level) ||
             log_target == LOG_TARGET_NULL)
@@ -1492,7 +1498,6 @@ void log_set_open_when_needed(bool b) {
 void log_set_prohibit_ipc(bool b) {
         prohibit_ipc = b;
 }
-#endif // 0
 
 int log_emergency_level(void) {
         /* Returns the log level to use for log_emergency() logging. We use LOG_EMERG only when we are PID 1, as only
@@ -1501,7 +1506,6 @@ int log_emergency_level(void) {
         return getpid_cached() == 1 ? LOG_EMERG : LOG_ERR;
 }
 
-#if 0 /// UNNEEDED by elogind
 int log_dup_console(void) {
         int copy;
 
