@@ -101,33 +101,15 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 {}
         };
 
-#if 0 /// elogind has its configuration differently organized
         (void) config_parse_many_nulstr(
                         PKGSYSCONFDIR "/sleep.conf",
-                        CONF_PATHS_NULSTR("systemd/sleep.conf.d"),
+                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
                         "Sleep\0",
                         config_item_table_lookup, items,
                         CONFIG_PARSE_WARN,
                         NULL,
                         NULL);
 
-#else // 0
-        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
-
-        if (!logind_conf)
-                logind_conf = PKGSYSCONFDIR "/logind.conf";
-
-        log_debug_elogind("Parsing %s ...", logind_conf);
-
-        (void) config_parse_many_nulstr(
-                        logind_conf,
-                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
-                        "Login\0Sleep\0",
-                        config_item_table_lookup, items,
-                        CONFIG_PARSE_WARN | CONFIG_PARSE_RELAXED,
-                        NULL,
-                        NULL);
-#endif // 0
         /* use default values unless set */
         sc->allow[SLEEP_SUSPEND] = allow_suspend != 0;
         sc->allow[SLEEP_HIBERNATE] = allow_hibernate != 0;
