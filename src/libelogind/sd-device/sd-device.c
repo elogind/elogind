@@ -2392,7 +2392,6 @@ int device_get_sysattr_unsigned(sd_device *device, const char *sysattr, unsigned
         return v > 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_get_sysattr_bool(sd_device *device, const char *sysattr) {
         const char *value;
         int r;
@@ -2406,7 +2405,6 @@ int device_get_sysattr_bool(sd_device *device, const char *sysattr) {
 
         return parse_boolean(value);
 }
-#endif // 0
 
 static void device_remove_cached_sysattr_value(sd_device *device, const char *_key) {
         _cleanup_free_ char *key = NULL;

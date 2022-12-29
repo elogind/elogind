@@ -571,7 +571,6 @@ int unbase64char(char c) {
         return -EINVAL;
 }
 
-#if 0 /// UNNEEDED by elogind
 static void maybe_line_break(char **x, char *start, size_t line_break) {
         size_t n;
 
@@ -728,7 +727,6 @@ ssize_t base64_append(
                 /* leave plen on the left, keep last column free */
                 return base64_append_width(prefix, plen, ' ', plen + 1, p, l, width - plen - 1);
 }
-#endif // 0
 
 static int unbase64_next(const char **p, size_t *l) {
         int ret;

@@ -65,8 +65,8 @@ char* xescape_full(const char *s, const char *bad, size_t console_width, XEscape
 static inline char* xescape(const char *s, const char *bad) {
         return xescape_full(s, bad, SIZE_MAX, 0);
 }
-#endif // 0
 char* octescape(const char *s, size_t len);
+#endif // 0
 char* escape_non_printable_full(const char *str, size_t console_width, XEscapeFlags flags);
 
 char* shell_escape(const char *s, const char *bad);
