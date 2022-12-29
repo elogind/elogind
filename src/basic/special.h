@@ -28,6 +28,7 @@
 #define SPECIAL_MULTI_USER_TARGET "multi-user.target"
 #define SPECIAL_GRAPHICAL_TARGET "graphical.target"
 
+#if 0 /// elogind does not ship a systemd-bootd like agent or daemon
 /* Early boot targets */
 #define SPECIAL_SYSINIT_TARGET "sysinit.target"
 #define SPECIAL_SOCKETS_TARGET "sockets.target"
@@ -80,13 +81,13 @@
 
 /* Magic early boot services */
 #define SPECIAL_FSCK_SERVICE "systemd-fsck@.service"
-#define SPECIAL_FSCK_ROOT_SERVICE "elogind-fsck-root.service"
-#define SPECIAL_FSCK_USR_SERVICE "elogind-fsck-usr.service"
+#define SPECIAL_FSCK_ROOT_SERVICE "systemd-fsck-root.service"
+#define SPECIAL_FSCK_USR_SERVICE "systemd-fsck-usr.service"
 #define SPECIAL_QUOTACHECK_SERVICE "systemd-quotacheck.service"
 #define SPECIAL_QUOTAON_SERVICE "quotaon.service"
 #define SPECIAL_REMOUNT_FS_SERVICE "systemd-remount-fs.service"
-#define SPECIAL_VOLATILE_ROOT_SERVICE "elogind-volatile-root.service"
-#define SPECIAL_UDEVD_SERVICE "elogind-udevd.service"
+#define SPECIAL_VOLATILE_ROOT_SERVICE "systemd-volatile-root.service"
+#define SPECIAL_UDEVD_SERVICE "systemd-udevd.service"
 
 /* Services systemd relies on */
 #define SPECIAL_DBUS_SERVICE "dbus.service"
@@ -99,6 +100,7 @@
 #define SPECIAL_KBREQUEST_TARGET "kbrequest.target"
 #define SPECIAL_SIGPWR_TARGET "sigpwr.target"
 #define SPECIAL_CTRL_ALT_DEL_TARGET "ctrl-alt-del.target"
+#endif // 0
 
 /* Where we add all our system units, users and machines by default */
 #define SPECIAL_SYSTEM_SLICE "system.slice"
