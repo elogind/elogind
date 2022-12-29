@@ -209,16 +209,19 @@ int efi_stub_get_features(uint64_t *ret) {
                 _cleanup_free_ char *info = NULL;
 
                 /* The new (v252+) StubFeatures variable is not supported, let's see if it's elogind-stub at all */
+                /* The new (v252+) StubFeatures variable is not supported, let's see if it's systemd-stub at all */
                 r = efi_get_variable_string(EFI_LOADER_VARIABLE(StubInfo), &info);
                 if (r < 0) {
                         if (r != -ENOENT)
                                 return r;
 
                         /* Variable not set, definitely means not elogind-stub */
+                        /* Variable not set, definitely means not systemd-stub */
 
-                } else if (first_word(info, "elogind-stub")) {
+                } else if (first_word(info, "systemd-stub")) {
 
                         /* An older elogind-stub version. Let's hardcode the feature set, since it was pretty
+                        /* An older systemd-stub version. Let's hardcode the feature set, since it was pretty
                          * static in all its versions. */
 
                         *ret = EFI_STUB_FEATURE_REPORT_BOOT_PARTITION;
