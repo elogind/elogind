@@ -345,7 +345,6 @@ static int hwdb_new(const char *path, sd_hwdb **ret) {
 }
 #endif // 0
 
-
 _public_ int sd_hwdb_new_from_path(const char *path, sd_hwdb **ret) {
 #if 0 /// hwdb is only stubbed but not used in elogind
         assert_return(!isempty(path), -EINVAL);
