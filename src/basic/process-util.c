@@ -1621,8 +1621,6 @@ bool invoked_as(char *argv[], const char *token) {
 }
 #endif // 0
 
-        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
-         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
 bool invoked_by_elogind(void) {
         int r;
