@@ -135,6 +135,7 @@ bool hostname_is_valid(const char *s, ValidHostnameFlags flags) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* hostname_cleanup(char *s) {
         char *p, *d;
         bool dot, hyphen;
@@ -172,6 +173,7 @@ char* hostname_cleanup(char *s) {
 
         return s;
 }
+#endif // 0
 
 bool is_localhost(const char *hostname) {
         assert(hostname);
@@ -191,7 +193,7 @@ bool is_localhost(const char *hostname) {
                 endswith_no_case(hostname, ".localhost.localdomain.");
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
 int get_pretty_hostname(char **ret) {
         _cleanup_free_ char *n = NULL;
         int r;
@@ -208,3 +210,4 @@ int get_pretty_hostname(char **ret) {
         *ret = TAKE_PTR(n);
         return 0;
 }
+#endif // 0

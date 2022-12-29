@@ -48,7 +48,9 @@ typedef enum ValidHostnameFlags {
 } ValidHostnameFlags;
 
 bool hostname_is_valid(const char *s, ValidHostnameFlags flags) _pure_;
+#if 0 /// UNNEEDED by elogind
 char* hostname_cleanup(char *s);
+#endif // 0
 
 bool is_localhost(const char *hostname);
 
@@ -63,5 +65,5 @@ static inline bool is_outbound_hostname(const char *hostname) {
         return STRCASE_IN_SET(hostname, "_outbound", "_outbound.");
 }
 
-#endif // 0
 int get_pretty_hostname(char **ret);
+#endif // 0
