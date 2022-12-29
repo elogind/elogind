@@ -212,10 +212,15 @@ static int write_mode(SleepOperation operation, char **modes) {
         static char const mode_mem[] = "/sys/power/mem_sleep";
         char const* mode_location = SLEEP_SUSPEND == operation ? mode_mem : mode_disk;
 
-        // If this is a supend, write that it is to mode_disk.
+        // If this is a suspend, write that it is to mode_disk.
         if (operation == SLEEP_SUSPEND) {
                 log_debug_elogind("Writing '%s' to '%s' ...", "suspend", mode_disk);
                 (void) write_string_file(mode_disk, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
+        }
+
+        // Get out if we have no mode to write
+        if (strv_isempty(modes)) {
+                return r;
         }
 
         // Now get the real action mode right:
