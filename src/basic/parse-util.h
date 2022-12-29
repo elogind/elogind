@@ -54,9 +54,11 @@ static inline int safe_atou16(const char *s, uint16_t *ret) {
         return safe_atou16_full(s, 0, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline int safe_atoux16(const char *s, uint16_t *ret) {
         return safe_atou16_full(s, 16, ret);
 }
+#endif // 0
 
 int safe_atoi16(const char *s, int16_t *ret);
 
@@ -90,29 +92,35 @@ static inline int safe_atoi64(const char *s, int64_t *ret_i) {
         return safe_atolli(s, (long long int*) ret_i);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline int safe_atoux64(const char *s, uint64_t *ret) {
         assert_cc(sizeof(int64_t) == sizeof(unsigned long long));
         return safe_atollu_full(s, 16, (unsigned long long*) ret);
 }
+#endif // 0
 
 #if LONG_MAX == INT_MAX
 static inline int safe_atolu_full(const char *s, unsigned base, unsigned long *ret_u) {
         assert_cc(sizeof(unsigned long) == sizeof(unsigned));
         return safe_atou_full(s, base, (unsigned*) ret_u);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int safe_atoli(const char *s, long int *ret_u) {
         assert_cc(sizeof(long int) == sizeof(int));
         return safe_atoi(s, (int*) ret_u);
 }
+#endif // 0
 #else
 static inline int safe_atolu_full(const char *s, unsigned base, unsigned long *ret_u) {
         assert_cc(sizeof(unsigned long) == sizeof(unsigned long long));
         return safe_atollu_full(s, base, (unsigned long long*) ret_u);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int safe_atoli(const char *s, long int *ret_u) {
         assert_cc(sizeof(long int) == sizeof(long long int));
         return safe_atolli(s, (long long int*) ret_u);
 }
+#endif // 0
 #endif
 
 static inline int safe_atolu(const char *s, unsigned long *ret_u) {
@@ -138,9 +146,6 @@ int safe_atod(const char *s, double *ret_d);
 #if 0 /// UNNEEDED by elogind
 int parse_fractional_part_u(const char **s, size_t digits, unsigned *res);
 
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int parse_nice(const char *p, int *ret);
 
 int parse_ip_port(const char *s, uint16_t *ret);
@@ -149,7 +154,6 @@ int parse_ip_port_range(const char *s, uint16_t *low, uint16_t *high);
 int parse_ip_prefix_length(const char *s, int *ret);
 
 int parse_oom_score_adjust(const char *s, int *ret);
-#endif // 0
 
 /* Implement floating point using fixed integers, to improve performance when
  * calculating load averages. These macros can be used to extract the integer
@@ -159,7 +163,6 @@ int parse_oom_score_adjust(const char *s, int *ret);
 #define LOADAVG_INT_SIDE(x)     ((x) >> LOADAVG_PRECISION_BITS)
 #define LOADAVG_DECIMAL_SIDE(x) LOADAVG_INT_SIDE(((x) & (LOADAVG_FIXED_POINT_1_0 - 1)) * 100)
 
-#if 0 /// UNNEEDED by elogind
 /* Given a Linux load average (e.g. decimal number 34.89 where 34 is passed as i and 89 is passed as f), convert it
  * to a loadavg_t. */
 int store_loadavg_fixed_point(unsigned long i, unsigned long f, loadavg_t *ret);
