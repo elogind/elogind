@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - v246-stable
+      - v252-stable
       - github-actions-test
   pull_request:
     branches:
