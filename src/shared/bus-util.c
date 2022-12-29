@@ -296,7 +296,7 @@ int bus_connect_transport(
                         if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
-                                                       "System has not been booted with elogind as init system (PID 1). Can't operate.");
+                                                       "System has not been booted with systemd as init system (PID 1). Can't operate.");
 #endif // 0
                         r = sd_bus_default_system(&bus);
                 }
