@@ -12,12 +12,14 @@ TEST(cescape) {
         assert_se(streq(t, "abc\\\\\\\"\\b\\f\\n\\r\\t\\v\\a\\003\\177\\234\\313"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(xescape) {
         _cleanup_free_ char *t;
 
         assert_se(t = xescape("abc\\\"\b\f\n\r\t\v\a\003\177\234\313", ""));
         assert_se(streq(t, "abc\\x5c\"\\x08\\x0c\\x0a\\x0d\\x09\\x0b\\x07\\x03\\x7f\\x9c\\xcb"));
 }
+#endif // 0
 
 static void test_xescape_full_one(bool eight_bits) {
         const char* escaped = !eight_bits ?
