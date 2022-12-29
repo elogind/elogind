@@ -70,6 +70,8 @@ static inline bool efi_has_tpm2(void) {
 
 #endif
 
+#if 0 /// UNNEEDED by elogind
 static inline char *efi_tilt_backslashes(char *s) {
         return string_replace_char(s, '\\', '/');
 }
+#endif // 0
