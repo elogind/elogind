@@ -55,7 +55,7 @@
     <title>Home Area/User Account directives</title>
 
     <para>Directives for configuring home areas and user accounts via
-    <citerefentry><refentrytitle>elogind-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+    <citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
 
     <variablelist id='home-directives' />
   </refsect1>

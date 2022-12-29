@@ -543,7 +543,7 @@ Features:
     file system paths to enable on start.
   • make elogind-fstab-generator look for a system credential encoding root= or
     usr=
-  • elogind-homed: when initializing, look for a credential
+  • systemd-homed: when initializing, look for a credential
     elogind.homed.register or so with JSON user records to automatically
     register if not registered yet.  Usecase: deploy a system, and add an
     account one can directly log into.
@@ -1755,7 +1755,7 @@ Features:
   - timer units should get the ability to trigger when DST changes
   - Modulate timer frequency based on battery state
 
-* add libelogind-password or so to query passwords during boot using the password agent logic
+* add libsystemd-password or so to query passwords during boot using the password agent logic
 
 * clean up date formatting and parsing so that all absolute/relative timestamps we format can also be parsed
 
@@ -2041,7 +2041,7 @@ Features:
   - add a switch to homectl (maybe called --first-boot) where it will check if
     any non-system users exist, and if not prompts interactively for basic user
     info, mimicking elogind-firstboot. Then, place this in a service that runs
-    after elogind-homed, but before gdm and friends, as a simple, barebones
+    after systemd-homed, but before gdm and friends, as a simple, barebones
     fallback logic to get a regular user created on uninitialized systems.
   - store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
     elogind-cryptsetup, so that it can unlock homed volumes
