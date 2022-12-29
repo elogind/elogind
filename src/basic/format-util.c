@@ -24,6 +24,7 @@ int format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NA
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret) {
         char buf[IF_NAMESIZE], *copy;
         int r;
@@ -41,6 +42,7 @@ int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret) {
         *ret = copy;
         return 0;
 }
+#endif // 0
 
 char *format_bytes_full(char *buf, size_t l, uint64_t t, FormatBytesFlag flag) {
         typedef struct {

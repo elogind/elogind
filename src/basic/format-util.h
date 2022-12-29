@@ -68,7 +68,9 @@ typedef enum {
 } FormatIfnameFlag;
 
 int format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NAMESIZE]);
+#if 0 /// UNNEEDED by elogind
 int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret);
+#endif // 0
 
 static inline int format_ifname(int ifindex, char buf[static IF_NAMESIZE]) {
         return format_ifname_full(ifindex, 0, buf);
