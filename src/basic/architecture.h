@@ -48,8 +48,9 @@ typedef enum {
         _ARCHITECTURE_INVALID = -EINVAL,
 } Architecture;
 
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
 Architecture uname_architecture(void);
+#endif // 0
 
 /*
  * LIB_ARCH_TUPLE should resolve to the local library path
@@ -244,6 +245,7 @@ Architecture uname_architecture(void);
 #  error "Please register your architecture here!"
 #endif
 
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
 const char *architecture_to_string(Architecture a) _const_;
 Architecture architecture_from_string(const char *s) _pure_;
+#endif // 0
