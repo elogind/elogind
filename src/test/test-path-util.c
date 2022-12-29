@@ -27,9 +27,11 @@ TEST(path) {
         assert_se(path_is_absolute("/"));
         assert_se(!path_is_absolute("./"));
 
+#if 0 /// UNNEEDED by elogind
         assert_se(is_path("/dir"));
         assert_se(is_path("a/b"));
         assert_se(!is_path("."));
+#endif // 0
 
         assert_se(streq(basename("./aa/bb/../file.da."), "file.da."));
         assert_se(streq(basename("/aa///.file"), ".file"));
