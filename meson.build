@@ -2513,7 +2513,9 @@ subdir('src/test')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
-# subdir('rules.d')
+#endif // 0
+subdir('rules.d')
+#if 0 /// UNNEEDED by elogind
 # subdir('test')
 #endif // 0
 
