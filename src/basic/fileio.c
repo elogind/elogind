@@ -1446,6 +1446,3 @@ int warn_file_is_world_accessible(const char *filename, struct stat *st, const c
                             filename, st->st_mode & 07777);
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
