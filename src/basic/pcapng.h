@@ -56,6 +56,7 @@ struct pcapng_interface_block {
         uint32_t snap_len;
 };
 
+#if 0 /// UNNEEDED by elogind
 enum pcapng_interface_options {
         PCAPNG_IFB_NAME	 = 2,
         PCAPNG_IFB_DESCRIPTION,
@@ -72,6 +73,7 @@ enum pcapng_interface_options {
         PCAPNG_IFB_TSOFFSET,
         PCAPNG_IFB_HARDWARE,
 };
+#endif // 0
 
 struct pcapng_enhance_packet_block {
         uint32_t block_type;	/* 6 */
@@ -83,6 +85,7 @@ struct pcapng_enhance_packet_block {
         uint32_t original_length;
 };
 
+#if 0 /// UNNEEDED by elogind
 /* Flags values */
 #define PCAPNG_IFB_INBOUND   0b01
 #define PCAPNG_IFB_OUTBOUND  0b10
@@ -113,3 +116,4 @@ enum pcapng_isb_options {
         PCAPNG_ISB_OSDROP,
         PCAPNG_ISB_USRDELIV,
 };
+#endif // 0
