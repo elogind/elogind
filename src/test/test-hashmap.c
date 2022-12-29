@@ -14,6 +14,7 @@ static void custom_destruct(void* p) {
 DEFINE_HASH_OPS_FULL(boring_hash_ops, char, string_hash_func, string_compare_func, free, char, free);
 DEFINE_HASH_OPS_FULL(custom_hash_ops, char, string_hash_func, string_compare_func, custom_destruct, char, custom_destruct);
 
+#if 0 /// UNNEEDED by elogind
 TEST(ordered_hashmap_next) {
         _cleanup_ordered_hashmap_free_ OrderedHashmap *m = NULL;
         int i;
@@ -27,6 +28,7 @@ TEST(ordered_hashmap_next) {
         assert_se(!ordered_hashmap_next(NULL, INT_TO_PTR(1)));
         assert_se(!ordered_hashmap_next(m, INT_TO_PTR(3)));
 }
+#endif // 0
 
 TEST(uint64_compare_func) {
         const uint64_t a = 0x100, b = 0x101;
@@ -47,6 +49,7 @@ TEST(string_compare_func) {
         assert_se(string_compare_func("fred", "fred") == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void compare_cache(Hashmap *map, IteratedCache *cache) {
         const void **keys = NULL, **values = NULL;
         unsigned num, idx;
@@ -102,6 +105,7 @@ TEST(iterated_cache) {
         assert_se(hashmap_free(m) == NULL);
         assert_se(iterated_cache_free(c) == NULL);
 }
+#endif // 0
 
 TEST(hashmap_put_strdup) {
         _cleanup_hashmap_free_ Hashmap *m = NULL;

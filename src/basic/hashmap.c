@@ -735,6 +735,7 @@ bool _hashmap_iterate(HashmapBase *h, Iterator *i, void **value, const void **ke
              (idx != IDX_NIL); \
              (idx) = hashmap_iterate_entry((h), &(i)))
 
+#if 0 /// UNNEEDED by elogind
 IteratedCache* _hashmap_iterated_cache_new(HashmapBase *h) {
         IteratedCache *cache;
 
@@ -753,6 +754,7 @@ IteratedCache* _hashmap_iterated_cache_new(HashmapBase *h) {
 
         return cache;
 }
+#endif // 0
 
 static void reset_direct_storage(HashmapBase *h) {
         const struct hashmap_type_info *hi = &hashmap_type_info[h->type];
@@ -855,6 +857,7 @@ int _hashmap_ensure_put(Hashmap **h, const struct hash_ops *hash_ops, const void
         return hashmap_put(*h, key, value);
 }
 
+#if 0 /// UNNEEDED by elogind
 int _ordered_hashmap_ensure_put(OrderedHashmap **h, const struct hash_ops *hash_ops, const void *key, void *value  HASHMAP_DEBUG_PARAMS) {
         int r;
 
@@ -864,6 +867,7 @@ int _ordered_hashmap_ensure_put(OrderedHashmap **h, const struct hash_ops *hash_
 
         return ordered_hashmap_put(*h, key, value);
 }
+#endif // 0
 
 static void hashmap_free_no_clear(HashmapBase *h) {
         assert(!h->has_indirect);
@@ -1434,6 +1438,7 @@ void* hashmap_remove2(Hashmap *h, const void *key, void **rkey) {
         return data;
 }
 
+#if 0 /// UNNEEDED by elogind
 int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key, void *value) {
         struct swap_entries swap;
         struct plain_hashmap_entry *e;
@@ -1461,7 +1466,6 @@ int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
         struct swap_entries swap;
         struct hashmap_base_entry *e;
@@ -1487,7 +1491,6 @@ int set_remove_and_put(Set *s, const void *old_key, const void *new_key) {
 
         return 0;
 }
-#endif // 0
 
 int hashmap_remove_and_replace(Hashmap *h, const void *old_key, const void *new_key, void *value) {
         struct swap_entries swap;
@@ -1524,6 +1527,7 @@ int hashmap_remove_and_replace(Hashmap *h, const void *old_key, const void *new_
 
         return 0;
 }
+#endif // 0
 
 void* _hashmap_remove_value(HashmapBase *h, const void *key, void *value) {
         struct hashmap_base_entry *e;
@@ -1630,6 +1634,7 @@ int set_merge(Set *s, Set *other) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int _hashmap_reserve(HashmapBase *h, unsigned entries_add) {
         int r;
 
@@ -1729,6 +1734,7 @@ int _hashmap_move_one(HashmapBase *h, HashmapBase *other, const void *key) {
         remove_entry(other, idx);
         return 0;
 }
+#endif // 0
 
 HashmapBase* _hashmap_copy(HashmapBase *h  HASHMAP_DEBUG_PARAMS) {
         HashmapBase *copy;
@@ -1778,6 +1784,7 @@ char** _hashmap_get_strv(HashmapBase *h) {
         return sv;
 }
 
+#if 0 /// UNNEEDED by elogind
 void* ordered_hashmap_next(OrderedHashmap *h, const void *key) {
         struct ordered_hashmap_entry *e;
         unsigned hash, idx;
@@ -1795,6 +1802,7 @@ void* ordered_hashmap_next(OrderedHashmap *h, const void *key) {
                 return NULL;
         return ordered_bucket_at(h, e->iterate_next)->p.value;
 }
+#endif // 0
 
 int set_consume(Set *s, void *value) {
         int r;
@@ -1902,7 +1910,6 @@ int set_put_strsplit(Set *s, const char *v, const char *separators, ExtractFlags
                         return r;
         }
 }
-#endif // 0
 
 /* expand the cachemem if needed, return true if newly (re)activated. */
 static int cachemem_maintain(CacheMem *mem, size_t size) {
@@ -1994,6 +2001,7 @@ IteratedCache* iterated_cache_free(IteratedCache *cache) {
 
         return mfree(cache);
 }
+#endif // 0
 
 int set_strjoin(Set *s, const char *separator, bool wrap_with_separator, char **ret) {
         _cleanup_free_ char *str = NULL;

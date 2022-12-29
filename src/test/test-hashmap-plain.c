@@ -120,6 +120,7 @@ TEST(hashmap_get_strv) {
         hashmap_free(m);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(hashmap_move_one) {
         Hashmap *m, *n;
         char *val1, *val2, *val3, *val4, *r;
@@ -200,6 +201,7 @@ TEST(hashmap_move) {
         hashmap_free_free(m);
         hashmap_free_free(n);
 }
+#endif // 0
 
 TEST(hashmap_update) {
         Hashmap *m;
@@ -338,6 +340,7 @@ TEST(hashmap_remove_value) {
         assert_se(!hashmap_get(m, "key 1"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(hashmap_remove_and_put) {
         _cleanup_hashmap_free_ Hashmap *m = NULL;
         int valid;
@@ -423,6 +426,7 @@ TEST(hashmap_remove_and_replace) {
                 }
         }
 }
+#endif // 0
 
 TEST(hashmap_ensure_allocated) {
         _cleanup_hashmap_free_ Hashmap *m = NULL;
@@ -923,6 +927,7 @@ TEST(hashmap_clear_free_with_destructor) {
         assert_se(hashmap_isempty(m));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(hashmap_reserve) {
         _cleanup_hashmap_free_ Hashmap *m = NULL;
 
@@ -939,6 +944,7 @@ TEST(hashmap_reserve) {
         assert_se(hashmap_reserve(m, UINT_MAX) == -ENOMEM);
         assert_se(hashmap_reserve(m, UINT_MAX - 1) == -ENOMEM);
 }
+#endif // 0
 
 TEST(path_hashmap) {
         _cleanup_hashmap_free_ Hashmap *h = NULL;

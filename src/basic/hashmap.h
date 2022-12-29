@@ -107,12 +107,14 @@ static inline OrderedHashmap* ordered_hashmap_free_free(OrderedHashmap *h) {
         return (void*) _hashmap_free(HASHMAP_BASE(h), NULL, free);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline Hashmap* hashmap_free_free_key(Hashmap *h) {
         return (void*) _hashmap_free(HASHMAP_BASE(h), free, NULL);
 }
 static inline OrderedHashmap* ordered_hashmap_free_free_key(OrderedHashmap *h) {
         return (void*) _hashmap_free(HASHMAP_BASE(h), free, NULL);
 }
+#endif // 0
 
 static inline Hashmap* hashmap_free_free_free(Hashmap *h) {
         return (void*) _hashmap_free(HASHMAP_BASE(h), free, free);
@@ -121,8 +123,11 @@ static inline OrderedHashmap* ordered_hashmap_free_free_free(OrderedHashmap *h) 
         return (void*) _hashmap_free(HASHMAP_BASE(h), free, free);
 }
 
+#if 0 /// UNNEEDED by elogind
 IteratedCache* iterated_cache_free(IteratedCache *cache);
+
 int iterated_cache_get(IteratedCache *cache, const void ***res_keys, const void ***res_values, unsigned *res_n_entries);
+#endif // 0
 
 HashmapBase* _hashmap_copy(HashmapBase *h  HASHMAP_DEBUG_PARAMS);
 #define hashmap_copy(h) ((Hashmap*) _hashmap_copy(HASHMAP_BASE(h)  HASHMAP_DEBUG_SRC_ARGS))
@@ -136,6 +141,7 @@ int _ordered_hashmap_ensure_allocated(OrderedHashmap **h, const struct hash_ops 
 #define hashmap_ensure_put(s, ops, key, value) _hashmap_ensure_put(s, ops, key, value  HASHMAP_DEBUG_SRC_ARGS)
 #define ordered_hashmap_ensure_allocated(h, ops) _ordered_hashmap_ensure_allocated(h, ops  HASHMAP_DEBUG_SRC_ARGS)
 
+#if 0 /// UNNEEDED by elogind
 int _ordered_hashmap_ensure_put(OrderedHashmap **h, const struct hash_ops *hash_ops, const void *key, void *value  HASHMAP_DEBUG_PARAMS);
 #define ordered_hashmap_ensure_put(s, ops, key, value) _ordered_hashmap_ensure_put(s, ops, key, value  HASHMAP_DEBUG_SRC_ARGS)
 
@@ -146,6 +152,7 @@ static inline IteratedCache* hashmap_iterated_cache_new(Hashmap *h) {
 static inline IteratedCache* ordered_hashmap_iterated_cache_new(OrderedHashmap *h) {
         return (IteratedCache*) _hashmap_iterated_cache_new(HASHMAP_BASE(h));
 }
+#endif // 0
 
 int hashmap_put(Hashmap *h, const void *key, void *value);
 static inline int ordered_hashmap_put(OrderedHashmap *h, const void *key, void *value) {
@@ -209,6 +216,7 @@ static inline void* ordered_hashmap_remove_value(OrderedHashmap *h, const void *
         return hashmap_remove_value(PLAIN_HASHMAP(h), key, value);
 }
 
+#if 0 /// UNNEEDED by elogind
 int hashmap_remove_and_put(Hashmap *h, const void *old_key, const void *new_key, void *value);
 static inline int ordered_hashmap_remove_and_put(OrderedHashmap *h, const void *old_key, const void *new_key, void *value) {
         return hashmap_remove_and_put(PLAIN_HASHMAP(h), old_key, new_key, value);
@@ -218,6 +226,7 @@ int hashmap_remove_and_replace(Hashmap *h, const void *old_key, const void *new_
 static inline int ordered_hashmap_remove_and_replace(OrderedHashmap *h, const void *old_key, const void *new_key, void *value) {
         return hashmap_remove_and_replace(PLAIN_HASHMAP(h), old_key, new_key, value);
 }
+#endif // 0
 
 /* Since merging data from an OrderedHashmap into a Hashmap or vice-versa
  * should just work, allow this by having looser type-checking here. */
@@ -225,6 +234,7 @@ int _hashmap_merge(Hashmap *h, Hashmap *other);
 #define hashmap_merge(h, other) _hashmap_merge(PLAIN_HASHMAP(h), PLAIN_HASHMAP(other))
 #define ordered_hashmap_merge(h, other) hashmap_merge(h, other)
 
+#if 0 /// UNNEEDED by elogind
 int _hashmap_reserve(HashmapBase *h, unsigned entries_add);
 static inline int hashmap_reserve(Hashmap *h, unsigned entries_add) {
         return _hashmap_reserve(HASHMAP_BASE(h), entries_add);
@@ -249,6 +259,7 @@ static inline int hashmap_move_one(Hashmap *h, Hashmap *other, const void *key) 
 static inline int ordered_hashmap_move_one(OrderedHashmap *h, OrderedHashmap *other, const void *key) {
         return _hashmap_move_one(HASHMAP_BASE(h), HASHMAP_BASE(other), key);
 }
+#endif // 0
 
 unsigned _hashmap_size(HashmapBase *h) _pure_;
 static inline unsigned hashmap_size(Hashmap *h) {
@@ -296,12 +307,14 @@ static inline void ordered_hashmap_clear_free(OrderedHashmap *h) {
         _hashmap_clear(HASHMAP_BASE(h), NULL, free);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline void hashmap_clear_free_key(Hashmap *h) {
         _hashmap_clear(HASHMAP_BASE(h), free, NULL);
 }
 static inline void ordered_hashmap_clear_free_key(OrderedHashmap *h) {
         _hashmap_clear(HASHMAP_BASE(h), free, NULL);
 }
+#endif // 0
 
 static inline void hashmap_clear_free_free(Hashmap *h) {
         _hashmap_clear(HASHMAP_BASE(h), free, free);
@@ -322,6 +335,7 @@ static inline void ordered_hashmap_clear_free_free(OrderedHashmap *h) {
  */
 
 void *_hashmap_first_key_and_value(HashmapBase *h, bool remove, void **ret_key);
+#if 0 /// UNNEEDED by elogind
 static inline void *hashmap_steal_first_key_and_value(Hashmap *h, void **ret) {
         return _hashmap_first_key_and_value(HASHMAP_BASE(h), true, ret);
 }
@@ -334,6 +348,7 @@ static inline void *hashmap_first_key_and_value(Hashmap *h, void **ret) {
 static inline void *ordered_hashmap_first_key_and_value(OrderedHashmap *h, void **ret) {
         return _hashmap_first_key_and_value(HASHMAP_BASE(h), false, ret);
 }
+#endif // 0
 
 static inline void *hashmap_steal_first(Hashmap *h) {
         return _hashmap_first_key_and_value(HASHMAP_BASE(h), true, NULL);
@@ -389,7 +404,9 @@ static inline void *ordered_hashmap_first_key(OrderedHashmap *h) {
         ordered_hashmap_free(ordered_hashmap_clear_with_destructor(h, f))
 
 /* no hashmap_next */
+#if 0 /// UNNEEDED by elogind
 void* ordered_hashmap_next(OrderedHashmap *h, const void *key);
+#endif // 0
 
 char** _hashmap_get_strv(HashmapBase *h);
 static inline char** hashmap_get_strv(Hashmap *h) {
@@ -427,20 +444,28 @@ static inline char** ordered_hashmap_get_strv(OrderedHashmap *h) {
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(Hashmap*, hashmap_free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(Hashmap*, hashmap_free_free);
+#if 0 /// UNNEEDED by elogind
 DEFINE_TRIVIAL_CLEANUP_FUNC(Hashmap*, hashmap_free_free_key);
+#endif // 0
 DEFINE_TRIVIAL_CLEANUP_FUNC(Hashmap*, hashmap_free_free_free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(OrderedHashmap*, ordered_hashmap_free);
 DEFINE_TRIVIAL_CLEANUP_FUNC(OrderedHashmap*, ordered_hashmap_free_free);
+#if 0 /// UNNEEDED by elogind
 DEFINE_TRIVIAL_CLEANUP_FUNC(OrderedHashmap*, ordered_hashmap_free_free_key);
+#endif // 0
 DEFINE_TRIVIAL_CLEANUP_FUNC(OrderedHashmap*, ordered_hashmap_free_free_free);
 
 #define _cleanup_hashmap_free_ _cleanup_(hashmap_freep)
 #define _cleanup_hashmap_free_free_ _cleanup_(hashmap_free_freep)
 #define _cleanup_hashmap_free_free_free_ _cleanup_(hashmap_free_free_freep)
 #define _cleanup_ordered_hashmap_free_ _cleanup_(ordered_hashmap_freep)
+#if 0 /// UNNEEDED by elogind
 #define _cleanup_ordered_hashmap_free_free_ _cleanup_(ordered_hashmap_free_freep)
+#endif // 0
 #define _cleanup_ordered_hashmap_free_free_free_ _cleanup_(ordered_hashmap_free_free_freep)
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_TRIVIAL_CLEANUP_FUNC(IteratedCache*, iterated_cache_free);
 
 #define _cleanup_iterated_cache_free_ _cleanup_(iterated_cache_freep)
+#endif // 0
