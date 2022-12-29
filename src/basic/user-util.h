@@ -66,8 +66,8 @@ int getgroups_alloc(gid_t** gids);
 
 int get_home_dir(char **ret);
 #if 0 /// UNNEEDED by elogind
-#endif // 0
 int get_shell(char **ret);
+#endif // 0
 
 int reset_uid_gid(void);
 
@@ -159,6 +159,7 @@ int is_this_me(const char *username);
 
 const char *get_home_root(void);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool hashed_password_is_locked_or_invalid(const char *password) {
         return password && password[0] != '$';
 }
@@ -171,3 +172,4 @@ static inline bool hashed_password_is_locked_or_invalid(const char *password) {
 
 /* A password indicating "hey, no password required for login" */
 #define PASSWORD_NONE ""
+#endif // 0
