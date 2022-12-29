@@ -42,12 +42,14 @@
 #  define DEFAULT_USER_PATH DEFAULT_PATH
 #endif
 
+#if 0 /// UNNEEDED by elogind
 static inline bool is_path(const char *p) {
         if (!p) /* A NULL pointer is definitely not a path */
                 return false;
 
         return strchr(p, '/');
 }
+#endif // 0
 
 static inline bool path_is_absolute(const char *p) {
         if (!p) /* A NULL pointer is definitely not an absolute path */
@@ -114,9 +116,9 @@ static inline int find_executable(const char *name, char **ret_filename) {
 
 bool paths_check_timestamp(const char* const* paths, usec_t *paths_ts_usec, bool update);
 
-#endif // 0
 int fsck_exists(void);
 int fsck_exists_for_fstype(const char *fstype);
+#endif // 0
 
 /* Iterates through the path prefixes of the specified path, going up
  * the tree, to root. Also returns "" (and not "/"!) for the root
