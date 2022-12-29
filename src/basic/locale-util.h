@@ -43,8 +43,10 @@ void init_gettext(void);
 
 bool is_locale_utf8(void);
 
+#if 0 /// UNNEEDED by elogind
 const char* locale_variable_to_string(LocaleVariable i) _const_;
 LocaleVariable locale_variable_from_string(const char *s) _pure_;
+#endif // 0
 
 static inline void freelocalep(locale_t *p) {
         if (*p == (locale_t) 0)
@@ -58,5 +60,5 @@ void locale_variables_free(char* l[_VARIABLE_LC_MAX]);
 static inline void locale_variables_freep(char*(*l)[_VARIABLE_LC_MAX]) {
         locale_variables_free(*l);
 }
-#endif // 0
 void locale_variables_simplify(char *l[_VARIABLE_LC_MAX]);
+#endif // 0

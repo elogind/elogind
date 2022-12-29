@@ -344,7 +344,6 @@ void locale_variables_free(char *l[_VARIABLE_LC_MAX]) {
         for (LocaleVariable i = 0; i < _VARIABLE_LC_MAX; i++)
                 l[i] = mfree(l[i]);
 }
-#endif // 0
 
 void locale_variables_simplify(char *l[_VARIABLE_LC_MAX]) {
         assert(l);
@@ -375,3 +374,4 @@ static const char * const locale_variable_table[_VARIABLE_LC_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(locale_variable, LocaleVariable);
+#endif // 0
