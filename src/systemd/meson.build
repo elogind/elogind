@@ -20,26 +20,26 @@ _systemd_headers = [
 systemd_headers = files(_systemd_headers)
 
 #if 0 /// elogind does not need these
+# _not_installed_headers = [
+#         'sd-dhcp6-client.h',
+#         'sd-dhcp6-lease.h',
+#         'sd-dhcp-client.h',
+#         'sd-dhcp-lease.h',
+#         'sd-dhcp-option.h',
+#         'sd-dhcp6-option.h',
+#         'sd-dhcp-server.h',
+#         'sd-ipv4acd.h',
+#         'sd-ipv4ll.h',
+#         'sd-lldp-rx.h',
+#         'sd-lldp-tx.h',
+#         'sd-lldp.h',
+#         'sd-ndisc.h',
+#         'sd-netlink.h',
+#         'sd-network.h',
+#         'sd-radv.h',
+#         'sd-resolve.h',
+# ]
 #endif // 0
-_not_installed_headers = [
-        'sd-dhcp6-client.h',
-        'sd-dhcp6-lease.h',
-        'sd-dhcp-client.h',
-        'sd-dhcp-lease.h',
-        'sd-dhcp-option.h',
-        'sd-dhcp6-option.h',
-        'sd-dhcp-server.h',
-        'sd-ipv4acd.h',
-        'sd-ipv4ll.h',
-        'sd-lldp-rx.h',
-        'sd-lldp-tx.h',
-        'sd-lldp.h',
-        'sd-ndisc.h',
-        'sd-netlink.h',
-        'sd-network.h',
-        'sd-radv.h',
-        'sd-resolve.h',
-]
 
 install_headers(
         systemd_headers,
