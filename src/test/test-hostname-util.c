@@ -46,6 +46,7 @@ TEST(hostname_is_valid) {
         assert_se(!hostname_is_valid("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", VALID_HOSTNAME_TRAILING_DOT));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(hostname_cleanup) {
         char *s;
 
@@ -90,6 +91,7 @@ TEST(hostname_cleanup) {
         s = strdupa_safe("xxxx........xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         assert_se(streq(hostname_cleanup(s), "xxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"));
 }
+#endif // 0
 
 TEST(hostname_malloc) {
         _cleanup_free_ char *h = NULL, *l = NULL;
