@@ -40,11 +40,13 @@ TEST(utf8_is_valid) {
         assert_se(!utf8_is_valid("\341\204"));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(ascii_is_valid) {
         assert_se( ascii_is_valid("alsdjf\t\vbarr\nba z"));
         assert_se(!ascii_is_valid("\342\204\242"));
         assert_se(!ascii_is_valid("\341\204"));
 }
+#endif // 0
 
 TEST(ascii_is_valid_n) {
         assert_se( ascii_is_valid_n("alsdjf\t\vbarr\nba z", 17));
@@ -56,6 +58,7 @@ TEST(ascii_is_valid_n) {
         assert_se( ascii_is_valid_n("\342\204\242", 0));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_utf8_to_ascii_one(const char *s, int r_expected, const char *expected) {
         _cleanup_free_ char *ans = NULL;
         int r;
@@ -80,6 +83,7 @@ TEST(utf8_to_ascii) {
         test_utf8_to_ascii_one("串", 0, "*");
         test_utf8_to_ascii_one("…👊🔪💐…", 0, "*****");
 }
+#endif // 0
 
 TEST(utf8_encoded_valid_unichar) {
         assert_se(utf8_encoded_valid_unichar("\342\204\242", 1) == -EINVAL); /* truncated */
@@ -190,6 +194,7 @@ TEST(utf16_to_utf8) {
         assert_se(memcmp(a, utf8, sizeof(utf8)) == 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(utf8_n_codepoints) {
         assert_se(utf8_n_codepoints("abc") == 3);
         assert_se(utf8_n_codepoints("zażółcić gęślą jaźń") == 19);
@@ -198,6 +203,7 @@ TEST(utf8_n_codepoints) {
         assert_se(utf8_n_codepoints("…👊🔪💐…") == 5);
         assert_se(utf8_n_codepoints("\xF1") == SIZE_MAX);
 }
+#endif // 0
 
 TEST(utf8_console_width) {
         assert_se(utf8_console_width("abc") == 3);
