@@ -239,7 +239,6 @@ int userns_acquire(const char *uid_map, const char *gid_map) {
         return TAKE_FD(userns_fd);
 
 }
-#endif // 0
 
 int in_same_namespace(pid_t pid1, pid_t pid2, NamespaceType type) {
         const char *ns_path;
@@ -264,3 +263,4 @@ int in_same_namespace(pid_t pid1, pid_t pid2, NamespaceType type) {
 
         return stat_inode_same(&ns_st1, &ns_st2);
 }
+#endif // 0
