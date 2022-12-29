@@ -14,7 +14,7 @@
 #endif
 
 #include "alloc-util.h"
-#include "architecture.h"
+//#include "architecture.h"
 #include "dirent-util.h"
 #include "errno-list.h"
 #include "errno-util.h"
