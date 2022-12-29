@@ -125,7 +125,6 @@ static inline OrderedHashmap* ordered_hashmap_free_free_free(OrderedHashmap *h) 
 
 #if 0 /// UNNEEDED by elogind
 IteratedCache* iterated_cache_free(IteratedCache *cache);
-
 int iterated_cache_get(IteratedCache *cache, const void ***res_keys, const void ***res_values, unsigned *res_n_entries);
 #endif // 0
 
