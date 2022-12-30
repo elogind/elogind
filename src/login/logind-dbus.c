@@ -1750,12 +1750,10 @@ static int elogind_execute_shutdown_or_sleep(
 
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
-         * by ourselves. */
-        if ( a->inhibit_what == INHIBIT_SLEEP ) {
-                (void) send_prepare_for( m, a->inhibit_what, false );
-                m->delayed_action = NULL;
-        } else
-                m->delayed_action = a;
+         * by ourselves.
+         * Note: execute_shutdown_or_sleep() does not send the
+         *       signal unless an error occurred. */
+        (void) send_prepare_for( m, a->inhibit_what, false );
 
         return 0;
 }
@@ -1800,9 +1798,9 @@ static int execute_shutdown_or_sleep(
         r = free_and_strdup(&m->action_job, p);
         if (r < 0)
                 goto error;
-#endif // 0
 
         m->delayed_action = a;
+#endif // 0
 
         /* Make sure the lid switch is ignored for a while */
         manager_set_lid_switch_ignore(m, usec_add(now(CLOCK_MONOTONIC), m->holdoff_timeout_usec));
