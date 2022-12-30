@@ -437,6 +437,16 @@ static int execute(
 
                 return -ECANCELED;
         }
+
+        /* If this was successful and hook scripts were allowed to interrupt, we have
+         * to signal everybody that a sleep is imminent, now. */
+        if ( m->allow_suspend_interrupts )
+                (void) sd_bus_emit_signal(m->bus,
+                                "/org/freedesktop/login1",
+                                "org.freedesktop.login1.Manager",
+                                "PrepareForSleep",
+                                "b",
+                                1);
 #endif // 0
 
         log_struct(LOG_INFO,

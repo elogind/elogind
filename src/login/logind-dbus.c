@@ -1656,6 +1656,11 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
                 return -ECANCELED;
         }
 
+        /* If this was successful and hook scripts were allowed to interrupt, we have
+         * to signal everybody that a shutdown is imminent, now. */
+        if ( m->allow_poweroff_interrupts )
+                (void) send_prepare_for(m, INHIBIT_SHUTDOWN, true );
+
         r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
 
         if ( r < 0 )
@@ -1922,8 +1927,15 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                                         a->target, load_state);
 #endif // 0
 
+#if 1 /// elogind allows hook scripts to interrupt sleep/shutdown, only signal if no cancellation is possible.
+        if ( ( (INHIBIT_SHUTDOWN == a->inhibit_what) && !m->allow_poweroff_interrupts) ||
+             ( (INHIBIT_SLEEP    == a->inhibit_what) && !m->allow_suspend_interrupts ) ) {
+#endif // 1
         /* Tell everybody to prepare for shutdown/sleep */
         (void) send_prepare_for(m, a->inhibit_what, true);
+#if 1 /// close if() needed by elogind
+        }
+#endif // 1
 
         delayed =
                 m->inhibit_delay_max > 0 &&
