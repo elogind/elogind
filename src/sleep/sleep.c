@@ -7,39 +7,40 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-#include <linux/fiemap.h>
+//#include <linux/fiemap.h>
 #include <poll.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <sys/timerfd.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
 #include "sd-messages.h"
 
-#include "btrfs-util.h"
-#include "bus-error.h"
-#include "bus-locator.h"
-#include "bus-util.h"
+//#include "btrfs-util.h"
+//#include "bus-error.h"
+//#include "bus-locator.h"
+//#include "bus-util.h"
 #include "def.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "format-util.h"
+//#include "format-util.h"
 #include "io-util.h"
 #include "log.h"
-#include "main-func.h"
-#include "parse-util.h"
-#include "pretty-print.h"
+//#include "main-func.h"
+//#include "parse-util.h"
+//#include "pretty-print.h"
 #include "sleep-config.h"
-#include "special.h"
+//#include "special.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-#include "util.h"
+//#include "util.h"
 
 /// Additional includes needed by elogind
+#include <stdio.h>
 #include "exec-elogind.h"
 #include "sd-login.h"
 #include "sleep.h"
@@ -114,7 +115,7 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                 // Then try to change back
                 if (*vtnr > 0) {
                         log_debug_elogind("Switching back to VT %u", *vtnr);
-                        (void) chvt(*vtnr);
+                        (void) chvt((int)(*vtnr));
                 }
         }
 
@@ -141,8 +142,7 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
         if (r < 0) {
                 r = stat(hibernate_location->swap->device, &stb);
                 if (r < 0)
-                        return log_debug_errno(errno, "Error while trying to get stats for %s: %m",
-                                               hibernate_location->swap->device);
+                        return log_debug_errno(errno, "Error while trying to get stats for %s: %m", hibernate_location->swap->device);
 
                 (void) snprintf(device_num_str, DECIMAL_STR_MAX(uint32_t) * 2 + 2,
                                 "%u:%u",
@@ -396,8 +396,7 @@ static int execute(
         }
         r = write_mode(operation, modes);
         if (r < 0)
-                return log_error_errno(r, "Failed to write mode to /sys/power/%s: %m",
-                                       SLEEP_SUSPEND == operation ? "mem_sleep" : "disk");
+                return log_error_errno(r, "Failed to write mode to /sys/power/%s: %m", SLEEP_SUSPEND == operation ? "mem_sleep" : "disk");
 #endif // 0
 
         /* Pass an action string to the call-outs. This is mostly our operation string, except if the
@@ -434,8 +433,7 @@ static int execute(
                 if ( m->broadcast_suspend_interrupts )
                         utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
 
-                log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SLEEP=%s",
-                                 sleep_operation_to_string(operation));
+                log_error_errno(r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR " %s", l);
 
                 return -ECANCELED;
         }
@@ -565,9 +563,9 @@ static int custom_timer_suspend(const SleepConfig *sleep_config) {
         return 1;
 }
 
+#if 0 /// elogind does not support systemd scopes and slices
 /* Freeze when invoked and thaw on cleanup */
 static int freeze_thaw_user_slice(const char **method) {
-#if 0 /// elogind does not support systemd scopes and slices
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         int r;
@@ -582,22 +580,24 @@ static int freeze_thaw_user_slice(const char **method) {
         r = bus_call_method(bus, bus_systemd_mgr, *method, &error, NULL, "s", SPECIAL_USER_SLICE);
         if (r < 0)
                 return log_debug_errno(r, "Failed to execute operation: %s", bus_error_message(&error, r));
-#endif // 0
 
         return 1;
 }
+#endif // 0
 
 static int execute_s2h(const SleepConfig *sleep_config) {
-        _unused_ _cleanup_(freeze_thaw_user_slice) const char *auto_method_thaw = NULL;
+#if 0 /// elogind does not support systemd scopes and slices
+        _unused_ _cleanup_(freeze_thaw_user_slice) const char *auto_method_thaw = "ThawUnit";
+#endif // 0
         int r, k;
 
         assert(sleep_config);
 
+#if 0 /// elogind does not support systemd scopes and slices
         r = freeze_thaw_user_slice(&(const char*) { "FreezeUnit" });
         if (r < 0)
                 log_debug_errno(r, "Failed to freeze unit user.slice, ignoring: %m");
-        else
-                auto_method_thaw = "ThawUnit"; /* from now on we want automatic thawing */;
+#endif // 0
 
         r = check_wakeup_type();
         if (r < 0)
@@ -721,6 +721,17 @@ static int run(int argc, char *argv[]) {
         r = parse_argv(argc, argv);
         if (r <= 0)
                 return r;
+#else // 0
+int do_sleep(Manager *sleep_config, SleepOperation operation) {
+        int r;
+
+        assert(operation < _SLEEP_OPERATION_MAX);
+        assert(sleep_config);
+
+        arg_operation = operation;
+
+        log_debug_elogind("Called for '%s'", sleep_operation_to_string(operation));
+#endif // 0
 
         r = parse_sleep_config(&sleep_config);
         if (r < 0)
@@ -759,57 +770,6 @@ static int run(int argc, char *argv[]) {
         return r;
 }
 
+#if 0 /// No main function needed by elogind
 DEFINE_MAIN_FUNCTION(run);
-#else // 0
-
-int do_sleep(Manager *m, SleepOperation operation) {
-        int r;
-
-        assert(operation < _SLEEP_OPERATION_MAX);
-        assert(m);
-
-        arg_operation = operation;
-
-        log_debug_elogind("Called for '%s'", sleep_operation_to_string(operation));
-
-        /* Re-load the sleep configuration, so users can change their options
-         * on-the-fly without having to reload elogind
-         */
-        r = parse_sleep_config(&m);
-        if (r < 0)
-                return r;
-
-        if (!m->allow[arg_operation])
-                return log_error_errno(SYNTHETIC_ERRNO(EACCES),
-                                       "Sleep operation \"%s\" is disabled by configuration, refusing.",
-                                       sleep_operation_to_string(arg_operation));
-
-        switch (arg_operation) {
-
-        case SLEEP_SUSPEND_THEN_HIBERNATE:
-                r = execute_s2h(m);
-                break;
-
-        case SLEEP_HYBRID_SLEEP:
-                r = execute(m, SLEEP_HYBRID_SLEEP, NULL);
-                if (r < 0) {
-                        /* If we can't hybrid sleep, then let's try to suspend at least. After all, the user
-                         * asked us to do both: suspend + hibernate, and it's almost certainly the
-                         * hibernation that failed, hence still do the other thing, the suspend. */
-
-                        log_notice("Couldn't hybrid sleep, will try to suspend instead.");
-
-                        r = execute(m, SLEEP_SUSPEND, "suspend-after-failed-hybrid-sleep");
-                }
-
-                break;
-
-        default:
-                r = execute(m, arg_operation, NULL);
-                break;
-        }
-
-        return r;
-}
-
 #endif // 0
