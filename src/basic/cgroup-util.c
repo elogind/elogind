@@ -1264,7 +1264,7 @@ static const char *skip_session(const char *p) {
                  * here. */
 
                 if (!session_id_valid(buf))
-                        return false;
+                        return NULL;
 
                 p += n;
                 p += strspn(p, "/");
