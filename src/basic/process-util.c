@@ -34,6 +34,7 @@
 #include "memory-util.h"
 #include "missing_sched.h"
 #include "missing_syscall.h"
+#include "missing_threads.h"
 #include "namespace-util.h"
 #include "path-util.h"
 #include "process-util.h"
