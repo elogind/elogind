@@ -17,10 +17,11 @@
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing_timerfd.h"
-//#include "parse-util.h"
-//#include "path-util.h"
-//#include "process-util.h"
+#include "missing_threads.h"
+#include "missing_timerfd.h"
+#include "parse-util.h"
+#include "path-util.h"
+#include "process-util.h"
 #include "stat-util.h"
 //#include "string-table.h"
 #include "string-util.h"
@@ -1002,6 +1003,8 @@ int parse_timestamp(const char *t, usec_t *ret) {
                         shared->return_value = negative_errno();
                         _exit(EXIT_FAILURE);
                 }
+
+                tzset();
 
                 shared->return_value = parse_timestamp_maybe_with_tz(t, tz_offset, /* valid_tz = */ true, &shared->usec);
 
