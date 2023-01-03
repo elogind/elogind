@@ -12,7 +12,7 @@
 
 #include "alloc-util.h"
 #include "cgroup-util.h"
-//#include "def.h"
+#include "constants.h"
 #include "dirent-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
@@ -23,8 +23,9 @@
 #include "login-util.h"
 #include "macro.h"
 #include "missing_magic.h"
-//#include "mkdir.h"
-//#include "parse-util.h"
+#include "missing_threads.h"
+#include "mkdir.h"
+#include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "set.h"
@@ -1246,6 +1247,28 @@ int cg_path_get_unit(const char *path, char **ret) {
         return 0;
 }
 
+int cg_path_get_unit_path(const char *path, char **ret) {
+        _cleanup_free_ char *path_copy = NULL;
+        char *unit_name;
+
+        assert(path);
+        assert(ret);
+
+        path_copy = strdup(path);
+        if (!path_copy)
+                return -ENOMEM;
+
+        unit_name = (char *)skip_slices(path_copy);
+        unit_name[strcspn(unit_name, "/")] = 0;
+
+        if (!unit_name_is_valid(cg_unescape(unit_name), UNIT_NAME_PLAIN|UNIT_NAME_INSTANCE))
+                return -ENXIO;
+
+        *ret = TAKE_PTR(path_copy);
+
+        return 0;
+}
+
 int cg_pid_get_unit(pid_t pid, char **unit) {
         _cleanup_free_ char *cgroup = NULL;
         int r;
@@ -1286,7 +1309,7 @@ static const char *skip_session(const char *p) {
                  * here. */
 
                 if (!session_id_valid(buf))
-                        return false;
+                        return NULL;
 
                 p += n;
                 p += strspn(p, "/");
@@ -2258,7 +2281,7 @@ int cg_unified_cached(bool flush) {
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
 #if 0 /// elogind has to check the "legacy" part in any case to account for hybrid controllers
-                }  else {
+                } else {
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0) {
                                 if (errno == ENOENT) {
                                         /* Some other software may have set up /sys/fs/cgroup in a configuration we do not recognize. */

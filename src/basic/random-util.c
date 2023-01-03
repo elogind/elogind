@@ -23,8 +23,9 @@
 //#include "fileio.h"
 #include "io-util.h"
 #include "missing_random.h"
-//#include "missing_syscall.h"
-//#include "parse-util.h"
+#include "missing_syscall.h"
+#include "missing_threads.h"
+#include "parse-util.h"
 #include "random-util.h"
 #include "sha256.h"
 #include "time-util.h"
@@ -75,7 +76,7 @@ static void fallback_random_bytes(void *p, size_t n) {
 
 void random_bytes(void *p, size_t n) {
         static bool have_getrandom = true, have_grndinsecure = true;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         if (n == 0)
                 return;
@@ -117,7 +118,7 @@ void random_bytes(void *p, size_t n) {
 
 int crypto_random_bytes(void *p, size_t n) {
         static bool have_getrandom = true, seen_initialized = false;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         if (n == 0)
                 return 0;
@@ -145,7 +146,7 @@ int crypto_random_bytes(void *p, size_t n) {
         }
 
         if (!seen_initialized) {
-                _cleanup_close_ int ready_fd = -1;
+                _cleanup_close_ int ready_fd = -EBADF;
                 int r;
 
                 ready_fd = open("/dev/random", O_RDONLY|O_CLOEXEC|O_NOCTTY);
@@ -188,7 +189,7 @@ size_t random_pool_size(void) {
 }
 
 int random_write_entropy(int fd, const void *seed, size_t size, bool credit) {
-        _cleanup_close_ int opened_fd = -1;
+        _cleanup_close_ int opened_fd = -EBADF;
         int r;
 
         assert(seed || size == 0);

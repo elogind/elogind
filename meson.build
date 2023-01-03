@@ -894,6 +894,7 @@ foreach header : ['crypt.h',
                   'printf.h',
 #endif // 1
                   'sys/auxv.h',
+                  'threads.h',
                   'valgrind/memcheck.h',
                   'valgrind/valgrind.h',
                   'linux/time_types.h',
