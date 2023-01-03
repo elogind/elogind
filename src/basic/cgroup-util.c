@@ -2259,7 +2259,7 @@ int cg_unified_cached(bool flush) {
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
                         unified_systemd_v232 = false;
 #if 0 /// elogind has to check the "legacy" part in any case to account for hybrid controllers
-                }  else {
+                } else {
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0) {
                                 if (errno == ENOENT) {
                                         /* Some other software may have set up /sys/fs/cgroup in a configuration we do not recognize. */
