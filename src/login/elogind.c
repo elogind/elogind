@@ -47,7 +47,7 @@ void bus_reset_queues( sd_bus* b );
 #endif // ELOGIND_PID_FILE
 
 
-/* The elogind specific signal handler sends an exit event, so eleogind can
+/* The elogind specific signal handler sends an exit event, so elogind can
    gracefully shutdown.
    Caught are SIGINT, SIGQUIT and SIGTERM.
    While QUIT and TERMinate mean to power down the service completely, INTerrupt
@@ -64,9 +64,7 @@ static int elogind_signal_handler(
         Manager* m = userdata;
         int r;
 
-        log_warning( "Received signal %u [%s]", si->ssi_signo,
-                     signal_to_string( si->ssi_signo )
-                   );
+        log_warning( "Received signal %u [%s]", si->ssi_signo, signal_to_string( si->ssi_signo ) );
 
         r = sd_event_get_state( m->event );
 

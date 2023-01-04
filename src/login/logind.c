@@ -1201,6 +1201,11 @@ static int manager_run(Manager *m) {
         assert(m);
 
         for (;;) {
+#if 1 /// Only issue a debug message if elogind is restarted through an INTerrupt
+                if (m->do_interrupt) {
+                        log_debug_elogind("elogind interrupted (PID " PID_FMT "), going down silently...", getpid_cached());
+                }
+#endif // 1
                 r = sd_event_get_state(m->event);
                 if (r < 0)
                         return r;
@@ -1317,17 +1322,6 @@ static int run(int argc, char *argv[]) {
         r = manager_startup(m);
         if (r < 0)
                 return log_error_errno(r, "Failed to fully start up daemon: %m");
-
-#if 1 /// Do not tell anybody if elogind is restarted through an INTerrupt
-        if (m->do_interrupt) {
-                log_debug_elogind("elogind interrupted (PID "
-                PID_FMT
-                "), going down silently...", getpid_cached());
-        } else {
-#endif /// 1
-#if 1 /// extra bracket for elogind here
-        }
-#endif // 1
 
         notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
         return manager_run(m);

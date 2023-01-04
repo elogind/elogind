@@ -71,9 +71,6 @@ Inhibitor* inhibitor_free(Inhibitor *i) {
         free(i->who);
         free(i->why);
 
-#if 1 /// Do not remove the state file if elogind got interrupted
-                if (!i->manager->do_interrupt)
-#endif // 1
         sd_event_source_unref(i->event_source);
         safe_close(i->fifo_fd);
 
@@ -373,11 +370,9 @@ static void inhibitor_remove_fifo(Inhibitor *i) {
         if (i->fifo_path) {
 #if 1 /// Do not remove the fifo if elogind is to be restarted
                 if (i->manager->do_interrupt && (current_fifo_fd >= 0)) {
-                        log_debug_elogind("Keeping FIFO %d at %s for inhibitor %s",
-                                          current_fifo_fd, i->fifo_path, i->id);
+                        log_debug_elogind("Keeping FIFO %d at %s for inhibitor %s", current_fifo_fd, i->fifo_path, i->id);
                 } else {
-                        log_debug_elogind("Removing FIFO %d at %s for inhibitor %s",
-                                          current_fifo_fd, i->fifo_path, i->id);
+                        log_debug_elogind("Removing FIFO %d at %s for inhibitor %s", current_fifo_fd, i->fifo_path, i->id);
 #endif // 1
                 (void) unlink(i->fifo_path);
                 i->fifo_path = mfree(i->fifo_path);

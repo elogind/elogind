@@ -1299,11 +1299,9 @@ static void session_remove_fifo(Session *s) {
         if (s->fifo_path) {
 #if 1 /// Do not remove the fifo if elogind is to be restarted
                 if (s->manager->do_interrupt && (current_fifo_fd >= 0)) {
-                        log_debug_elogind("Keeping FIFO %d at %s for session %s",
-                                          current_fifo_fd, s->fifo_path, s->id);
+                        log_debug_elogind("Keeping FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
                 } else {
-                        log_debug_elogind("Removing FIFO %d at %s for session %s",
-                                          current_fifo_fd, s->fifo_path, s->id);
+                        log_debug_elogind("Removing FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
 #endif // 1
                 (void) unlink(s->fifo_path);
                 s->fifo_path = mfree(s->fifo_path);
