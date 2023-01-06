@@ -128,6 +128,11 @@ Deprecations and removals:
 
 Features:
 
+* add a utility that can be used with the kernel's
+  CONFIG_STATIC_USERMODEHELPER_PATH and then handles them within pid1 so that
+  security, resource management and cgroup settings can be enforced properly
+  for all umh processes.
+
 * elogind-shutdown: keep sending sd_notify() status updates immediately before
   going down, in particular include the "reboot param" string.
 
@@ -594,7 +599,6 @@ Features:
   • resolved: allow defining additional /etc/hosts entries via a credential (it
     might make sense to then synthesize a new combined /etc/hosts file in /run
     and bind mount it on /etc/hosts for other clients that want to read it.
-    Similar, allow picking up DNS server IP addresses from credential.
   • repart: allow defining additional partitions via credential
   • timesyncd: pick NTP server info from credential
   • portabled: read a credential "portable.extra" or so, that takes a list of
