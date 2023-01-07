@@ -6,6 +6,7 @@ fundamental_headers = files(
         'bootspec-fundamental.h',
         'efivars-fundamental.h',
         'macro-fundamental.h',
+        'memory-util-fundamental.h',
         'sha256.h',
         'string-util-fundamental.h',
 #if 0 /// Nowhere used in elogind
