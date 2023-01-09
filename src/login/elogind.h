@@ -39,9 +39,6 @@ void elogind_manager_free(Manager* m);
 /// Add-On for manager_new()
 int elogind_manager_new(Manager* m);
 
-/** Add-On for manager_reset_config() */
-void elogind_manager_reset_config(Manager* m);
-
 /// Add-On for manager_startup()
 int elogind_manager_startup(Manager* m);
 

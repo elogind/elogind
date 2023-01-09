@@ -84,47 +84,6 @@ void manager_reset_config(Manager *m) {
         m->stop_idle_session_usec = USEC_INFINITY;
 }
 
-#if 1 /// Add-On for manager_reset_config() used by elogind
-void elogind_manager_reset_config(Manager* m) {
-
-#if ENABLE_DEBUG_ELOGIND
-        int dbg_cnt;
-#endif // ENABLE_DEBUG_ELOGIND
-
-        (void)parse_sleep_config(&m);
-
-#if ENABLE_DEBUG_ELOGIND
-        dbg_cnt = -1;
-        while (m->modes[SLEEP_SUSPEND] && m->modes[SLEEP_SUSPEND][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_SUSPEND][%d] = %s",
-                                  dbg_cnt, m->modes[SLEEP_SUSPEND][dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->states[SLEEP_SUSPEND] && m->states[SLEEP_SUSPEND][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_SUSPEND][%d] = %s",
-                                  dbg_cnt, m->states[SLEEP_SUSPEND][dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->modes[SLEEP_HIBERNATE] && m->modes[SLEEP_HIBERNATE][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_HIBERNATE][%d] = %s",
-                                  dbg_cnt, m->modes[SLEEP_HIBERNATE][dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->states[SLEEP_HIBERNATE] && m->states[SLEEP_HIBERNATE][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_HIBERNATE][%d] = %s",
-                                  dbg_cnt, m->states[SLEEP_HIBERNATE][dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->modes[SLEEP_HYBRID_SLEEP] && m->modes[SLEEP_HYBRID_SLEEP][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_HYBRID_SLEEP][%d] = %s",
-                                  dbg_cnt, m->modes[SLEEP_HYBRID_SLEEP][dbg_cnt]);
-        dbg_cnt = -1;
-        while (m->states[SLEEP_HYBRID_SLEEP] && m->states[SLEEP_HYBRID_SLEEP][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_HYBRID_SLEEP][%d] = %s",
-                                  dbg_cnt, m->states[SLEEP_HYBRID_SLEEP][dbg_cnt]);
-        log_debug_elogind("hibernate_delay_sec: %lu seconds (%lu minutes)",
-                          m->hibernate_delay_sec / USEC_PER_SEC,
-                          m->hibernate_delay_sec / USEC_PER_MINUTE);
-#endif // ENABLE_DEBUG_ELOGIND
-}
-#endif // 1
-
 int manager_parse_config_file(Manager *m) {
         assert(m);
 
