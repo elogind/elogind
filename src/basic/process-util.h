@@ -72,6 +72,8 @@ void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
 #endif // 0
 void sigterm_wait(pid_t pid);
+void sigkill_nowait(pid_t pid);
+void sigkill_nowaitp(pid_t *pid);
 
 int kill_and_sigcont(pid_t pid, int sig);
 
