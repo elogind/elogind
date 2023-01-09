@@ -19,16 +19,16 @@
 
 #include "alloc-util.h"
 #include "blockdev-util.h"
-#include "btrfs-util.h"
+//#include "btrfs-util.h"
 #include "conf-parser.h"
 #include "def.h"
 #include "device-util.h"
 #include "devnum-util.h"
-#include "env-util.h"
-#include "errno-util.h"
+//#include "env-util.h"
+//#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "hexdecoct.h"
+//#include "hexdecoct.h"
 #include "id128-util.h"
 #include "log.h"
 #include "macro.h"
@@ -67,14 +67,24 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         _cleanup_(free_sleep_configp) SleepConfig *sc = NULL;
 #else // 0
         Manager* sc = *ret_sleep_config;
+#if ENABLE_DEBUG_ELOGIND
+        int dbg_cnt;
+#endif // ENABLE_DEBUG_ELOGIND
 #endif // 0
         int allow_suspend = -1, allow_hibernate = -1,
             allow_s2h = -1, allow_hybrid_sleep = -1;
 
-#if 0 /// UNNEDED by elogind
+#if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be red anew.
         sc = new0(SleepConfig, 1);
         if (!sc)
                 return log_oom();
+#else // 0
+        sc->modes[SLEEP_SUSPEND]       = strv_free(sc->modes[SLEEP_SUSPEND]);
+        sc->states[SLEEP_SUSPEND]      = strv_free(sc->states[SLEEP_SUSPEND]);
+        sc->modes[SLEEP_HIBERNATE]     = strv_free(sc->modes[SLEEP_HIBERNATE]);
+        sc->states[SLEEP_HIBERNATE]    = strv_free(sc->states[SLEEP_HIBERNATE]);
+        sc->modes[SLEEP_HYBRID_SLEEP]  = strv_free(sc->modes[SLEEP_HYBRID_SLEEP]);
+        sc->states[SLEEP_HYBRID_SLEEP] = strv_free(sc->states[SLEEP_HYBRID_SLEEP]);
 #endif // 0
 
         const ConfigTableItem items[] = {
@@ -135,6 +145,29 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         if (!sc->states[SLEEP_SUSPEND] || !sc->modes[SLEEP_HIBERNATE]
             || !sc->states[SLEEP_HIBERNATE] || !sc->modes[SLEEP_HYBRID_SLEEP] || !sc->states[SLEEP_HYBRID_SLEEP])
                 return log_oom();
+
+#if ENABLE_DEBUG_ELOGIND
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_SUSPEND] && sc->modes[SLEEP_SUSPEND][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->modes[SLEEP_SUSPEND][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_SUSPEND] && sc->states[SLEEP_SUSPEND][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->states[SLEEP_SUSPEND][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_HIBERNATE] && sc->modes[SLEEP_HIBERNATE][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->modes[SLEEP_HIBERNATE][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_HIBERNATE] && sc->states[SLEEP_HIBERNATE][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->states[SLEEP_HIBERNATE][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_HYBRID_SLEEP] && sc->modes[SLEEP_HYBRID_SLEEP][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->modes[SLEEP_HYBRID_SLEEP][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_HYBRID_SLEEP] && sc->states[SLEEP_HYBRID_SLEEP][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->states[SLEEP_HYBRID_SLEEP][dbg_cnt]);
+        log_debug_elogind("hibernate_delay_sec: %lu seconds (%lu minutes)",
+                          sc->hibernate_delay_sec / USEC_PER_SEC, sc->hibernate_delay_sec / USEC_PER_MINUTE);
+#endif // ENABLE_DEBUG_ELOGIND
 
 #if 0 /// UNNEEDED by elogind
         *ret_sleep_config = TAKE_PTR(sc);

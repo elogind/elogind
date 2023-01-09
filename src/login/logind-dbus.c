@@ -1516,8 +1516,6 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
         } else
                 log_info("Config file reloaded.");
 
-        elogind_manager_reset_config(m);
-
         return sd_bus_reply_method_return(message, NULL);
 }
 #endif // 1

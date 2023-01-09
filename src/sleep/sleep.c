@@ -237,6 +237,9 @@ static int write_mode(SleepOperation operation, char **modes) {
                         r = k;
         }
 
+        if (r < 0)
+                return log_error_errno(r, "Failed to write mode to %s: %m", mode_location);
+
         return r;
 }
 #endif // 0
@@ -371,7 +374,7 @@ static int execute(
 #endif // __GLIBC__
 
         /* Configure hibernation settings if we are supposed to hibernate */
-#if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptyness doesn't cut it
+#if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
         if (!strv_isempty(modes)) {
 #else // 0
         if (operation != SLEEP_SUSPEND) {
@@ -387,16 +390,14 @@ static int execute(
                                 return log_error_errno(r, "Failed to prepare for hibernation: %m");
                 }
 
-#if 0 /// elogind supports suspend modes
+#if 0 /// elogind supports suspend modes, and our write_mode() variant does more and logs on error
                 r = write_mode(modes);
                 if (r < 0)
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
         }
 #else // 0
         }
-        r = write_mode(operation, modes);
-        if (r < 0)
-                return log_error_errno(r, "Failed to write mode to /sys/power/%s: %m", SLEEP_SUSPEND == operation ? "mem_sleep" : "disk");
+        (void)write_mode(operation, modes);
 #endif // 0
 
         /* Pass an action string to the call-outs. This is mostly our operation string, except if the

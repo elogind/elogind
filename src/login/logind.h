@@ -210,7 +210,9 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **ret_inhibitor)
 int manager_process_seat_device(Manager *m, sd_device *d);
 int manager_process_button_device(Manager *m, sd_device *d);
 
+#if 0 /// elogind does not spawn VTs.
 int manager_spawn_autovt(Manager *m, unsigned vtnr);
+#endif // 0
 
 bool manager_shall_kill(Manager *m, const char *user);
 
