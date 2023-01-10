@@ -63,6 +63,9 @@ conf.set10('LOG_MESSAGE_VERIFICATION', verification)
 # # limits).
 # conf.set10('FUZZ_USE_SIZE_LIMIT', fuzzer_build)
 #
+# # We'll set this to '1' for EFI builds in a different place.
+# conf.set10('SD_BOOT', false)
+#
 # # Create a title-less summary section early, so it ends up first in the output.
 # # More items are added later after they have been detected.
 # summary({'build mode' : get_option('mode')})
@@ -388,7 +391,6 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 #
 # conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 #endif // 0
-
 
 #####################################################################
 
