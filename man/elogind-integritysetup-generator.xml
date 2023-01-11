@@ -27,9 +27,9 @@
   <refsect1>
     <title>Description</title>
 
-    <para><filename>elogind-integritysetup-generator</filename> is a generator that translates <filename>/etc/integritytab</filename> entries into
-    native elogind units early at boot. This will create
     <citerefentry><refentrytitle>elogind-integritysetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    <para><command>elogind-integritysetup-generator</command> is a generator that translates
+    <filename>/etc/integritytab</filename> entries into native elogind units early at boot. This will create
     units as necessary.</para>
 
     <para><command>elogind-integritysetup-generator</command> implements
