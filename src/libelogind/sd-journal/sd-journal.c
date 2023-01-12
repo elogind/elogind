@@ -2253,16 +2253,18 @@ _public_ void sd_journal_close(sd_journal *j) {
 
 _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 #if 0 /// UNSUPPORTED by elogind
-        JournalFile *f;
         Object *o;
+        JournalFile *f;
         int r;
 
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(ret, -EINVAL);
 
         f = j->current_file;
         if (!f)
                 return -EADDRNOTAVAIL;
+
         if (f->current_offset <= 0)
                 return -EADDRNOTAVAIL;
 
@@ -2270,13 +2272,7 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
         if (r < 0)
                 return r;
 
-        uint64_t t = le64toh(o->entry.realtime);
-        if (!VALID_REALTIME(t))
-                return -EBADMSG;
-
-        if (ret)
-                *ret = t;
-
+        *ret = le64toh(o->entry.realtime);
         return 0;
 #else // 0
         return -ENOSYS;
@@ -2329,6 +2325,37 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 }
 
 #if 0 /// UNNEEDED by elogind
+_public_ int sd_journal_get_seqnum(
+                sd_journal *j,
+                uint64_t *ret_seqnum,
+                sd_id128_t *ret_seqnum_id) {
+
+        JournalFile *f;
+        Object *o;
+        int r;
+
+        assert_return(j, -EINVAL);
+        assert_return(!journal_pid_changed(j), -ECHILD);
+
+        f = j->current_file;
+        if (!f)
+                return -EADDRNOTAVAIL;
+
+        if (f->current_offset <= 0)
+                return -EADDRNOTAVAIL;
+
+        r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
+        if (r < 0)
+                return r;
+
+        if (ret_seqnum_id)
+                *ret_seqnum_id = f->header->seqnum_id;
+        if (ret_seqnum)
+                *ret_seqnum = le64toh(o->entry.seqnum);
+
+        return 0;
+}
+
 static bool field_is_valid(const char *field) {
         assert(field);
 
