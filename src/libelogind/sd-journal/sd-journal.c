@@ -43,8 +43,6 @@
 #include "syslog-util.h"
 
 #if 0 /// UNNEEDED by elogind
-#define JOURNAL_FILES_MAX 7168
-
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)
 
 /* The maximum size of variable values we'll expand in catalog entries. We bind this to PATH_MAX for now, as
@@ -376,7 +374,7 @@ _public_ int sd_journal_add_disjunction(sd_journal *j) {
 
 #if 0 /// UNNEEDED by elogind
 static char *match_make_string(Match *m) {
-        char *p = NULL, *r;
+        _cleanup_free_ char *p = NULL;
         bool enclose = false;
 
         if (!m)
@@ -386,34 +384,25 @@ static char *match_make_string(Match *m) {
                 return cescape_length(m->data, m->size);
 
         LIST_FOREACH(matches, i, m->matches) {
-                char *t, *k;
+                _cleanup_free_ char *t = NULL;
 
                 t = match_make_string(i);
                 if (!t)
-                        return mfree(p);
+                        return NULL;
 
                 if (p) {
-                        k = strjoin(p, m->type == MATCH_OR_TERM ? " OR " : " AND ", t);
-                        free(p);
-                        free(t);
-
-                        if (!k)
+                        if (!strextend(&p, m->type == MATCH_OR_TERM ? " OR " : " AND ", t))
                                 return NULL;
-
-                        p = k;
 
                         enclose = true;
                 } else
-                        p = t;
+                        p = TAKE_PTR(t);
         }
 
-        if (enclose) {
-                r = strjoin("(", p, ")");
-                free(p);
-                return r;
-        }
+        if (enclose)
+                return strjoin("(", p, ")");
 
-        return p;
+        return TAKE_PTR(p);
 }
 
 char *journal_make_match_string(sd_journal *j) {
@@ -619,9 +608,9 @@ static int find_location_for_match(
                 /* FIXME: missing: find by monotonic */
 
                 if (j->current_location.type == LOCATION_HEAD)
-                        return direction == DIRECTION_DOWN ? journal_file_next_entry_for_data(f, d, DIRECTION_DOWN, ret, offset) : 0;
+                        return journal_file_next_entry_for_data(f, d, DIRECTION_DOWN, ret, offset);
                 if (j->current_location.type == LOCATION_TAIL)
-                        return direction == DIRECTION_UP ? journal_file_next_entry_for_data(f, d, DIRECTION_UP, ret, offset) : 0;
+                        return journal_file_next_entry_for_data(f, d, DIRECTION_UP, ret, offset);
                 if (j->current_location.seqnum_set && sd_id128_equal(j->current_location.seqnum_id, f->header->seqnum_id))
                         return journal_file_move_to_entry_by_seqnum_for_data(f, d, j->current_location.seqnum, direction, ret, offset);
                 if (j->current_location.monotonic_set) {
@@ -714,9 +703,9 @@ static int find_location_with_matches(
                 /* No matches is simple */
 
                 if (j->current_location.type == LOCATION_HEAD)
-                        return direction == DIRECTION_DOWN ? journal_file_next_entry(f, 0, DIRECTION_DOWN, ret, offset) : 0;
+                        return journal_file_next_entry(f, 0, DIRECTION_DOWN, ret, offset);
                 if (j->current_location.type == LOCATION_TAIL)
-                        return direction == DIRECTION_UP ? journal_file_next_entry(f, 0, DIRECTION_UP, ret, offset) : 0;
+                        return journal_file_next_entry(f, 0, DIRECTION_UP, ret, offset);
                 if (j->current_location.seqnum_set && sd_id128_equal(j->current_location.seqnum_id, f->header->seqnum_id))
                         return journal_file_move_to_entry_by_seqnum(f, j->current_location.seqnum, direction, ret, offset);
                 if (j->current_location.monotonic_set) {
@@ -1327,7 +1316,7 @@ static int add_any_file(
                 int fd,
                 const char *path) {
 
-        _cleanup_close_ int our_fd = -1;
+        _cleanup_close_ int our_fd = -EBADF;
         JournalFile *f;
         struct stat st;
         int r;
@@ -1791,7 +1780,7 @@ static int add_root_directory(sd_journal *j, const char *p, bool missing_ok) {
                         goto fail;
                 }
         } else {
-                _cleanup_close_ int dfd = -1;
+                _cleanup_close_ int dfd = -EBADF;
 
                 /* If there's no path specified, then we use the top-level fd itself. We duplicate the fd here, since
                  * opendir() will take possession of the fd, and close it, which we don't want. */
@@ -1889,7 +1878,6 @@ static int add_search_paths(sd_journal *j) {
         static const char search_paths[] =
                 "/run/log/journal\0"
                 "/var/log/journal\0";
-        const char *p;
 
         assert(j);
 
@@ -1945,15 +1933,17 @@ static int allocate_inotify(sd_journal *j) {
 static sd_journal *journal_new(int flags, const char *path, const char *namespace) {
         _cleanup_(sd_journal_closep) sd_journal *j = NULL;
 
-        j = new0(sd_journal, 1);
+        j = new(sd_journal, 1);
         if (!j)
                 return NULL;
 
-        j->original_pid = getpid_cached();
-        j->toplevel_fd = -1;
-        j->inotify_fd = -1;
-        j->flags = flags;
-        j->data_threshold = DEFAULT_DATA_THRESHOLD;
+        *j = (sd_journal) {
+                .original_pid = getpid_cached(),
+                .toplevel_fd = -EBADF,
+                .inotify_fd = -EBADF,
+                .flags = flags,
+                .data_threshold = DEFAULT_DATA_THRESHOLD,
+        };
 
         if (path) {
                 char *t;
@@ -2291,8 +2281,8 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 
 _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id128_t *ret_boot_id) {
 #if 0 /// UNSUPPORTED by elogind
-        Object *o;
         JournalFile *f;
+        Object *o;
         int r;
 
         assert_return(j, -EINVAL);
@@ -2301,7 +2291,6 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
         f = j->current_file;
         if (!f)
                 return -EADDRNOTAVAIL;
-
         if (f->current_offset <= 0)
                 return -EADDRNOTAVAIL;
 
@@ -2322,8 +2311,43 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
                         return -ESTALE;
         }
 
+        uint64_t t = le64toh(o->entry.monotonic);
+        if (!VALID_MONOTONIC(t))
+                return -EBADMSG;
+
         if (ret)
-                *ret = le64toh(o->entry.monotonic);
+                *ret = t;
+
+        return 0;
+}
+
+_public_ int sd_journal_get_seqnum(
+                sd_journal *j,
+                uint64_t *ret_seqnum,
+                sd_id128_t *ret_seqnum_id) {
+
+        JournalFile *f;
+        Object *o;
+        int r;
+
+        assert_return(j, -EINVAL);
+        assert_return(!journal_pid_changed(j), -ECHILD);
+
+        f = j->current_file;
+        if (!f)
+                return -EADDRNOTAVAIL;
+
+        if (f->current_offset <= 0)
+                return -EADDRNOTAVAIL;
+
+        r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
+        if (r < 0)
+                return r;
+
+        if (ret_seqnum_id)
+                *ret_seqnum_id = f->header->seqnum_id;
+        if (ret_seqnum)
+                *ret_seqnum = le64toh(o->entry.seqnum);
 
         return 0;
 #else // 0
@@ -2742,28 +2766,23 @@ _public_ int sd_journal_wait(sd_journal *j, uint64_t timeout_usec) {
         if (j->inotify_fd < 0) {
                 JournalFile *f;
 
-                /* This is the first invocation, hence create the
-                 * inotify watch */
+                /* This is the first invocation, hence create the inotify watch */
                 r = sd_journal_get_fd(j);
                 if (r < 0)
                         return r;
 
-                /* Server might have done some vacuuming while we weren't watching.
-                   Get rid of the deleted files now so they don't stay around indefinitely. */
+                /* Server might have done some vacuuming while we weren't watching. Get rid of the deleted
+                 * files now so they don't stay around indefinitely. */
                 ORDERED_HASHMAP_FOREACH(f, j->files) {
                         r = journal_file_fstat(f);
                         if (r == -EIDRM)
                                 remove_file_real(j, f);
-                        else if (r < 0) {
-                                log_debug_errno(r,"Failed to fstat() journal file '%s' : %m", f->path);
-                                continue;
-                        }
+                        else if (r < 0)
+                                log_debug_errno(r, "Failed to fstat() journal file '%s', ignoring: %m", f->path);
                 }
 
-                /* The journal might have changed since the context
-                 * object was created and we weren't watching before,
-                 * hence don't wait for anything, and return
-                 * immediately. */
+                /* The journal might have changed since the context object was created and we weren't
+                 * watching before, hence don't wait for anything, and return immediately. */
                 return determine_change(j);
         }
 
