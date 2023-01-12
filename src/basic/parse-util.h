@@ -23,6 +23,7 @@ int parse_mtu(int family, const char *s, uint32_t *ret);
 
 int parse_size(const char *t, uint64_t base, uint64_t *size);
 #if 0 /// UNNEEDED by elogind
+int parse_sector_size(const char *t, uint64_t *ret);
 int parse_range(const char *t, unsigned *lower, unsigned *upper);
 int parse_errno(const char *t);
 #endif // 0
