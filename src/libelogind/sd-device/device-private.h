@@ -52,6 +52,7 @@ int device_ensure_usec_initialized(sd_device *device, sd_device *device_old);
 #endif // 0
 int device_add_devlink(sd_device *device, const char *devlink);
 #if 0 /// UNNEEDED by elogind
+void device_remove_devlink(sd_device *device, const char *devlink);
 bool device_has_devlink(sd_device *device, const char *devlink);
 #endif // 0
 int device_add_property(sd_device *device, const char *property, const char *value);
