@@ -58,3 +58,5 @@ int block_device_remove_all_partitions(sd_device *dev, int fd);
 int block_device_has_partitions(sd_device *dev);
 int blockdev_reread_partition_table(sd_device *dev);
 #endif // 0
+
+int blockdev_get_sector_size(int fd, uint32_t *ret);
