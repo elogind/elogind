@@ -230,6 +230,10 @@ option('dbussystemservicedir', type : 'string',
 option('dbus-interfaces-dir', type : 'string',
        description : 'export D-Bus introspection XML as standalone files')
 #if 0 /// UNNEEDED by elogind
+# option('default-timeout-sec', type : 'integer', value : 90,
+#        description : 'default timeout for system unit start/stop')
+# option('default-user-timeout-sec', type : 'integer', value : 90,
+#        description : 'default timeout for user unit start/stop')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0
@@ -241,8 +245,8 @@ option('pkgconfiglibdir', type : 'string', value : '',
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
 #endif // 0
-option('update-helper-user-timeout', type : 'string', value : '15s',
-       description : 'how long to wait for user manager operations')
+option('update-helper-user-timeout-sec', type : 'integer', value : 15,
+       description : 'timeout for user manager package operations')
 option('pamlibdir', type : 'string',
        description : 'directory for PAM modules')
 option('pamconfdir', type : 'string',
@@ -372,6 +376,8 @@ option('default-kill-user-processes', type : 'boolean',
 #        description : 'default locale used when /etc/locale.conf does not exist')
 # option('nspawn-locale', type : 'string', value : 'C.UTF-8',
 #        description : 'default locale used by systemd-nspawn when executing commands in a container')
+# option('default-keymap', type : 'string', value : 'us',
+#        description : 'default keymap used when populating /etc/vconsole.conf')
 # option('localegen-path', type : 'string', value : '',
 #        description : 'absolute path to the locale-gen binary in case the system is using locale-gen')
 # option('service-watchdog', type : 'string', value : '3min',
@@ -442,6 +448,8 @@ option('audit', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('kmod', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'support for loadable modules')
 #endif // 0
+option('xenctrl', type : 'combo', choices : ['auto', 'true', 'false'],
+       description : 'support for Xen kexec')
 option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'PAM support')
 #if 0 /// UNNEEDED by elogind
@@ -517,8 +525,6 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('efi-includedir', type : 'string', value : '/usr/include/efi',
 #        description : 'path to the EFI header directory')
 #endif // 0
-option('efi-tpm-pcr-compat', type : 'boolean', value : false,
-       description : 'Measure kernel command line also into TPM PCR 8 (in addition to 12)')
 option('sbat-distro', type : 'string', value : 'auto',
        description : 'SBAT distribution ID, e.g. fedora, or auto for autodetection')
 option('sbat-distro-generation', type : 'integer', value : 1,
@@ -577,6 +583,8 @@ option('urlify', type : 'boolean', value : true,
 #        description : 'build against LLVM libFuzzer')
 # option('kernel-install', type: 'boolean', value: true,
 #        description : 'install kernel-install and associated files')
+# option('ukify', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'install ukify')
 # option('analyze', type: 'boolean', value: true,
 #        description : 'install systemd-analyze')
 #endif // 0
