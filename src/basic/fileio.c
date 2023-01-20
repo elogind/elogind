@@ -870,7 +870,6 @@ int executable_is_script(const char *path, char **interpreter) {
 int get_proc_field(const char *filename, const char *pattern, const char *terminator, char **field) {
         _cleanup_free_ char *status = NULL;
         char *t, *f;
-        size_t len;
         int r;
 
         assert(terminator);
@@ -922,9 +921,7 @@ int get_proc_field(const char *filename, const char *pattern, const char *termin
                         t--;
         }
 
-        len = strcspn(t, terminator);
-
-        f = strndup(t, len);
+        f = strdupcspn(t, terminator);
         if (!f)
                 return -ENOMEM;
 
