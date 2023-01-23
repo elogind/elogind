@@ -180,24 +180,18 @@ int readlink_value(const char *p, char **ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int readlink_and_make_absolute(const char *p, char **r) {
+int readlink_and_make_absolute(const char *p, char **ret) {
         _cleanup_free_ char *target = NULL;
-        char *k;
-        int j;
+        int r;
 
         assert(p);
-        assert(r);
+        assert(ret);
 
-        j = readlink_malloc(p, &target);
-        if (j < 0)
-                return j;
+        r = readlink_malloc(p, &target);
+        if (r < 0)
+                return r;
 
-        k = file_in_same_dir(p, target);
-        if (!k)
-                return -ENOMEM;
-
-        *r = k;
-        return 0;
+        return file_in_same_dir(p, target, ret);
 }
 #endif // 0
 

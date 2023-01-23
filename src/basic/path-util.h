@@ -183,8 +183,8 @@ static inline bool path_is_safe(const char *p) {
 bool path_is_normalized(const char *p) _pure_;
 
 #if 0 /// UNNEEDED by elogind
-char *file_in_same_dir(const char *path, const char *filename);
 #endif // 0
+int file_in_same_dir(const char *path, const char *filename, char **ret);
 
 bool hidden_or_backup_file(const char *filename) _pure_;
 
