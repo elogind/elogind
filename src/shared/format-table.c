@@ -302,6 +302,7 @@ static size_t table_data_size(TableDataType type, const void *data) {
         case TABLE_TIMESTAMP_DATE:
         case TABLE_TIMESPAN:
         case TABLE_TIMESPAN_MSEC:
+        case TABLE_TIMESPAN_DAY:
                 return sizeof(usec_t);
 
         case TABLE_SIZE:
@@ -918,6 +919,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                 case TABLE_TIMESTAMP_DATE:
                 case TABLE_TIMESPAN:
                 case TABLE_TIMESPAN_MSEC:
+                case TABLE_TIMESPAN_DAY:
                         buffer.usec = va_arg(ap, usec_t);
                         data = &buffer.usec;
                         break;
@@ -1337,6 +1339,7 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
 
                 case TABLE_TIMESPAN:
                 case TABLE_TIMESPAN_MSEC:
+                case TABLE_TIMESPAN_DAY:
                         return CMP(a->timespan, b->timespan);
 
                 case TABLE_SIZE:
@@ -1590,7 +1593,8 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
         }
 
         case TABLE_TIMESPAN:
-        case TABLE_TIMESPAN_MSEC: {
+        case TABLE_TIMESPAN_MSEC:
+        case TABLE_TIMESPAN_DAY: {
                 _cleanup_free_ char *p = NULL;
 
                 p = new(char, FORMAT_TIMESPAN_MAX);
@@ -1598,7 +1602,8 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                         return NULL;
 
                 if (!format_timespan(p, FORMAT_TIMESPAN_MAX, d->timespan,
-                                     d->type == TABLE_TIMESPAN ? 0 : USEC_PER_MSEC))
+                                     d->type == TABLE_TIMESPAN ? 0 :
+                                     d->type == TABLE_TIMESPAN_MSEC ? USEC_PER_MSEC : USEC_PER_DAY))
                         return "-";
 
                 d->formatted = TAKE_PTR(p);
@@ -2630,6 +2635,7 @@ static int table_data_to_json(TableData *d, JsonVariant **ret) {
 
         case TABLE_TIMESPAN:
         case TABLE_TIMESPAN_MSEC:
+        case TABLE_TIMESPAN_DAY:
                 if (d->timespan == USEC_INFINITY)
                         return json_variant_new_null(ret);
 
