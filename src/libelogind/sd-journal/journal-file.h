@@ -67,6 +67,7 @@ typedef struct JournalFile {
         int open_flags;
         bool close_fd:1;
         bool archive:1;
+        bool strict_order:1;
 
         direction_t last_direction;
         LocationType location_type;
@@ -124,8 +125,10 @@ typedef struct JournalFile {
 
 #if 0 /// UNNEEDED by elogind
 typedef enum JournalFileFlags {
-        JOURNAL_COMPRESS = 1 << 0,
-        JOURNAL_SEAL     = 1 << 1,
+        JOURNAL_COMPRESS        = 1 << 0,
+        JOURNAL_SEAL            = 1 << 1,
+        JOURNAL_STRICT_ORDER    = 1 << 2,
+        _JOURNAL_FILE_FLAGS_MAX = JOURNAL_COMPRESS|JOURNAL_SEAL|JOURNAL_STRICT_ORDER,
 } JournalFileFlags;
 
 typedef struct {
@@ -255,8 +258,10 @@ int journal_file_append_entry(
                 JournalFile *f,
                 const dual_timestamp *ts,
                 const sd_id128_t *boot_id,
-                const struct iovec iovec[], unsigned n_iovec,
-                uint64_t *seqno,
+                const struct iovec iovec[],
+                size_t n_iovec,
+                uint64_t *seqnum,
+                sd_id128_t *seqnum_id,
                 Object **ret_object,
                 uint64_t *ret_offset);
 
@@ -283,12 +288,13 @@ int journal_file_move_to_entry_by_seqnum_for_data(JournalFile *f, Object *d, uin
 int journal_file_move_to_entry_by_realtime_for_data(JournalFile *f, Object *d, uint64_t realtime, direction_t direction, Object **ret_object, uint64_t *ret_offset);
 int journal_file_move_to_entry_by_monotonic_for_data(JournalFile *f, Object *d, sd_id128_t boot_id, uint64_t monotonic, direction_t direction, Object **ret_object, uint64_t *ret_offset);
 
-int journal_file_copy_entry(JournalFile *from, JournalFile *to, Object *o, uint64_t p);
+int journal_file_copy_entry(JournalFile *from, JournalFile *to, Object *o, uint64_t p, uint64_t *seqnum, sd_id128_t *seqnum_id);
 
 void journal_file_dump(JournalFile *f);
 void journal_file_print_header(JournalFile *f);
 
 int journal_file_archive(JournalFile *f, char **ret_previous_path);
+int journal_file_parse_uid_from_filename(const char *path, uid_t *uid);
 JournalFile* journal_initiate_close(JournalFile *f, Set *deferred_closes);
 
 int journal_file_dispose(int dir_fd, const char *fname);
