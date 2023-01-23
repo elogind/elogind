@@ -2518,6 +2518,7 @@ subdir('src/update-utmp')
 # subdir('src/analyze')
 #endif // 0
 
+subdir('src/boot')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
@@ -3030,24 +3031,7 @@ endif
 #
 #         exe = executable(
 #                 'bootctl',
-#                 ['src/boot/bootctl.c',
-#                  'src/boot/bootctl.h',
-#                  'src/boot/bootctl-install.c',
-#                  'src/boot/bootctl-install.h',
-#                  'src/boot/bootctl-random-seed.c',
-#                  'src/boot/bootctl-random-seed.h',
-#                  'src/boot/bootctl-reboot-to-firmware.c',
-#                  'src/boot/bootctl-reboot-to-firmware.h',
-#                  'src/boot/bootctl-set-efivar.c',
-#                  'src/boot/bootctl-set-efivar.h',
-#                  'src/boot/bootctl-status.c',
-#                  'src/boot/bootctl-status.h',
-#                  'src/boot/bootctl-elogind-efi-options.c',
-#                  'src/boot/bootctl-elogind-efi-options.h',
-#                  'src/boot/bootctl-uki.c',
-#                  'src/boot/bootctl-uki.h',
-#                  'src/boot/bootctl-util.c',
-#                  'src/boot/bootctl-util.h'],
+#                 bootctl_sources,
 #                 include_directories : includes,
 #                 link_with : [boot_link_with],
 #                 dependencies : [libblkid,
