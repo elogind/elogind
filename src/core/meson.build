@@ -194,6 +194,11 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 ############################################################
 
 #if 0 /// elogind does not fuzz
+# test_core_base = {
+#         'link_with' : [libcore, libshared],
+#         'includes' : core_includes,
+# }
+#
 # fuzzers += [
 #         [files('fuzz-unit-file.c'),
 #          [libcore,
