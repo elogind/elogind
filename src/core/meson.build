@@ -200,9 +200,13 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 # }
 #
 # fuzzers += [
-#         [files('fuzz-unit-file.c'),
-#          [libcore,
-#           libshared],
-#          [libmount]],
+#         {
+#                 'sources' : files('fuzz-unit-file.c'),
+#                 'link_with' : [
+#                         libcore,
+#                         libshared
+#                 ],
+#                 'dependencies' : libmount,
+#         },
 # ]
 #endif // 0
