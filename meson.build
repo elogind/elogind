@@ -233,6 +233,7 @@ polkitpolicydir = datadir / 'polkit-1/actions'
 # factorydir = datadir / 'factory'
 # bootlibdir = prefixdir / 'lib/systemd/boot/efi'
 # testsdir = prefixdir / 'lib/systemd/tests'
+# unittestsdir = testsdir / 'unit-tests'
 # systemdstatedir = localstatedir / 'lib/systemd'
 # catalogstatedir = systemdstatedir / 'catalog'
 # randomseeddir = localstatedir / 'lib/systemd'
@@ -3603,14 +3604,24 @@ endif
 # endif
 #
 # if conf.get('ENABLE_LOCALED') == 1
+#         if conf.get('HAVE_XKBCOMMON') == 1
+#                 # logind will load libxkbcommon.so dynamically on its own, but we still
+#                 # need to specify where the headers are
+#                 deps = [libdl,
+#                         libxkbcommon.partial_dependency(compile_args: true),
+#                         userspace,
+#                         versiondep]
+#         else
+#                 deps = [userspace,
+#                         versiondep]
+#         endif
+#
 #         dbus_programs += executable(
 #                 'systemd-localed',
 #                 systemd_localed_sources,
 #                 include_directories : includes,
 #                 link_with : [libshared],
-#                 dependencies : libxkbcommon_deps +
-#                                [userspace,
-#                                 versiondep],
+#                 dependencies : deps,
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
 #                 install_dir : rootlibexecdir)
@@ -4760,7 +4771,7 @@ foreach test : tests
                 build_by_default : want_tests != 'false',
                 install_rpath : rootpkglibdir,
                 install : install_tests,
-                install_dir : testsdir / type,
+                install_dir : unittestsdir / type,
                 link_depends : runtest_env)
 
         if type == 'manual'
@@ -4785,7 +4796,7 @@ endforeach
 #         dependencies : userspace,
 #         build_by_default : want_tests != 'false',
 #         install : install_tests,
-#         install_dir : testsdir)
+#         install_dir : unittestsdir)
 # if want_tests != 'false'
 #         test('test-libsystemd-sym', exe)
 # endif
@@ -4803,7 +4814,7 @@ endforeach
 #         ],
 #         build_by_default : want_tests != 'false' and static_libsystemd_pic,
 #         install : install_tests and static_libsystemd_pic,
-#         install_dir : testsdir)
+#         install_dir : unittestsdir)
 # if want_tests != 'false' and static_libsystemd_pic
 #         test('test-libsystemd-static-sym', exe)
 # endif
@@ -4817,7 +4828,7 @@ endforeach
 #         dependencies : userspace,
 #         build_by_default : want_tests != 'false',
 #         install : install_tests,
-#         install_dir : testsdir)
+#         install_dir : unittestsdir)
 # if want_tests != 'false'
 #         test('test-libudev-sym', exe)
 # endif
@@ -4831,7 +4842,7 @@ endforeach
 #         dependencies : userspace,
 #         build_by_default : want_tests != 'false' and static_libudev_pic,
 #         install : install_tests and static_libudev_pic,
-#         install_dir : testsdir)
+#         install_dir : unittestsdir)
 # if want_tests != 'false' and static_libudev_pic
 #         test('test-libudev-static-sym', exe)
 # endif
