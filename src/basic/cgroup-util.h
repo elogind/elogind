@@ -278,6 +278,7 @@ int cg_path_get_session(const char *path, char **session);
 int cg_path_get_owner_uid(const char *path, uid_t *uid);
 #if 0 /// UNNEEDED by elogind
 int cg_path_get_unit(const char *path, char **unit);
+int cg_path_get_unit_path(const char *path, char **unit);
 int cg_path_get_user_unit(const char *path, char **unit);
 int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
