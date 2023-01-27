@@ -856,7 +856,6 @@ endforeach
 # endif
 #endif // 0
 
-
 ############################################################
 
 gperf = find_program('gperf')
@@ -2197,6 +2196,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 ############################################################
 
 tests = []
+simple_tests = []
 fuzzers = []
 catalogs = []
 
@@ -2445,9 +2445,9 @@ install_libelogind_static = static_library(
 
 if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         if conf.get('HAVE_TPM2') == 1
+                shared_library(
                         'cryptsetup-token-elogind-tpm2',
                         cryptsetup_token_elogind_tpm2_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2463,9 +2463,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_LIBFIDO2') == 1
+                shared_library(
                         'cryptsetup-token-elogind-fido2',
                         cryptsetup_token_elogind_fido2_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2481,9 +2481,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_P11KIT') == 1
+                shared_library(
                         'cryptsetup-token-elogind-pkcs11',
                         cryptsetup_token_elogind_pkcs11_sources,
-                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -4515,6 +4515,10 @@ test_cflags = ['-DTEST_CODE=1']
 if '-O2' in c_args and '-flto=auto' in c_args
         test_cflags += cc.first_supported_argument('-Wno-maybe-uninitialized')
 endif
+
+foreach test : simple_tests
+        tests += [ [[test]] ]
+endforeach
 
 foreach tuple : tests
         sources = tuple[0]
