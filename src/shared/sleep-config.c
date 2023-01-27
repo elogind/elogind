@@ -74,17 +74,21 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         int allow_suspend = -1, allow_hibernate = -1,
             allow_s2h = -1, allow_hybrid_sleep = -1;
 
-#if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be red anew.
+#if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be read anew.
         sc = new0(SleepConfig, 1);
         if (!sc)
                 return log_oom();
 #else // 0
-        sc->modes[SLEEP_SUSPEND]       = strv_free(sc->modes[SLEEP_SUSPEND]);
-        sc->states[SLEEP_SUSPEND]      = strv_free(sc->states[SLEEP_SUSPEND]);
-        sc->modes[SLEEP_HIBERNATE]     = strv_free(sc->modes[SLEEP_HIBERNATE]);
-        sc->states[SLEEP_HIBERNATE]    = strv_free(sc->states[SLEEP_HIBERNATE]);
-        sc->modes[SLEEP_HYBRID_SLEEP]  = strv_free(sc->modes[SLEEP_HYBRID_SLEEP]);
-        sc->states[SLEEP_HYBRID_SLEEP] = strv_free(sc->states[SLEEP_HYBRID_SLEEP]);
+        for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
+                if (sc->modes[i]) {
+                        strv_free(sc->modes[i]);
+                }
+
+                if (sc->states[i]) {
+                        strv_free(sc->states[i]);
+                        sc->states[i] = strv_new(STRV_IGNORE);
+                }
+        }
 #endif // 0
 
         const ConfigTableItem items[] = {
