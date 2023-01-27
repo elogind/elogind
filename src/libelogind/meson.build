@@ -280,11 +280,10 @@ libsystemd_c_args = ['-fvisibility=default']
 #
 # ############################################################
 #
-# fuzzers += [
-#         [files('sd-bus/fuzz-bus-message.c')],
-#
-#         [files('sd-bus/fuzz-bus-match.c')],
-# ]
+# simple_fuzzers += files(
+#         'sd-bus/fuzz-bus-match.c',
+#         'sd-bus/fuzz-bus-message.c',
+# )
 #else // 0
 libelogind_static = static_library(
         'elogind_static',
