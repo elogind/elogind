@@ -216,7 +216,6 @@ polkitpolicydir = datadir / 'polkit-1/actions'
 # binfmtdir = prefixdir / 'lib/binfmt.d'
 # modulesloaddir = prefixdir / 'lib/modules-load.d'
 # networkdir = rootprefixdir / 'lib/systemd/network'
-# pkgincludedir = includedir / 'systemd'
 # systemgeneratordir = rootlibexecdir / 'system-generators'
 # usergeneratordir = prefixdir / 'lib/systemd/user-generators'
 # systemenvgeneratordir = prefixdir / 'lib/systemd/system-environment-generators'
@@ -395,7 +394,6 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 #####################################################################
 
 cc = meson.get_compiler('c')
-pkgconfig = import('pkgconfig')
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
@@ -442,7 +440,6 @@ possible_common_cc_flags = [
         '-Werror=format=2',
         '-Werror=format-signedness',
         '-Werror=implicit-function-declaration',
-        '-Werror=implicit-int',
         '-Werror=incompatible-pointer-types',
         '-Werror=int-conversion',
         '-Werror=overflow',
@@ -1280,12 +1277,9 @@ else
                         if clang_found
                                 clang = r.path()
                         endif
-                        # Assume that the required flags are supported by the found clang.
-                        clang_supports_flags = clang_found
                 else
                         clang_found = true
                         clang = cc.cmd_array()
-                        clang_supports_flags = cc.has_argument('-Wno-compare-distinct-pointer-types')
                 endif
 
                 if clang_found
@@ -2208,23 +2202,8 @@ conf.set10('HAVE_GNU_EFI', false)
 
 ############################################################
 
-pymod = import('python')
-python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
-python_39 = python.language_version().version_compare('>=3.9')
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-if get_option('ukify') == 'auto'
-    want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
-elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
-    error('ukify requires Python >= 3.9 and GNU EFI')
-else
-    want_ukify = get_option('ukify') == 'true'
-endif
-conf.set10('ENABLE_UKIFY', want_ukify)
-
-############################################################
-#
+/// elogind empty mask removed (UNNEEDED by elogind)
 generate_gperfs = find_program('tools/generate-gperfs.py')
 make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 make_directive_index_py = find_program('tools/make-directive-index.py')
@@ -2267,6 +2246,20 @@ config_h = configure_file(
 add_project_arguments('-include', 'config.h', language : 'c')
 
 jinja2_cmdline = [meson_render_jinja2, config_h, version_h]
+
+############################################################
+
+pymod = import('python')
+python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
+python_39 = python.language_version().version_compare('>=3.9')
+
+if get_option('ukify') == 'auto'
+    want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
+elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
+    error('ukify requires Python >= 3.9 and GNU EFI')
+else
+    want_ukify = get_option('ukify') == 'true'
+endif
 
 ############################################################
 
@@ -2437,9 +2430,9 @@ install_libelogind_static = static_library(
 
 if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         if conf.get('HAVE_TPM2') == 1
-                cryptsetup_token_elogind_tpm2 = shared_library(
                         'cryptsetup-token-elogind-tpm2',
                         cryptsetup_token_elogind_tpm2_sources,
+                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2455,9 +2448,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_LIBFIDO2') == 1
-                cryptsetup_token_elogind_fido2 = shared_library(
                         'cryptsetup-token-elogind-fido2',
                         cryptsetup_token_elogind_fido2_sources,
+                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],
@@ -2473,9 +2466,9 @@ if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
         endif
 
         if conf.get('HAVE_P11KIT') == 1
-                cryptsetup_token_elogind_pkcs11 = shared_library(
                         'cryptsetup-token-elogind-pkcs11',
                         cryptsetup_token_elogind_pkcs11_sources,
+                shared_library(
                         include_directories : includes,
                         link_args : ['-shared',
                                      '-Wl,--version-script=' + cryptsetup_token_sym_path],

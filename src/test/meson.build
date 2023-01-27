@@ -9,8 +9,6 @@ test_hashmap_ordered_c = custom_target(
         capture : true,
         build_by_default : want_tests != 'false')
 
-test_include_dir = include_directories('.')
-
 path = run_command(sh, '-c', 'echo "$PATH"', check: true).stdout().strip()
 test_env = environment()
 #if 0 /// UNNEEDED in elogind
