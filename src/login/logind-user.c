@@ -491,6 +491,7 @@ int user_start(User *u) {
 #if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */
         user_start_service(u);
+#endif // 0
 
         if (!u->started) {
                 if (!dual_timestamp_is_set(&u->timestamp))
@@ -498,7 +499,6 @@ int user_start(User *u) {
                 user_send_signal(u, true);
                 u->started = true;
         }
-#endif // 0
 
         /* Save new user data */
         user_save(u);
