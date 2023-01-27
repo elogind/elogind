@@ -86,13 +86,9 @@ int manager_parse_config_file(Manager *m) {
         assert(m);
 
 #if 0 /// elogind parses its own config file
-        return config_parse_many_nulstr(
-                        PKGSYSCONFDIR "/logind.conf",
-                        CONF_PATHS_NULSTR("systemd/logind.conf.d"),
-                        "Login\0",
-                        config_item_perf_lookup, logind_gperf_lookup,
-                        CONFIG_PARSE_WARN, m,
-                        NULL);
+        return config_parse_config_file("logind.conf", "Login\0",
+                                        config_item_perf_lookup, logind_gperf_lookup,
+                                        CONFIG_PARSE_WARN, m);
 #else // 0
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
