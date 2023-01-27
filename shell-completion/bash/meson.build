@@ -32,11 +32,11 @@ endif
 #          ['systemd-path',        ''],
 #          ['systemd-run',         ''],
 #          ['udevadm',             ''],
-#          ['kernel-install',      'ENABLE_KERNEL_INSTALL'],
 #          ['bootctl',             'HAVE_GNU_EFI'],
 #          ['coredumpctl',         'ENABLE_COREDUMP'],
 #          ['homectl',             'ENABLE_HOMED'],
 #          ['hostnamectl',         'ENABLE_HOSTNAMED'],
+#          ['kernel-install',      'ENABLE_KERNEL_INSTALL'],
 #          ['localectl',           'ENABLE_LOCALED'],
 #          ['loginctl',            'ENABLE_LOGIND'],
 #          ['machinectl',          'ENABLE_MACHINED'],
@@ -45,7 +45,9 @@ endif
 #          ['portablectl',         'ENABLE_PORTABLED'],
 #          ['resolvectl',          'ENABLE_RESOLVE'],
 #          ['systemd-cryptenroll', 'HAVE_LIBCRYPTSETUP'],
+#          ['systemd-dissect',     'HAVE_BLKID'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],
+#          ['systemd-sysext',      'ENABLE_SYSEXT'],
 #          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0
 items = [['busctl',              ''],
