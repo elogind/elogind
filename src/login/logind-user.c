@@ -4,38 +4,38 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "bus-common-errors.h"
+//#include "bus-common-errors.h"
 #include "bus-error.h"
-#include "bus-util.h"
-#include "cgroup-util.h"
+//#include "bus-util.h"
+//#include "cgroup-util.h"
 #include "clean-ipc.h"
 #include "env-file.h"
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
-#include "fs-util.h"
+//#include "fs-util.h"
 #include "hashmap.h"
-#include "label.h"
+//#include "label.h"
 #include "limits-util.h"
 #include "logind-dbus.h"
 #include "logind-user-dbus.h"
 #include "logind-user.h"
 #include "mkdir-label.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "percent-util.h"
 #include "rm-rf.h"
 #include "serialize.h"
-#include "special.h"
+//#include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
-#include "strv.h"
+//#include "strv.h"
 #include "tmpfile-util.h"
 #include "uid-alloc-range.h"
-#include "unit-name.h"
+//#include "unit-name.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
@@ -44,7 +44,9 @@ int user_new(User **ret,
              UserRecord *ur) {
 
         _cleanup_(user_freep) User *u = NULL;
+#if 0 /// elogind does not support systemd units
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
+#endif // 0
         int r;
 
         assert(ret);
@@ -73,6 +75,7 @@ int user_new(User **ret,
         if (asprintf(&u->runtime_path, "/run/user/" UID_FMT, ur->uid) < 0)
                 return -ENOMEM;
 
+#if 0 /// elogind does not support systemd units
         xsprintf(lu, UID_FMT, ur->uid);
         r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
@@ -85,6 +88,7 @@ int user_new(User **ret,
         r = unit_name_build("user-runtime-dir", lu, ".service", &u->runtime_dir_service);
         if (r < 0)
                 return r;
+#endif // 0
 
         r = hashmap_put(m->users, UID_TO_PTR(ur->uid), u);
         if (r < 0)
@@ -134,13 +138,13 @@ User *user_free(User *u) {
 
         sd_event_source_unref(u->timer_event_source);
 
-#if 0 /// elogind neither supports slice nor service jobs.
+#if 0 /// elogind does not support service jobs.
         u->service_job = mfree(u->service_job);
-#endif // 0
 
         u->service = mfree(u->service);
         u->runtime_dir_service = mfree(u->runtime_dir_service);
         u->slice = mfree(u->slice);
+#endif // 0
         u->runtime_path = mfree(u->runtime_path);
         u->state_file = mfree(u->state_file);
 
@@ -180,7 +184,7 @@ static int user_save_internal(User *u) {
         if (u->runtime_path)
                 fprintf(f, "RUNTIME=%s\n", u->runtime_path);
 
-#if 0 /// elogind neither supports service nor slice jobs
+#if 0 /// elogind does not support service jobs.
         if (u->service_job)
                 fprintf(f, "SERVICE_JOB=%s\n", u->service_job);
 
@@ -321,7 +325,7 @@ int user_load(User *u) {
         assert(u);
 
         r = parse_env_file(NULL, u->state_file,
-#if 0 /// elogind neither supports service jobs
+#if 0 /// elogind does not support service jobs.
                            "SERVICE_JOB",            &u->service_job,
 #endif // 0
                            "STOPPING",               &stopping,
@@ -375,6 +379,7 @@ static void user_start_service(User *u) {
 }
 #endif // 0
 
+#if 0 /// elogind does not support systemd slices
 static int update_slice_callback(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         _cleanup_(user_record_unrefp) UserRecord *ur = ASSERT_PTR(userdata);
         const sd_bus_error *e;
@@ -459,6 +464,7 @@ static int user_update_slice(User *u) {
 
         return 0;
 }
+#endif // 0
 
 int user_start(User *u) {
         assert(u);
@@ -485,8 +491,10 @@ int user_start(User *u) {
          * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
         user_save_internal(u);
 
+#if 0 /// elogind does not support systemd slices
         /* Set slice parameters */
         (void) user_update_slice(u);
+#endif // 0
 
 #if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */

@@ -27,11 +27,11 @@ struct User {
         char *state_file;
         char *runtime_path;
 
+#if 0 /// UNNEEDED by elogind
         char *slice;                     /* user-UID.slice */
         char *service;                   /* user@UID.service */
         char *runtime_dir_service;       /* user-runtime-dir@UID.service */
 
-#if 0 /// UNNEEDED by elogind
         char *service_job;
 #endif // 0
 
