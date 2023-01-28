@@ -486,8 +486,6 @@ _public_ int sd_journal_perror(const char *message) {
                 return sd_journal_print(LOG_ERR, "%s: %s", message, strerror(errno));
         else
                 return sd_journal_print(LOG_ERR, "%s", strerror(errno));
-
-        return 0;
 #endif // 0
 }
 
@@ -726,7 +724,5 @@ _public_ int sd_journal_perror_with_location(
                 return sd_journal_print(LOG_ERR, "%s:%s:%s:%s",
                                         strna(file), strna(line), strna(func),
                                         strerror(errno));
-
-        return 0;
 #endif // 0
 }

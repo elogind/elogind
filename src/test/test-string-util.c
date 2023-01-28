@@ -172,15 +172,9 @@ TEST(cellescape) {
         assert_se(streq(cellescape(buf, 1, "\020"), ""));
         assert_se(streq(cellescape(buf, 2, "\020"), "."));
         assert_se(streq(cellescape(buf, 3, "\020"), ".."));
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1 
         assert_se(streq(cellescape(buf, 4, "\020"), is_locale_utf8() ? "…" : "..."));
         assert_se(streq(cellescape(buf, 5, "\020"), "\\020"));
 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1 
         assert_se(streq(cellescape(buf, 5, "1234\020"), is_locale_utf8() ? "1…" : "1..."));
         assert_se(streq(cellescape(buf, 6, "1234\020"), is_locale_utf8() ? "12…" : "12..."));
         assert_se(streq(cellescape(buf, 7, "1234\020"), is_locale_utf8() ? "123…" : "123..."));
@@ -190,33 +184,15 @@ TEST(cellescape) {
         assert_se(streq(cellescape(buf, 1, "\t\n"), ""));
         assert_se(streq(cellescape(buf, 2, "\t\n"), "."));
         assert_se(streq(cellescape(buf, 3, "\t\n"), ".."));
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1 
         assert_se(streq(cellescape(buf, 4, "\t\n"), is_locale_utf8() ? "…" : "..."));
         assert_se(streq(cellescape(buf, 5, "\t\n"), "\\t\\n"));
 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1 
         assert_se(streq(cellescape(buf, 5, "1234\t\n"), is_locale_utf8() ? "1…" : "1..."));
         assert_se(streq(cellescape(buf, 6, "1234\t\n"), is_locale_utf8() ? "12…" : "12..."));
         assert_se(streq(cellescape(buf, 7, "1234\t\n"), is_locale_utf8() ? "123…" : "123..."));
         assert_se(streq(cellescape(buf, 8, "1234\t\n"), is_locale_utf8() ? "1234…" : "1234..."));
         assert_se(streq(cellescape(buf, 9, "1234\t\n"), "1234\\t\\n"));
 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1 
         assert_se(streq(cellescape(buf, 4, "x\t\020\n"), is_locale_utf8() ? "…" : "..."));
         assert_se(streq(cellescape(buf, 5, "x\t\020\n"), is_locale_utf8() ? "x…" : "x..."));
         assert_se(streq(cellescape(buf, 6, "x\t\020\n"), is_locale_utf8() ? "x…" : "x..."));

@@ -1019,9 +1019,9 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
                 return r;
 
 #if 1 /// We have to gc queue session and user in elogind, as no systemd manager will call back on us.
-        session_add_to_gc_queue(session);
         if (session->user)
                 user_add_to_gc_queue(session->user);
+        session_add_to_gc_queue(session);
 #endif // 1
         return sd_bus_reply_method_return(message, NULL);
 }
@@ -1519,6 +1519,7 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
         return sd_bus_reply_method_return(message, NULL);
 }
 #endif // 1
+
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -2386,11 +2387,7 @@ fail:
         return log_error_errno(r, "Failed to write information about scheduled shutdowns: %m");
 }
 
-#if 0 /// elogind must access this from elogind-dbus.c
 static void reset_scheduled_shutdown(Manager *m) {
-#else // 0
-void reset_scheduled_shutdown(Manager *m) {
-#endif // 0
         assert(m);
 
         m->scheduled_shutdown_timeout_source = sd_event_source_unref(m->scheduled_shutdown_timeout_source);
@@ -2585,17 +2582,17 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         (void) sd_bus_creds_get_tty(creds, &tty);
                 }
 
-#if 0 /// elogind wants to allow extra cancellation messages
                 _cleanup_free_ char *username = uid_to_name(uid);
 
                 log_struct(LOG_INFO,
-                           LOG_MESSAGE("System shutdown has been cancelled"),
-                           "ACTION=%s", handle_action_to_string(a->handle),
-                           "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_CANCELED_STR,
-                           username ? "OPERATOR=%s" : NULL, username);
+                                   LOG_MESSAGE("System shutdown has been cancelled"),
+                                   "ACTION=%s", handle_action_to_string(a->handle),
+                                   "MESSAGE_ID=" SD_MESSAGE_SHUTDOWN_CANCELED_STR,
+                                   username ? "OPERATOR=%s" : NULL, username);
 
+#if 0 /// elogind wants to allow extra cancellation messages
                 utmp_wall("System shutdown has been cancelled",
-                          username, tty, logind_wall_tty_filter, m);
+                        username, tty, logind_wall_tty_filter, m);
 #else // 0
                 r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
                              strempty(m->wall_message),
@@ -2605,7 +2602,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         return 0;
                 }
 
-                utmp_wall(l, uid_to_name(uid), tty, logind_wall_tty_filter, m);
+                utmp_wall(l, username, tty, logind_wall_tty_filter, m);
 #endif // 0
         }
 
@@ -3452,7 +3449,6 @@ static int method_set_wall_message(
         if (r < 0)
                 return r;
 
-#if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
         if (strlen(wall_message) > WALL_MESSAGE_MAX)
                 return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS,
                         "Wall message too long, maximum permitted length is %u characters.",
@@ -3464,6 +3460,7 @@ static int method_set_wall_message(
             m->enable_wall_messages == enable_wall_messages)
                 goto done;
 
+#if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-wall-message",
@@ -3484,9 +3481,7 @@ static int method_set_wall_message(
 
         m->enable_wall_messages = enable_wall_messages;
 
-#if 0 /// UNNEEDED by elogind
  done:
-#endif // 0
 
         return sd_bus_reply_method_return(message, NULL);
 }

@@ -179,8 +179,8 @@ bool bus_error_is_unknown_service(const sd_bus_error *error) {
                                       SD_BUS_ERROR_NAME_HAS_NO_OWNER,
                                       BUS_ERROR_NO_SUCH_UNIT);
 }
-#if 0 /// UNNEEDED by elogind
 
+#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
         int fd, r;
@@ -358,9 +358,7 @@ int bus_connect_transport_systemd(BusTransport transport, const char *host, bool
                 assert_not_reached();
         }
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 /**
  * bus_path_encode_unique() - encode unique object path
  * @b: bus connection or NULL
@@ -487,9 +485,6 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
         *ret_external = external;
         return 1;
 }
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 
 int bus_track_add_name_many(sd_bus_track *t, char **l) {
         int r = 0;
