@@ -295,19 +295,10 @@ int log_open(void) {
                                         return r;
                                 }
                         }
-#else // 0
-        if (log_target != LOG_TARGET_CONSOLE) {
-#endif // 0
-
-#if 0 /// Add syslog to elogind LOG_TARGET_AUTO set
-#else // 0
-                if ( IN_SET(log_target, LOG_TARGET_AUTO, LOG_TARGET_SYSLOG_OR_KMSG, LOG_TARGET_SYSLOG)) {
-#endif // 0
 
                         if (IN_SET(log_target,
                                    LOG_TARGET_SYSLOG_OR_KMSG,
                                    LOG_TARGET_SYSLOG)) {
-
                                 r = log_open_syslog();
                                 if (r >= 0) {
                                         log_close_journal();
@@ -330,6 +321,32 @@ int log_open(void) {
                         }
                 }
         }
+#else // 0
+        if (LOG_TARGET_CONSOLE != log_target) {
+                if (IN_SET(log_target, LOG_TARGET_AUTO,
+                                       LOG_TARGET_SYSLOG_OR_KMSG,
+                                       LOG_TARGET_SYSLOG)) {
+                        r = log_open_syslog();
+                        if (r >= 0) {
+                                log_close_journal();
+                                log_close_console();
+                                return r;
+                        }
+                }
+                if (IN_SET(log_target, LOG_TARGET_AUTO,
+                                       LOG_TARGET_JOURNAL_OR_KMSG,
+                                       LOG_TARGET_SYSLOG_OR_KMSG,
+                                       LOG_TARGET_KMSG)) {
+                        r = log_open_kmsg();
+                        if (r >= 0) {
+                                log_close_journal();
+                                log_close_syslog();
+                                log_close_console();
+                                return r;
+                        }
+                }
+        }
+#endif // 0
 
         log_close_journal();
         log_close_syslog();
