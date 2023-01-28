@@ -19,6 +19,8 @@ For more on systemd, see
 All of the blame should go to Andy Wingo, who extracted elogind
 from systemd.  
 All complaints should go to Sven Eden, who is maintaining elogind.
+But you could also [Buy Him A Coffee](https://www.buymeacoffee.com/EdenWorX)
+instead if you like elogind and want to say thanks.
 
 Build Status
 ------------
@@ -46,11 +48,7 @@ lists further possibilities to contact the maintainers.
 To chat about elogind:
   #elogind on freenode
 
-A forum subsection has been set up for elogind at  
-  https://forums.prydeworx.com  
-where you can register/login with your GitLab/GitHub account.
-
-Finally, bug reports:
+Bug reports should go to:
   https://github.com/elogind/elogind/issues
 
 Why bother?
@@ -214,8 +212,6 @@ can be changed with:
 `meson configure` without any arguments will print out available options and
 their current values.
 
-
-
 Useful commands:  
 ----------------
   * `ninja -v some/target`
@@ -229,3 +225,11 @@ Useful commands:
 
 A tarball can be created with:  
   `git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz`
+
+--------
+
+Many thanks to JetBrains and their
+"[Licenses for Open Source Development](https://jb.gg/OpenSourceSupport)"
+program, providing free licenses for
+
+![CLion by JetBrains](https://resources.jetbrains.com/storage/products/company/brand/logos/CLion.svg)

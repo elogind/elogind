@@ -723,7 +723,6 @@ endif
 
 #####################################################################
 #if 1 /// elogind shall be usable with non-glibc libc variations
-#####################################################################
 # Find out whether program_invocation[_short]_name is supported
 have_pisn = cc.links('''
   #define _GNU_SOURCE 1
@@ -736,7 +735,7 @@ have_pisn = cc.links('''
 ''', name : 'program_invocation[_short]_name test')
 conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
            description : 'program_invocation[_short]_name is provided by libc')
-
+#####################################################################
 #endif // 1
 
 version_tag = get_option('version-tag')
@@ -2209,10 +2208,9 @@ conf.set_quoted('UMOUNT_PATH',                      '/dev/null')
 conf.set_quoted('USER_ENV_GENERATOR_PATH',          '/dev/null')
 conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 conf.set_quoted('DEBUGTTY',                         '/dev/null')
-#####################################################################
 ############################################################
-
 #endif // 1
+
 if get_option('b_coverage')
         add_project_arguments('-include', 'src/basic/coverage.h', language : 'c')
 endif
