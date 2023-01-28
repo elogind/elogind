@@ -182,12 +182,6 @@ TEST(get_process_comm_escape) {
         test_get_process_comm_escape_one("foo", "foo");
         test_get_process_comm_escape_one("012345678901234", "012345678901234");
         test_get_process_comm_escape_one("0123456789012345", "012345678901234");
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1
         test_get_process_comm_escape_one("äöüß", "\\303\\244\\303\\266\\303\\274\\303\\237");
         test_get_process_comm_escape_one("xäöüß", "x\\303\\244\\303\\266\\303\\274\\303\\237");
         test_get_process_comm_escape_one("xxäöüß", "xx\\303\\244\\303\\266\\303\\274\\303\\237");

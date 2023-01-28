@@ -147,12 +147,7 @@ void bus_close_inotify_fd(sd_bus *b) {
         b->n_inotify_watches = 0;
 }
 
-#if 0 /// needed as non-static by elogind
 static void bus_reset_queues(sd_bus *b) {
-#else // 0
-void bus_reset_queues(sd_bus *b);
-void bus_reset_queues(sd_bus *b) {
-#endif // 0
         assert(b);
 
         while (b->rqueue_size > 0)

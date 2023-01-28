@@ -38,9 +38,6 @@
 
 #include <errno.h>
 
-/// defined in sd-bus.c
-void bus_reset_queues( sd_bus* b );
-
 #define CGROUPS_AGENT_RCVBUF_SIZE (8*1024*1024)
 #ifndef ELOGIND_PID_FILE
 #  define ELOGIND_PID_FILE "/run/elogind.pid"

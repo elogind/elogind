@@ -3500,7 +3500,7 @@ int manager_setup_cgroup(Manager *m) {
         else
                 // we have to create our own group
                 scope_path = strjoina(m->cgroup_root, "/elogind");
-        r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
+        (void) cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
 #endif // 0
         log_debug_elogind("Created control group \"%s\"", scope_path);
 
@@ -3685,7 +3685,6 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-
 int unit_get_memory_available(Unit *u, uint64_t *ret) {
         uint64_t unit_current, available = UINT64_MAX;
         CGroupContext *unit_context;

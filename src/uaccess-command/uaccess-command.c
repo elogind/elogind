@@ -26,16 +26,16 @@
 
 #include "sd-login.h"
 
-#include "device-util.h"
+//#include "device-util.h"
 #include "devnode-acl.h"
 #include "login-util.h"
 #include "log.h"
 //#include "udev-builtin.h"
 /// Additional includes needed by elogind
 #include "musl_missing.h"
-#include "sd-device.h"
+//#include "sd-device.h"
 #include <string.h>
-#include <sys/stat.h>
+//#include <sys/stat.h>
 #include <sys/types.h>
 
 /*
@@ -55,7 +55,7 @@ static int dev_uaccess(const char *path, const char *seat) {
         umask(0022);
 
 #if 0 /// If elogind is not running, yet, dbus will start it when it is needed.
-        /* don't muck around with ACLs when the system is not running elogind */
+        /* don't muck around with ACLs when the system is not running systemd-logind */
         if (!logind_running())
                 return 0;
 #endif // 0

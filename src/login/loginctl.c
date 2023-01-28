@@ -1265,6 +1265,7 @@ static int reload_config(int argc, char *argv[], void *userdata) {
         return 0;
 }
 #endif // 1
+
 static int help(int argc, char *argv[], void *userdata) {
         _cleanup_free_ char *link = NULL;
         int r;
