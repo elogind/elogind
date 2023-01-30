@@ -452,8 +452,6 @@ shared_sources = files(
         'user-record-nss.h',
         'user-record.c',
         'user-record.h',
-        'userdb-dropin.c',
-        'userdb-dropin.h',
         'userdb.c',
         'userdb.h',
         'utmp-wtmp.h',

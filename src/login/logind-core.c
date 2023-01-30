@@ -1,35 +1,35 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <fcntl.h>
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 #include <sys/types.h>
-#include <linux/vt.h>
+//#include <linux/vt.h>
 
 #include "sd-device.h"
 
 #include "alloc-util.h"
-#include "bus-error.h"
-#include "bus-util.h"
+//#include "bus-error.h"
+//#include "bus-util.h"
 #include "cgroup-util.h"
 #include "conf-parser.h"
 #include "device-util.h"
 #include "efi-loader.h"
 #include "errno-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "limits-util.h"
 #include "logind.h"
-#include "parse-util.h"
+//#include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "stdio-util.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 #include "udev-util.h"
 #include "user-util.h"
 #include "userdb.h"
 /// Additional includes needed by elogind
-#include "elogind.h"
-#include "sleep-config.h"
+//#include "elogind.h"
+//#include "sleep-config.h"
 #include "utmp-wtmp.h"
 
 void manager_reset_config(Manager *m) {
