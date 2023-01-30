@@ -6,7 +6,7 @@
 
 #include "alloc-util.h"
 #include "bus-error.h"
-#include "bus-util.h"
+//#include "bus-util.h"
 #include "conf-parser.h"
 #include "format-util.h"
 #include "logind-action.h"
@@ -20,8 +20,6 @@
 
 /// Additional includes needed by elogind
 #include "fd-util.h"
-#include "fileio.h"
-#include "strv.h"
 
 static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_POWEROFF] = {
