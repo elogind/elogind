@@ -17,7 +17,7 @@
 #include "user-util.h"
 //#include "userdb-dropin.h"
 #include "userdb.h"
-#include "varlink.h"
+//#include "varlink.h"
 
 #if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_func, trivial_compare_func, Varlink, varlink_unref);
@@ -46,7 +46,9 @@ struct UserDBIterator {
         size_t current_dropin;
         int error;
         unsigned n_found;
+#if 0 /// Nowhere needed in elogind
         sd_event *event;
+#endif // 0
         UserRecord *found_user;                   /* when .what == LOOKUP_USER */
 #if 0 /// Nowhere needed in elogind
         GroupRecord *found_group;                 /* when .what == LOOKUP_GROUP */
@@ -101,7 +103,9 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
                 assert_not_reached();
         }
 
+#if 0 /// Nowhere needed in elogind
         sd_event_unref(iterator->event);
+#endif // 0
 
         if (iterator->nss_elogind_blocked)
                 assert_se(userdb_block_nss_elogind(false) >= 0);
