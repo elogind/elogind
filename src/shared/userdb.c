@@ -2,24 +2,26 @@
 
 #include <sys/auxv.h>
 
-#include "conf-files.h"
-#include "dirent-util.h"
+//#include "conf-files.h"
+//#include "dirent-util.h"
 #include "dlfcn-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "format-util.h"
-#include "missing_syscall.h"
-#include "parse-util.h"
+//#include "format-util.h"
+//#include "missing_syscall.h"
+//#include "parse-util.h"
 #include "set.h"
-#include "socket-util.h"
+//#include "socket-util.h"
 #include "strv.h"
 #include "user-record-nss.h"
 #include "user-util.h"
-#include "userdb-dropin.h"
+//#include "userdb-dropin.h"
 #include "userdb.h"
 #include "varlink.h"
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_func, trivial_compare_func, Varlink, varlink_unref);
+#endif // 0
 
 typedef enum LookupWhat {
         LOOKUP_USER,
@@ -148,6 +150,7 @@ struct user_group_data {
         bool incomplete;
 };
 
+#if 0 /// UNNEEDED by elogind
 static void user_group_data_release(struct user_group_data *d) {
         json_variant_unref(d->record);
 }
@@ -240,7 +243,6 @@ static int userdb_on_query_reply(
                 goto finish;
         }
 
-#if 0 /// Nowhere needed in elogind
         case LOOKUP_GROUP: {
                 _cleanup_(user_group_data_release) struct user_group_data group_data = {};
 
@@ -336,7 +338,6 @@ static int userdb_on_query_reply(
                 r = 0;
                 goto finish;
         }
-#endif // 0
 
         default:
                 assert_not_reached();
@@ -401,7 +402,9 @@ static int userdb_connect(
                 return log_debug_errno(r, "Failed to add varlink connection to set: %m");
         return r;
 }
+#endif // 0
 
+#if 0 /// Nothing in elogind ever sets up userdb, so this will always return -ESRCH
 static int userdb_start_query(
                 UserDBIterator *iterator,
                 const char *method,
@@ -441,11 +444,11 @@ static int userdb_start_query(
 
         /* First, let's talk to the multiplexer, if we can */
         if ((flags & (USERDB_AVOID_MULTIPLEXER|USERDB_EXCLUDE_DYNAMIC_USER|USERDB_EXCLUDE_NSS|USERDB_EXCLUDE_DROPIN|USERDB_DONT_SYNTHESIZE)) == 0 &&
-            !strv_contains(except, "io.elogind.Multiplexer") &&
-            (!only || strv_contains(only, "io.elogind.Multiplexer"))) {
+            !strv_contains(except, "io.systemd.Multiplexer") &&
+            (!only || strv_contains(only, "io.systemd.Multiplexer"))) {
                 _cleanup_(json_variant_unrefp) JsonVariant *patched_query = json_variant_ref(query);
 
-                r = json_variant_set_field_string(&patched_query, "service", "io.elogind.Multiplexer");
+                r = json_variant_set_field_string(&patched_query, "service", "io.systemd.Multiplexer");
                 if (r < 0)
                         return log_debug_errno(r, "Unable to set service JSON field: %m");
 
@@ -470,23 +473,23 @@ static int userdb_start_query(
                 _cleanup_free_ char *p = NULL;
                 bool is_nss, is_dropin;
 
-                if (streq(de->d_name, "io.elogind.Multiplexer")) /* We already tried this above, don't try this again */
+                if (streq(de->d_name, "io.systemd.Multiplexer")) /* We already tried this above, don't try this again */
                         continue;
 
                 if (FLAGS_SET(flags, USERDB_EXCLUDE_DYNAMIC_USER) &&
-                    streq(de->d_name, "io.elogind.DynamicUser"))
+                    streq(de->d_name, "io.systemd.DynamicUser"))
                         continue;
 
                 /* Avoid NSS is this is requested. Note that we also skip NSS when we were asked to skip the
                  * multiplexer, since in that case it's safer to do NSS in the client side emulation below
                  * (and when we run as part of elogind-userdbd.service we don't want to talk to ourselves
                  * anyway). */
-                is_nss = streq(de->d_name, "io.elogind.NameServiceSwitch");
+                is_nss = streq(de->d_name, "io.systemd.NameServiceSwitch");
                 if ((flags & (USERDB_EXCLUDE_NSS|USERDB_AVOID_MULTIPLEXER)) && is_nss)
                         continue;
 
                 /* Similar for the drop-in service */
-                is_dropin = streq(de->d_name, "io.elogind.DropIn");
+                is_dropin = streq(de->d_name, "io.systemd.DropIn");
                 if ((flags & (USERDB_EXCLUDE_DROPIN|USERDB_AVOID_MULTIPLEXER)) && is_dropin)
                         continue;
 
@@ -522,17 +525,15 @@ static int userdb_start_query(
         /* We connected to some services, in this case, ignore the ones we failed on */
         return 0;
 }
+#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 static int userdb_process(
                 UserDBIterator *iterator,
-#if 0 /// Never needed in elogind
                 UserRecord **ret_user_record,
                 GroupRecord **ret_group_record,
                 char **ret_user_name,
                 char **ret_group_name) {
-#else // 0
-                UserRecord **ret_user_record) {
-#endif // 0
 
         int r;
 
@@ -545,19 +546,16 @@ static int userdb_process(
                         else
                                 iterator->found_user = user_record_unref(iterator->found_user);
 
-#if 0 /// Never needed in elogind
                         if (ret_group_record)
                                 *ret_group_record = NULL;
                         if (ret_user_name)
                                 *ret_user_name = NULL;
                         if (ret_group_name)
                                 *ret_group_name = NULL;
-#endif // 0
 
                         return 0;
                 }
 
-#if 0 /// Never happens in elogind
                 if (iterator->what == LOOKUP_GROUP && iterator->found_group) {
                         if (ret_group_record)
                                 *ret_group_record = TAKE_PTR(iterator->found_group);
@@ -592,7 +590,6 @@ static int userdb_process(
 
                         return 0;
                 }
-#endif // 0
 
                 if (set_isempty(iterator->links)) {
                         if (iterator->error == 0)
@@ -609,6 +606,7 @@ static int userdb_process(
                         return r;
         }
 }
+#endif // 0
 
 static int synthetic_root_user_build(UserRecord **ret) {
         return user_record_build(
@@ -648,13 +646,10 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
+#if 0 /// Nothing in elogind sets up userdb, so r is always -ESRCH
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
-#if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
-#else // 0
-                r = userdb_process(iterator, ret);
-#endif // 0
                 if (r >= 0)
                         return r;
         }
@@ -664,6 +659,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                 if (r >= 0)
                         return r;
         }
+#endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
@@ -705,13 +701,10 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
+#if 0 /// Nothing in elogind sets up userdb, so r is always -ESRCH
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
-#if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
-#else // 0
-                r = userdb_process(iterator, ret);
-#endif // 0
                 if (r >= 0)
                         return r;
         }
@@ -721,6 +714,7 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
                 if (r >= 0)
                         return r;
         }
+#endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 r = userdb_iterator_block_nss_elogind(iterator);

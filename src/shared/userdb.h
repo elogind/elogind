@@ -22,8 +22,8 @@ typedef enum UserDBFlags {
 
         /* Modifications */
         USERDB_SUPPRESS_SHADOW      = 1 << 3,  /* don't do client-side shadow calls (server side might happen though) */
-        USERDB_EXCLUDE_DYNAMIC_USER = 1 << 4,  /* exclude looking up in io.elogind.DynamicUser */
-        USERDB_AVOID_MULTIPLEXER    = 1 << 5,  /* exclude looking up via io.elogind.Multiplexer */
+        USERDB_EXCLUDE_DYNAMIC_USER = 1 << 4,  /* exclude looking up in io.systemd.DynamicUser */
+        USERDB_AVOID_MULTIPLEXER    = 1 << 5,  /* exclude looking up via io.systemd.Multiplexer */
         USERDB_DONT_SYNTHESIZE      = 1 << 6,  /* don't synthesize root/nobody */
 
         /* Combinations */
@@ -55,6 +55,6 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
 int membershipdb_all(UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_iterator_get(UserDBIterator *iterator, char **user, char **group);
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret);
-
 #endif // 0
+
 int userdb_block_nss_elogind(int b);

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <endian.h>
+//#include <endian.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -8,8 +8,8 @@
 #include <security/pam_ext.h>
 #include <security/pam_misc.h>
 #include <security/pam_modules.h>
-#include <security/pam_modutil.h>
-#include <sys/file.h>
+//#include <security/pam_modutil.h>
+//#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
 #include <sys/types.h>
@@ -21,11 +21,11 @@
 #include "bus-error.h"
 #include "bus-internal.h"
 #include "bus-locator.h"
-#include "cgroup-setup.h"
+//#include "cgroup-setup.h"
 #include "devnum-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "format-util.h"
 #include "fs-util.h"
 #include "hostname-util.h"

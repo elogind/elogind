@@ -4,7 +4,7 @@
 #include "def.h"
 //#include "group-record.h"
 #include "user-record.h"
-#include "userdb.h"
+//#include "userdb.h"
 
 /* This could be put together with CONF_PATHS_NULSTR, with the exception of the /run/host/ part in the
  * middle, which we use here, but not otherwise. */
