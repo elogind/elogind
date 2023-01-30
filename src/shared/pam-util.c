@@ -73,7 +73,7 @@ int pam_acquire_bus_connection(pam_handle_t *handle, sd_bus **ret) {
         if (r < 0)
                 return pam_syslog_errno(handle, LOG_ERR, r, "Failed to connect to system bus: %m");
 
-        r = pam_set_data(handle, "elogind-system-bus", bus, cleanup_system_bus);
+        r = pam_set_data(handle, "systemd-system-bus", bus, cleanup_system_bus);
         if (r != PAM_SUCCESS)
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to set PAM bus data: @PAMERR@");
 
@@ -86,7 +86,7 @@ int pam_acquire_bus_connection(pam_handle_t *handle, sd_bus **ret) {
 int pam_release_bus_connection(pam_handle_t *handle) {
         int r;
 
-        r = pam_set_data(handle, "elogind-system-bus", NULL, NULL);
+        r = pam_set_data(handle, "systemd-system-bus", NULL, NULL);
         if (r != PAM_SUCCESS)
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to release PAM user record data: @PAMERR@");
 

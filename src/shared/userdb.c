@@ -166,12 +166,12 @@ static int userdb_on_query_reply(
                 log_debug("Got lookup error: %s", error_id);
 
                 if (STR_IN_SET(error_id,
-                               "io.elogind.UserDatabase.NoRecordFound",
-                               "io.elogind.UserDatabase.ConflictingRecordFound"))
+                               "io.systemd.UserDatabase.NoRecordFound",
+                               "io.systemd.UserDatabase.ConflictingRecordFound"))
                         r = -ESRCH;
-                else if (streq(error_id, "io.elogind.UserDatabase.ServiceNotAvailable"))
+                else if (streq(error_id, "io.systemd.UserDatabase.ServiceNotAvailable"))
                         r = -EHOSTDOWN;
-                else if (streq(error_id, "io.elogind.UserDatabase.EnumerationNotSupported"))
+                else if (streq(error_id, "io.systemd.UserDatabase.EnumerationNotSupported"))
                         r = -EOPNOTSUPP;
                 else if (streq(error_id, VARLINK_ERROR_TIMEOUT))
                         r = -ETIMEDOUT;
@@ -648,7 +648,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetUserRecord", false, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
 #if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
@@ -705,7 +705,7 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-        r = userdb_start_query(iterator, "io.elogind.UserDatabase.GetUserRecord", false, query, flags);
+        r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
 #if 0 /// The NULL parameters are not needed with elogind
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);

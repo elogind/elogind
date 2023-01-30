@@ -418,11 +418,10 @@ int manager_get_session_by_pid(Manager *m, pid_t pid, Session **ret) {
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
-#if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
-#else // 0
+#if 1 /// elogind has its own session system
         Session *s;
-#endif // 0
+#endif // 1
         User *u = NULL;
         int r;
 
@@ -431,16 +430,18 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (!pid_is_valid(pid))
                 return -EINVAL;
 
-#if 0 /// elogind does not support systemd units, but its own session system
         r = cg_pid_get_slice(pid, &unit);
         if (r >= 0)
                 u = hashmap_get(m->user_units, unit);
-#else // 0
-        // If a session was found, ignore it if it is already closing.
-        r = manager_get_session_by_pid (m, pid, &s);
-        if ( (r > 0) && (SESSION_CLOSING != session_get_state(s)) )
-                u = s->user;
-#endif // 0
+
+#if 1 /// elogind also has its own session system
+        if ((r < 0) || (NULL == u)) {
+                r = manager_get_session_by_pid(m, pid, &s);
+                // If a session was found, ignore it if it is already closing.
+                if ((r > 0) && (SESSION_CLOSING != session_get_state(s)))
+                        u = s->user;
+        }
+#endif // 1
 
         if (ret)
                 *ret = u;

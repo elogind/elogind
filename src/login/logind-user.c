@@ -27,13 +27,13 @@
 #include "percent-util.h"
 #include "rm-rf.h"
 #include "serialize.h"
-//#include "special.h"
+#include "special.h"
 #include "stdio-util.h"
 #include "string-table.h"
 //#include "strv.h"
 #include "tmpfile-util.h"
 #include "uid-alloc-range.h"
-//#include "unit-name.h"
+#include "unit-name.h"
 #include "user-util.h"
 //#include "util.h"
 /// Additional includes needed by elogind
@@ -44,9 +44,7 @@ int user_new(User **ret,
              UserRecord *ur) {
 
         _cleanup_(user_freep) User *u = NULL;
-#if 0 /// elogind does not support systemd units
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
-#endif // 0
         int r;
 
         assert(ret);
@@ -75,7 +73,6 @@ int user_new(User **ret,
         if (asprintf(&u->runtime_path, "/run/user/" UID_FMT, ur->uid) < 0)
                 return -ENOMEM;
 
-#if 0 /// elogind does not support systemd units
         xsprintf(lu, UID_FMT, ur->uid);
         r = slice_build_subslice(SPECIAL_USER_SLICE, lu, &u->slice);
         if (r < 0)
@@ -85,6 +82,7 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not need the systemd runtime_dir_service
         r = unit_name_build("user-runtime-dir", lu, ".service", &u->runtime_dir_service);
         if (r < 0)
                 return r;
@@ -94,7 +92,6 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd units
         r = hashmap_put(m->user_units, u->slice, u);
         if (r < 0)
                 return r;
@@ -103,6 +100,7 @@ int user_new(User **ret,
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not need the systemd runtime_dir_service
         r = hashmap_put(m->user_units, u->runtime_dir_service, u);
         if (r < 0)
                 return r;
@@ -123,28 +121,30 @@ User *user_free(User *u) {
         while (u->sessions)
                 session_free(u->sessions);
 
-#if 0 /// elogind does not support systemd units
         if (u->service)
                 hashmap_remove_value(u->manager->user_units, u->service, u);
 
+#if 0 /// elogind does not need the systemd runtime_dir_service
         if (u->runtime_dir_service)
                 hashmap_remove_value(u->manager->user_units, u->runtime_dir_service, u);
+#endif // 0
 
         if (u->slice)
                 hashmap_remove_value(u->manager->user_units, u->slice, u);
-#endif // 0
 
         hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
         sd_event_source_unref(u->timer_event_source);
 
-#if 0 /// elogind does not support service jobs.
+#if 0 /// elogind does not support services and service jobs.
         u->service_job = mfree(u->service_job);
+#endif // 0
 
         u->service = mfree(u->service);
+#if 0 /// elogind does not need the systemd runtime_dir_service
         u->runtime_dir_service = mfree(u->runtime_dir_service);
-        u->slice = mfree(u->slice);
 #endif // 0
+        u->slice = mfree(u->slice);
         u->runtime_path = mfree(u->runtime_path);
         u->state_file = mfree(u->state_file);
 

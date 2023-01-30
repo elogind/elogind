@@ -92,10 +92,10 @@ struct Manager {
         unsigned long session_counter;
         unsigned long inhibit_counter;
 
-#if 0 /// elogind does not support units
+#if 0 /// elogind does not support session units
         Hashmap *session_units;
-        Hashmap *user_units;
 #endif // 0
+        Hashmap *user_units;
 
         usec_t inhibit_delay_max;
         usec_t user_stop_delay;
