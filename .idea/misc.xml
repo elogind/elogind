@@ -16,7 +16,6 @@
       <MakefileProjectSettings>
         <option name="buildOptions" value="-j 1" />
         <option name="buildTarget" value="justprint" />
-        <option name="cleanTarget" value="justprint" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>

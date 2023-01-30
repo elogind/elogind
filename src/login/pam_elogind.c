@@ -969,7 +969,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                         return r;
         }
 
-        r = pam_set_data(handle, "systemd.existing", INT_TO_PTR(!!existing), NULL);
+        r = pam_set_data(handle, "elogind.existing", INT_TO_PTR(!!existing), NULL);
         if (r != PAM_SUCCESS)
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to install existing flag: @PAMERR@");
 
@@ -978,7 +978,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (fd < 0)
                         return pam_syslog_errno(handle, LOG_ERR, errno, "Failed to dup session fd: %m");
 
-                r = pam_set_data(handle, "elogind.session-fd", FD_TO_PTR(fd), NULL);
+                r = pam_set_data(handle, "systemd.session-fd", FD_TO_PTR(fd), NULL);
                 if (r != PAM_SUCCESS)
                         return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to install session fd: @PAMERR@");
                 TAKE_FD(fd);

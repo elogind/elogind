@@ -37,10 +37,12 @@ void bus_creds_done(sd_bus_creds *c) {
          * something else */
 
         free(c->session);
+#if 0 /// elogind does not support systemd units, and "slices" are just the elogind sessions
         free(c->unit);
         free(c->user_unit);
         free(c->slice);
         free(c->user_slice);
+#endif // 0
         free(c->unescaped_description);
         free(c->supplementary_gids);
         free(c->tty);

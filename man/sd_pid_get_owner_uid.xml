@@ -19,17 +19,21 @@
   <refnamediv>
     <refname>sd_pid_get_owner_uid</refname>
     <refname>sd_pid_get_session</refname>
+    <!-- 0 // elogind does not support systemd units
     <refname>sd_pid_get_user_unit</refname>
     <refname>sd_pid_get_unit</refname>
     <refname>sd_pid_get_machine_name</refname>
+    // 0 -->
     <refname>sd_pid_get_slice</refname>
     <refname>sd_pid_get_user_slice</refname>
     <refname>sd_pid_get_cgroup</refname>
     <refname>sd_peer_get_owner_uid</refname>
     <refname>sd_peer_get_session</refname>
+    <!-- 0 // elogind does not support systemd units
     <refname>sd_peer_get_user_unit</refname>
     <refname>sd_peer_get_unit</refname>
     <refname>sd_peer_get_machine_name</refname>
+    // 0 -->
     <refname>sd_peer_get_slice</refname>
     <refname>sd_peer_get_user_slice</refname>
     <refname>sd_peer_get_cgroup</refname>
@@ -54,6 +58,7 @@
         <paramdef>char **<parameter>session</parameter></paramdef>
       </funcprototype>
 
+      <!-- 0 // elogind does not support systemd units
       <funcprototype>
         <funcdef>int <function>sd_pid_get_user_unit</function></funcdef>
         <paramdef>pid_t <parameter>pid</parameter></paramdef>
@@ -71,6 +76,7 @@
         <paramdef>pid_t <parameter>pid</parameter></paramdef>
         <paramdef>char **<parameter>name</parameter></paramdef>
       </funcprototype>
+      // 0 -->
 
       <funcprototype>
         <funcdef>int <function>sd_pid_get_slice</function></funcdef>
@@ -102,6 +108,7 @@
         <paramdef>char **<parameter>session</parameter></paramdef>
       </funcprototype>
 
+      <!-- 0 // elogind does not support systemd unit
       <funcprototype>
         <funcdef>int <function>sd_peer_get_user_unit</function></funcdef>
         <paramdef>int <parameter>fd</parameter></paramdef>
@@ -119,6 +126,7 @@
         <paramdef>int <parameter>fd</parameter></paramdef>
         <paramdef>char **<parameter>name</parameter></paramdef>
       </funcprototype>
+      // 0 -->
 
       <funcprototype>
         <funcdef>int <function>sd_peer_get_slice</function></funcdef>
@@ -173,7 +181,7 @@
     project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     call after use.</para>
 
-    <!-- 0 // elogind does not support systemd units and slices
+    <!-- 0 // elogind does not support systemd units, and slices are elogind sessions
     <para><function>sd_pid_get_user_unit()</function> may be used to
     determine the systemd user unit (i.e. user service or scope unit)
     identifier of a process identified by the specified PID. The
@@ -235,9 +243,11 @@
 
     <para>The <function>sd_peer_get_owner_uid()</function>,
     <function>sd_peer_get_session()</function>,
+    <!-- 0 // elogind does not support systemd units
     <function>sd_peer_get_user_unit()</function>,
     <function>sd_peer_get_unit()</function>,
     <function>sd_peer_get_machine_name()</function>,
+    // 0 -->
     <function>sd_peer_get_slice()</function>,
     <function>sd_peer_get_user_slice()</function> and
     <function>sd_peer_get_cgroup()</function> calls operate similarly to their PID counterparts, but accept a

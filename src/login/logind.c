@@ -73,13 +73,13 @@ static int manager_new(Manager **ret) {
         m->inhibitors = hashmap_new(&string_hash_ops);
         m->buttons = hashmap_new(&string_hash_ops);
 
-#if 0 /// elogind does not support units
         m->user_units = hashmap_new(&string_hash_ops);
+#if 0 /// elogind does not support session units
         m->session_units = hashmap_new(&string_hash_ops);
 
         if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
 #else // 0
-        if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons)
+        if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons || !m->user_units)
 #endif // 0
                 return -ENOMEM;
 
@@ -150,8 +150,8 @@ static Manager* manager_unref(Manager *m) {
         hashmap_free(m->buttons);
         hashmap_free(m->brightness_writers);
 
-#if 0 /// elogind does not support systemd units.
         hashmap_free(m->user_units);
+#if 0 /// elogind does not support systemd session units.
         hashmap_free(m->session_units);
 #endif // 0
 

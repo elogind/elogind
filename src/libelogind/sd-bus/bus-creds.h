@@ -38,10 +38,12 @@ struct sd_bus_creds {
 
         char *cgroup;
         char *session;
+#if 0 /// elogind does not support systemd units, and slices are just elogind sessions
         char *unit;
         char *user_unit;
         char *slice;
         char *user_slice;
+#endif // 0
 
         char *tty;
 
