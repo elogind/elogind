@@ -124,7 +124,4 @@ TEST(dump_special_glyphs) {
         dump_glyph(SPECIAL_GLYPH_SPARKLES);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 DEFINE_TEST_MAIN(LOG_INFO);

@@ -245,9 +245,4 @@ TEST(system_tasks_max_scale) {
 }
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 DEFINE_TEST_MAIN(LOG_INFO);

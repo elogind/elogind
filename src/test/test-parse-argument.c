@@ -52,6 +52,4 @@ TEST(parse_signal_argument) {
         assert_se(signal == SIGABRT);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_TEST_MAIN(LOG_INFO);

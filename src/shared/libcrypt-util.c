@@ -15,18 +15,18 @@
 #  include <unistd.h>
 #endif
 
-#include <errno.h>
-#include <stdlib.h>
+//#include <errno.h>
+//#include <stdlib.h>
 
-#include "alloc-util.h"
-#include "errno-util.h"
+//#include "alloc-util.h"
+//#include "errno-util.h"
 #include "libcrypt-util.h"
 #include "log.h"
 #include "macro.h"
-#include "memory-util.h"
-#include "missing_stdlib.h"
+//#include "memory-util.h"
+//#include "missing_stdlib.h"
 #include "random-util.h"
-#include "string-util.h"
+//#include "string-util.h"
 #include "strv.h"
 
 #if 0 /// UNNEEDED by elogind

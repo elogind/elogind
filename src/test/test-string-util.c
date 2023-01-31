@@ -1183,10 +1183,4 @@ TEST(streq_skip_trailing_chars) {
         assert_se(!streq_skip_trailing_chars("", "f", NULL));
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// This is not used anywhere in elogind and thus masked.
-#endif // 0
 DEFINE_TEST_MAIN(LOG_DEBUG);

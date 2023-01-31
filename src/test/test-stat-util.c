@@ -149,13 +149,7 @@ TEST(fd_is_ns) {
         assert_se((fd = open("/proc/self/ns/net", O_CLOEXEC|O_RDONLY)) >= 0);
         assert_se(IN_SET(fd_is_ns(fd, CLONE_NEWNET), 1, -EUCLEAN));
 }
-#endif // 0
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 TEST(dir_is_empty) {
         _cleanup_(rm_rf_physical_and_freep) char *empty_dir = NULL;
         _cleanup_free_ char *j = NULL, *jj = NULL, *jjj = NULL;

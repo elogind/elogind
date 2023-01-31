@@ -1006,9 +1006,6 @@ TEST(string_strv_hashmap) {
 }
 #endif // 0
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 /* Signal to test-hashmap.c that tests from this compilation unit were run. */
 extern int n_extern_tests_run;
 TEST(ensure_extern_hashmap_tests) {
