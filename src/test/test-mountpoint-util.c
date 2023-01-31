@@ -335,7 +335,6 @@ static int intro(void) {
                 if (!ERRNO_IS_PRIVILEGE(errno))
                         return log_error_errno(errno, "Failed to detach mount namespace: %m");
 
-/// elogind empty mask removed (UNNEEDED by elogind)
                 log_notice("Lacking privilege to create separate mount namespace, proceeding in originating mount namespace.");
         } else
                 assert_se(mount(NULL, "/", NULL, MS_PRIVATE | MS_REC, NULL) >= 0);

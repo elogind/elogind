@@ -401,7 +401,6 @@ char *path_simplify(char *path) {
         return path;
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
         assert(path);
         assert(prefix);

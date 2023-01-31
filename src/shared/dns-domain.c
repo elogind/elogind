@@ -7,9 +7,9 @@
 
 #include "alloc-util.h"
 #include "dns-domain.h"
-#include "glyph-util.h"
+//#include "glyph-util.h"
 #include "hashmap.h"
-#include "hexdecoct.h"
+//#include "hexdecoct.h"
 #include "hostname-util.h"
 //#include "idn-util.h"
 //#include "in-addr-util.h"

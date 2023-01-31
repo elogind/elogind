@@ -3,14 +3,14 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "dirent-util.h"
+//#include "dirent-util.h"
 #include "efi-api.h"
 #include "efivars.h"
-#include "fd-util.h"
-#include "sort-util.h"
+//#include "fd-util.h"
+//#include "sort-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
-#include "utf8.h"
+//#include "utf8.h"
 
 #if ENABLE_EFI
 

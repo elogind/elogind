@@ -409,7 +409,6 @@ char* strv_join_full(char * const *l, const char *separator, const char *prefix,
         return r;
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int strv_push_with_size(char ***l, size_t *n, char *value) {
         /* n is a pointer to a variable to store the size of l.
          * If not given (i.e. n is NULL or *n is SIZE_MAX), size will be calculated using strv_length().

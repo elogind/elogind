@@ -255,9 +255,6 @@ static int intro(void) {
         if (access("/proc/cmdline", R_OK) < 0 && ERRNO_IS_PRIVILEGE(errno))
                 return log_tests_skipped("can't read /proc/cmdline");
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-/// elogind empty mask removed (UNNEEDED by elogind)
-
         return EXIT_SUCCESS;
 }
 

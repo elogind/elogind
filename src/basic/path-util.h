@@ -90,8 +90,6 @@ char* path_extend_internal(char **x, ...);
 
 char* path_simplify(char *path);
 
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 static inline bool path_equal_ptr(const char *a, const char *b) {
         return !!a == !!b && (!a || path_equal(a, b));
 }
