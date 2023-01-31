@@ -4,7 +4,7 @@
 
 //#include "conf-files.h"
 //#include "dirent-util.h"
-#include "dlfcn-util.h"
+//#include "dlfcn-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
 //#include "format-util.h"
@@ -41,7 +41,9 @@ struct UserDBIterator {
         bool dropin_covered:1;
         bool synthesize_root:1;
         bool synthesize_nobody:1;
-        bool nss_elogind_blocked:1;
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
+        bool nss_systemd_blocked:1;
+#endif // 0
         char **dropins;
         size_t current_dropin;
         int error;
@@ -105,10 +107,10 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
 
 #if 0 /// Nowhere needed in elogind
         sd_event_unref(iterator->event);
-#endif // 0
 
-        if (iterator->nss_elogind_blocked)
-                assert_se(userdb_block_nss_elogind(false) >= 0);
+        if (iterator->nss_systemd_blocked)
+                assert_se(userdb_block_nss_systemd(false) >= 0);
+#endif // 0
 
         return mfree(iterator);
 }
@@ -133,21 +135,23 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         return i;
 }
 
-static int userdb_iterator_block_nss_elogind(UserDBIterator *iterator) {
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
+static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
         int r;
 
         assert(iterator);
 
-        if (iterator->nss_elogind_blocked)
+        if (iterator->nss_systemd_blocked)
                 return 0;
 
-        r = userdb_block_nss_elogind(true);
+        r = userdb_block_nss_systemd(true);
         if (r < 0)
                 return r;
 
-        iterator->nss_elogind_blocked = true;
+        iterator->nss_systemd_blocked = true;
         return 1;
 }
+#endif // 0
 
 struct user_group_data {
         JsonVariant *record;
@@ -668,13 +672,17 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
 
-                r = userdb_iterator_block_nss_elogind(iterator);
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
+                r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
+#endif // 0
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 }
+#endif // 0
         }
 
         if (!FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE)) {
@@ -721,13 +729,17 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
 #endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
-                r = userdb_iterator_block_nss_elogind(iterator);
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
+                r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
+#endif // 0
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 }
+#endif // 0
         }
 
         if (!FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE)) {
@@ -1470,26 +1482,26 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         *ret = TAKE_PTR(members);
         return 0;
 }
-#endif // 0
 
-int userdb_block_nss_elogind(int b) {
+int userdb_block_nss_systemd(int b) {
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
-        /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
+        /* Note that we might be called from libnss_systemd.so.2 itself, but that should be fine, really. */
 
-        dl = dlopen(ROOTLIBDIR "/libnss_elogind.so.2", RTLD_LAZY|RTLD_NODELETE);
+        dl = dlopen(ROOTLIBDIR "/libnss_systemd.so.2", RTLD_LAZY|RTLD_NODELETE);
         if (!dl) {
                 /* If the file isn't installed, don't complain loudly */
-                log_debug("Failed to dlopen(libnss_elogind.so.2), ignoring: %s", dlerror());
+                log_debug("Failed to dlopen(libnss_systemd.so.2), ignoring: %s", dlerror());
                 return 0;
         }
 
-        call = (int (*)(bool b)) dlsym(dl, "_nss_elogind_block");
+        call = (int (*)(bool b)) dlsym(dl, "_nss_systemd_block");
         if (!call)
                 /* If the file is installed but lacks the symbol we expect, things are weird, let's complain */
                 return log_debug_errno(SYNTHETIC_ERRNO(ELIBBAD),
-                                       "Unable to find symbol _nss_elogind_block in libnss_elogind.so.2: %s", dlerror());
+                                       "Unable to find symbol _nss_systemd_block in libnss_systemd.so.2: %s", dlerror());
 
         return call(b);
 }
+#endif // 0

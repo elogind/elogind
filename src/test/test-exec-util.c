@@ -455,7 +455,4 @@ TEST(exec_command_flags_to_strv) {
 }
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 DEFINE_TEST_MAIN(LOG_DEBUG);
