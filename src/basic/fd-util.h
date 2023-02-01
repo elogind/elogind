@@ -82,7 +82,6 @@ int fd_get_path(int fd, char **ret);
 int move_fd(int from, int to, int cloexec);
 #endif // 0
 
-
 int fd_move_above_stdio(int fd);
 
 int rearrange_stdio(int original_input_fd, int original_output_fd, int original_error_fd);
@@ -108,6 +107,8 @@ int fd_reopen_condition(int fd, int flags, int mask, int *ret_new_fd);
 int fd_is_opath(int fd);
 int read_nr_open(void);
 int fd_get_diskseq(int fd, uint64_t *ret);
+
+int dir_fd_is_root(int dir_fd);
 
 /* The maximum length a buffer for a /proc/self/fd/<fd> path needs */
 #define PROC_FD_PATH_MAX \
