@@ -2,34 +2,34 @@
 
 #include <dirent.h>
 #include <errno.h>
-#include <sys/prctl.h>
+//#include <sys/prctl.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 
 #include "alloc-util.h"
 #include "conf-files.h"
-#include "env-file.h"
+//#include "env-file.h"
 #include "env-util.h"
-#include "errno-util.h"
+//#include "errno-util.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "hashmap.h"
 #include "macro.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "process-util.h"
 #include "rlimit-util.h"
 #include "serialize.h"
-#include "set.h"
-#include "signal-util.h"
+//#include "set.h"
+//#include "signal-util.h"
 #include "stat-util.h"
-#include "string-table.h"
+//#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
-#include "terminal-util.h"
-#include "tmpfile-util.h"
-#include "util.h"
+//#include "terminal-util.h"
+//#include "tmpfile-util.h"
+//#include "util.h"
 
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);

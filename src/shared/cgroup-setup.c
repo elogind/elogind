@@ -7,7 +7,7 @@
 #include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "fs-util.h"
+//#include "fs-util.h"
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
@@ -17,7 +17,7 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "user-util.h"
-#include "virt.h"
+//#include "virt.h"
 
 static int cg_any_controller_used_for_v1(void) {
         _cleanup_free_ char *buf = NULL;
