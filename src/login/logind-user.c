@@ -712,7 +712,7 @@ static usec_t user_get_stop_delay(User *u) {
 }
 
 bool user_may_gc(User *u, bool drop_not_started) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind neither supports service nor slice jobs
         int r;
 #endif // 0
 

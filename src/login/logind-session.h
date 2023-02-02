@@ -81,7 +81,7 @@ struct Session {
         char *desktop;
 
         char *scope;
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not support systemd scope jobsd
         char *scope_job;
 #endif // 0
 

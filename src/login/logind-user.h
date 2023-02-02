@@ -29,7 +29,7 @@ struct User {
 
         char *slice;                     /* user-UID.slice */
         char *service;                   /* user@UID.service */
-#if 0 /// UNNEEDED by elogind
+#if 0 ///elogind does not support systemd service jobs
         char *runtime_dir_service;       /* user-runtime-dir@UID.service */
 
         char *service_job;

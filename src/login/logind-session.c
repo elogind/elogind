@@ -38,7 +38,7 @@
 #include "tmpfile-util.h"
 #include "uid-alloc-range.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
 /// Additional includes needed by elogind
 #include "cgroup-setup.h"
 #include "extract-word.h"
@@ -1312,7 +1312,7 @@ static void session_remove_fifo(Session *s) {
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind supports neither scopes nor jobs
         int r;
 #endif // 0
 
