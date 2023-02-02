@@ -27,7 +27,7 @@
 #include "string-util.h"
 #include "strv.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
 
 /* Error codes:
  *
@@ -50,7 +50,7 @@ _public_ int sd_pid_get_session(pid_t pid, char **session) {
 }
 
 _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not support systemd units
         int r;
 #endif // 0
 
@@ -66,7 +66,7 @@ _public_ int sd_pid_get_unit(pid_t pid, char **unit) {
 }
 
 _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not support systemd units
         int r;
 #endif // 0
 
@@ -82,7 +82,7 @@ _public_ int sd_pid_get_user_unit(pid_t pid, char **unit) {
 }
 
 _public_ int sd_pid_get_machine_name(pid_t pid, char **name) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not support systemd units
         int r;
 #endif // 0
 
