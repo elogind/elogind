@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
+//#include <ctype.h>
 #include <net/if.h>
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 #include <sys/types.h>
 
 #include "sd-device.h"
@@ -31,9 +31,9 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
-#include "strxcpyx.h"
+//#include "strxcpyx.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
 
 int device_new_aux(sd_device **ret) {
         sd_device *device;
