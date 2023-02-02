@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <errno.h>
-#include <stdlib.h>
+//#include <errno.h>
+//#include <stdlib.h>
 #include <sys/mman.h>
 
-#include "alloc-util.h"
-#include "errno-util.h"
-#include "fd-util.h"
+//#include "alloc-util.h"
+//#include "errno-util.h"
+//#include "fd-util.h"
 #include "hashmap.h"
 #include "list.h"
-#include "log.h"
+//#include "log.h"
 #include "macro.h"
-#include "memory-util.h"
+//#include "memory-util.h"
 #include "mmap-cache.h"
-#include "sigbus.h"
+//#include "sigbus.h"
 
 typedef struct Window Window;
 typedef struct Context Context;

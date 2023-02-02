@@ -12,34 +12,34 @@
 
 #include "sd-journal.h"
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 //#include "catalog.h"
 //#include "compress.h"
-#include "dirent-util.h"
-#include "env-file.h"
-#include "escape.h"
-#include "fd-util.h"
-#include "fileio.h"
-#include "format-util.h"
-#include "fs-util.h"
-#include "hashmap.h"
-#include "hostname-util.h"
-#include "id128-util.h"
-#include "inotify-util.h"
-#include "io-util.h"
+//#include "dirent-util.h"
+//#include "env-file.h"
+//#include "escape.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "format-util.h"
+//#include "fs-util.h"
+//#include "hashmap.h"
+//#include "hostname-util.h"
+//#include "id128-util.h"
+//#include "inotify-util.h"
+//#include "io-util.h"
 #include "journal-def.h"
 #include "journal-file.h"
 #include "journal-internal.h"
 #include "list.h"
 //#include "lookup3.h"
 #include "nulstr-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "process-util.h"
 //#include "replace-var.h"
-#include "stat-util.h"
+//#include "stat-util.h"
 #include "stdio-util.h"
-#include "string-util.h"
-#include "strv.h"
+//#include "string-util.h"
+//#include "strv.h"
 #include "syslog-util.h"
 
 #if 0 /// UNNEEDED by elogind
@@ -2418,9 +2418,6 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
 
         return -ENOENT;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t *size) {
 #if 0 /// UNSUPPORTED by elogind
