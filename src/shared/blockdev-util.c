@@ -1,23 +1,23 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <linux/blkpg.h>
+//#include <linux/blkpg.h>
 #include <sys/file.h>
-#include <sys/ioctl.h>
-#include <sys/mount.h>
-#include <unistd.h>
+//#include <sys/ioctl.h>
+//#include <sys/mount.h>
+//#include <unistd.h>
 
 #include "sd-device.h"
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 #include "blockdev-util.h"
 #include "btrfs-util.h"
-#include "device-util.h"
+//#include "device-util.h"
 #include "devnum-util.h"
-#include "dirent-util.h"
-#include "errno-util.h"
+//#include "dirent-util.h"
+//#include "errno-util.h"
 #include "fd-util.h"
-#include "fileio.h"
-#include "missing_magic.h"
+//#include "fileio.h"
+//#include "missing_magic.h"
 #include "parse-util.h"
 
 #if 0 /// UNNEEDED by elogind

@@ -10,18 +10,18 @@
 #include "dirent-util.h"
 #include "efi-loader.h"
 #include "env-file.h"
-#include "errno-util.h"
+//#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "find-esp.h"
 #include "path-util.h"
 #include "pe-header.h"
-#include "pretty-print.h"
+//#include "pretty-print.h"
 #include "recurse-dir.h"
 #include "sort-util.h"
 #include "string-table.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 #include "unaligned.h"
 
 static const char* const boot_entry_type_table[_BOOT_ENTRY_TYPE_MAX] = {
@@ -1264,9 +1264,6 @@ int boot_config_augment_from_loader(
 
         return 0;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 BootEntry* boot_config_find_entry(BootConfig *config, const char *id) {
         assert(config);

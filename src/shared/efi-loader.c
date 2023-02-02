@@ -305,9 +305,6 @@ int efi_loader_update_entry_one_shot_cache(char **cache, struct stat *cache_stat
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 #endif
 
 bool efi_loader_entry_name_valid(const char *s) {
@@ -317,5 +314,3 @@ bool efi_loader_entry_name_valid(const char *s) {
         return in_charset(s, ALPHANUMERICAL "+-_.");
 }
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0

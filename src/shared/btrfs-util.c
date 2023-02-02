@@ -4,34 +4,34 @@
 #include <fcntl.h>
 #include <inttypes.h>
 #include <linux/btrfs_tree.h>
-#include <linux/fs.h>
+//#include <linux/fs.h>
 #include <linux/loop.h>
 #include <linux/magic.h>
 #include <stddef.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/sysmacros.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "alloc-util.h"
-#include "blockdev-util.h"
+//#include "blockdev-util.h"
 #include "btrfs-util.h"
 #include "chattr-util.h"
 #include "copy.h"
 #include "fd-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "fs-util.h"
-#include "io-util.h"
+//#include "io-util.h"
 #include "macro.h"
 #include "path-util.h"
 #include "rm-rf.h"
-#include "smack-util.h"
+//#include "smack-util.h"
 #include "sparse-endian.h"
 #include "stat-util.h"
 #include "string-util.h"
-#include "time-util.h"
-#include "util.h"
+//#include "time-util.h"
+//#include "util.h"
 
 /* WARNING: Be careful with file system ioctls! When we get an fd, we
  * need to make sure it either refers to only a regular file or

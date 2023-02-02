@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sendfile.h>
-#include <sys/xattr.h>
+//#include <sys/xattr.h>
 #ifndef __GLIBC__ /// elogind has to include <signal.h> for musl-based systems
 #include <signal.h>
 #endif // __GLIBC__
@@ -16,27 +16,27 @@
 #include "btrfs-util.h"
 //#include "chattr-util.h"
 #include "copy.h"
-#include "dirent-util.h"
-#include "fd-util.h"
-#include "fileio.h"
-#include "fs-util.h"
-#include "io-util.h"
+//#include "dirent-util.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "fs-util.h"
+//#include "io-util.h"
 #include "macro.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "mkdir-label.h"
-#include "mountpoint-util.h"
+//#include "mountpoint-util.h"
 #include "nulstr-util.h"
 #include "rm-rf.h"
-#include "selinux-util.h"
+//#include "selinux-util.h"
 #include "signal-util.h"
-#include "stat-util.h"
+//#include "stat-util.h"
 #include "stdio-util.h"
-#include "string-util.h"
-#include "strv.h"
-#include "sync-util.h"
+//#include "string-util.h"
+//#include "strv.h"
+//#include "sync-util.h"
 #include "time-util.h"
-#include "tmpfile-util.h"
-#include "umask-util.h"
+//#include "tmpfile-util.h"
+//#include "umask-util.h"
 #include "user-util.h"
 //#include "xattr-util.h"
 
