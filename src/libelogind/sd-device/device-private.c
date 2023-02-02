@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
-#include <net/if.h>
+//#include <ctype.h>
+//#include <net/if.h>
 #include <sys/types.h>
 
 #include "sd-device.h"
@@ -10,22 +10,22 @@
 #include "device-internal.h"
 #include "device-private.h"
 #include "device-util.h"
-#include "fd-util.h"
-#include "fileio.h"
-#include "fs-util.h"
-#include "hashmap.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "fs-util.h"
+//#include "hashmap.h"
 #include "macro.h"
-#include "mkdir.h"
+//#include "mkdir.h"
 #include "nulstr-util.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "set.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 #include "strxcpyx.h"
-#include "tmpfile-util.h"
+//#include "tmpfile-util.h"
 #include "user-util.h"
 
 int device_add_property(sd_device *device, const char *key, const char *value) {
@@ -726,9 +726,7 @@ static int device_shallow_clone(sd_device *device, sd_device **ret) {
         *ret = TAKE_PTR(dest);
         return 0;
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int device_clone_with_db(sd_device *device, sd_device **ret) {
         _cleanup_(sd_device_unrefp) sd_device *dest = NULL;
         int r;
@@ -750,9 +748,6 @@ int device_clone_with_db(sd_device *device, sd_device **ret) {
         return 0;
 }
 
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 void device_cleanup_tags(sd_device *device) {
         assert(device);
 

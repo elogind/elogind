@@ -3,7 +3,7 @@
 #include "device-private.h"
 #include "device-util.h"
 #include "devnum-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "string-util.h"
 
 int devname_from_devnum(mode_t mode, dev_t devnum, char **ret) {
