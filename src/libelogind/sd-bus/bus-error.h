@@ -55,6 +55,3 @@ const char* _bus_error_message(const sd_bus_error *e, int error, char buf[static
 #define BUS_ERROR_MAP_END_MARKER -'x'
 
 BUS_ERROR_MAP_ELF_USE(bus_standard_errors);
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
