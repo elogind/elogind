@@ -34,7 +34,7 @@
     <para><filename>elogind-pcrmachine.service</filename></para>
     <para><filename>elogind-pcrfs-root.service</filename></para>
     <para><filename>elogind-pcrfs@.service</filename></para>
-    <para><filename>/usr/lib/elogind/system-pcrphase</filename> <optional><replaceable>STRING</replaceable></optional></para>
+    <para><filename>/usr/lib/elogind/elogind-pcrphase</filename> <optional><replaceable>STRING</replaceable></optional></para>
   </refsynopsisdiv>
 
   <refsect1>
