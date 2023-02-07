@@ -43,8 +43,6 @@
 #include "syslog-util.h"
 
 #if 0 /// UNNEEDED by elogind
-#define JOURNAL_FILES_MAX 7168
-
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)
 
 /* The maximum size of variable values we'll expand in catalog entries. We bind this to PATH_MAX for now, as
