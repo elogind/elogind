@@ -6,10 +6,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/sendfile.h>
-//#include <sys/xattr.h>
 #ifndef __GLIBC__ /// elogind has to include <signal.h> for musl-based systems
 #include <signal.h>
 #endif // __GLIBC__
+//#include <sys/xattr.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
