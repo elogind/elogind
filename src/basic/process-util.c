@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
+//#include <ctype.h>
 #include <errno.h>
-#include <limits.h>
-#include <linux/oom.h>
+//#include <limits.h>
+//#include <linux/oom.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@
 
 #include "alloc-util.h"
 //#include "architecture.h"
-#include "env-util.h"
+//#include "env-util.h"
 #include "errno-util.h"
 #include "escape.h"
 #include "fd-util.h"
@@ -40,13 +40,13 @@
 #include "raw-clone.h"
 #include "rlimit-util.h"
 #include "signal-util.h"
-#include "stat-util.h"
+//#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
-#include "terminal-util.h"
-#include "user-util.h"
-#include "utf8.h"
+//#include "terminal-util.h"
+//#include "user-util.h"
+//#include "utf8.h"
 /// Additional includes needed by elogind
 #include "util.h"
 

@@ -6,8 +6,8 @@
 #include <limits.h>
 #include <stdarg.h>
 #include <stddef.h>
-#include <sys/signalfd.h>
-#include <sys/stat.h>
+//#include <sys/signalfd.h>
+//#include <sys/stat.h>
 #include <sys/time.h>
 #include <sys/uio.h>
 #include <sys/un.h>
@@ -22,12 +22,12 @@
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
 #include "process-util.h"
 #include "ratelimit.h"
-#include "signal-util.h"
+//#include "signal-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"
 #include "string-table.h"

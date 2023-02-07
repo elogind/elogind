@@ -4,21 +4,21 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include "alloc-util.h"
 #include "escape.h"
 #include "extract-word.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "gunicode.h"
 #include "locale-util.h"
 #include "macro.h"
 #include "memory-util.h"
 #include "string-util.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 #include "utf8.h"
-#include "util.h"
+//#include "util.h"
 
 char* first_word(const char *s, const char *word) {
         size_t sl, wl;

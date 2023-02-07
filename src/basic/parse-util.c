@@ -2,24 +2,23 @@
 
 #include <errno.h>
 #include <inttypes.h>
-#include <net/if.h>
+//#include <net/if.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/socket.h>
+//#include <sys/socket.h>
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 #include "errno-list.h"
-#include "extract-word.h"
+//#include "extract-word.h"
 #include "locale-util.h"
 #include "macro.h"
-#include "missing_network.h"
+//#include "missing_network.h"
 #include "parse-util.h"
 #include "process-util.h"
-#include "stat-util.h"
+//#include "stat-util.h"
 #include "string-util.h"
 
 /// Additional includes needed by elogind
-#include "musl_missing.h"
 #include "strv.h"
 
 int parse_boolean(const char *v) {
@@ -599,9 +598,6 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         return 0;
 }
 
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 int parse_nice(const char *p, int *ret) {
         int n, r;
 
@@ -667,9 +663,7 @@ int parse_ip_prefix_length(const char *s, int *ret) {
 
         return 0;
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int parse_oom_score_adjust(const char *s, int *ret) {
         int r, v;
 

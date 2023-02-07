@@ -333,7 +333,6 @@ basic_sources = files(
         'hmac.h',
         'hostname-util.c',
         'hostname-util.h',
-        'in-addr-util.c',
         'in-addr-util.h',
         'inotify-util.c',
         'inotify-util.h',

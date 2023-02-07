@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <fnmatch.h>
+//#include <fnmatch.h>
 #include <limits.h>
 #include <stdio.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -19,7 +19,7 @@
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
-#include "time-util.h"
+//#include "time-util.h"
 
 
 #if 0 /// UNNEEDED by elogind

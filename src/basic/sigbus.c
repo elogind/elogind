@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <errno.h>
+//#include <errno.h>
 #include <signal.h>
 #include <stddef.h>
 #include <sys/mman.h>

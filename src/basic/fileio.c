@@ -9,11 +9,11 @@
 #include <stdio_ext.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "chase-symlinks.h"
+//#include "chase-symlinks.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
@@ -21,7 +21,7 @@
 #include "log.h"
 #include "macro.h"
 #include "mkdir.h"
-#include "parse-util.h"
+//#include "parse-util.h"
 #include "path-util.h"
 #include "socket-util.h"
 #include "stdio-util.h"

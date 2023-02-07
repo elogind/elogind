@@ -4,21 +4,21 @@
 #include <fnmatch.h>
 #include <pthread.h>
 #include <stdint.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 
 #include "alloc-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "hashmap.h"
 #include "macro.h"
 #include "memory-util.h"
 #include "mempool.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "process-util.h"
 #include "random-util.h"
 #include "set.h"
 #include "siphash24.h"
 #include "string-util.h"
-#include "strv.h"
+//#include "strv.h"
 
 #if ENABLE_DEBUG_HASHMAP
 #include "list.h"

@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <syslog.h>
+//#include <syslog.h>
 
 #include "alloc-util.h"
 #include "escape.h"
@@ -14,7 +14,7 @@
 #include "log.h"
 #include "macro.h"
 #include "string-util.h"
-#include "strv.h"
+//#include "strv.h"
 #include "utf8.h"
 
 int extract_first_word(const char **p, char **ret, const char *separators, ExtractFlags flags) {

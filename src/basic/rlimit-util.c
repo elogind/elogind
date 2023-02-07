@@ -4,7 +4,7 @@
 
 #include "alloc-util.h"
 #include "errno-util.h"
-#include "extract-word.h"
+//#include "extract-word.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "macro.h"

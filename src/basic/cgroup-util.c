@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 //#include <sys/utsname.h>
 //#include <sys/xattr.h>
 #include <unistd.h>
@@ -24,7 +24,7 @@
 #include "macro.h"
 #include "missing_magic.h"
 //#include "mkdir.h"
-#include "parse-util.h"
+//#include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "set.h"

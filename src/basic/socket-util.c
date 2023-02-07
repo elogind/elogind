@@ -4,15 +4,15 @@
 #include <errno.h>
 #include <limits.h>
 #include <net/if.h>
-#include <netdb.h>
-#include <netinet/ip.h>
-#include <poll.h>
+//#include <netdb.h>
+//#include <netinet/ip.h>
+//#include <poll.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
-#include <unistd.h>
+//#include <unistd.h>
 #include <linux/if.h>
 
 #include "alloc-util.h"
@@ -21,19 +21,19 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
-#include "io-util.h"
+//#include "io-util.h"
 #include "log.h"
 #include "memory-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
-#include "string-table.h"
+//#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 //#include "sysctl-util.h"
 #include "user-util.h"
-#include "utf8.h"
+//#include "utf8.h"
 
 #if 0 /// UNNEEDED by elogind
 #if ENABLE_IDN

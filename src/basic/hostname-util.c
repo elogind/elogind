@@ -2,7 +2,7 @@
 
 #include <errno.h>
 #include <limits.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <stdlib.h>
 #include <sys/utsname.h>
 #include <unistd.h>

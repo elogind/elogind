@@ -7,9 +7,9 @@
 #include <stdlib.h>
 
 #include "alloc-util.h"
-#include "escape.h"
+//#include "escape.h"
 #include "extract-word.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "memory-util.h"
 #include "nulstr-util.h"
 #include "sort-util.h"

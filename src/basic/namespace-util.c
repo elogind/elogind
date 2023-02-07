@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <fcntl.h>
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 #include <sys/mount.h>
 
 #include "errno-util.h"
 #include "fd-util.h"
-#include "fileio.h"
-#include "missing_fs.h"
-#include "missing_magic.h"
+//#include "fileio.h"
+//#include "missing_fs.h"
+//#include "missing_magic.h"
 #include "missing_sched.h"
 #include "namespace-util.h"
 #include "process-util.h"
