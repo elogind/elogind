@@ -313,4 +313,3 @@ bool efi_loader_entry_name_valid(const char *s) {
 
         return in_charset(s, ALPHANUMERICAL "+-_.");
 }
-

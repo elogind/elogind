@@ -490,7 +490,7 @@ static int userdb_start_query(
 
                 /* Avoid NSS is this is requested. Note that we also skip NSS when we were asked to skip the
                  * multiplexer, since in that case it's safer to do NSS in the client side emulation below
-                 * (and when we run as part of elogind-userdbd.service we don't want to talk to ourselves
+                 * (and when we run as part of systemd-userdbd.service we don't want to talk to ourselves
                  * anyway). */
                 is_nss = streq(de->d_name, "io.systemd.NameServiceSwitch");
                 if ((flags & (USERDB_EXCLUDE_NSS|USERDB_AVOID_MULTIPLEXER)) && is_nss)
