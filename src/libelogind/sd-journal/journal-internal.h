@@ -14,6 +14,8 @@
 #include "list.h"
 #include "set.h"
 
+#define JOURNAL_FILES_MAX 7168u
+
 typedef struct Match Match;
 typedef struct Location Location;
 typedef struct Directory Directory;
