@@ -28,8 +28,6 @@
 #include "user-util.h"
 #include "userdb.h"
 /// Additional includes needed by elogind
-//#include "elogind.h"
-//#include "sleep-config.h"
 #include "utmp-wtmp.h"
 
 void manager_reset_config(Manager *m) {
