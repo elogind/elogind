@@ -25,7 +25,6 @@
 #include "string-util.h"
 #include "strv.h"
 #include "terminal-util.h"
-#include "util.h"
 
 static pid_t pager_pid = 0;
 
@@ -84,7 +83,7 @@ static int no_quit_on_interrupt(int exe_name_fd, const char *less_opts) {
 }
 
 void pager_open(PagerFlags flags) {
-        _cleanup_close_pair_ int fd[2] = { -1, -1 }, exe_name_pipe[2] = { -1, -1 };
+        _cleanup_close_pair_ int fd[2] = PIPE_EBADF, exe_name_pipe[2] = PIPE_EBADF;
         _cleanup_strv_free_ char **pager_args = NULL;
         _cleanup_free_ char *l = NULL;
         const char *pager, *less_opts;
@@ -318,7 +317,7 @@ int show_man_page(const char *desc, bool null_stdio) {
         } else
                 args[1] = desc;
 
-        r = safe_fork("(man)", FORK_RESET_SIGNALS|FORK_DEATHSIG|(null_stdio ? FORK_NULL_STDIO : 0)|FORK_RLIMIT_NOFILE_SAFE|FORK_LOG, &pid);
+        r = safe_fork("(man)", FORK_RESET_SIGNALS|FORK_DEATHSIG|(null_stdio ? FORK_REARRANGE_STDIO : 0)|FORK_RLIMIT_NOFILE_SAFE|FORK_LOG, &pid);
         if (r < 0)
                 return r;
         if (r == 0) {
