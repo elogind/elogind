@@ -47,7 +47,7 @@ def print_method(declarations, elem, *, prefix, file, is_signal=False):
     klass = 'signal' if is_signal else 'method'
     declarations[klass].append(name)
 
-    # @org.freedesktop.elogind1.Privileged("true")
+    # @org.freedesktop.systemd1.Privileged("true")
     # SetShowStatus(in  s mode);
 
     for anno in elem.findall('./annotation'):

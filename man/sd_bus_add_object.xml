@@ -590,7 +590,7 @@
           </para>
 
           <para>When <emphasis>not</emphasis> specified, the
-          <constant>org.freedesktop.elogind1.Privileged</constant> annotation with value
+          <constant>org.freedesktop.systemd1.Privileged</constant> annotation with value
           <literal>true</literal> will be shown in introspection data.</para>
 
           <para>Note that this page describes checks implemented in the D-Bus client. The D-Bus server has an

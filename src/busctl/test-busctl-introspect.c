@@ -162,7 +162,7 @@ static const char *xml_org_freedesktop_LogControl1 =
                   "  </property>\n"
                   "  <property name=\"LogTarget\" type=\"s\" access=\"readwrite\">\n"
                   "   <annotation name=\"org.freedesktop.DBus.Property.EmitsChangedSignal\" value=\"false\"/>\n"
-                  "   <annotation name=\"org.freedesktop.elogind1.Privileged\" value=\"true\"/>\n"
+                  "   <annotation name=\"org.freedesktop.systemd1.Privileged\" value=\"true\"/>\n"
                   "  </property>\n"
                   "  <property name=\"SyslogIdentifier\" type=\"s\" access=\"read\">\n"
                   "   <annotation name=\"org.freedesktop.DBus.Property.EmitsChangedSignal\" value=\"false\"/>\n"

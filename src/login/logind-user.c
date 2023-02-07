@@ -418,9 +418,9 @@ static int user_update_slice(User *u) {
         r = sd_bus_message_new_method_call(
                         u->manager->bus,
                         &m,
-                        "org.freedesktop.elogind1",
-                        "/org/freedesktop/elogind1",
-                        "org.freedesktop.elogind1.Manager",
+                        "org.freedesktop.systemd1",
+                        "/org/freedesktop/systemd1",
+                        "org.freedesktop.systemd1.Manager",
                         "SetUnitProperties");
         if (r < 0)
                 return bus_log_create_error(r);

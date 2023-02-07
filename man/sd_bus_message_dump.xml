@@ -69,7 +69,7 @@
 ‣ Type=signal  Endian=l  Flags=1  Version=1  Cookie=22
   Path=/value/a  Interface=org.freedesktop.DBus.Properties  Member=PropertiesChanged
   MESSAGE "sa{sv}as" {
-          STRING "org.freedesktop.elogind.ValueTest";
+          STRING "org.freedesktop.systemd.ValueTest";
           ARRAY "{sv}" {
                   DICT_ENTRY "sv" {
                           STRING "Value";
