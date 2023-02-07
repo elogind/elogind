@@ -134,7 +134,7 @@ int bus_introspect_implementations(
                                        is_interface ? "Interface" : "Object path",
                                        pattern);
 
-        /* We use trusted=false here to get all the @org.freedesktop.elogind1.Privileged annotations. */
+        /* We use trusted=false here to get all the @org.freedesktop.systemd1.Privileged annotations. */
         r = introspect_begin(&intro, false);
         if (r < 0)
                 return log_error_errno(r, "Failed to write introspection data: %m");

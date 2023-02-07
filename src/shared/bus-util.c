@@ -599,4 +599,4 @@ const struct hash_ops bus_message_hash_ops = {
         .compare = trivial_compare_func,
         .free_value = bus_message_unref_wrapper,
 };
-        /* We use trusted=false here to get all the @org.freedesktop.elogind1.Privileged annotations. */
+        /* We use trusted=false here to get all the @org.freedesktop.systemd1.Privileged annotations. */
