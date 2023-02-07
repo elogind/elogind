@@ -163,9 +163,6 @@ void siphash24_compress(const void *_in, size_t inlen, struct siphash *state) {
 #  endif // __GNUC__
 #endif // 1
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 uint64_t siphash24_finalize(struct siphash *state) {
         uint64_t b;
 

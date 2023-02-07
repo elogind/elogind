@@ -1,25 +1,25 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 #include <langinfo.h>
 #include <libintl.h>
 #include <stddef.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
+//#include <sys/mman.h>
+//#include <sys/stat.h>
 
-#include "def.h"
-#include "dirent-util.h"
+//#include "def.h"
+//#include "dirent-util.h"
 #include "env-util.h"
-#include "fd-util.h"
-#include "fileio.h"
-#include "hashmap.h"
+//#include "fd-util.h"
+//#include "fileio.h"
+//#include "hashmap.h"
 #include "locale-util.h"
 #include "path-util.h"
-#include "set.h"
-#include "string-table.h"
+//#include "set.h"
+//#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 #include "utf8.h"

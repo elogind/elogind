@@ -2,21 +2,21 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <sys/time.h>
+//#include <stdint.h>
+//#include <stdlib.h>
+//#include <sys/time.h>
 #include <sys/xattr.h>
 
 #include "alloc-util.h"
-#include "errno-util.h"
+//#include "errno-util.h"
 #include "fd-util.h"
 #include "macro.h"
-#include "missing_syscall.h"
-#include "sparse-endian.h"
-#include "stat-util.h"
+//#include "missing_syscall.h"
+//#include "sparse-endian.h"
+//#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
-#include "time-util.h"
+//#include "time-util.h"
 #include "xattr-util.h"
 
 int getxattr_at_malloc(

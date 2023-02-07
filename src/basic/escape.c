@@ -8,7 +8,7 @@
 #include "escape.h"
 #include "hexdecoct.h"
 #include "macro.h"
-#include "strv.h"
+//#include "strv.h"
 #include "utf8.h"
 
 int cescape_char(char c, char *buf) {

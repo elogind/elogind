@@ -2,22 +2,22 @@
 
 #include <errno.h>
 #include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
+//#include <stdint.h>
+//#include <stdlib.h>
 
 #include "sd-id128.h"
 
 #include "alloc-util.h"
 //#include "glob-util.h"
 #include "hexdecoct.h"
-#include "memory-util.h"
-#include "path-util.h"
+//#include "memory-util.h"
+//#include "path-util.h"
 #include "random-util.h"
-#include "sparse-endian.h"
+//#include "sparse-endian.h"
 #include "special.h"
 #include "stdio-util.h"
 #include "string-util.h"
-#include "strv.h"
+//#include "strv.h"
 #include "unit-name.h"
 
 /* Characters valid in a unit name. */

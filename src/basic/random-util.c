@@ -3,28 +3,28 @@
 #include <elf.h>
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/random.h>
+//#include <linux/random.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <sys/time.h>
+//#include <sys/ioctl.h>
+//#include <sys/time.h>
 
 #if HAVE_SYS_AUXV_H
 #  include <sys/auxv.h>
 #endif
 
-#include "alloc-util.h"
-#include "env-util.h"
+//#include "alloc-util.h"
+//#include "env-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "io-util.h"
 #include "missing_random.h"
-#include "missing_syscall.h"
-#include "parse-util.h"
+//#include "missing_syscall.h"
+//#include "parse-util.h"
 #include "random-util.h"
 #include "sha256.h"
 #include "time-util.h"

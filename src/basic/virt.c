@@ -1,18 +1,20 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
+#if 0 /// UNNEEDED by elogind
 #if defined(__i386__) || defined(__x86_64__)
 #include <cpuid.h>
 #endif
+#endif // 0
 #include <errno.h>
-#include <stdint.h>
+//#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "cgroup-util.h"
-#include "dirent-util.h"
-#include "env-util.h"
-#include "errno-util.h"
+//#include "dirent-util.h"
+//#include "env-util.h"
+//#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"

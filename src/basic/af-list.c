@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <errno.h>
-#include <string.h>
+//#include <errno.h>
+//#include <string.h>
 #include <sys/socket.h>
 
 #include "af-list.h"
-#include "macro.h"
+//#include "macro.h"
 
 #if 0 /// UNNEEDED by elogind
 static const struct af_name* lookup_af(register const char *str, register GPERF_LEN_TYPE len);

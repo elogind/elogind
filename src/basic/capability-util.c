@@ -1,21 +1,21 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <sys/prctl.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "capability-util.h"
-#include "cap-list.h"
+//#include "cap-list.h"
 #include "fileio.h"
-#include "log.h"
+//#include "log.h"
 #include "macro.h"
-#include "missing_prctl.h"
+//#include "missing_prctl.h"
 #include "parse-util.h"
 #include "user-util.h"
-#include "util.h"
+//#include "util.h"
 
 int have_effective_cap(int value) {
         _cleanup_cap_free_ cap_t cap = NULL;

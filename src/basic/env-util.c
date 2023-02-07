@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <limits.h>
-#include <stdarg.h>
+//#include <limits.h>
+//#include <stdarg.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
 #include "env-util.h"
 #include "errno-util.h"
-#include "escape.h"
-#include "extract-word.h"
+//#include "escape.h"
+//#include "extract-word.h"
 #include "macro.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "process-util.h"
 #include "stdio-util.h"
 #include "string-util.h"

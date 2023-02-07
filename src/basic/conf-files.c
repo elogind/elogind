@@ -1,13 +1,13 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <stdarg.h>
+//#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "chase-symlinks.h"
 #include "conf-files.h"
-#include "def.h"
+//#include "def.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "hashmap.h"
@@ -19,7 +19,7 @@
 #include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 
 static int files_add(
                 Hashmap *h,
