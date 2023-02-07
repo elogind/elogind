@@ -81,12 +81,11 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
 #else // 0
         for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
                 if (sc->modes[i]) {
-                        strv_free(sc->modes[i]);
+                        sc->modes[i] = strv_free(sc->modes[i]);
                 }
 
                 if (sc->states[i]) {
-                        strv_free(sc->states[i]);
-                        sc->states[i] = strv_new(STRV_IGNORE);
+                        sc->states[i] = strv_free(sc->states[i]);
                 }
         }
 #endif // 0
