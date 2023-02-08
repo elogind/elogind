@@ -242,7 +242,7 @@
 
         <listitem><para>Instead of writing the corresponding state to <filename>/sys/power/state</filename>, an executable can be defined to
         call instead. More than one value can be specified by separating multiple values with whitespace. They will be tried in turn, until
-        one is called without error. If neither succeeds, the default operation of writing to <filename>/sys/power/state</filename>  is
+        one is called without error. If neither succeeds, the default operation of writing to <filename>/sys/power/state</filename> is
         performed.</para></listitem>
       </varlistentry>
 <!-- // 1 -->

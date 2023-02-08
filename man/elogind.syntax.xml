@@ -27,7 +27,7 @@
     <title>Introduction</title>
 
     <para>This page describes the basic principles of configuration files used by
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     and related programs for:
     <itemizedlist>
       <!-- 0 /// Completely irrelevant for elogind
