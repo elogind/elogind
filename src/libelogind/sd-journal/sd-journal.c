@@ -2253,18 +2253,16 @@ _public_ void sd_journal_close(sd_journal *j) {
 
 _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 #if 0 /// UNSUPPORTED by elogind
-        Object *o;
         JournalFile *f;
+        Object *o;
         int r;
 
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
-        assert_return(ret, -EINVAL);
 
         f = j->current_file;
         if (!f)
                 return -EADDRNOTAVAIL;
-
         if (f->current_offset <= 0)
                 return -EADDRNOTAVAIL;
 
@@ -2272,7 +2270,13 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
         if (r < 0)
                 return r;
 
-        *ret = le64toh(o->entry.realtime);
+        uint64_t t = le64toh(o->entry.realtime);
+        if (!VALID_REALTIME(t))
+                return -EBADMSG;
+
+        if (ret)
+                *ret = t;
+
         return 0;
 #else // 0
         return -ENOSYS;
