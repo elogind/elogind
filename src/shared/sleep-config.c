@@ -88,6 +88,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                         sc->states[i] = strv_free(sc->states[i]);
                 }
         }
+        sc->suspend_by_using   = strv_free(sc->suspend_by_using);
+        sc->hibernate_by_using = strv_free(sc->hibernate_by_using);
 #endif // 0
 
         const ConfigTableItem items[] = {
@@ -97,6 +99,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 { "Sleep", "AllowSuspendInterrupts",      config_parse_bool, 0, &sc->allow_suspend_interrupts },
                 { "Sleep", "BroadcastSuspendInterrupts",  config_parse_bool, 0, &sc->broadcast_suspend_interrupts },
                 { "Sleep", "HandleNvidiaSleep",           config_parse_bool, 0, &sc->handle_nvidia_sleep },
+                { "Sleep", "SuspendByUsing",              config_parse_strv, 0, &sc->suspend_by_using },
+                { "Sleep", "HibernateByUsing",            config_parse_strv, 0, &sc->hibernate_by_using },
 #endif // 1
                 { "Sleep", "AllowSuspend",              config_parse_tristate, 0, &allow_suspend                  },
                 { "Sleep", "AllowHibernation",          config_parse_tristate, 0, &allow_hibernate                },

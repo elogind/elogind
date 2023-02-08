@@ -42,6 +42,7 @@
 /// Additional includes needed by elogind
 #include <stdio.h>
 #include "exec-elogind.h"
+#include "process-util.h"
 #include "sd-login.h"
 #include "sleep.h"
 #include "terminal-util.h"
@@ -120,6 +121,44 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
         }
 
         return 1;
+}
+#endif // 1
+
+#if 1 /// If an external program is configured to suspend/hibernate, elogind calls that one first.
+static int execute_external(Manager *m, SleepOperation operation) {
+        int r = -1;
+        char **tools = NULL;
+
+        if ( (SLEEP_SUSPEND == operation) && !strv_isempty(m->suspend_by_using) )
+                tools = m->suspend_by_using;
+
+        if ( ( (SLEEP_HIBERNATE == operation) || (SLEEP_HYBRID_SLEEP == operation) ) && !strv_isempty(m->hibernate_by_using) )
+                tools = m->hibernate_by_using;
+
+        if ( tools ) {
+                STRV_FOREACH(tool, tools) {
+                        int k;
+
+                        log_debug_elogind("Calling '%s' to '%s'...", *tool, sleep_operation_to_string(operation));
+                        k = safe_fork( *tool, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+
+                        if ( k < 0 ) {
+                                r = log_error_errno(errno, "Failed to fork run %s: %m", *tool);
+                                continue;
+                        }
+
+                        if ( 0 == k ) {
+                                /* Child */
+                                execlp( *tool, *tool, NULL );
+                                log_error_errno( errno, "Failed to execute %s: %m", *tool );
+                                _exit( EXIT_FAILURE );
+                        }
+
+                        return 0;
+                }
+        }
+
+        return r;
 }
 #endif // 1
 
@@ -460,7 +499,13 @@ static int execute(
                 have_nvidia = nvidia_sleep(m, operation, &vtnr);
 #endif // 1
 
+#if 0 /// Instead of only writing to /sys/power/state, elogind offers the possibility to call an extra program instead
         r = write_state(&f, states);
+#else // 0
+        r = execute_external(m, operation);
+        if (r < 0)
+                r = write_state(&f, states);
+#endif // 0
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
                                  "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR,
