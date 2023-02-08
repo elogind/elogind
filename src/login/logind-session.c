@@ -731,6 +731,26 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
 
         return 0;
 }
+#else // 0
+static int session_start_cgroup(Session *s) {
+        int r;
+
+        assert(s);
+        assert(s->user);
+        assert(s->leader > 0);
+
+        /* First, create our own group */
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
+        if (r < 0)
+                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
+
+        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
+        if (r < 0)
+                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
+
+        return 0;
+}
+#endif // 0
 
 static int session_dispatch_stop_on_idle(sd_event_source *source, uint64_t t, void *userdata) {
         Session *s = userdata;
@@ -783,26 +803,6 @@ static int session_setup_stop_on_idle_timer(Session *s) {
 
         return 0;
 }
-#else // 0
-static int session_start_cgroup(Session *s) {
-        int r;
-
-        assert(s);
-        assert(s->user);
-        assert(s->leader > 0);
-
-        /* First, create our own group */
-        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
-        if (r < 0)
-                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
-
-        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
-        if (r < 0)
-                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
-
-        return 0;
-}
-#endif // 0
 
 int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
         int r;
@@ -824,13 +824,13 @@ int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
 
 #if 0 /// elogind does its own session management
         r = session_start_scope(s, properties, error);
+#else // 0
+        r = session_start_cgroup(s);
+#endif // 0
         if (r < 0)
                 return r;
 
         r = session_setup_stop_on_idle_timer(s);
-#else // 0
-        r = session_start_cgroup(s);
-#endif // 0
         if (r < 0)
                 return r;
 
