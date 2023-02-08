@@ -215,3 +215,4 @@ _noreturn_ void freeze(void);
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
+int get_process_threads(pid_t pid);
