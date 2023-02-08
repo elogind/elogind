@@ -814,6 +814,51 @@ static int next_beyond_location(sd_journal *j, JournalFile *f, direction_t direc
         }
 }
 
+static int compare_locations(JournalFile *af, JournalFile *bf) {
+        int r;
+
+        assert(af);
+        assert(af->header);
+        assert(bf);
+        assert(bf->header);
+        assert(af->location_type == LOCATION_SEEK);
+        assert(bf->location_type == LOCATION_SEEK);
+
+        /* If contents, timestamps and seqnum match, these entries are identical. */
+        if (sd_id128_equal(af->current_boot_id, bf->current_boot_id) &&
+            af->current_monotonic == bf->current_monotonic &&
+            af->current_realtime == bf->current_realtime &&
+            af->current_xor_hash == bf->current_xor_hash &&
+            sd_id128_equal(af->header->seqnum_id, bf->header->seqnum_id) &&
+            af->current_seqnum == bf->current_seqnum)
+                return 0;
+
+        if (sd_id128_equal(af->header->seqnum_id, bf->header->seqnum_id)) {
+                /* If this is from the same seqnum source, compare seqnums */
+                r = CMP(af->current_seqnum, bf->current_seqnum);
+                if (r != 0)
+                        return r;
+
+                /* Wow! This is weird, different data but the same seqnums? Something is borked, but let's
+                 * make the best of it and compare by time. */
+        }
+
+        if (sd_id128_equal(af->current_boot_id, bf->current_boot_id)) {
+                /* If the boot id matches, compare monotonic time */
+                r = CMP(af->current_monotonic, bf->current_monotonic);
+                if (r != 0)
+                        return r;
+        }
+
+        /* Otherwise, compare UTC time */
+        r = CMP(af->current_realtime, bf->current_realtime);
+        if (r != 0)
+                return r;
+
+        /* Finally, compare by contents */
+        return CMP(af->current_xor_hash, bf->current_xor_hash);
+}
+
 static int real_journal_next(sd_journal *j, direction_t direction) {
         JournalFile *new_file = NULL;
         unsigned n_files;
@@ -847,7 +892,7 @@ static int real_journal_next(sd_journal *j, direction_t direction) {
                 else {
                         int k;
 
-                        k = journal_file_compare_locations(f, new_file);
+                        k = compare_locations(f, new_file);
 
                         found = direction == DIRECTION_DOWN ? k < 0 : k > 0;
                 }
@@ -2253,18 +2298,16 @@ _public_ void sd_journal_close(sd_journal *j) {
 
 _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 #if 0 /// UNSUPPORTED by elogind
-        Object *o;
         JournalFile *f;
+        Object *o;
         int r;
 
         assert_return(j, -EINVAL);
         assert_return(!journal_pid_changed(j), -ECHILD);
-        assert_return(ret, -EINVAL);
 
         f = j->current_file;
         if (!f)
                 return -EADDRNOTAVAIL;
-
         if (f->current_offset <= 0)
                 return -EADDRNOTAVAIL;
 
@@ -2272,7 +2315,13 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
         if (r < 0)
                 return r;
 
-        *ret = le64toh(o->entry.realtime);
+        uint64_t t = le64toh(o->entry.realtime);
+        if (!VALID_REALTIME(t))
+                return -EBADMSG;
+
+        if (ret)
+                *ret = t;
+
         return 0;
 #else // 0
         return -ENOSYS;
