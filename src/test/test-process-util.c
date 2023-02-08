@@ -2,6 +2,7 @@
 
 #include <fcntl.h>
 #include <linux/oom.h>
+#include <pthread.h>
 #include <sys/mount.h>
 #include <sys/personality.h>
 #include <sys/prctl.h>
@@ -34,7 +35,6 @@
 #include "terminal-util.h"
 #include "tests.h"
 #include "user-util.h"
-#include "util.h"
 #include "virt.h"
 
 /// Additional includes needed by elogind
@@ -252,7 +252,7 @@ TEST(personality) {
 
 TEST(get_process_cmdline_harder) {
         char path[] = "/tmp/test-cmdlineXXXXXX";
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ char *line = NULL;
         pid_t pid;
 
@@ -536,107 +536,6 @@ TEST(get_process_cmdline_harder) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_rename_process_now(const char *p, int ret) {
-        _cleanup_free_ char *comm = NULL, *cmdline = NULL;
-        int r;
-
-        log_info("/* %s(%s) */", __func__, p);
-
-        r = rename_process(p);
-        assert_se(r == ret ||
-                  (ret == 0 && r >= 0) ||
-                  (ret > 0 && r > 0));
-
-        log_debug_errno(r, "rename_process(%s): %m", p);
-
-        if (r < 0)
-                return;
-
-#if HAVE_VALGRIND_VALGRIND_H
-        /* see above, valgrind is weird, we can't verify what we are doing here */
-        if (RUNNING_ON_VALGRIND)
-                return;
-#endif
-
-        assert_se(get_process_comm(0, &comm) >= 0);
-        log_debug("comm = <%s>", comm);
-        assert_se(strneq(comm, p, TASK_COMM_LEN-1));
-        /* We expect comm to be at most 16 bytes (TASK_COMM_LEN). The kernel may raise this limit in the
-         * future. We'd only check the initial part, at least until we recompile, but this will still pass. */
-
-        r = get_process_cmdline(0, SIZE_MAX, 0, &cmdline);
-        assert_se(r >= 0);
-        /* we cannot expect cmdline to be renamed properly without privileges */
-        if (geteuid() == 0) {
-                if (r == 0 && detect_container() > 0)
-                        log_info("cmdline = <%s> (not verified, Running in unprivileged container?)", cmdline);
-                else {
-                        log_info("cmdline = <%s> (expected <%.*s>)", cmdline, (int) strlen("test-process-util"), p);
-
-                        bool skip = cmdline[0] == '"'; /* A shortcut to check if the string is quoted */
-
-                        assert_se(strneq(cmdline + skip, p, strlen("test-process-util")));
-                        assert_se(startswith(cmdline + skip, p));
-                }
-        } else
-                log_info("cmdline = <%s> (not verified)", cmdline);
-}
-
-static void test_rename_process_one(const char *p, int ret) {
-        siginfo_t si;
-        pid_t pid;
-
-        log_info("/* %s(%s) */", __func__, p);
-
-        pid = fork();
-        assert_se(pid >= 0);
-
-        if (pid == 0) {
-                /* child */
-                test_rename_process_now(p, ret);
-                _exit(EXIT_SUCCESS);
-        }
-
-        assert_se(wait_for_terminate(pid, &si) >= 0);
-        assert_se(si.si_code == CLD_EXITED);
-        assert_se(si.si_status == EXIT_SUCCESS);
-}
-
-TEST(rename_process_invalid) {
-        assert_se(rename_process(NULL) == -EINVAL);
-        assert_se(rename_process("") == -EINVAL);
-}
-
-TEST(rename_process_multi) {
-        pid_t pid;
-
-        pid = fork();
-        assert_se(pid >= 0);
-
-        if (pid > 0) {
-                siginfo_t si;
-
-                assert_se(wait_for_terminate(pid, &si) >= 0);
-                assert_se(si.si_code == CLD_EXITED);
-                assert_se(si.si_status == EXIT_SUCCESS);
-
-                return;
-        }
-
-        /* child */
-        test_rename_process_now("one", 1);
-        test_rename_process_now("more", 0); /* longer than "one", hence truncated */
-        (void) setresuid(99, 99, 99); /* change uid when running privileged */
-        test_rename_process_now("time!", 0);
-        test_rename_process_now("0", 1); /* shorter than "one", should fit */
-        _exit(EXIT_SUCCESS);
-}
-
-TEST(rename_process) {
-        test_rename_process_one("foo", 1); /* should always fit */
-        test_rename_process_one("this is a really really long process name, followed by some more words", 0); /* unlikely to fit */
-        test_rename_process_one("1234567", 1); /* should always fit */
-}
 #endif // 0
 
 TEST(getpid_cached) {
@@ -910,6 +809,59 @@ TEST(set_oom_score_adjust) {
         assert_se(b == a);
 }
 #endif // 0
+
+static void* dummy_thread(void *p) {
+        int fd = PTR_TO_FD(p);
+        char x;
+
+        /* let main thread know we are ready */
+        assert_se(write(fd, &(const char) { 'x' }, 1) == 1);
+
+        /* wait for the main thread to tell us to shut down */
+        assert_se(read(fd, &x, 1) == 1);
+        return NULL;
+}
+
+TEST(get_process_threads) {
+        int r;
+
+        /* Run this test in a child, so that we can guarantee there's exactly one thread around in the child */
+        r = safe_fork("(nthreads)", FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_REOPEN_LOG|FORK_WAIT|FORK_LOG, NULL);
+        assert_se(r >= 0);
+
+        if (r == 0) {
+                _cleanup_close_pair_ int pfd[2] = PIPE_EBADF, ppfd[2] = PIPE_EBADF;
+                pthread_t t, tt;
+                char x;
+
+                assert_se(socketpair(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0, pfd) >= 0);
+                assert_se(socketpair(AF_UNIX, SOCK_STREAM|SOCK_CLOEXEC, 0, ppfd) >= 0);
+
+                assert_se(get_process_threads(0) == 1);
+                assert_se(pthread_create(&t, NULL, &dummy_thread, FD_TO_PTR(pfd[0])) == 0);
+                assert_se(read(pfd[1], &x, 1) == 1);
+                assert_se(get_process_threads(0) == 2);
+                assert_se(pthread_create(&tt, NULL, &dummy_thread, FD_TO_PTR(ppfd[0])) == 0);
+                assert_se(read(ppfd[1], &x, 1) == 1);
+                assert_se(get_process_threads(0) == 3);
+
+                assert_se(write(pfd[1], &(const char) { 'x' }, 1) == 1);
+                assert_se(pthread_join(t, NULL) == 0);
+
+                /* the value reported via /proc/ is decreased asynchronously, and there appears to be no nice
+                 * way to sync on it. Hence we do the weak >= 2 check, even though == 2 is what we'd actually
+                 * like to check here */
+                assert_se(get_process_threads(0) >= 2);
+
+                assert_se(write(ppfd[1], &(const char) { 'x' }, 1) == 1);
+                assert_se(pthread_join(tt, NULL) == 0);
+
+                /* similar here */
+                assert_se(get_process_threads(0) >= 1);
+
+                _exit(EXIT_SUCCESS);
+        }
+}
 
 static int intro(void) {
         log_show_color(true);

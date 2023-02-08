@@ -9,6 +9,7 @@
 #include "alloc-util.h"
 //#include "fileio.h"
 #include "hashmap.h"
+#include "logarithm.h"
 #include "macro.h"
 #include "memory-util.h"
 #include "mempool.h"
@@ -276,7 +277,6 @@ static _used_ const struct hashmap_type_info hashmap_type_info[_HASHMAP_TYPE_MAX
 #if VALGRIND
 _destructor_ static void cleanup_pools(void) {
         _cleanup_free_ char *t = NULL;
-        int r;
 
         /* Be nice to valgrind */
 
@@ -290,8 +290,7 @@ _destructor_ static void cleanup_pools(void) {
         if (getpid() != gettid())
                 return;
 
-        r = get_proc_field("/proc/self/status", "Threads", WHITESPACE, &t);
-        if (r < 0 || !streq(t, "1"))
+        if (get_process_threads(0) != 1)
                 return;
 
         mempool_drop(&hashmap_pool);
@@ -372,8 +371,9 @@ static void get_hash_key(uint8_t hash_key[HASH_KEY_SIZE], bool reuse_is_ok) {
 }
 
 static struct hashmap_base_entry* bucket_at(HashmapBase *h, unsigned idx) {
-        return (struct hashmap_base_entry*)
-                ((uint8_t*) storage_ptr(h) + idx * hashmap_type_info[h->type].entry_size);
+        return CAST_ALIGN_PTR(
+                        struct hashmap_base_entry,
+                        (uint8_t *) storage_ptr(h) + idx * hashmap_type_info[h->type].entry_size);
 }
 
 static struct plain_hashmap_entry* plain_bucket_at(Hashmap *h, unsigned idx) {
@@ -774,7 +774,7 @@ static struct HashmapBase* hashmap_base_new(const struct hash_ops *hash_ops, enu
         HashmapBase *h;
         const struct hashmap_type_info *hi = &hashmap_type_info[type];
 
-        bool use_pool = mempool_enabled && mempool_enabled();
+        bool use_pool = mempool_enabled && mempool_enabled();  /* mempool_enabled is a weak symbol */
 
         h = use_pool ? mempool_alloc0_tile(hi->mempool) : malloc0(hi->head_size);
         if (!h)
@@ -1759,7 +1759,7 @@ HashmapBase* _hashmap_copy(HashmapBase *h  HASHMAP_DEBUG_PARAMS) {
         }
 
         if (r < 0)
-                return _hashmap_free(copy, false, false);
+                return _hashmap_free(copy, NULL, NULL);
 
         return copy;
 }
