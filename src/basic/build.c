@@ -247,6 +247,8 @@ const char* const elogind_features =
 
 static char *elogind_features_with_color(void) {
         const char *p = elogind_features;
+static char *elogind_features_with_color(void) {
+        const char *p = elogind_features;
         _cleanup_free_ char *ret = NULL;
         int r;
 
@@ -286,7 +288,8 @@ int version(void) {
         if (colors_enabled())
                 b = elogind_features_with_color();
 
-        printf("elogind " STRINGIFY(PROJECT_VERSION) " (" GIT_VERSION ")\n%s\n",
+        printf("%selogind " STRINGIFY(PROJECT_VERSION) "%s (" GIT_VERSION ")\n%s\n",
+               ansi_highlight(), ansi_normal(),
                b ?: elogind_features);
         return 0;
 }
