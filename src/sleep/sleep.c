@@ -69,7 +69,7 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
         if (r)
                 return 0;
 
-        if (operation < _SLEEP_OPERATION_MAX) {
+        if (operation != _SLEEP_OPERATION_MAX) {
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
