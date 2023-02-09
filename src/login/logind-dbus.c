@@ -61,6 +61,7 @@
 // Additional includes needed by elogind
 #include <stdio.h>
 #include "exec-elogind.h"
+#include "sd-login.h"
 #include "sleep.h"
 #include "update-utmp.h"
 
@@ -2148,6 +2149,28 @@ static int method_do_shutdown_or_sleep(
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_AUGMENT|SD_BUS_CREDS_UID, &creds);
         if (r >= 0) {
                 (void) sd_bus_creds_get_uid(creds, &m->scheduled_sleep_uid);
+        }
+        /* If the UID is 0, a regular user might have used sudo. We then have
+         * to determine a more suitable UID, as 0 won't work (unless root has
+         * a real session with a real VT to switch away from) */
+        if ( 0 == m->scheduled_sleep_uid) {
+                r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, NULL);
+                if (r <= 0) {
+                        /* Nope, no active root sessions found. */
+                        _cleanup_free_ uid_t *users = NULL;
+                        r = sd_get_uids(&users);
+                        log_debug_elogind("root has no sessions, checking %d found uids ...", r);
+                        for (int i = 0 ; (r > 0) && (i < r) ; ++i) {
+                                if ( sd_uid_get_sessions(users[i], 1, NULL) > 0 ) {
+                                        log_debug_elogind("UID %u has an active session", users[i]);
+                                        m->scheduled_sleep_uid = users[i];
+                                        r = 0;
+                                }
+                        }
+                        if ( 0 == m->scheduled_sleep_uid) {
+                                log_debug_elogind("%s", "Unable to find an active UID");
+                        }
+                }
         }
 #endif // 1
         /* reset case we're shorting a scheduled shutdown */
