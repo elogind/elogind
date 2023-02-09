@@ -121,7 +121,7 @@
 
     <para><filename>elogind-pcrfs-root.service</filename> and <filename>elogind-pcrfs@.service</filename> are
     automatically pulled into the initial transaction by
-    <citerefentry><refentrytitle>elogind-gpt-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>elogind-gpt-auto-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     for the root and <filename>/var/</filename> file
     systems. <citerefentry><refentrytitle>elogind-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     will do this for all mounts with the <option>x-elogind.pcrfs</option> mount option in
@@ -188,8 +188,8 @@
       <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind-gpt-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind-gpt-auto-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
     </para>
   </refsect1>
 
