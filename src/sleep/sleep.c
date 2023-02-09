@@ -58,7 +58,10 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
         struct stat std;
         unsigned vt = 0;
 
-        assert(operation < _SLEEP_OPERATION_INVALID);
+        assert(m);
+        assert(operation >= 0);
+        assert(operation <= _SLEEP_OPERATION_MAX);
+        assert(operation != SLEEP_SUSPEND_THEN_HIBERNATE); /* execute_s2h() calls execute() with suspend/hibernate */
         assert(vtnr);
 
         // See whether an nvidia suspension is possible
