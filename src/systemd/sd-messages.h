@@ -183,6 +183,9 @@ _SD_BEGIN_DECLARATIONS;
 #define SD_MESSAGE_TIME_SYNC                          SD_ID128_MAKE(7c,8a,41,f3,7b,76,49,41,a0,e1,78,0b,1b,e2,f0,37)
 #define SD_MESSAGE_TIME_SYNC_STR                      SD_ID128_MAKE_STR(7c,8a,41,f3,7b,76,49,41,a0,e1,78,0b,1b,e2,f0,37)
 
+#define SD_MESSAGE_TIME_BUMP                          SD_ID128_MAKE(7d,b7,3c,8a,f0,d9,4e,eb,82,2a,e0,43,23,fe,6a,b6)
+#define SD_MESSAGE_TIME_BUMP_STR                      SD_ID128_MAKE_STR(7d,b7,3c,8a,f0,d9,4e,eb,82,2a,e0,43,23,fe,6a,b6)
+
 #define SD_MESSAGE_SHUTDOWN_SCHEDULED                 SD_ID128_MAKE(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
 #define SD_MESSAGE_SHUTDOWN_SCHEDULED_STR             SD_ID128_MAKE_STR(9e,70,66,27,9d,c8,40,3d,a7,9c,e4,b1,a6,90,64,b2)
 
@@ -191,6 +194,9 @@ _SD_BEGIN_DECLARATIONS;
 
 #define SD_MESSAGE_TPM_PCR_EXTEND                     SD_ID128_MAKE(3f,7d,5e,f3,e5,4f,43,02,b4,f0,b1,43,bb,27,0c,ab)
 #define SD_MESSAGE_TPM_PCR_EXTEND_STR                 SD_ID128_MAKE_STR(3f,7d,5e,f3,e5,4f,43,02,b4,f0,b1,43,bb,27,0c,ab)
+
+#define SD_MESSAGE_MEMORY_TRIM                        SD_ID128_MAKE(f9,b0,be,46,5a,d5,40,d0,85,0a,d3,21,72,d5,7c,21)
+#define SD_MESSAGE_MEMORY_TRIM_STR                    SD_ID128_MAKE_STR(f9,b0,be,46,5a,d5,40,d0,85,0a,d3,21,72,d5,7c,21)
 
 _SD_END_DECLARATIONS;
 
