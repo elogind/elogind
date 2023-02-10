@@ -2,7 +2,6 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <malloc.h>
 #include <stddef.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -23,6 +22,7 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
+#include "mallinfo-util.h"
 #include "path-util.h"
 #include "selinux-util.h"
 #include "stdio-util.h"
@@ -92,26 +92,6 @@ void mac_selinux_retest(void) {
 }
 
 #if HAVE_SELINUX
-#  if HAVE_MALLINFO2
-#    define HAVE_GENERIC_MALLINFO 1
-typedef struct mallinfo2 generic_mallinfo;
-static generic_mallinfo generic_mallinfo_get(void) {
-        return mallinfo2();
-}
-#  elif HAVE_MALLINFO
-#    define HAVE_GENERIC_MALLINFO 1
-typedef struct mallinfo generic_mallinfo;
-static generic_mallinfo generic_mallinfo_get(void) {
-        /* glibc has deprecated mallinfo(), let's suppress the deprecation warning if mallinfo2() doesn't
-         * exist yet. */
-DISABLE_WARNING_DEPRECATED_DECLARATIONS
-        return mallinfo();
-REENABLE_WARNING
-}
-#  else
-#    define HAVE_GENERIC_MALLINFO 0
-#  endif
-
 static int open_label_db(void) {
         struct selabel_handle *hnd;
         usec_t before_timestamp, after_timestamp;
@@ -277,7 +257,7 @@ static int selinux_fix_fd(
                         return 0;
 
                 /* If the old label is identical to the new one, suppress any kind of error */
-                if (getfilecon_raw(FORMAT_PROC_FD_PATH(fd), &oldcon) >= 0 && streq(fcon, oldcon))
+                if (getfilecon_raw(FORMAT_PROC_FD_PATH(fd), &oldcon) >= 0 && streq_ptr(fcon, oldcon))
                         return 0;
 
                 return log_enforcing_errno(r, "Unable to fix SELinux security context of %s: %m", label_path);
@@ -297,7 +277,7 @@ int mac_selinux_fix_full(
         assert(atfd >= 0 || inode_path);
 
 #if HAVE_SELINUX
-        _cleanup_close_ int opened_fd = -1;
+        _cleanup_close_ int opened_fd = -EBADF;
         _cleanup_free_ char *p = NULL;
         int inode_fd, r;
 
@@ -382,9 +362,13 @@ int mac_selinux_get_create_label_from_exe(const char *exe, char **label) {
 
         if (getcon_raw(&mycon) < 0)
                 return -errno;
+        if (!mycon)
+                return -EOPNOTSUPP;
 
         if (getfilecon_raw(exe, &fcon) < 0)
                 return -errno;
+        if (!fcon)
+                return -EOPNOTSUPP;
 
         sclass = string_to_security_class("process");
         if (sclass == 0)
@@ -396,14 +380,21 @@ int mac_selinux_get_create_label_from_exe(const char *exe, char **label) {
 #endif
 }
 
-int mac_selinux_get_our_label(char **label) {
-#if HAVE_SELINUX
-        assert(label);
+int mac_selinux_get_our_label(char **ret) {
+        assert(ret);
 
+#if HAVE_SELINUX
         if (!mac_selinux_use())
                 return -EOPNOTSUPP;
 
-        return RET_NERRNO(getcon_raw(label));
+        _cleanup_freecon_ char *con = NULL;
+        if (getcon_raw(&con) < 0)
+                return -errno;
+        if (!con)
+                return -EOPNOTSUPP;
+
+        *ret = TAKE_PTR(con);
+        return 0;
 #else
         return -EOPNOTSUPP;
 #endif
@@ -425,13 +416,20 @@ int mac_selinux_get_child_mls_label(int socket_fd, const char *exe, const char *
 
         if (getcon_raw(&mycon) < 0)
                 return -errno;
+        if (!mycon)
+                return -EOPNOTSUPP;
 
         if (getpeercon_raw(socket_fd, &peercon) < 0)
                 return -errno;
+        if (!peercon)
+                return -EOPNOTSUPP;
 
-        if (!exec_label) /* If there is no context set for next exec let's use context of target executable */
+        if (!exec_label) { /* If there is no context set for next exec let's use context of target executable */
                 if (getfilecon_raw(exe, &fcon) < 0)
                         return -errno;
+                if (!fcon)
+                        return -EOPNOTSUPP;
+        }
 
         bcon = context_new(mycon);
         if (!bcon)
