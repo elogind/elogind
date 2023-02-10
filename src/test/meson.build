@@ -194,60 +194,36 @@ test_dlopen_c = files('test-dlopen.c')
 #endif // 0
 
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
 /// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
+/// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+
+/// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-#if 0 /// UNNEEDED in elogind
-#endif // 0
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
 
 #if 0 /// UNNEEDED in elogind
@@ -486,6 +462,10 @@ tests += [
         {
                 'sources' : files('test-math-util.c'),
                 'dependencies' : libm,
+        },
+        {
+                'sources' : files('test-mempress.c'),
+                'dependencies' : threads,
         },
         {
                 'sources' : files('test-namespace.c'),
