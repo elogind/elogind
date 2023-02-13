@@ -674,21 +674,23 @@ static int parse_timestamp_impl(const char *t, usec_t *ret, bool with_tz) {
                 if (streq(t, "now"))
                         goto finish;
 
-                else if (t[0] == '+') {
+                if (t[0] == '+') {
                         r = parse_sec(t+1, &plus);
                         if (r < 0)
                                 return r;
 
                         goto finish;
+                }
 
-                } else if (t[0] == '-') {
+                if (t[0] == '-') {
                         r = parse_sec(t+1, &minus);
                         if (r < 0)
                                 return r;
 
                         goto finish;
+                }
 
-                } else if ((k = endswith(t, " ago"))) {
+                if ((k = endswith(t, " ago"))) {
                         t = strndupa_safe(t, k - t);
 
                         r = parse_sec(t, &minus);
@@ -696,8 +698,9 @@ static int parse_timestamp_impl(const char *t, usec_t *ret, bool with_tz) {
                                 return r;
 
                         goto finish;
+                }
 
-                } else if ((k = endswith(t, " left"))) {
+                if ((k = endswith(t, " left"))) {
                         t = strndupa_safe(t, k - t);
 
                         r = parse_sec(t, &plus);
