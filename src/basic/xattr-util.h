@@ -40,3 +40,5 @@ static inline int flistxattr_malloc(int fd, char **ret) {
         return listxattr_at_malloc(fd, NULL, AT_EMPTY_PATH, ret);
 }
 #endif // 0
+
+int xsetxattr(int fd, const char *path, const char *name, const char *value, size_t size, int flags);
