@@ -490,11 +490,17 @@ static int fd_copy_symlink(
                 if (r < 0)
                         return r;
         }
-        r = symlinkat(target, dt, to);
+        r = RET_NERRNO(symlinkat(target, dt, to));
         if (copy_flags & COPY_MAC_CREATE)
                 mac_selinux_create_file_clear();
-        if (r < 0)
-                return -errno;
+        if (r < 0) {
+                if (FLAGS_SET(copy_flags, COPY_GRACEFUL_WARN) && (ERRNO_IS_PRIVILEGE(r) || ERRNO_IS_NOT_SUPPORTED(r))) {
+                        log_notice_errno(r, "Failed to copy symlink '%s', ignoring: %m", from);
+                        return 0;
+                }
+
+                return r;
+        }
 
         if (fchownat(dt, to,
                      uid_is_valid(override_uid) ? override_uid : st->st_uid,
@@ -524,7 +530,7 @@ static int hardlink_context_setup(
                 const char *to,
                 CopyFlags copy_flags) {
 
-        _cleanup_close_ int dt_copy = -1;
+        _cleanup_close_ int dt_copy = -EBADF;
         int r;
 
         assert(c);
@@ -691,6 +697,7 @@ static int fd_copy_tree_generic(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
+                const Set *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -710,7 +717,7 @@ static int fd_copy_regular(
                 copy_progress_bytes_t progress,
                 void *userdata) {
 
-        _cleanup_close_ int fdf = -1, fdt = -1;
+        _cleanup_close_ int fdf = -EBADF, fdt = -EBADF;
         int r, q;
 
         assert(from);
@@ -751,7 +758,7 @@ static int fd_copy_regular(
                 r = -errno;
 
         (void) futimens(fdt, (struct timespec[]) { st->st_atim, st->st_mtim });
-        (void) copy_xattr(fdf, fdt, copy_flags);
+        (void) copy_xattr(fdf, NULL, fdt, NULL, copy_flags);
 
         if (copy_flags & COPY_FSYNC) {
                 if (fsync(fdt) < 0) {
@@ -801,11 +808,17 @@ static int fd_copy_fifo(
                 if (r < 0)
                         return r;
         }
-        r = mkfifoat(dt, to, st->st_mode & 07777);
+        r = RET_NERRNO(mkfifoat(dt, to, st->st_mode & 07777));
         if (copy_flags & COPY_MAC_CREATE)
                 mac_selinux_create_file_clear();
-        if (r < 0)
-                return -errno;
+        if (r < 0) {
+                if (FLAGS_SET(copy_flags, COPY_GRACEFUL_WARN) && (ERRNO_IS_PRIVILEGE(r) || ERRNO_IS_NOT_SUPPORTED(r))) {
+                        log_notice_errno(r, "Failed to copy fifo '%s', ignoring: %m", from);
+                        return 0;
+                }
+
+                return r;
+        }
 
         if (fchownat(dt, to,
                      uid_is_valid(override_uid) ? override_uid : st->st_uid,
@@ -849,11 +862,17 @@ static int fd_copy_node(
                 if (r < 0)
                         return r;
         }
-        r = mknodat(dt, to, st->st_mode, st->st_rdev);
+        r = RET_NERRNO(mknodat(dt, to, st->st_mode, st->st_rdev));
         if (copy_flags & COPY_MAC_CREATE)
                 mac_selinux_create_file_clear();
-        if (r < 0)
-                return -errno;
+        if (r < 0) {
+                if (FLAGS_SET(copy_flags, COPY_GRACEFUL_WARN) && (ERRNO_IS_PRIVILEGE(r) || ERRNO_IS_NOT_SUPPORTED(r))) {
+                        log_notice_errno(r, "Failed to copy node '%s', ignoring: %m", from);
+                        return 0;
+                }
+
+                return r;
+        }
 
         if (fchownat(dt, to,
                      uid_is_valid(override_uid) ? override_uid : st->st_uid,
@@ -881,6 +900,7 @@ static int fd_copy_directory(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
+                const Set *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -888,11 +908,11 @@ static int fd_copy_directory(
                 void *userdata) {
 
         _cleanup_(hardlink_context_destroy) HardlinkContext our_hardlink_context = {
-                .dir_fd = -1,
-                .parent_fd = -1,
+                .dir_fd = -EBADF,
+                .parent_fd = -EBADF,
         };
 
-        _cleanup_close_ int fdf = -1, fdt = -1;
+        _cleanup_close_ int fdf = -EBADF, fdt = -EBADF;
         _cleanup_closedir_ DIR *d = NULL;
         bool exists, created;
         int r;
@@ -983,6 +1003,11 @@ static int fd_copy_directory(
                                 return r;
                 }
 
+                if (set_contains(denylist, &buf)) {
+                        log_debug("%s/%s is in the denylist, skipping", from, de->d_name);
+                        continue;
+                }
+
                 if (S_ISDIR(buf.st_mode)) {
                         /*
                          * Don't descend into directories on other file systems, if this is requested. We do a simple
@@ -1015,7 +1040,10 @@ static int fd_copy_directory(
                         }
                 }
 
-                q = fd_copy_tree_generic(dirfd(d), de->d_name, &buf, fdt, de->d_name, original_device, depth_left-1, override_uid, override_gid, copy_flags, hardlink_context, child_display_path, progress_path, progress_bytes, userdata);
+                q = fd_copy_tree_generic(dirfd(d), de->d_name, &buf, fdt, de->d_name, original_device,
+                                         depth_left-1, override_uid, override_gid, copy_flags, denylist,
+                                         hardlink_context, child_display_path, progress_path, progress_bytes,
+                                         userdata);
 
                 if (q == -EINTR) /* Propagate SIGINT/SIGTERM up instantly */
                         return q;
@@ -1034,7 +1062,7 @@ static int fd_copy_directory(
                 if (fchmod(fdt, st->st_mode & 07777) < 0)
                         r = -errno;
 
-                (void) copy_xattr(dirfd(d), fdt, copy_flags);
+                (void) copy_xattr(dirfd(d), NULL, fdt, NULL, copy_flags);
                 (void) futimens(fdt, (struct timespec[]) { st->st_atim, st->st_mtim });
         }
 
@@ -1086,6 +1114,7 @@ static int fd_copy_tree_generic(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
+                const Set *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -1094,7 +1123,9 @@ static int fd_copy_tree_generic(
         int r;
 
         if (S_ISDIR(st->st_mode))
-                return fd_copy_directory(df, from, st, dt, to, original_device, depth_left-1, override_uid, override_gid, copy_flags, hardlink_context, display_path, progress_path, progress_bytes, userdata);
+                return fd_copy_directory(df, from, st, dt, to, original_device, depth_left-1, override_uid,
+                                         override_gid, copy_flags, denylist, hardlink_context, display_path,
+                                         progress_path, progress_bytes, userdata);
 
         r = fd_copy_leaf(df, from, st, dt, to, override_uid, override_gid, copy_flags, hardlink_context, display_path, progress_bytes, userdata);
         /* We just tried to copy a leaf node of the tree. If it failed because the node already exists *and* the COPY_REPLACE flag has been provided, we should unlink the node and re-copy. */
@@ -1117,6 +1148,7 @@ int copy_tree_at_full(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
+                const Set *denylist,
                 copy_progress_path_t progress_path,
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
@@ -1130,7 +1162,9 @@ int copy_tree_at_full(
         if (fstatat(fdf, from, &st, AT_SYMLINK_NOFOLLOW) < 0)
                 return -errno;
 
-        r = fd_copy_tree_generic(fdf, from, &st, fdt, to, st.st_dev, COPY_DEPTH_MAX, override_uid, override_gid, copy_flags, NULL, NULL, progress_path, progress_bytes, userdata);
+        r = fd_copy_tree_generic(fdf, from, &st, fdt, to, st.st_dev, COPY_DEPTH_MAX, override_uid,
+                                 override_gid, copy_flags, denylist, NULL, NULL, progress_path,
+                                 progress_bytes, userdata);
         if (r < 0)
                 return r;
 
@@ -1192,7 +1226,7 @@ int copy_directory_fd_full(
                         COPY_DEPTH_MAX,
                         UID_INVALID, GID_INVALID,
                         copy_flags,
-                        NULL, NULL,
+                        NULL, NULL, NULL,
                         progress_path,
                         progress_bytes,
                         userdata);
@@ -1235,7 +1269,7 @@ int copy_directory_full(
                         COPY_DEPTH_MAX,
                         UID_INVALID, GID_INVALID,
                         copy_flags,
-                        NULL, NULL,
+                        NULL, NULL, NULL,
                         progress_path,
                         progress_bytes,
                         userdata);
@@ -1256,7 +1290,7 @@ int copy_file_fd_full(
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
 
-        _cleanup_close_ int fdf = -1;
+        _cleanup_close_ int fdf = -EBADF;
         struct stat st;
         int r;
 
@@ -1283,7 +1317,7 @@ int copy_file_fd_full(
          * mode/ownership of that device node...) */
         if (S_ISREG(st.st_mode)) {
                 (void) copy_times(fdf, fdt, copy_flags);
-                (void) copy_xattr(fdf, fdt, copy_flags);
+                (void) copy_xattr(fdf, NULL, fdt, NULL, copy_flags);
         }
 
         if (copy_flags & COPY_FSYNC_FULL) {
@@ -1309,7 +1343,7 @@ int copy_file_full(
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
 
-        _cleanup_close_ int fdf = -1, fdt = -1;
+        _cleanup_close_ int fdf = -EBADF, fdt = -EBADF;
         struct stat st;
         int r;
 
@@ -1327,7 +1361,7 @@ int copy_file_full(
         if (r < 0)
                 return r;
 
-        RUN_WITH_UMASK(0000) {
+        WITH_UMASK(0000) {
                 if (copy_flags & COPY_MAC_CREATE) {
                         r = mac_selinux_create_file_prepare(to, S_IFREG);
                         if (r < 0)
@@ -1355,7 +1389,7 @@ int copy_file_full(
                 goto fail;
 
         (void) copy_times(fdf, fdt, copy_flags);
-        (void) copy_xattr(fdf, fdt, copy_flags);
+        (void) copy_xattr(fdf, NULL, fdt, NULL, copy_flags);
 
         if (chattr_mask != 0)
                 (void) chattr_fd(fdt, chattr_flags, chattr_mask & ~CHATTR_EARLY_FL, NULL);
@@ -1398,7 +1432,7 @@ int copy_file_atomic_full(
                 void *userdata) {
 
         _cleanup_(unlink_and_freep) char *t = NULL;
-        _cleanup_close_ int fdt = -1;
+        _cleanup_close_ int fdt = -EBADF;
         int r;
 
         assert(from);
@@ -1540,12 +1574,11 @@ int copy_rights_with_fallback(int fdf, int fdt, const char *patht) {
         return fchmod_and_chown_with_fallback(fdt, patht, st.st_mode & 07777, st.st_uid, st.st_gid);
 }
 
-int copy_xattr(int fdf, int fdt, CopyFlags copy_flags) {
+int copy_xattr(int df, const char *from, int dt, const char *to, CopyFlags copy_flags) {
         _cleanup_free_ char *names = NULL;
         int ret = 0, r;
-        const char *p;
 
-        r = flistxattr_malloc(fdf, &names);
+        r = listxattr_at_malloc(df, from, 0, &names);
         if (r < 0)
                 return r;
 
@@ -1555,13 +1588,13 @@ int copy_xattr(int fdf, int fdt, CopyFlags copy_flags) {
                 if (!FLAGS_SET(copy_flags, COPY_ALL_XATTRS) && !startswith(p, "user."))
                         continue;
 
-                r = fgetxattr_malloc(fdf, p, &value);
+                r = getxattr_at_malloc(df, from, p, 0, &value);
                 if (r == -ENODATA)
                         continue; /* gone by now */
                 if (r < 0)
                         return r;
 
-                if (fsetxattr(fdt, p, value, r, 0) < 0)
+                if (xsetxattr(dt, to, p, value, r, 0) < 0)
                         ret = -errno;
         }
 
