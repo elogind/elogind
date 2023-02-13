@@ -234,7 +234,7 @@ nsec_t timespec_load_nsec(const struct timespec *ts) {
 }
 #endif // 0
 
-struct timespec *timespec_store(struct timespec *ts, usec_t u)  {
+struct timespec *timespec_store(struct timespec *ts, usec_t u) {
         assert(ts);
 
         if (u == USEC_INFINITY ||
@@ -251,7 +251,7 @@ struct timespec *timespec_store(struct timespec *ts, usec_t u)  {
 }
 
 #if 0 /// UNNEEDED by elogind
-struct timespec *timespec_store_nsec(struct timespec *ts, nsec_t n)  {
+struct timespec *timespec_store_nsec(struct timespec *ts, nsec_t n) {
         assert(ts);
 
         if (n == NSEC_INFINITY ||
