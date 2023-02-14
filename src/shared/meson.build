@@ -124,7 +124,6 @@
 #         'pcre2-util.c',
 #         'pkcs11-util.c',
 #         'pretty-print.c',
-#         'psi-util.c',
 #         'ptyfwd.c',
 #         'pwquality-util.c',
 #         'qrcode-util.c',
