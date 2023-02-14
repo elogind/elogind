@@ -391,6 +391,11 @@ void log_set_target(LogTarget target) {
         log_target = target;
 }
 
+void log_set_target_and_open(LogTarget target) {
+        log_set_target(target);
+        log_open();
+}
+
 void log_close(void) {
         /* Do not call from library code. */
 
@@ -1265,6 +1270,7 @@ static bool should_parse_proc_cmdline(void) {
                 return true;
 
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }
