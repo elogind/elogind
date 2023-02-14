@@ -568,6 +568,8 @@ tests += [
 #
 #         [files('test-tpm2.c')],
 #
+#         [files('test-mempool.c')],
+#
 #         [files('test-replace-var.c')],
 #
 #         [files('test-calendarspec.c')],
