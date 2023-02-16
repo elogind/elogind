@@ -31,7 +31,10 @@ char** strv_free_erase(char **l);
 DEFINE_TRIVIAL_CLEANUP_FUNC(char**, strv_free_erase);
 #define _cleanup_strv_free_erase_ _cleanup_(strv_free_erasep)
 
-char** strv_copy(char * const *l);
+char** strv_copy_n(char * const *l, size_t n);
+static inline char** strv_copy(char * const *l) {
+        return strv_copy_n(l, SIZE_MAX);
+}
 size_t strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
@@ -49,8 +52,8 @@ static inline int strv_extend(char ***l, const char *value) {
         return strv_extend_with_size(l, NULL, value);
 }
 
-int strv_extendf(char ***l, const char *format, ...) _printf_(2,0);
 #if 0 /// UNNEEDED by elogind
+int strv_extendf(char ***l, const char *format, ...) _printf_(2,3);
 int strv_extend_front(char ***l, const char *value);
 #endif // 0
 
@@ -140,21 +143,9 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-char** strv_parse_nulstr(const char *s, size_t l);
-char** strv_split_nulstr(const char *s);
 #if 0 /// UNNEEDED by elogind
-int strv_make_nulstr(char * const *l, char **p, size_t *n);
 #endif // 0
 
-static inline int strv_from_nulstr(char ***a, const char *nulstr) {
-        char **t;
-
-        t = strv_split_nulstr(nulstr);
-        if (!t)
-                return -ENOMEM;
-        *a = t;
-        return 0;
-}
 
 #if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;
@@ -278,6 +269,8 @@ char** strv_skip(char **l, size_t n);
 int strv_extend_n(char ***l, const char *value, size_t n);
 
 #if 0 /// UNNEEDED by elogind
+int strv_extend_assignment(char ***l, const char *lhs, const char *rhs);
+
 int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
 #endif // 0
 

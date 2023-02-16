@@ -2,7 +2,6 @@
 
 #include "alloc-util.h"
 #include "escape.h"
-#include "nulstr-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "tests.h"
@@ -493,36 +492,6 @@ TEST(strv_split_newlines_full) {
 }
 #endif // 0
 
-TEST(strv_split_nulstr) {
-        _cleanup_strv_free_ char **l = NULL;
-        const char nulstr[] = "str0\0str1\0str2\0str3\0";
-
-        l = strv_split_nulstr (nulstr);
-        assert_se(l);
-
-        assert_se(streq(l[0], "str0"));
-        assert_se(streq(l[1], "str1"));
-        assert_se(streq(l[2], "str2"));
-        assert_se(streq(l[3], "str3"));
-}
-
-TEST(strv_parse_nulstr) {
-        _cleanup_strv_free_ char **l = NULL;
-        const char nulstr[] = "hoge\0hoge2\0hoge3\0\0hoge5\0\0xxx";
-
-        l = strv_parse_nulstr(nulstr, sizeof(nulstr)-1);
-        assert_se(l);
-        puts("Parse nulstr:");
-        strv_print(l);
-
-        assert_se(streq(l[0], "hoge"));
-        assert_se(streq(l[1], "hoge2"));
-        assert_se(streq(l[2], "hoge3"));
-        assert_se(streq(l[3], ""));
-        assert_se(streq(l[4], "hoge5"));
-        assert_se(streq(l[5], ""));
-        assert_se(streq(l[6], "xxx"));
-}
 
 #if 0 /// UNNEEDED by elogind
 TEST(strv_overlap) {
@@ -960,36 +929,6 @@ TEST(strv_extend_n) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static void test_strv_make_nulstr_one(char **l) {
-        _cleanup_free_ char *b = NULL, *c = NULL;
-        _cleanup_strv_free_ char **q = NULL;
-        const char *s = NULL;
-        size_t n, m;
-        unsigned i = 0;
-
-        log_info("/* %s */", __func__);
-
-        assert_se(strv_make_nulstr(l, &b, &n) >= 0);
-        assert_se(q = strv_parse_nulstr(b, n));
-        assert_se(strv_equal(l, q));
-
-        assert_se(strv_make_nulstr(q, &c, &m) >= 0);
-        assert_se(m == n);
-        assert_se(memcmp(b, c, m) == 0);
-
-        NULSTR_FOREACH(s, b)
-                assert_se(streq(s, l[i++]));
-        assert_se(i == strv_length(l));
-}
-
-TEST(strv_make_nulstr) {
-        test_strv_make_nulstr_one(NULL);
-        test_strv_make_nulstr_one(STRV_MAKE(NULL));
-        test_strv_make_nulstr_one(STRV_MAKE("foo"));
-        test_strv_make_nulstr_one(STRV_MAKE("foo", "bar"));
-        test_strv_make_nulstr_one(STRV_MAKE("foo", "bar", "quuux"));
-}
-
 #endif // 0
 
 TEST(foreach_string) {
@@ -1022,5 +961,57 @@ TEST(strv_fnmatch) {
         assert_se(pos == 1);
 }
 #endif // 0
+
+TEST(strv_extend_join) {
+        _cleanup_strv_free_ char **v = NULL;
+
+        assert_se(strv_extend_assignment(&v, "MESSAGE", "ABC") >= 0);
+        assert_se(strv_extend_assignment(&v, "ABC", "QER") >= 0);
+        assert_se(strv_extend_assignment(&v, "MISSING", NULL) >= 0);
+
+        assert_se(strv_length(v) == 2);
+        assert_se(streq(v[0], "MESSAGE=ABC"));
+        assert_se(streq(v[1], "ABC=QER"));
+}
+
+TEST(strv_copy_n) {
+        char **x = STRV_MAKE("a", "b", "c", "d", "e");
+        _cleanup_strv_free_ char **l = NULL;
+
+        l = strv_copy_n(x, 0);
+        assert_se(strv_equal(l, NULL));
+        strv_free(l);
+
+        l = strv_copy_n(x, 0);
+        assert_se(strv_equal(l, (char**) { NULL }));
+        strv_free(l);
+
+        l = strv_copy_n(x, 1);
+        assert_se(strv_equal(l, STRV_MAKE("a")));
+        strv_free(l);
+
+        l = strv_copy_n(x, 2);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b")));
+        strv_free(l);
+
+        l = strv_copy_n(x, 3);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b", "c")));
+        strv_free(l);
+
+        l = strv_copy_n(x, 4);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b", "c", "d")));
+        strv_free(l);
+
+        l = strv_copy_n(x, 5);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b", "c", "d", "e")));
+        strv_free(l);
+
+        l = strv_copy_n(x, 6);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b", "c", "d", "e")));
+        strv_free(l);
+
+        l = strv_copy_n(x, SIZE_MAX);
+        assert_se(strv_equal(l, STRV_MAKE("a", "b", "c", "d", "e")));
+}
 
 DEFINE_TEST_MAIN(LOG_INFO);
