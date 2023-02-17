@@ -188,7 +188,7 @@ static int socket_from_display(const char *display) {
         char *c;
         union sockaddr_union sa;
         socklen_t sa_len;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
         assert(display);
@@ -236,7 +236,7 @@ static int socket_from_display(const char *display) {
 
 static int get_seat_from_display(const char *display, const char **seat, uint32_t *vtnr) {
         _cleanup_free_ char *sys_path = NULL, *tty = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         struct ucred ucred;
         int v, r;
         dev_t display_ctty;
@@ -394,24 +394,40 @@ static int append_session_tasks_max(pam_handle_t *handle, sd_bus_message *m, con
 }
 
 #if 0 /// elogind neither handles io_weight nor cpu_weight
-static int append_session_cg_weight(pam_handle_t *handle, sd_bus_message *m, const char *limit, const char *field) {
+static int append_session_cpu_weight(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
         uint64_t val;
         int r;
-        bool is_cpu_weight;
 
-        is_cpu_weight = streq(field, "CPUWeight");
         if (isempty(limit))
                 return PAM_SUCCESS;
 
-        r = is_cpu_weight ? cg_cpu_weight_parse(limit, &val) : cg_weight_parse(limit, &val);
-        if (r >= 0) {
-                r = sd_bus_message_append(m, "(sv)", field, "t", val);
+        r = cg_cpu_weight_parse(limit, &val);
+        if (r < 0)
+                pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.cpu_weight, ignoring: %s", limit);
+        else {
+                r = sd_bus_message_append(m, "(sv)", "CPUWeight", "t", val);
                 if (r < 0)
                         return pam_bus_log_create_error(handle, r);
-        } else if (is_cpu_weight)
-                pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.cpu_weight, ignoring: %s", limit);
-        else
+        }
+
+        return PAM_SUCCESS;
+}
+
+static int append_session_io_weight(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
+        uint64_t val;
+        int r;
+
+        if (isempty(limit))
+                return PAM_SUCCESS;
+
+        r = cg_weight_parse(limit, &val);
+        if (r < 0)
                 pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.io_weight, ignoring: %s", limit);
+        else {
+                r = sd_bus_message_append(m, "(sv)", "IOWeight", "t", val);
+                if (r < 0)
+                        return pam_bus_log_create_error(handle, r);
+        }
 
         return PAM_SUCCESS;
 }
@@ -676,7 +692,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 *memory_max = NULL, *tasks_max = NULL, *cpu_weight = NULL, *io_weight = NULL, *runtime_max_sec = NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(user_record_unrefp) UserRecord *ur = NULL;
-        int session_fd = -1, existing, r;
+        int session_fd = -EBADF, existing, r;
         bool debug = false, remote;
         uint32_t vtnr = 0;
         uid_t original_uid;
@@ -811,8 +827,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.memory_max data: @PAMERR@");
         r = pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
-                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.tasks_max data: @PAMERR@");
 #if 0 /// elogind neither handles io_weight nor cpu_weight
+                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.tasks_max data: @PAMERR@");
         r = pam_get_data(handle, "systemd.cpu_weight", (const void **)&cpu_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.cpu_weight data: @PAMERR@");
@@ -881,11 +897,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 return r;
 
 #if 0 /// elogind neither handles io_weight nor cpu_weight
-        r = append_session_cg_weight(handle, m, cpu_weight, "CPUWeight");
+        r = append_session_cpu_weight(handle, m, cpu_weight);
         if (r != PAM_SUCCESS)
                 return r;
 
-        r = append_session_cg_weight(handle, m, io_weight, "IOWeight");
+        r = append_session_io_weight(handle, m, io_weight);
         if (r != PAM_SUCCESS)
                 return r;
 #endif // 0
