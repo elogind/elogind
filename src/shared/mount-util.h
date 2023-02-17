@@ -11,38 +11,10 @@
 #include "errno-util.h"
 //#include "macro.h"
 
-/* The limit used for /dev itself. 4MB should be enough since device nodes and symlinks don't
- * consume any space and udev isn't supposed to create regular file either. There's no limit on the
- * max number of inodes since such limit is hard to guess especially on large storage array
- * systems. */
-#define TMPFS_LIMITS_DEV             ",size=4m"
-
-/* The limit used for /dev in private namespaces. 4MB for contents of regular files. The number of
- * inodes should be relatively low in private namespaces but for now use a 64k limit. */
-#define TMPFS_LIMITS_PRIVATE_DEV     ",size=4m,nr_inodes=64k"
-
-/* Very little, if any use expected */
-#define TMPFS_LIMITS_EMPTY_OR_ALMOST ",size=4m,nr_inodes=1k"
-#define TMPFS_LIMITS_SYS             TMPFS_LIMITS_EMPTY_OR_ALMOST
-#define TMPFS_LIMITS_SYS_FS_CGROUP   TMPFS_LIMITS_EMPTY_OR_ALMOST
-
-/* On an extremely small device with only 256MB of RAM, 20% of RAM should be enough for the re-execution of
- * PID1 because 16MB of free space is required. */
-#define TMPFS_LIMITS_RUN             ",size=20%,nr_inodes=800k"
-
 /* The limit used for various nested tmpfs mounts, in particular for guests started by elogind-nspawn.
  * 10% of RAM (using 16GB of RAM as a baseline) translates to 400k inodes (assuming 4k each) and 25%
  * translates to 1M inodes.
  * (On the host, /tmp is configured through a .mount unit file.) */
-#define NESTED_TMPFS_LIMITS          ",size=10%,nr_inodes=400k"
-
-/* More space for volatile root and /var */
-#define TMPFS_LIMITS_VAR             ",size=25%,nr_inodes=1m"
-#define TMPFS_LIMITS_ROOTFS          TMPFS_LIMITS_VAR
-#define TMPFS_LIMITS_VOLATILE_STATE  TMPFS_LIMITS_VAR
-
-int mount_fd(const char *source, int target_fd, const char *filesystemtype, unsigned long mountflags, const void *data);
-int mount_nofollow(const char *source, const char *target, const char *filesystemtype, unsigned long mountflags, const void *data);
 
 #if 0 /// UNNEEDED by elogind
 int repeat_unmount(const char *path, int flags);
@@ -55,7 +27,7 @@ static inline int bind_remount_recursive(const char *prefix, unsigned long new_f
 
 int bind_remount_one_with_mountinfo(const char *path, unsigned long new_flags, unsigned long flags_mask, FILE *proc_self_mountinfo);
 
-int mount_move_root(const char *path);
+int mount_switch_root(const char *path, unsigned long mount_propagation_flag);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(FILE*, endmntent, NULL);
 #define _cleanup_endmntent_ _cleanup_(endmntentp)
@@ -147,6 +119,14 @@ typedef enum RemountIdmapping {
 } RemountIdmapping;
 
 int remount_idmap(const char *p, uid_t uid_shift, uid_t uid_range, uid_t owner, RemountIdmapping idmapping);
+
+int remount_and_move_sub_mounts(
+                const char *what,
+                const char *where,
+                const char *type,
+                unsigned long flags,
+                const char *options);
+int remount_sysfs(const char *where);
 
 /* Creates a mount point (not parents) based on the source path or stat - ie, a file or a directory */
 int make_mount_point_inode_from_stat(const struct stat *st, const char *dest, mode_t mode);
