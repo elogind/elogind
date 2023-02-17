@@ -9,7 +9,7 @@
 #include "sync-util.h"
 
 int fsync_directory_of_file(int fd) {
-        _cleanup_close_ int dfd = -1;
+        _cleanup_close_ int dfd = -EBADF;
         struct stat st;
         int r;
 
@@ -27,16 +27,12 @@ int fsync_directory_of_file(int fd) {
 
         } else if (!S_ISREG(st.st_mode)) { /* Regular files are OK regardless if O_PATH or not, for all other
                                             * types check O_PATH flag */
-                int flags;
-
-                flags = fcntl(fd, F_GETFL);
-                if (flags < 0)
-                        return -errno;
-
-                if (!FLAGS_SET(flags, O_PATH)) /* If O_PATH this refers to the inode in the fs, in which case
-                                                * we can sensibly do what is requested. Otherwise this refers
-                                                * to a socket, fifo or device node, where the concept of a
-                                                * containing directory doesn't make too much sense. */
+                r = fd_is_opath(fd);
+                if (r < 0)
+                        return r;
+                if (!r) /* If O_PATH this refers to the inode in the fs, in which case we can sensibly do
+                         * what is requested. Otherwise this refers to a socket, fifo or device node, where
+                         * the concept of a containing directory doesn't make too much sense. */
                         return -ENOTTY;
         }
 
@@ -87,7 +83,7 @@ int fsync_full(int fd) {
 
 #if 0 /// UNNEEDED by elogind
 int fsync_path_at(int at_fd, const char *path) {
-        _cleanup_close_ int opened_fd = -1;
+        _cleanup_close_ int opened_fd = -EBADF;
         int fd;
 
         if (isempty(path)) {
@@ -111,7 +107,7 @@ int fsync_path_at(int at_fd, const char *path) {
 }
 
 int fsync_parent_at(int at_fd, const char *path) {
-        _cleanup_close_ int opened_fd = -1;
+        _cleanup_close_ int opened_fd = -EBADF;
 
         if (isempty(path)) {
                 if (at_fd != AT_FDCWD)
@@ -132,7 +128,7 @@ int fsync_parent_at(int at_fd, const char *path) {
 }
 
 int fsync_path_and_parent_at(int at_fd, const char *path) {
-        _cleanup_close_ int opened_fd = -1;
+        _cleanup_close_ int opened_fd = -EBADF;
 
         if (isempty(path)) {
                 if (at_fd != AT_FDCWD)
@@ -148,7 +144,7 @@ int fsync_path_and_parent_at(int at_fd, const char *path) {
 }
 
 int syncfs_path(int at_fd, const char *path) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         if (isempty(path)) {
                 if (at_fd != AT_FDCWD)
