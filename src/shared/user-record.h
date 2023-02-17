@@ -368,6 +368,9 @@ typedef struct UserRecord {
         RecoveryKey *recovery_key;
         size_t n_recovery_key;
 
+        char **capability_bounding_set;
+        char **capability_ambient_set;
+
         JsonVariant *json;
 } UserRecord;
 
@@ -418,6 +421,8 @@ bool user_record_drop_caches(UserRecord *h);
 AutoResizeMode user_record_auto_resize_mode(UserRecord *h);
 uint64_t user_record_rebalance_weight(UserRecord *h);
 #endif // 0
+uint64_t user_record_capability_bounding_set(UserRecord *h);
+uint64_t user_record_capability_ambient_set(UserRecord *h);
 
 int user_record_build_image_path(UserStorage storage, const char *user_name_and_realm, char **ret);
 
