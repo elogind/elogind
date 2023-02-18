@@ -34,7 +34,6 @@
 #include "memory-util.h"
 #include "missing_sched.h"
 #include "missing_syscall.h"
-#include "missing_threads.h"
 #include "namespace-util.h"
 #include "path-util.h"
 #include "process-util.h"
@@ -1337,7 +1336,6 @@ int safe_fork_full(
                 /* Close the logs if requested, before we log anything. And make sure we reopen it if needed. */
                 log_close();
                 log_set_open_when_needed(true);
-                log_settle_target();
         }
 
         if (name) {
