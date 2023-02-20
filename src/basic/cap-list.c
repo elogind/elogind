@@ -21,7 +21,6 @@ static const struct capability_name* lookup_capability(register const char *str,
 const char *capability_to_name(int id) {
         if (id < 0)
                 return NULL;
-
         if ((size_t) id >= ELEMENTSOF(capability_names))
                 return NULL;
 
@@ -29,6 +28,22 @@ const char *capability_to_name(int id) {
 }
 
 #if 0 /// UNNEEDED by elogind
+const char *capability_to_string(int id, char buf[static CAPABILITY_TO_STRING_MAX]) {
+        const char *p;
+
+        if (id < 0)
+                return NULL;
+        if (id >= 63) /* refuse caps >= 63 since we can't store them in a uint64_t mask anymore, and still retain UINT64_MAX as marker for "unset" */
+                return NULL;
+
+        p = capability_to_name(id);
+        if (p)
+                return p;
+
+        sprintf(buf, "0x%x", (unsigned) id); /* numerical fallback */
+        return buf;
+}
+
 int capability_from_name(const char *name) {
         const struct capability_name *sc;
         int r, i;
