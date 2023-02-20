@@ -60,3 +60,5 @@ int blockdev_reread_partition_table(sd_device *dev);
 
 int blockdev_get_sector_size(int fd, uint32_t *ret);
 #endif // 0
+
+int blockdev_get_root(int level, dev_t *ret);
