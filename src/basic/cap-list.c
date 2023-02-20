@@ -10,7 +10,6 @@
 #include "macro.h"
 #include "parse-util.h"
 #include "stdio-util.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
@@ -61,11 +60,11 @@ int capability_list_length(void) {
 }
 #endif // 0
 
-int capability_set_to_string_alloc(uint64_t set, char **s) {
+int capability_set_to_string(uint64_t set, char **ret) {
         _cleanup_free_ char *str = NULL;
         size_t n = 0;
 
-        assert(s);
+        assert(ret);
 
         for (unsigned i = 0; i <= cap_last_cap(); i++)
                 if (set & (UINT64_C(1) << i)) {
@@ -93,8 +92,7 @@ int capability_set_to_string_alloc(uint64_t set, char **s) {
 
         str[n > 0 ? n - 1 : 0] = '\0'; /* truncate the last space, if it's there */
 
-        *s = TAKE_PTR(str);
-
+        *ret = TAKE_PTR(str);
         return 0;
 }
 
