@@ -698,7 +698,7 @@ static int fd_copy_tree_generic(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
-                const Set *denylist,
+                Hashmap *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -901,7 +901,7 @@ static int fd_copy_directory(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
-                const Set *denylist,
+                Hashmap *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -975,6 +975,11 @@ static int fd_copy_directory(
 
         r = 0;
 
+        if (PTR_TO_INT(hashmap_get(denylist, st)) == DENY_CONTENTS) {
+                log_debug("%s is in the denylist, not recursing", from);
+                goto finish;
+        }
+
         FOREACH_DIRENT_ALL(de, d, return -errno) {
                 const char *child_display_path = NULL;
                 _cleanup_free_ char *dp = NULL;
@@ -1004,8 +1009,8 @@ static int fd_copy_directory(
                                 return r;
                 }
 
-                if (set_contains(denylist, &buf)) {
-                        log_debug("%s/%s is in the denylist, skipping", from, de->d_name);
+                if (PTR_TO_INT(hashmap_get(denylist, &buf)) == DENY_INODE) {
+                        log_debug("%s/%s is in the denylist, ignoring", from, de->d_name);
                         continue;
                 }
 
@@ -1054,6 +1059,7 @@ static int fd_copy_directory(
                         r = q;
         }
 
+finish:
         if (created) {
                 if (fchown(fdt,
                            uid_is_valid(override_uid) ? override_uid : st->st_uid,
@@ -1115,7 +1121,7 @@ static int fd_copy_tree_generic(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
-                const Set *denylist,
+                Hashmap *denylist,
                 HardlinkContext *hardlink_context,
                 const char *display_path,
                 copy_progress_path_t progress_path,
@@ -1127,6 +1133,13 @@ static int fd_copy_tree_generic(
                 return fd_copy_directory(df, from, st, dt, to, original_device, depth_left-1, override_uid,
                                          override_gid, copy_flags, denylist, hardlink_context, display_path,
                                          progress_path, progress_bytes, userdata);
+
+        DenyType t = PTR_TO_INT(hashmap_get(denylist, st));
+        if (t == DENY_INODE) {
+                log_debug("%s is in the denylist, ignoring", from);
+                return 0;
+        } else if (t == DENY_CONTENTS)
+                log_debug("%s is configured to have its contents excluded, but is not a directory", from);
 
         r = fd_copy_leaf(df, from, st, dt, to, override_uid, override_gid, copy_flags, hardlink_context, display_path, progress_bytes, userdata);
         /* We just tried to copy a leaf node of the tree. If it failed because the node already exists *and* the COPY_REPLACE flag has been provided, we should unlink the node and re-copy. */
@@ -1149,7 +1162,7 @@ int copy_tree_at_full(
                 uid_t override_uid,
                 gid_t override_gid,
                 CopyFlags copy_flags,
-                const Set *denylist,
+                Hashmap *denylist,
                 copy_progress_path_t progress_path,
                 copy_progress_bytes_t progress_bytes,
                 void *userdata) {
