@@ -114,8 +114,6 @@ option('debug-extra', type : 'array', choices : ['elogind', 'hashmap', 'mmap-cac
 # option('bump-proc-sys-fs-nr-open', type : 'boolean',
 #        description : 'bump /proc/sys/fs/nr_open to INT_MAX')
 #endif // 0
-option('valgrind', type : 'boolean', value : false,
-       description : 'do extra operations to avoid valgrind warnings')
 option('log-trace', type : 'boolean', value : false,
        description : 'enable low level debug logging')
 option('user-path', type : 'string',

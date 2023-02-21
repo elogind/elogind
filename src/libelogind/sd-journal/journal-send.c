@@ -11,7 +11,7 @@
 //#include <sys/un.h>
 #include <unistd.h>
 #if HAVE_VALGRIND_VALGRIND_H
-#include <valgrind/valgrind.h>
+#  include <valgrind/valgrind.h>
 #endif
 
 #define SD_JOURNAL_SUPPRESS_LOCATION
@@ -85,9 +85,9 @@ int journal_fd_nonblock(bool nonblock) {
 }
 #endif /// 0
 
-#if VALGRIND
 void close_journal_fd(void) {
-        /* Be nice to valgrind. This is not atomic. This must be used only in tests. */
+#if HAVE_VALGRIND_VALGRIND_H
+        /* Be nice to valgrind. This is not atomic, so it is useful mainly for debugging. */
 
         if (!RUNNING_ON_VALGRIND)
                 return;
@@ -100,8 +100,8 @@ void close_journal_fd(void) {
 
         safe_close(fd_plus_one - 1);
         fd_plus_one = 0;
-}
 #endif
+}
 
 _public_ int sd_journal_print(int priority, const char *format, ...) {
         int r;
@@ -260,7 +260,7 @@ _public_ int sd_journal_sendv(const struct iovec *iov, int n) {
         PROTECT_ERRNO;
 #if 0 /// UNNEEDED by elogind
         int fd, r;
-        _cleanup_close_ int buffer_fd = -1;
+        _cleanup_close_ int buffer_fd = -EBADF;
         struct iovec *w;
         uint64_t *l;
         int i, j = 0;
@@ -491,7 +491,7 @@ _public_ int sd_journal_perror(const char *message) {
 
 _public_ int sd_journal_stream_fd(const char *identifier, int priority, int level_prefix) {
 #if 0 /// elogind is not journald and can not stream fds in the latter.
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         char *header;
         size_t l;
         int r;
