@@ -35,6 +35,7 @@ typedef enum TimestampStyle {
         TIMESTAMP_UTC,
         TIMESTAMP_US_UTC,
         TIMESTAMP_UNIX,
+        TIMESTAMP_DATE,
         _TIMESTAMP_STYLE_MAX,
         _TIMESTAMP_STYLE_INVALID = -EINVAL,
 } TimestampStyle;
@@ -135,8 +136,13 @@ struct timeval* timeval_store(struct timeval *tv, usec_t u);
 #define TIMEVAL_STORE(u) timeval_store(&(struct timeval) {}, (u))
 
 char* format_timestamp_style(char *buf, size_t l, usec_t t, TimestampStyle style) _warn_unused_result_;
-char* format_timestamp_relative(char *buf, size_t l, usec_t t) _warn_unused_result_;
+char* format_timestamp_relative_full(char *buf, size_t l, usec_t t, bool implicit_left) _warn_unused_result_;
 char* format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) _warn_unused_result_;
+
+_warn_unused_result_
+static inline char* format_timestamp_relative(char *buf, size_t l, usec_t t)  {
+        return format_timestamp_relative_full(buf, l, t, false);
+}
 
 _warn_unused_result_
 static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
