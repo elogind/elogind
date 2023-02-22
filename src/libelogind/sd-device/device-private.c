@@ -805,7 +805,7 @@ int device_update_db(sd_device *device) {
         const char *id;
         char *path;
         _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_free_ char *path_tmp = NULL;
+        _cleanup_(unlink_and_freep) char *path_tmp = NULL;
         bool has_info;
         int r;
 
@@ -882,6 +882,8 @@ int device_update_db(sd_device *device) {
                 goto fail;
         }
 
+        path_tmp = mfree(path_tmp);
+
         log_device_debug(device, "sd-device: Created %s file '%s' for '%s'", has_info ? "db" : "empty",
                          path, device->devpath);
 
@@ -889,7 +891,6 @@ int device_update_db(sd_device *device) {
 
 fail:
         (void) unlink(path);
-        (void) unlink(path_tmp);
 
         return log_device_debug_errno(device, r, "sd-device: Failed to create %s file '%s' for '%s'", has_info ? "db" : "empty", path, device->devpath);
 }
