@@ -569,7 +569,6 @@ static int device_update_properties_bufs(sd_device *device) {
                 return -ENOMEM;
 
         size_t i = 0;
-        char *p;
         NULSTR_FOREACH(p, buf_nulstr)
                 buf_strv[i++] = p;
         assert(i == num);
@@ -628,51 +627,6 @@ int device_get_devlink_priority(sd_device *device, int *ret) {
                 *ret = device->devlink_priority;
 
         return 0;
-}
-
-int device_rename(sd_device *device, const char *name) {
-        _cleanup_free_ char *new_syspath = NULL;
-        const char *interface;
-        int r;
-
-        assert(device);
-        assert(name);
-
-        if (!filename_is_valid(name))
-                return -EINVAL;
-
-        r = path_extract_directory(device->syspath, &new_syspath);
-        if (r < 0)
-                return r;
-
-        if (!path_extend(&new_syspath, name))
-                return -ENOMEM;
-
-        if (!path_is_safe(new_syspath))
-                return -EINVAL;
-
-        /* At the time this is called, the renamed device may not exist yet. Hence, we cannot validate
-         * the new syspath. */
-        r = device_set_syspath(device, new_syspath, false);
-        if (r < 0)
-                return r;
-
-        /* Here, only clear the sysname and sysnum. They will be set when requested. */
-        device->sysnum = NULL;
-        device->sysname = mfree(device->sysname);
-
-        r = sd_device_get_property_value(device, "INTERFACE", &interface);
-        if (r == -ENOENT)
-                return 0;
-        if (r < 0)
-                return r;
-
-        /* like DEVPATH_OLD, INTERFACE_OLD is not saved to the db, but only stays around for the current event */
-        r = device_add_property_internal(device, "INTERFACE_OLD", interface);
-        if (r < 0)
-                return r;
-
-        return device_add_property_internal(device, "INTERFACE", name);
 }
 
 static int device_shallow_clone(sd_device *device, sd_device **ret) {
@@ -851,7 +805,7 @@ int device_update_db(sd_device *device) {
         const char *id;
         char *path;
         _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_free_ char *path_tmp = NULL;
+        _cleanup_(unlink_and_freep) char *path_tmp = NULL;
         bool has_info;
         int r;
 
@@ -928,6 +882,8 @@ int device_update_db(sd_device *device) {
                 goto fail;
         }
 
+        path_tmp = mfree(path_tmp);
+
         log_device_debug(device, "sd-device: Created %s file '%s' for '%s'", has_info ? "db" : "empty",
                          path, device->devpath);
 
@@ -935,7 +891,6 @@ int device_update_db(sd_device *device) {
 
 fail:
         (void) unlink(path);
-        (void) unlink(path_tmp);
 
         return log_device_debug_errno(device, r, "sd-device: Failed to create %s file '%s' for '%s'", has_info ? "db" : "empty", path, device->devpath);
 }

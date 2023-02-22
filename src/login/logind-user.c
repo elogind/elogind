@@ -35,7 +35,6 @@
 #include "uid-alloc-range.h"
 #include "unit-name.h"
 #include "user-util.h"
-//#include "util.h"
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
@@ -154,7 +153,7 @@ User *user_free(User *u) {
 }
 
 static int user_save_internal(User *u) {
-        _cleanup_free_ char *temp_path = NULL;
+        _cleanup_(unlink_and_freep) char *temp_path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
         int r;
 
@@ -298,13 +297,11 @@ static int user_save_internal(User *u) {
                 goto fail;
         }
 
+        temp_path = mfree(temp_path);
         return 0;
 
 fail:
         (void) unlink(u->state_file);
-
-        if (temp_path)
-                (void) unlink(temp_path);
 
         return log_error_errno(r, "Failed to save user data %s: %m", u->state_file);
 }
