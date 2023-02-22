@@ -9,6 +9,7 @@
 
 #include "alloc-util.h"
 #include "macro.h"
+#include "memory-util-fundamental.h"
 
 size_t page_size(void) _pure_;
 #define PAGE_ALIGN(l) ALIGN_TO((l), page_size())
@@ -95,16 +96,6 @@ static inline void *mempmem_safe(const void *haystack, size_t haystacklen, const
 }
 #endif // 0
 
-#if HAVE_EXPLICIT_BZERO
-static inline void* explicit_bzero_safe(void *p, size_t l) {
-        if (l > 0)
-                explicit_bzero(p, l);
-
-        return p;
-}
-#else
-void *explicit_bzero_safe(void *p, size_t l);
-#endif
 
 static inline void* erase_and_free(void *p) {
         size_t l;
@@ -127,3 +118,37 @@ static inline void erase_char(char *p) {
         explicit_bzero_safe(p, sizeof(char));
 }
 #endif // 0
+
+/* An automatic _cleanup_-like logic for destroy arrays (i.e. pointers + size) when leaving scope */
+struct ArrayCleanup {
+        void **parray;
+        size_t *pn;
+        free_array_func_t pfunc;
+};
+
+static inline void array_cleanup(struct ArrayCleanup *c) {
+        assert(c);
+
+        assert(!c->parray == !c->pn);
+
+        if (!c->parray)
+                return;
+
+        if (*c->parray) {
+                assert(c->pfunc);
+                c->pfunc(*c->parray, *c->pn);
+                *c->parray = NULL;
+        }
+
+        *c->pn = 0;
+}
+
+#define CLEANUP_ARRAY(array, n, func)                                   \
+        _cleanup_(array_cleanup) _unused_ struct ArrayCleanup CONCATENATE(_cleanup_array_, UNIQ) = { \
+                .parray = (void**) &(array),                            \
+                .pn = &(n),                                             \
+                .pfunc = (free_array_func_t) ({                         \
+                                void (*_f)(typeof(array[0]) *a, size_t b) = func; \
+                                _f;                                     \
+                        }),                                             \
+        }
