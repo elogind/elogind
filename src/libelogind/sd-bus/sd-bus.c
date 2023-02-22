@@ -27,7 +27,7 @@
 #include "bus-track.h"
 #include "bus-type.h"
 #include "cgroup-util.h"
-#include "def.h"
+#include "constants.h"
 #include "errno-util.h"
 #include "fd-util.h"
 #include "glyph-util.h"
@@ -48,7 +48,9 @@
 #define log_debug_bus_message(m)                                         \
         do {                                                             \
                 sd_bus_message *_mm = (m);                               \
-                log_debug("Got message type=%s sender=%s destination=%s path=%s interface=%s member=%s cookie=%" PRIu64 " reply_cookie=%" PRIu64 " signature=%s error-name=%s error-message=%s", \
+                log_debug("Got message type=%s sender=%s destination=%s path=%s interface=%s member=%s " \
+                          " cookie=%" PRIu64 " reply_cookie=%" PRIu64   \
+                          " signature=%s error-name=%s error-message=%s", \
                           strna(bus_message_type_to_string(_mm->header->type)), \
                           strna(sd_bus_message_get_sender(_mm)),         \
                           strna(sd_bus_message_get_destination(_mm)),    \
@@ -240,9 +242,9 @@ _public_ int sd_bus_new(sd_bus **ret) {
 
         *b = (sd_bus) {
                 .n_ref = 1,
-                .input_fd = -1,
-                .output_fd = -1,
-                .inotify_fd = -1,
+                .input_fd = -EBADF,
+                .output_fd = -EBADF,
+                .inotify_fd = -EBADF,
                 .message_version = 1,
                 .creds_mask = SD_BUS_CREDS_WELL_KNOWN_NAMES|SD_BUS_CREDS_UNIQUE_NAME,
                 .accept_fd = true,
@@ -1983,7 +1985,9 @@ static int bus_write_message(sd_bus *bus, sd_bus_message *m, size_t *idx) {
                 return r;
 
         if (*idx >= BUS_MESSAGE_SIZE(m))
-                log_debug("Sent message type=%s sender=%s destination=%s path=%s interface=%s member=%s cookie=%" PRIu64 " reply_cookie=%" PRIu64 " signature=%s error-name=%s error-message=%s",
+                log_debug("Sent message type=%s sender=%s destination=%s path=%s interface=%s member=%s"
+                          " cookie=%" PRIu64 " reply_cookie=%" PRIu64
+                          " signature=%s error-name=%s error-message=%s",
                           bus_message_type_to_string(m->header->type),
                           strna(sd_bus_message_get_sender(m)),
                           strna(sd_bus_message_get_destination(m)),
@@ -2412,7 +2416,8 @@ _public_ int sd_bus_call(
                                                 return 1;
                                         }
 
-                                        return sd_bus_error_set(error, SD_BUS_ERROR_INCONSISTENT_MESSAGE, "Reply message contained file descriptors which I couldn't accept. Sorry.");
+                                        return sd_bus_error_set(error, SD_BUS_ERROR_INCONSISTENT_MESSAGE,
+                                                                "Reply message contained file descriptors which I couldn't accept. Sorry.");
 
                                 } else if (incoming->header->type == SD_BUS_MESSAGE_METHOD_ERROR)
                                         return sd_bus_error_copy(error, &incoming->error);
@@ -2465,8 +2470,11 @@ _public_ int sd_bus_call(
                         left = UINT64_MAX;
 
                 r = bus_poll(bus, true, left);
-                if (r < 0)
+                if (r < 0) {
+                        if (ERRNO_IS_TRANSIENT(r))
+                                continue;
                         goto fail;
+                }
                 if (r == 0) {
                         r = -ETIMEDOUT;
                         goto fail;
@@ -2921,10 +2929,12 @@ static int process_fd_check(sd_bus *bus, sd_bus_message *m) {
         if (m->header->type != SD_BUS_MESSAGE_METHOD_CALL)
                 return 1; /* just eat it up */
 
-        return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_INCONSISTENT_MESSAGE, "Message contains file descriptors, which I cannot accept. Sorry.");
+        return sd_bus_reply_method_errorf(m, SD_BUS_ERROR_INCONSISTENT_MESSAGE,
+                                          "Message contains file descriptors, which I cannot accept. Sorry.");
 }
 
 static int process_message(sd_bus *bus, sd_bus_message *m) {
+        _unused_ _cleanup_(log_context_freep) LogContext *c = NULL;
         int r;
 
         assert(bus);
@@ -2932,6 +2942,9 @@ static int process_message(sd_bus *bus, sd_bus_message *m) {
 
         bus->current_message = m;
         bus->iteration_counter++;
+
+        if (log_context_enabled())
+                c = log_context_new_consume(bus_message_make_log_fields(m));
 
         log_debug_bus_message(m);
 
@@ -3321,6 +3334,7 @@ static int bus_poll(sd_bus *bus, bool need_more, uint64_t timeout_usec) {
 }
 
 _public_ int sd_bus_wait(sd_bus *bus, uint64_t timeout_usec) {
+        int r;
 
         assert_return(bus, -EINVAL);
         assert_return(bus = bus_resolve(bus), -ENOPKG);
@@ -3335,7 +3349,11 @@ _public_ int sd_bus_wait(sd_bus *bus, uint64_t timeout_usec) {
         if (bus->rqueue_size > 0)
                 return 0;
 
-        return bus_poll(bus, false, timeout_usec);
+        r = bus_poll(bus, false, timeout_usec);
+        if (r < 0 && ERRNO_IS_TRANSIENT(r))
+                return 1; /* treat EINTR as success, but let's exit, so that the caller will call back into us soon. */
+
+        return r;
 }
 
 _public_ int sd_bus_flush(sd_bus *bus) {
@@ -3377,8 +3395,12 @@ _public_ int sd_bus_flush(sd_bus *bus) {
                         return 0;
 
                 r = bus_poll(bus, false, UINT64_MAX);
-                if (r < 0)
+                if (r < 0) {
+                        if (ERRNO_IS_TRANSIENT(r))
+                                continue;
+
                         return r;
+                }
         }
 }
 
@@ -3483,7 +3505,7 @@ static int bus_add_match_full(
                 void *userdata) {
 
         struct bus_match_component *components = NULL;
-        unsigned n_components = 0;
+        size_t n_components = 0;
         sd_bus_slot *s = NULL;
         int r = 0;
 
@@ -3529,7 +3551,7 @@ static int bus_add_match_full(
                                                                  s);
 
                                 if (r < 0)
-                                        return r;
+                                        goto finish;
 
                                 /* Make the slot of the match call floating now. We need the reference, but we don't
                                  * want that this match pins the bus object, hence we first create it non-floating, but
