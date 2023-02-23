@@ -14,10 +14,12 @@
 #include "bus-log-control-api.h"
 #include "bus-polkit.h"
 //#include "cgroup-util.h"
+#include "common-signal.h"
+#include "constants.h"
 #include "daemon-util.h"
-//#include "def.h"
 #include "device-util.h"
 #include "dirent-util.h"
+#include "escape.h"
 #include "fd-util.h"
 #include "format-util.h"
 #include "fs-util.h"
@@ -38,6 +40,7 @@
 /// Additional includes needed by elogind
 #include "label.h"
 #include "musl_missing.h"
+#include "udev-util.h"
 #include "user-util.h"
 
 static Manager* manager_unref(Manager *m);
@@ -54,9 +57,9 @@ static int manager_new(Manager **ret) {
                 return -ENOMEM;
 
         *m = (Manager) {
-                .console_active_fd = -1,
 #if 0 /// elogind does not support autospawning of vts
-                .reserve_vt_fd = -1,
+                .console_active_fd = -EBADF,
+                .reserve_vt_fd = -EBADF,
                 .enable_wall_messages = true,
                 .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
 #endif // 0
@@ -99,6 +102,14 @@ static int manager_new(Manager **ret) {
         if (r < 0)
                 return r;
 #endif // 0
+
+        r = sd_event_add_signal(m->event, NULL, SIGRTMIN+18, sigrtmin18_handler, NULL);
+        if (r < 0)
+                return r;
+
+        r = sd_event_add_memory_pressure(m->event, NULL, NULL, NULL);
+        if (r < 0)
+                log_debug_errno(r, "Failed allocate memory pressure event source, ignoring: %m");
 
         (void) sd_event_set_watchdog(m->event, true);
 
@@ -327,11 +338,16 @@ static int manager_enumerate_linger_users(Manager *m) {
 
         FOREACH_DIRENT(de, d, return -errno) {
                 int k;
+                _cleanup_free_ char *n = NULL;
 
                 if (!dirent_is_file(de))
                         continue;
-
-                k = manager_add_user_by_name(m, de->d_name, NULL);
+                k = cunescape(de->d_name, 0, &n);
+                if (k < 0) {
+                        r = log_warning_errno(k, "Failed to unescape username '%s', ignoring: %m", de->d_name);
+                        continue;
+                }
+                k = manager_add_user_by_name(m, n, NULL);
                 if (k < 0)
                         r = log_warning_errno(k, "Couldn't add lingering user %s, ignoring: %m", de->d_name);
         }
@@ -746,7 +762,7 @@ static int manager_vt_switch(sd_event_source *src, const struct signalfd_siginfo
 
         active = m->seat0->active;
         if (!active || active->vtnr < 1) {
-                _cleanup_close_ int fd = -1;
+                _cleanup_close_ int fd = -EBADF;
                 int r;
 
                 /* We are requested to acknowledge the VT-switch signal by the kernel but
@@ -1067,6 +1083,11 @@ static int manager_dispatch_reload_signal(sd_event_source *s, const struct signa
         Manager *m = userdata;
         int r;
 
+        (void) sd_notifyf(/* unset= */ false,
+                          "RELOADING=1\n"
+                          "STATUS=Reloading configuration...\n"
+                          "MONOTONIC_USEC=" USEC_FMT, now(CLOCK_MONOTONIC));
+
         manager_reset_config(m);
         r = manager_parse_config_file(m);
         if (r < 0)
@@ -1074,6 +1095,7 @@ static int manager_dispatch_reload_signal(sd_event_source *s, const struct signa
         else
                 log_info("Config file reloaded.");
 
+        (void) sd_notify(/* unset= */ false, NOTIFY_READY);
         return 0;
 }
 
@@ -1298,12 +1320,13 @@ static int run(int argc, char *argv[]) {
 #endif // 0
 
 #if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
-        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, -1) >= 0);
 #else // 0
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGQUIT, -1) >= 0);
 #endif // 0
 
         log_debug_elogind("%s", "Creating manager...");
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGRTMIN+18, -1) >= 0);
+
         r = manager_new(&m);
         if (r < 0)
                 return log_error_errno(r, "Failed to allocate manager object: %m");
