@@ -55,6 +55,7 @@
 #         'dm-util.c',
 #         'dns-domain.c',
 #         'dropin.c',
+#         'edit-util.c',
 #         'efi-api.c',
 #         'efi-loader.c',
 #         'elf-util.c',
