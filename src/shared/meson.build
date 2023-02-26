@@ -55,7 +55,6 @@
 #         'dm-util.c',
 #         'dns-domain.c',
 #         'dropin.c',
-#         'edit-util.c',
 #         'efi-api.c',
 #         'efi-loader.c',
 #         'elf-util.c',
@@ -100,6 +99,7 @@
 #         'libmount-util.c',
 #         'local-addresses.c',
 #         'locale-setup.c',
+#         'lockfile-util.c',
 #         'logs-show.c',
 #         'loop-util.c',
 #         'loopback-setup.c',
@@ -428,7 +428,8 @@ libshared_static = static_library(
         libshared_name,
         shared_sources,
         include_directories : includes,
-        dependencies : libshared_deps,
+        dependencies : [libshared_deps,
+                        userspace],
         c_args : ['-fvisibility=default'],
         build_by_default : false)
 
@@ -446,7 +447,8 @@ libshared = shared_library(
 #else // 0
                       libelogind_static],
 #endif // 0
-        dependencies : libshared_deps,
+        dependencies : [libshared_deps,
+                        userspace],
         install : true,
         install_dir : rootpkglibdir)
 
@@ -459,7 +461,8 @@ if get_option('fdisk') != 'false'
                 'shared-fdisk',
                 shared_fdisk_sources,
                 include_directories : includes,
-                dependencies : [libfdisk],
+                dependencies : [libfdisk,
+                                userspace],
                 c_args : ['-fvisibility=default'],
                 build_by_default : false)
 endif
