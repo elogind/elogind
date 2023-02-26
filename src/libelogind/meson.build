@@ -161,7 +161,8 @@ libsystemd_c_args = ['-fvisibility=default']
 #         link_with : [libbasic,
 #                      libbasic_compress],
 #         dependencies : [threads,
-#                         librt],
+#                         librt,
+#                         userspace],
 #         build_by_default : false)
 #
 # libsystemd_sym = files('libsystemd.sym')

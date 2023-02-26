@@ -47,7 +47,6 @@
 #         'ioprio-util.c',
 #         'limits-util.c',
 #         'locale-util.c',
-#         'lock-util.c',
 #         'log.c',
 #         'login-util.c',
 #         'memfd-util.c',
@@ -368,10 +367,11 @@ libbasic = static_library(
         basic_sources,
         fundamental_sources,
         include_directories : basic_includes,
-        dependencies : [versiondep,
+        dependencies : [libcap,
+                        libm,
                         threads,
-                        libcap,
-                        libm],
+                        userspace,
+                        versiondep],
         c_args : ['-fvisibility=default'],
         build_by_default : false)
 
@@ -388,7 +388,8 @@ libbasic = static_library(
 #         'basic-gcrypt',
 #         basic_gcrypt_sources,
 #         include_directories : basic_includes,
-#         dependencies : [libgcrypt],
+#         dependencies : [libgcrypt,
+#                         userspace],
 #         c_args : ['-fvisibility=default'],
 #         build_by_default : false)
 #endif // 0
@@ -406,9 +407,10 @@ libbasic = static_library(
 #         'basic-compress',
 #         basic_compress_sources,
 #         include_directories : basic_includes,
-#         dependencies : [libxz,
+#         dependencies : [liblz4,
+#                         libxz,
 #                         libzstd,
-#                         liblz4],
+#                         userspace],
 #         c_args : ['-fvisibility=default'],
 #         build_by_default : false)
 #endif // 0
