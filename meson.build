@@ -2123,6 +2123,7 @@ conf.set10('ENABLE_HOMED', false)
 # foreach term : ['analyze',
 #                 'backlight',
 #                 'binfmt',
+#                 'compat-mutable-uid-boundaries',
 #                 'coredump',
 #                 'efi',
 #                 'environment-d',
@@ -2134,23 +2135,22 @@ conf.set10('ENABLE_HOMED', false)
 #                 'idn',
 #                 'ima',
 #                 'initrd',
-#                 'compat-mutable-uid-boundaries',
-#                 'nscd',
 #                 'ldconfig',
 #                 'localed',
 #                 'logind',
 #                 'machined',
 #                 'networkd',
+#                 'nscd',
 #                 'nss-myhostname',
 #                 'nss-systemd',
 #                 'portabled',
-#                 'sysext',
 #                 'pstore',
 #                 'quotacheck',
 #                 'randomseed',
 #                 'resolve',
 #                 'rfkill',
 #                 'smack',
+#                 'sysext',
 #                 'sysusers',
 #                 'timedated',
 #                 'timesyncd',
@@ -2217,10 +2217,7 @@ catalogs = []
 
 ############################################################
 
-# Include these now as they provide gnu-efi detection.
-subdir('src/fundamental')
 #if 0 /// UNSUPPORTED by elogind (at the moment)
-# subdir('src/boot/efi')
 #else // 0
 # But we need the EFI configuration that is now determined in src/boot/efi/meson.build
 # TODO : Include EFI support
@@ -2228,17 +2225,38 @@ conf.set10('ENABLE_EFI', get_option('efi'))
 conf.set10('HAVE_GNU_EFI', false)
 #endif // 0
 
-############################################################
 
 #if 0 /// UNSUPPORTED by elogind (we do not build boot images)
 # pymod = import('python')
 # python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
 # python_39 = python.language_version().version_compare('>=3.9')
 #
+# #####################################################################
+#
+# efi_arch = {
+#         'aarch64' : 'aa64',
+#         'arm'     : 'arm',
+#         'riscv64' : 'riscv64',
+#         'x86_64'  : 'x64',
+#         'x86'     : 'ia32',
+# }.get(host_machine.cpu_family(), '')
+#
+# if get_option('bootloader') != 'false' and efi_arch != ''
+#         conf.set_quoted('EFI_MACHINE_TYPE_NAME', efi_arch)
+# elif get_option('bootloader') == 'true' and efi_arch == ''
+#         error('EFI not supported for this arch.')
+# endif
+# conf.set10(
+#         'ENABLE_BOOTLOADER',
+#         get_option('efi') and
+#         get_option('bootloader') in ['auto', 'true'] and
+#         efi_arch != '',
+# )
+#
 # if get_option('ukify') == 'auto'
-#     want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
-# elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
-#     error('ukify requires Python >= 3.9 and GNU EFI')
+#     want_ukify = python_39  and conf.get('ENABLE_BOOTLOADER') == 1
+# elif get_option('ukify') == 'true' and (not python_39 or conf.get('ENABLE_BOOTLOADER') != 1)
+#     error('ukify requires Python >= 3.9 and -Dbootloader=true')
 # else
 #     want_ukify = get_option('ukify') == 'true'
 # endif
@@ -2345,6 +2363,7 @@ subdir('po')
 #if 0 /// UNNEEDED by elogind
 # subdir('catalog')
 #endif // 0
+subdir('src/fundamental')
 subdir('src/basic')
 subdir('src/libelogind')
 subdir('src/shared')
@@ -2361,7 +2380,6 @@ alias_target('devel', libelogind_pc)
 libelogind = shared_library(
         'elogind',
         version : libsystemd_version,
-        include_directories : libelogind_includes,
         include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
@@ -2554,6 +2572,7 @@ subdir('src/update-utmp')
 #if 0 /// elogind does not provide bootctl (for now)
 # subdir('src/boot')
 #endif // 0
+subdir('src/boot/efi')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
@@ -3084,7 +3103,7 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// UNNEEDED by elogind
-# if conf.get('HAVE_BLKID') == 1 and conf.get('HAVE_GNU_EFI') == 1
+# if conf.get('HAVE_BLKID') == 1 and conf.get('ENABLE_BOOTLOADER') == 1
 #         if get_option('link-boot-shared')
 #                 boot_link_with = [libshared]
 #         else
@@ -5255,11 +5274,11 @@ foreach tuple : [
 #         # components
 #         ['backlight'],
 #         ['binfmt'],
+#         ['bootloader'],
 #         ['bpf-framework',          conf.get('BPF_FRAMEWORK') == 1],
 #         ['coredump'],
-#         ['environment.d'],
 #         ['efi'],
-#         ['gnu-efi'],
+#         ['environment.d'],
 #         ['firstboot'],
 #         ['hibernate'],
 #         ['homed'],
