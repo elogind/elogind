@@ -163,7 +163,6 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-sysctl-util.c',
 #         'test-terminal-util.c',
 #         'test-tmpfile-util.c',
-#         'test-tmpfiles.c',
 #         'test-tpm2.c',
 #         'test-udev-util.c',
 #         'test-uid-alloc-range.c',
@@ -520,7 +519,7 @@ tests += [
         },
         {
                 'sources' : files('test-sbat.c'),
-                'condition' : 'HAVE_GNU_EFI',
+                'condition' : 'ENABLE_BOOTLOADER',
                 'c_args' : '-I@0@'.format(efi_config_h_dir),
         },
         {
