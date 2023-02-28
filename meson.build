@@ -2233,11 +2233,14 @@ conf.set10('HAVE_GNU_EFI', false)
 # #####################################################################
 #
 # efi_arch = {
-#         'aarch64' : 'aa64',
-#         'arm'     : 'arm',
-#         'riscv64' : 'riscv64',
-#         'x86_64'  : 'x64',
-#         'x86'     : 'ia32',
+#         'aarch64'     : 'aa64',
+#         'arm'         : 'arm',
+#         'loongarch32' : 'loongarch32',
+#         'loongarch64' : 'loongarch64',
+#         'riscv32'     : 'riscv32',
+#         'riscv64'     : 'riscv64',
+#         'x86_64'      : 'x64',
+#         'x86'         : 'ia32',
 # }.get(host_machine.cpu_family(), '')
 #
 # if get_option('bootloader') != 'false' and efi_arch != ''
