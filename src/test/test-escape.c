@@ -40,7 +40,7 @@ static void test_xescape_full_one(bool eight_bits) {
                 if (i >= full_fit)
                         assert_se(streq(t, escaped));
                 else if (i >= 3) {
-                        /* We need up to four columns, so up to three three columns may be wasted */
+                        /* We need up to four columns, so up to three columns may be wasted */
                         assert_se(strlen(t) == i || strlen(t) == i - 1 || strlen(t) == i - 2 || strlen(t) == i - 3);
                         assert_se(strneq(t, escaped, i - 3) || strneq(t, escaped, i - 4) ||
                                   strneq(t, escaped, i - 5) || strneq(t, escaped, i - 6));
@@ -199,6 +199,10 @@ TEST(shell_maybe_quote) {
 
         test_shell_maybe_quote_one("głąb\002\003rząd", 0, "\"głąb\\002\\003rząd\"");
         test_shell_maybe_quote_one("głąb\002\003rząd", SHELL_ESCAPE_POSIX, "$'głąb\\002\\003rząd'");
+
+        /* Bogus UTF-8 strings */
+        test_shell_maybe_quote_one("\250\350", 0, "\"\\250\\350\"");
+        test_shell_maybe_quote_one("\250\350", SHELL_ESCAPE_POSIX, "$'\\250\\350'");
 }
 #endif // 0
 
@@ -223,6 +227,21 @@ TEST(quote_command_line) {
                                     "true \"\\$dollar\"");
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+static void test_octescape_one(const char *s, const char *expected) {
+        _cleanup_free_ char *ret;
+
+        assert_se(ret = octescape(s, strlen_ptr(s)));
+        log_debug("octescape(\"%s\") → \"%s\" (expected: \"%s\")", strnull(s), ret, expected);
+        assert_se(streq(ret, expected));
+}
+
+TEST(octescape) {
+        test_octescape_one(NULL, "");
+        test_octescape_one("", "");
+        test_octescape_one("foo", "foo");
+        test_octescape_one("\"\\\"", "\\042\\134\\042");
+        test_octescape_one("\123\213\222", "\123\\213\\222");
+}
+
 DEFINE_TEST_MAIN(LOG_DEBUG);
