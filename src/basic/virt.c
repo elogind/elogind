@@ -53,6 +53,8 @@ static Virtualization detect_vm_cpuid(void) {
                 { "QNXQVMBSQG",   VIRTUALIZATION_QNX       },
                 /* https://projectacrn.org */
                 { "ACRNACRNACRN", VIRTUALIZATION_ACRN      },
+                /* https://www.lockheedmartin.com/en-us/products/Hardened-Security-for-Intel-Processors.html */
+                { "SRESRESRESRE", VIRTUALIZATION_SRE       },
         };
 
         uint32_t eax, ebx, ecx, edx;
@@ -103,6 +105,7 @@ static Virtualization detect_vm_device_tree(void) {
         r = read_one_line_file("/proc/device-tree/hypervisor/compatible", &hvtype);
         if (r == -ENOENT) {
                 _cleanup_closedir_ DIR *dir = NULL;
+                _cleanup_free_ char *compat = NULL;
 
                 if (access("/proc/device-tree/ibm,partition-name", F_OK) == 0 &&
                     access("/proc/device-tree/hmc-managed?", F_OK) == 0 &&
@@ -123,6 +126,14 @@ static Virtualization detect_vm_device_tree(void) {
                                 log_debug("Virtualization QEMU: \"fw-cfg\" present in /proc/device-tree/%s", de->d_name);
                                 return VIRTUALIZATION_QEMU;
                         }
+
+                r = read_one_line_file("/proc/device-tree/compatible", &compat);
+                if (r < 0 && r != -ENOENT)
+                        return r;
+                if (r >= 0 && streq(compat, "qemu,pseries")) {
+                        log_debug("Virtualization %s found in /proc/device-tree/compatible", compat);
+                        return VIRTUALIZATION_QEMU;
+                }
 
                 log_debug("No virtualization found in /proc/device-tree/*");
                 return VIRTUALIZATION_NONE;
@@ -780,7 +791,7 @@ translate_name:
                 /* Some images hardcode container=oci, but OCI is not a specific container manager.
                  * Try to detect one based on well-known files. */
                 v = detect_container_files();
-                if (v != VIRTUALIZATION_NONE)
+                if (v == VIRTUALIZATION_NONE)
                         v = VIRTUALIZATION_CONTAINER_OTHER;
                 goto finish;
         }
@@ -874,11 +885,27 @@ int running_in_chroot(void) {
         int r;
 
 #if 0 /// elogind does not allow to ignore chroots, we are never init!
+        /* If we're PID1, /proc may not be mounted (and most likely we're not in a chroot). But PID1 will
+         * mount /proc, so all other programs can assume that if /proc is *not* available, we're in some
+         * chroot. */
+
         if (getenv_bool("SYSTEMD_IGNORE_CHROOT") > 0)
                 return 0;
 #endif // 0
 
+        if (getpid_cached() == 1)
+                return false;  /* We're PID 1, we can't be in a chroot. */
+
         r = files_same("/proc/1/root", "/", 0);
+        if (r == -ENOENT) {
+                r = proc_mounted();
+                if (r == 0) {
+                        log_debug("/proc is not mounted, assuming we're in a chroot.");
+                        return 1;
+                }
+                if (r > 0)  /* If we have fake /proc/, we can't do the check properly. */
+                        return -ENOSYS;
+        }
         if (r < 0)
                 return r;
 
@@ -1030,6 +1057,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_ACRN]            = "acrn",
         [VIRTUALIZATION_POWERVM]         = "powervm",
         [VIRTUALIZATION_APPLE]           = "apple",
+        [VIRTUALIZATION_SRE]             = "sre",
         [VIRTUALIZATION_VM_OTHER]        = "vm-other",
 
         [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "elogind-nspawn",
