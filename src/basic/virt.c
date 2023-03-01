@@ -18,7 +18,6 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
-#include "missing_threads.h"
 #include "process-util.h"
 #include "stat-util.h"
 #include "string-table.h"
