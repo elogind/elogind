@@ -475,6 +475,8 @@ char* octescape(const char *s, size_t len) {
 
 static char* strcpy_backslash_escaped(char *t, const char *s, const char *bad) {
         assert(bad);
+        assert(t);
+        assert(s);
 
         while (*s) {
                 int l = utf8_encoded_valid_unichar(s, SIZE_MAX);
