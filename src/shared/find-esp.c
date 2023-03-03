@@ -168,59 +168,65 @@ static int verify_esp_udev(
 
         r = sd_device_get_devname(d, &node);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device node: %m");
+                return log_device_error_errno(d, r, "Failed to get device node: %m");
 
         r = sd_device_get_property_value(d, "ID_FS_TYPE", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         if (!streq(v, "vfat"))
-                return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
-                                      SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
-                                      "File system \"%s\" is not FAT.", node );
+                return log_device_full_errno(d,
+                                             searching ? LOG_DEBUG : LOG_ERR,
+                                             SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
+                                             "File system \"%s\" is not FAT.", node );
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_SCHEME", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_full_errno(d,
+                                             searching && r == -ENOENT ? LOG_DEBUG : LOG_ERR,
+                                             searching && r == -ENOENT ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : r,
+                                             "Failed to get device property: %m");
         if (!streq(v, "gpt"))
-                return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
-                                      SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
-                                      "File system \"%s\" is not on a GPT partition table.", node);
+                return log_device_full_errno(d,
+                                             searching ? LOG_DEBUG : LOG_ERR,
+                                             SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
+                                             "File system \"%s\" is not on a GPT partition table.", node);
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_TYPE", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         if (sd_id128_string_equal(v, SD_GPT_ESP) <= 0)
-                return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
-                                       SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
-                                       "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
+                return log_device_full_errno(d,
+                                             searching ? LOG_DEBUG : LOG_ERR,
+                                             SYNTHETIC_ERRNO(searching ? EADDRNOTAVAIL : ENODEV),
+                                             "File system \"%s\" has wrong type for an EFI System Partition (ESP).", node);
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_UUID", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         r = sd_id128_from_string(v, &uuid);
         if (r < 0)
-                return log_error_errno(r, "Partition \"%s\" has invalid UUID \"%s\".", node, v);
+                return log_device_error_errno(d, r, "Partition \"%s\" has invalid UUID \"%s\".", node, v);
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_NUMBER", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         r = safe_atou32(v, &part);
         if (r < 0)
-                return log_error_errno(r, "Failed to parse PART_ENTRY_NUMBER field.");
+                return log_device_error_errno(d, r, "Failed to parse PART_ENTRY_NUMBER field.");
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_OFFSET", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         r = safe_atou64(v, &pstart);
         if (r < 0)
-                return log_error_errno(r, "Failed to parse PART_ENTRY_OFFSET field.");
+                return log_device_error_errno(d, r, "Failed to parse PART_ENTRY_OFFSET field.");
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_SIZE", &v);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device property: %m");
+                return log_device_error_errno(d, r, "Failed to get device property: %m");
         r = safe_atou64(v, &psize);
         if (r < 0)
-                return log_error_errno(r, "Failed to parse PART_ENTRY_SIZE field.");
+                return log_device_error_errno(d, r, "Failed to parse PART_ENTRY_SIZE field.");
 
         if (ret_part)
                 *ret_part = part;
@@ -240,7 +246,7 @@ static int verify_fsroot_dir(
                 bool unprivileged_mode,
                 dev_t *ret_dev) {
 
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         STRUCT_NEW_STATX_DEFINE(sxa);
         STRUCT_NEW_STATX_DEFINE(sxb);
         int r;
@@ -325,7 +331,7 @@ success:
                 return 0;
 
         if (sxa.sx.stx_dev_major == 0) { /* Hmm, maybe a btrfs device, and the caller asked for the backing device? Then let's try to get it. */
-                _cleanup_close_ int real_fd = -1;
+                _cleanup_close_ int real_fd = -EBADF;
 
                 /* The statx() above we can execute on an O_PATH fd. But the btrfs ioctl we cannot. Hence
                  * acquire a "real" fd first, without the O_PATH flag. */
@@ -524,7 +530,7 @@ int find_esp_and_warn(
                                flags | VERIFY_ESP_SEARCHING);
                 if (r >= 0)
                         goto found;
-                if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR)) /* This one is not it */
+                if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR, -ENOTTY)) /* This one is not it */
                         return r;
 
                 p = mfree(p);
@@ -561,30 +567,33 @@ static int verify_xbootldr_blkid(
         errno = 0;
         b = blkid_new_probe_from_filename(node);
         if (!b)
-                return log_error_errno(errno ?: SYNTHETIC_ERRNO(ENOMEM), "%s: Failed to create blkid probe: %m", node);
+                return log_error_errno(errno_or_else(ENOMEM), "%s: Failed to create blkid probe: %m", node);
 
         blkid_probe_enable_partitions(b, 1);
         blkid_probe_set_partitions_flags(b, BLKID_PARTS_ENTRY_DETAILS);
 
         errno = 0;
         r = blkid_do_safeprobe(b);
-        if (r == -2)
+        if (r == _BLKID_SAFEPROBE_AMBIGUOUS)
                 return log_error_errno(SYNTHETIC_ERRNO(ENODEV), "%s: File system is ambiguous.", node);
-        else if (r == 1)
+        if (r == _BLKID_SAFEPROBE_NOT_FOUND)
                 return log_error_errno(SYNTHETIC_ERRNO(ENODEV), "%s: File system does not contain a label.", node);
-        else if (r != 0)
-                return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe file system: %m", node);
+        if (r == _BLKID_SAFEPROBE_ERROR)
+                return log_error_errno(errno_or_else(EIO), "%s: Failed to probe file system: %m", node);
 
-        errno = 0;
+        assert(r == _BLKID_SAFEPROBE_FOUND);
+
         r = blkid_probe_lookup_value(b, "PART_ENTRY_SCHEME", &type, NULL);
         if (r != 0)
-                return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe PART_ENTRY_SCHEME: %m", node);
+                return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
+                                      searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(EIO),
+                                      "%s: Failed to probe PART_ENTRY_SCHEME: %m", node);
         if (streq(type, "gpt")) {
 
                 errno = 0;
                 r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
                 if (r != 0)
-                        return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe PART_ENTRY_TYPE: %m", node);
+                        return log_error_errno(errno_or_else(EIO), "%s: Failed to probe PART_ENTRY_TYPE: %m", node);
                 if (sd_id128_string_equal(v, SD_GPT_XBOOTLDR) <= 0)
                         return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                               searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(ENODEV),
@@ -593,7 +602,7 @@ static int verify_xbootldr_blkid(
                 errno = 0;
                 r = blkid_probe_lookup_value(b, "PART_ENTRY_UUID", &v, NULL);
                 if (r != 0)
-                        return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe PART_ENTRY_UUID: %m", node);
+                        return log_error_errno(errno_or_else(EIO), "%s: Failed to probe PART_ENTRY_UUID: %m", node);
                 r = sd_id128_from_string(v, &uuid);
                 if (r < 0)
                         return log_error_errno(r, "%s: Partition has invalid UUID PART_ENTRY_TYPE=%s: %m", node, v);
@@ -603,7 +612,7 @@ static int verify_xbootldr_blkid(
                 errno = 0;
                 r = blkid_probe_lookup_value(b, "PART_ENTRY_TYPE", &v, NULL);
                 if (r != 0)
-                        return log_error_errno(errno ?: SYNTHETIC_ERRNO(EIO), "%s: Failed to probe PART_ENTRY_TYPE: %m", node);
+                        return log_error_errno(errno_or_else(EIO), "%s: Failed to probe PART_ENTRY_TYPE: %m", node);
                 if (!streq(v, "0xea"))
                         return log_full_errno(searching ? LOG_DEBUG : LOG_ERR,
                                               searching ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : SYNTHETIC_ERRNO(ENODEV),
@@ -637,11 +646,14 @@ static int verify_xbootldr_udev(
 
         r = sd_device_get_devname(d, &node);
         if (r < 0)
-                return log_error_errno(r, "Failed to get device node: %m");
+                return log_device_error_errno(d, r, "Failed to get device node: %m");
 
         r = sd_device_get_property_value(d, "ID_PART_ENTRY_SCHEME", &type);
         if (r < 0)
-                return log_device_error_errno(d, r, "Failed to query ID_PART_ENTRY_SCHEME: %m");
+                return log_device_full_errno(d,
+                                             searching && r == -ENOENT ? LOG_DEBUG : LOG_ERR,
+                                             searching && r == -ENOENT ? SYNTHETIC_ERRNO(EADDRNOTAVAIL) : r,
+                                             "Failed to query ID_PART_ENTRY_SCHEME: %m");
 
         if (streq(type, "gpt")) {
 
