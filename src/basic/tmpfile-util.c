@@ -14,34 +14,21 @@
 #include "path-util.h"
 //#include "process-util.h"
 #include "random-util.h"
+#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "tmpfile-util.h"
 #include "umask-util.h"
 
-int fopen_temporary(const char *path, FILE **ret_f, char **ret_temp_path) {
+static int fopen_temporary_internal(int dir_fd, const char *path, FILE **ret_file) {
         _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_free_ char *t = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
-        if (path) {
-                r = tempfn_xxxxxx(path, NULL, &t);
-                if (r < 0)
-                        return r;
-        } else {
-                const char *d;
+        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
+        assert(path);
 
-                r = tmp_dir(&d);
-                if (r < 0)
-                        return r;
-
-                t = path_join(d, "XXXXXX");
-                if (!t)
-                        return -ENOMEM;
-        }
-
-        fd = mkostemp_safe(t);
+        fd = openat(dir_fd, path, O_CLOEXEC|O_NOCTTY|O_RDWR|O_CREAT|O_EXCL, 0600);
         if (fd < 0)
                 return -errno;
 
@@ -50,15 +37,59 @@ int fopen_temporary(const char *path, FILE **ret_f, char **ret_temp_path) {
 
         r = take_fdopen_unlocked(&fd, "w", &f);
         if (r < 0) {
-                (void) unlink(t);
+                (void) unlinkat(dir_fd, path, 0);
                 return r;
         }
 
-        if (ret_f)
-                *ret_f = TAKE_PTR(f);
+        if (ret_file)
+                *ret_file = TAKE_PTR(f);
 
-        if (ret_temp_path)
-                *ret_temp_path = TAKE_PTR(t);
+        return 0;
+}
+
+int fopen_temporary_at(int dir_fd, const char *path, FILE **ret_file, char **ret_path) {
+        _cleanup_free_ char *t = NULL;
+        int r;
+
+        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
+        assert(path);
+
+        r = tempfn_random(path, NULL, &t);
+        if (r < 0)
+                return r;
+
+        r = fopen_temporary_internal(dir_fd, t, ret_file);
+        if (r < 0)
+                return r;
+
+        if (ret_path)
+                *ret_path = TAKE_PTR(t);
+
+        return 0;
+}
+
+int fopen_temporary_child_at(int dir_fd, const char *path, FILE **ret_file, char **ret_path) {
+        _cleanup_free_ char *t = NULL;
+        int r;
+
+        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
+
+        if (!path) {
+                r = tmp_dir(&path);
+                if (r < 0)
+                        return r;
+        }
+
+        r = tempfn_random_child(path, NULL, &t);
+        if (r < 0)
+                return r;
+
+        r = fopen_temporary_internal(dir_fd, t, ret_file);
+        if (r < 0)
+                return r;
+
+        if (ret_path)
+                *ret_path = TAKE_PTR(t);
 
         return 0;
 }
@@ -71,7 +102,7 @@ int mkostemp_safe(char *pattern) {
 }
 
 int fmkostemp_safe(char *pattern, const char *mode, FILE **ret_f) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         FILE *f;
 
         fd = mkostemp_safe(pattern);
@@ -282,7 +313,7 @@ int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
 int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE **ret_file) {
         _cleanup_free_ char *path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(target);
         assert(ret_file);
@@ -301,24 +332,71 @@ int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE 
         return 0;
 }
 
-int link_tmpfile(int fd, const char *path, const char *target) {
+static int link_fd(int fd, int newdirfd, const char *newpath) {
+        int r;
+
+        assert(fd >= 0);
+        assert(newdirfd >= 0 || newdirfd == AT_FDCWD);
+        assert(newpath);
+
+        /* Try symlinking via /proc/fd/ first. */
+        r = RET_NERRNO(linkat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), newdirfd, newpath, AT_SYMLINK_FOLLOW));
+        if (r != -ENOENT)
+                return r;
+
+        /* Fall back to symlinking via AT_EMPTY_PATH as fallback (this requires CAP_DAC_READ_SEARCH and a
+         * more recent kernel, but does not require /proc/ mounted) */
+        if (proc_mounted() != 0)
+                return r;
+
+        return RET_NERRNO(linkat(fd, "", newdirfd, newpath, AT_EMPTY_PATH));
+}
+
+int link_tmpfile(int fd, const char *path, const char *target, bool replace) {
+        _cleanup_free_ char *tmp = NULL;
+        int r;
+
         assert(fd >= 0);
         assert(target);
 
-        /* Moves a temporary file created with open_tmpfile() above into its final place. if "path" is NULL an fd
-         * created with O_TMPFILE is assumed, and linkat() is used. Otherwise it is assumed O_TMPFILE is not supported
-         * on the directory, and renameat2() is used instead.
-         *
-         * Note that in both cases we will not replace existing files. This is because linkat() does not support this
-         * operation currently (renameat2() does), and there is no nice way to emulate this. */
+        /* Moves a temporary file created with open_tmpfile() above into its final place. If "path" is NULL
+         * an fd created with O_TMPFILE is assumed, and linkat() is used. Otherwise it is assumed O_TMPFILE
+         * is not supported on the directory, and renameat2() is used instead. */
 
-        if (path)
+        if (path) {
+                if (replace)
+                        return RET_NERRNO(rename(path, target));
+
                 return rename_noreplace(AT_FDCWD, path, AT_FDCWD, target);
+        }
 
-        return RET_NERRNO(linkat(AT_FDCWD, FORMAT_PROC_FD_PATH(fd), AT_FDCWD, target, AT_SYMLINK_FOLLOW));
+        r = link_fd(fd, AT_FDCWD, target);
+        if (r != -EEXIST || !replace)
+                return r;
+
+        /* So the target already exists and we were asked to replace it. That sucks a bit, since the kernel's
+         * linkat() logic does not allow that. We work-around this by linking the file to a random name
+         * first, and then renaming that to the final name. This reintroduces the race O_TMPFILE kinda is
+         * trying to fix, but at least the vulnerability window (i.e. where the file is linked into the file
+         * system under a temporary name) is very short. */
+
+        r = tempfn_random(target, NULL, &tmp);
+        if (r < 0)
+                return r;
+
+        if (link_fd(fd, AT_FDCWD, tmp) < 0)
+                return -EEXIST; /* propagate original error */
+
+        r = RET_NERRNO(rename(tmp, target));
+        if (r < 0) {
+                (void) unlink(tmp);
+                return r;
+        }
+
+        return 0;
 }
 
-int flink_tmpfile(FILE *f, const char *path, const char *target) {
+int flink_tmpfile(FILE *f, const char *path, const char *target, bool replace) {
         int fd, r;
 
         assert(f);
@@ -332,7 +410,7 @@ int flink_tmpfile(FILE *f, const char *path, const char *target) {
         if (r < 0)
                 return r;
 
-        return link_tmpfile(fd, path, target);
+        return link_tmpfile(fd, path, target, replace);
 }
 #endif // 0
 
@@ -361,4 +439,24 @@ int mkdtemp_malloc(const char *template, char **ret) {
 
         *ret = TAKE_PTR(p);
         return 0;
+}
+
+int mkdtemp_open(const char *template, int flags, char **ret) {
+        _cleanup_free_ char *p = NULL;
+        int fd, r;
+
+        r = mkdtemp_malloc(template, &p);
+        if (r < 0)
+                return r;
+
+        fd = RET_NERRNO(open(p, O_DIRECTORY|O_CLOEXEC|flags));
+        if (fd < 0) {
+                (void) rmdir(p);
+                return fd;
+        }
+
+        if (ret)
+                *ret = TAKE_PTR(p);
+
+        return fd;
 }
