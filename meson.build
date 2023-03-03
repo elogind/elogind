@@ -5146,6 +5146,8 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
         ['trace logging',          conf.get('LOG_TRACE') == 1],
+        ['slow tests',             slow_tests],
+        ['fuzz tests',             fuzz_tests],
         ['install tests',          install_tests],
 #if 0 /// elogind does not ship any of those
 #         ['link-udev-shared',       get_option('link-udev-shared')],
