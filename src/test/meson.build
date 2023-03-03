@@ -162,7 +162,6 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-strxcpyx.c',
 #         'test-sysctl-util.c',
 #         'test-terminal-util.c',
-#         'test-time-util.c',
 #         'test-tmpfile-util.c',
 #         'test-tmpfiles.c',
 #         'test-tpm2.c',
@@ -195,34 +194,24 @@ test_dlopen_c = files('test-dlopen.c')
 
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
-/// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
-
 /// elogind empty mask removed (UNNEEDED in elogind)
-
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
+/// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 /// elogind empty mask removed (UNNEEDED in elogind)
 
@@ -577,6 +566,10 @@ tests += [
                         journal_includes,
                         udev_includes,
                 ],
+        },
+        {
+                'sources' : files('test-time-util.c'),
+                'timeout' : 120,
         },
         {
                 'sources' : files('test-udev.c'),
