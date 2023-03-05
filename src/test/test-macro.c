@@ -202,13 +202,23 @@ TEST(ptr_to_int) {
 }
 
 TEST(in_set) {
-        assert_se(IN_SET(1, 1));
+        assert_se(IN_SET(1, 1, 2));
         assert_se(IN_SET(1, 1, 2, 3, 4));
         assert_se(IN_SET(2, 1, 2, 3, 4));
         assert_se(IN_SET(3, 1, 2, 3, 4));
         assert_se(IN_SET(4, 1, 2, 3, 4));
-        assert_se(!IN_SET(0, 1));
+        assert_se(!IN_SET(0, 1, 2));
         assert_se(!IN_SET(0, 1, 2, 3, 4));
+
+        struct {
+                unsigned x:3;
+        } t = { 1 };
+
+        assert_se(IN_SET(t.x, 1, 2));
+        assert_se(IN_SET(t.x, 1, 2, 3, 4));
+        assert_se(IN_SET(t.x, 2, 3, 4, 1));
+        assert_se(!IN_SET(t.x, 0, 2));
+        assert_se(!IN_SET(t.x, 2, 3, 4));
 }
 
 TEST(foreach_pointer) {
@@ -519,6 +529,109 @@ TEST(ISPOWEROF2) {
         assert_se(ISPOWEROF2(u++));
         assert_se(u == 5);
         assert_se(!ISPOWEROF2(u));
+}
+
+TEST(ALIGNED) {
+        assert_se(IS_ALIGNED16(NULL));
+        assert_se(IS_ALIGNED32(NULL));
+        assert_se(IS_ALIGNED64(NULL));
+
+        uint64_t u64;
+        uint32_t u32;
+        uint16_t u16;
+
+        assert_se(IS_ALIGNED16(&u16));
+        assert_se(IS_ALIGNED16(&u32));
+        assert_se(IS_ALIGNED16(&u64));
+        assert_se(IS_ALIGNED32(&u32));
+        assert_se(IS_ALIGNED32(&u64));
+        assert_se(IS_ALIGNED64(&u64));
+
+        _align_(32) uint8_t ua256;
+        _align_(8) uint8_t ua64;
+        _align_(4) uint8_t ua32;
+        _align_(2) uint8_t ua16;
+
+        assert_se(IS_ALIGNED16(&ua256));
+        assert_se(IS_ALIGNED32(&ua256));
+        assert_se(IS_ALIGNED64(&ua256));
+
+        assert_se(IS_ALIGNED16(&ua64));
+        assert_se(IS_ALIGNED32(&ua64));
+        assert_se(IS_ALIGNED64(&ua64));
+
+        assert_se(IS_ALIGNED16(&ua32));
+        assert_se(IS_ALIGNED32(&ua32));
+
+        assert_se(IS_ALIGNED16(&ua16));
+
+#ifdef __x86_64__
+        /* Conditionalized on x86-64, since there we know for sure that all three types are aligned to
+         * their size. Too lazy to figure it out for other archs */
+        void *p = UINT_TO_PTR(1); /* definitely not aligned */
+        assert_se(!IS_ALIGNED16(p));
+        assert_se(!IS_ALIGNED32(p));
+        assert_se(!IS_ALIGNED64(p));
+
+        assert_se(IS_ALIGNED16(ALIGN2_PTR(p)));
+        assert_se(IS_ALIGNED32(ALIGN4_PTR(p)));
+        assert_se(IS_ALIGNED64(ALIGN8_PTR(p)));
+
+        p = UINT_TO_PTR(-1); /* also definitely not aligned */
+        assert_se(!IS_ALIGNED16(p));
+        assert_se(!IS_ALIGNED32(p));
+        assert_se(!IS_ALIGNED64(p));
+#endif
+}
+
+TEST(FOREACH_ARRAY) {
+        int a[10] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        int b[10] = { 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 };
+        int x, n;
+
+        x = n = 0;
+        FOREACH_ARRAY(i, a, 10) {
+                x += *i;
+                n++;
+        }
+        assert_se(x == 45);
+        assert_se(n == 10);
+
+        x = n = 0;
+        FOREACH_ARRAY(i, a, 10)
+                FOREACH_ARRAY(j, b, 10) {
+                        x += (*i) * (*j);
+                        n++;
+                }
+        assert_se(x == 45 * 45);
+        assert_se(n == 10 * 10);
+
+        x = n = 0;
+        FOREACH_ARRAY(i, a, 5)
+                FOREACH_ARRAY(j, b, 5) {
+                        x += (*i) * (*j);
+                        n++;
+                }
+        assert_se(x == 10 * 35);
+        assert_se(n == 5 * 5);
+
+        x = n = 0;
+        FOREACH_ARRAY(i, a, 0)
+                FOREACH_ARRAY(j, b, 0) {
+                        x += (*i) * (*j);
+                        n++;
+                }
+        assert_se(x == 0);
+        assert_se(n == 0);
+
+        x = n = 0;
+        FOREACH_ARRAY(i, a, -1)
+                FOREACH_ARRAY(j, b, -1) {
+                        x += (*i) * (*j);
+                        n++;
+                }
+        assert_se(x == 0);
+        assert_se(n == 0);
 }
 
 DEFINE_TEST_MAIN(LOG_INFO);
