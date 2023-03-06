@@ -2844,6 +2844,10 @@ test_dlopen = executable(
 #                 dependencies : [versiondep],
 #                 install_rpath : rootpkglibdir,
 #                 install : true)
+#
+#         meson.add_install_script(meson_make_symlink,
+#                                  bindir / 'elogind-dissect',
+#                                  rootsbindir / 'mount.ddi')
 # endif
 #
 # if conf.get('ENABLE_RESOLVE') == 1
