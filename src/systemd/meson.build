@@ -71,6 +71,10 @@ if cc.has_argument('-std=iso9899:2017')
 endif
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
+# if cc.has_argument('-std=c2x')
+#         opts += [['c', '-std=c2x']]
+# endif
+#
 # if cxx_cmd != ''
 #         opts += [['c++'],
 #                  ['c++', '-std=c++98'],
@@ -83,6 +87,9 @@ endif
 #         endif
 #         if cxx.has_argument('-std=c++20')
 #                 opts += [['c++', '-std=c++20']]
+#         endif
+#         if cxx.has_argument('-std=c++23')
+#                 opts += [['c++', '-std=c++23']]
 #         endif
 # endif
 #endif // 0
