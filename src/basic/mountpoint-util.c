@@ -3,6 +3,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/mount.h>
+#if WANT_LINUX_FS_H
+#include <linux/fs.h>
+#endif
 
 #include "alloc-util.h"
 #include "chase-symlinks.h"
@@ -10,6 +13,8 @@
 #include "fileio.h"
 //#include "filesystems.h"
 #include "fs-util.h"
+#include "missing_fs.h"
+#include "missing_mount.h"
 #include "missing_stat.h"
 //#include "missing_syscall.h"
 //#include "mkdir.h"
@@ -37,7 +42,6 @@ int name_to_handle_at_loop(
                 int *ret_mnt_id,
                 int flags) {
 
-        _cleanup_free_ struct file_handle *h = NULL;
         size_t n = ORIGINAL_MAX_HANDLE_SZ;
 
         assert((flags & ~(AT_SYMLINK_FOLLOW|AT_EMPTY_PATH)) == 0);
@@ -50,6 +54,7 @@ int name_to_handle_at_loop(
          * as NULL if there's no interest in either. */
 
         for (;;) {
+                _cleanup_free_ struct file_handle *h = NULL;
                 int mnt_id = -1;
 
                 h = malloc0(offsetof(struct file_handle, f_handle) + n);
@@ -91,15 +96,13 @@ int name_to_handle_at_loop(
                 n = h->handle_bytes;
                 if (offsetof(struct file_handle, f_handle) + n < n) /* check for addition overflow */
                         return -EOVERFLOW;
-
-                h = mfree(h);
         }
 }
 
 static int fd_fdinfo_mnt_id(int fd, const char *filename, int flags, int *ret_mnt_id) {
         char path[STRLEN("/proc/self/fdinfo/") + DECIMAL_STR_MAX(int)];
         _cleanup_free_ char *fdinfo = NULL;
-        _cleanup_close_ int subfd = -1;
+        _cleanup_close_ int subfd = -EBADF;
         char *p;
         int r;
 
@@ -324,7 +327,7 @@ fallback_fstat:
 /* flags can be AT_SYMLINK_FOLLOW or 0 */
 int path_is_mount_point(const char *t, const char *root, int flags) {
         _cleanup_free_ char *canonical = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
         assert(t);
@@ -526,7 +529,53 @@ int dev_is_devtmpfs(void) {
         return false;
 }
 
-const char *mount_propagation_flags_to_string(unsigned long flags) {
+int mount_fd(const char *source,
+             int target_fd,
+             const char *filesystemtype,
+             unsigned long mountflags,
+             const void *data) {
+
+        if (mount(source, FORMAT_PROC_FD_PATH(target_fd), filesystemtype, mountflags, data) < 0) {
+                if (errno != ENOENT)
+                        return -errno;
+
+                /* ENOENT can mean two things: either that the source is missing, or that /proc/ isn't
+                 * mounted. Check for the latter to generate better error messages. */
+                if (proc_mounted() == 0)
+                        return -ENOSYS;
+
+                return -ENOENT;
+        }
+
+        return 0;
+}
+
+int mount_nofollow(
+                const char *source,
+                const char *target,
+                const char *filesystemtype,
+                unsigned long mountflags,
+                const void *data) {
+
+        _cleanup_close_ int fd = -EBADF;
+
+        /* In almost all cases we want to manipulate the mount table without following symlinks, hence
+         * mount_nofollow() is usually the way to go. The only exceptions are environments where /proc/ is
+         * not available yet, since we need /proc/self/fd/ for this logic to work. i.e. during the early
+         * initialization of namespacing/container stuff where /proc is not yet mounted (and maybe even the
+         * fs to mount) we can only use traditional mount() directly.
+         *
+         * Note that this disables following only for the final component of the target, i.e symlinks within
+         * the path of the target are honoured, as are symlinks in the source path everywhere. */
+
+        fd = open(target, O_PATH|O_CLOEXEC|O_NOFOLLOW);
+        if (fd < 0)
+                return -errno;
+
+        return mount_fd(source, fd, filesystemtype, mountflags, data);
+}
+
+const char *mount_propagation_flag_to_string(unsigned long flags) {
 
         switch (flags & (MS_SHARED|MS_SLAVE|MS_PRIVATE)) {
         case 0:
@@ -542,7 +591,7 @@ const char *mount_propagation_flags_to_string(unsigned long flags) {
         return NULL;
 }
 
-int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
+int mount_propagation_flag_from_string(const char *name, unsigned long *ret) {
 
         if (isempty(name))
                 *ret = 0;
@@ -554,5 +603,66 @@ int mount_propagation_flags_from_string(const char *name, unsigned long *ret) {
                 *ret = MS_PRIVATE;
         else
                 return -EINVAL;
+        return 0;
+}
+
+bool mount_propagation_flag_is_valid(unsigned long flag) {
+        return IN_SET(flag, 0, MS_SHARED, MS_PRIVATE, MS_SLAVE);
+}
+
+unsigned long ms_nosymfollow_supported(void) {
+        _cleanup_close_ int fsfd = -EBADF, mntfd = -EBADF;
+        static int cache = -1;
+
+        /* Returns MS_NOSYMFOLLOW if it is supported, zero otherwise. */
+
+        if (cache >= 0)
+                return cache ? MS_NOSYMFOLLOW : 0;
+
+        /* Checks if MS_NOSYMFOLLOW is supported (which was added in 5.10). We use the new mount API's
+         * mount_setattr() call for that, which was added in 5.12, which is close enough. */
+
+        fsfd = fsopen("tmpfs", FSOPEN_CLOEXEC);
+        if (fsfd < 0) {
+                if (ERRNO_IS_NOT_SUPPORTED(errno))
+                        goto not_supported;
+
+                log_debug_errno(errno, "Failed to open superblock context for tmpfs: %m");
+                return 0;
+        }
+
+        if (fsconfig(fsfd, FSCONFIG_CMD_CREATE, NULL, NULL, 0) < 0) {
+                if (ERRNO_IS_NOT_SUPPORTED(errno))
+                        goto not_supported;
+
+                log_debug_errno(errno, "Failed to create tmpfs superblock: %m");
+                return 0;
+        }
+
+        mntfd = fsmount(fsfd, FSMOUNT_CLOEXEC, 0);
+        if (mntfd < 0) {
+                if (ERRNO_IS_NOT_SUPPORTED(errno))
+                        goto not_supported;
+
+                log_debug_errno(errno, "Failed to turn superblock fd into mount fd: %m");
+                return 0;
+        }
+
+        if (mount_setattr(mntfd, "", AT_EMPTY_PATH|AT_RECURSIVE,
+                          &(struct mount_attr) {
+                                  .attr_set = MOUNT_ATTR_NOSYMFOLLOW,
+                          }, sizeof(struct mount_attr)) < 0) {
+                if (ERRNO_IS_NOT_SUPPORTED(errno))
+                        goto not_supported;
+
+                log_debug_errno(errno, "Failed to set MOUNT_ATTR_NOSYMFOLLOW mount attribute: %m");
+                return 0;
+        }
+
+        cache = true;
+        return MS_NOSYMFOLLOW;
+
+not_supported:
+        cache = false;
         return 0;
 }

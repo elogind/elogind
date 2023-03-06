@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "def.h"
+#include "constants.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "hashmap.h"
@@ -19,19 +19,19 @@
 #include "virt.h"
 #include "tmpfile-util.h"
 
-static void test_mount_propagation_flags_one(const char *name, int ret, unsigned long expected) {
+static void test_mount_propagation_flag_one(const char *name, int ret, unsigned long expected) {
         unsigned long flags;
 
         log_info("/* %s(%s) */", __func__, strnull(name));
 
-        assert_se(mount_propagation_flags_from_string(name, &flags) == ret);
+        assert_se(mount_propagation_flag_from_string(name, &flags) == ret);
 
         if (ret >= 0) {
                 const char *c;
 
                 assert_se(flags == expected);
 
-                c = mount_propagation_flags_to_string(flags);
+                c = mount_propagation_flag_to_string(flags);
                 if (isempty(name))
                         assert_se(isempty(c));
                 else
@@ -39,14 +39,14 @@ static void test_mount_propagation_flags_one(const char *name, int ret, unsigned
         }
 }
 
-TEST(mount_propagation_flags) {
-        test_mount_propagation_flags_one("shared", 0, MS_SHARED);
-        test_mount_propagation_flags_one("slave", 0, MS_SLAVE);
-        test_mount_propagation_flags_one("private", 0, MS_PRIVATE);
-        test_mount_propagation_flags_one(NULL, 0, 0);
-        test_mount_propagation_flags_one("", 0, 0);
-        test_mount_propagation_flags_one("xxxx", -EINVAL, 0);
-        test_mount_propagation_flags_one(" ", -EINVAL, 0);
+TEST(mount_propagation_flag) {
+        test_mount_propagation_flag_one("shared", 0, MS_SHARED);
+        test_mount_propagation_flag_one("slave", 0, MS_SLAVE);
+        test_mount_propagation_flag_one("private", 0, MS_PRIVATE);
+        test_mount_propagation_flag_one(NULL, 0, 0);
+        test_mount_propagation_flag_one("", 0, 0);
+        test_mount_propagation_flag_one("xxxx", -EINVAL, 0);
+        test_mount_propagation_flag_one(" ", -EINVAL, 0);
 }
 
 TEST(mnt_id) {
@@ -282,7 +282,7 @@ TEST(path_is_mount_point) {
 }
 
 TEST(fd_is_mount_point) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
         fd = open("/", O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY);
@@ -325,6 +325,10 @@ TEST(fd_is_mount_point) {
         r = fd_is_mount_point(fd, NULL, 0);
         assert_se(IN_SET(r, 0, -ENOTDIR)); /* on old kernels we can't determine if regular files are mount points if we have no directory fd */
         assert_se(fd_is_mount_point(fd, "", 0) == -EINVAL);
+}
+
+TEST(ms_nosymfollow_supported) {
+        log_info("MS_NOSYMFOLLOW supported: %s", yes_no(ms_nosymfollow_supported()));
 }
 
 static int intro(void) {
