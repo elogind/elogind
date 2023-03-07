@@ -410,6 +410,7 @@
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+    <xi:include href="threads-aware.xml" xpointer="getenv"/>
 
     <para>These functions send a single datagram with the
     state string as payload to the socket referenced in the
