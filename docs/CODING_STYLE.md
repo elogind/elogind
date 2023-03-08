@@ -120,6 +120,22 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   `_SD_ENUM_FORCE_S64()` macro in the enum definition, which forces the size of
   the enum to be signed 64bit wide.
 
+- Empty lines to separate code blocks are a good thing, please add them
+  abundantly. However, please stick to one at a time, i.e. multiple empty lines
+  immediately following each other are not OK. Also, we try to keep function
+  calls and their immediate error handling together. Hence:
+
+  ```c
+  /* → empty line here is good */
+  r = some_function(…);
+  /* → empty line here would be bad */
+  if (r < 0)
+          return log_error_errno(r, "Some function failed: %m");
+  /* → empty line here is good */
+
+- In shell scripts, do not use whitespace after the redirection operator
+  (`>some/file` instead of `> some/file`, `<<EOF` instead of `<< EOF`).
+
 ## Code Organization and Semantics
 
 - For our codebase we intend to use ISO C11 *with* GNU extensions (aka
@@ -195,7 +211,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   variables if you are sure that thread-safety doesn't matter in your
   case. Alternatively, consider using TLS, which is pretty easy to use with
   gcc's `thread_local` concept. It's also OK to store data that is inherently
-  global in global variables, for example data parsed from command lines, see
+  global in global variables, for example, data parsed from command lines, see
   below.
 
 - Our focus is on the GNU libc (glibc), not any other libcs. If other libcs are
@@ -210,8 +226,9 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   the point where they can be initialized. Avoid huge variable declaration
   lists at the top of the function.
 
-  As an exception, `r` is typically used for a local state variable, but should
-  almost always be declared as the last variable at the top of the function.
+  As an exception, `int r` is typically used for a local state variable, but
+  should almost always be declared as the last variable at the top of the
+  function.
 
   ```c
   {
@@ -530,7 +547,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
 ## Types
 
 - Think about the types you use. If a value cannot sensibly be negative, do not
-  use `int`, but use `unsigned`.
+  use `int`, but use `unsigned`.  We prefer `unsigned` form to `unsigned int`.
 
 - Use `char` only for actual characters. Use `uint8_t` or `int8_t` when you
   actually mean a byte-sized signed or unsigned integers. When referring to a
@@ -590,7 +607,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   i.e.  file system objects that are supposed to be regular files whose paths
   were specified by the user and hence might actually refer to other types of
   file system objects. This is a good idea so that we don't end up blocking on
-  'strange' file nodes, for example if the user pointed us to a FIFO or device
+  'strange' file nodes, for example, if the user pointed us to a FIFO or device
   node which may block when opening. Moreover even for actual regular files
   `O_NONBLOCK` has a benefit: it bypasses any mandatory lock that might be in
   effect on the regular file. If in doubt consider turning off `O_NONBLOCK`
@@ -686,7 +703,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
 - Do not use `basename()` or `dirname()`. The semantics in corner cases are
   full of pitfalls, and the fact that there are two quite different versions of
   `basename()` (one POSIX and one GNU, of which the latter is much more useful)
-  doesn't make it bette either. Use path_extract_filename() and
+  doesn't make it better either. Use path_extract_filename() and
   path_extract_directory() instead.
 
 - Never use `FILENAME_MAX`. Use `PATH_MAX` instead (for checking maximum size
@@ -698,7 +715,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
 ## Committing to git
 
 - Commit message subject lines should be prefixed with an appropriate component
-  name of some kind. For example "journal: ", "nspawn: " and so on.
+  name of some kind. For example, "journal: ", "nspawn: " and so on.
 
 - Do not use "Signed-Off-By:" in your commit messages. That's a kernel thing we
   don't do in the elogind project.
@@ -716,7 +733,7 @@ SPDX-License-Identifier: LGPL-2.1-or-later
   hard. Moreover, while we rely heavily on GitHub's project management
   infrastructure we'd like to keep everything that can reasonably be kept in
   the git repository itself in the git repository, so that we can theoretically
-  move things elswhere with the least effort possible.
+  move things elsewhere with the least effort possible.
 
 - It's OK to reference GitHub PRs, GitHub issues and git commits from code
   comments. Cross-referencing code, issues, and documentation is a good thing.
