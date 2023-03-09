@@ -192,6 +192,7 @@
 #         'varlink-io.elogind.PCRLock.c',
 #         'varlink-io.elogind.BootControl.c',
 #         'varlink-io.elogind.NamespaceResource.c',
+#         'varlink-io.elogind.MountFileSystem.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
