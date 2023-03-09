@@ -112,6 +112,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-list.c',
 #         'test-local-addresses.c',
 #         'test-locale-util.c',
+#         'test-lock-util.c',
 #         'test-log.c',
 #         'test-logarithm.c',
 #         'test-macro.c',
