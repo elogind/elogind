@@ -18,7 +18,9 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
+#include "lock-util.h"
 #include "macro.h"
+#include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
 //#include "path-util.h"
@@ -679,43 +681,30 @@ int reset_uid_gid(void) {
 
 #if 0 /// UNNEEDED by elogind
 int take_etc_passwd_lock(const char *root) {
+        int r;
 
-        struct flock flock = {
-                .l_type = F_WRLCK,
-                .l_whence = SEEK_SET,
-                .l_start = 0,
-                .l_len = 0,
-        };
-
-        const char *path;
-        int fd, r;
-
-        /* This is roughly the same as lckpwdf(), but not as awful. We
-         * don't want to use alarm() and signals, hence we implement
-         * our own trivial version of this.
+        /* This is roughly the same as lckpwdf(), but not as awful. We don't want to use alarm() and signals,
+         * hence we implement our own trivial version of this.
          *
-         * Note that shadow-utils also takes per-database locks in
-         * addition to lckpwdf(). However, we don't given that they
-         * are redundant as they invoke lckpwdf() first and keep
-         * it during everything they do. The per-database locks are
-         * awfully racy, and thus we just won't do them. */
+         * Note that shadow-utils also takes per-database locks in addition to lckpwdf(). However, we don't,
+         * given that they are redundant: they invoke lckpwdf() first and keep it during everything they do.
+         * The per-database locks are awfully racy, and thus we just won't do them. */
 
-        if (root)
-                path = prefix_roota(root, ETC_PASSWD_LOCK_PATH);
-        else
-                path = ETC_PASSWD_LOCK_PATH;
+        _cleanup_free_ char *path = path_join(root, ETC_PASSWD_LOCK_PATH);
+        if (!path)
+                return log_oom_debug();
 
-        fd = open(path, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW, 0600);
+        (void) mkdir_parents(path, 0755);
+
+        _cleanup_close_ int fd = open(path, O_WRONLY|O_CREAT|O_CLOEXEC|O_NOCTTY|O_NOFOLLOW, 0600);
         if (fd < 0)
                 return log_debug_errno(errno, "Cannot open %s: %m", path);
 
-        r = fcntl(fd, F_SETLKW, &flock);
-        if (r < 0) {
-                safe_close(fd);
-                return log_debug_errno(errno, "Locking %s failed: %m", path);
-        }
+        r = unposix_lock(fd, LOCK_EX);
+        if (r < 0)
+                return log_debug_errno(r, "Locking %s failed: %m", path);
 
-        return fd;
+        return TAKE_FD(fd);
 }
 #endif // 0
 
