@@ -11,6 +11,7 @@
 
 #include "errno-util.h"
 #include "macro.h"
+#include "runtime-scope.h"
 #include "string-util.h"
 #include "time-util.h"
 
@@ -43,10 +44,10 @@ int bus_connect_system_systemd(sd_bus **ret_bus);
 int bus_connect_user_systemd(sd_bus **ret_bus);
 #endif // 0
 
-int bus_connect_transport(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #if 0 /// UNNEEDED by elogind
-int bus_connect_transport_systemd(BusTransport transport, const char *host, bool user, sd_bus **bus);
 #endif // 0
+int bus_connect_transport(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus);
+int bus_connect_transport_elogind(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus);
 
 int bus_log_address_error(int r, BusTransport transport);
 int bus_log_connect_error(int r, BusTransport transport);
