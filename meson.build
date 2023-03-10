@@ -481,7 +481,14 @@ possible_common_cc_flags = [
         '-Wno-error=#warnings',  # clang
         '-Wno-string-plus-int',  # clang
 
+        '-fstack-protector',
+        '-fstack-protector-strong',
         '-fstrict-flex-arrays',
+        '--param=ssp-buffer-size=4',
+]
+
+possible_common_link_flags = [
+        '-fstack-protector',
 ]
 
 c_args = get_option('c_args')
@@ -516,7 +523,6 @@ possible_link_flags = [
         '-Wl,--fatal-warnings',
         '-Wl,-z,now',
         '-Wl,-z,relro',
-        '-fstack-protector',
 ]
 
 if get_option('b_sanitize') == 'none'
@@ -543,11 +549,8 @@ possible_cc_flags = [
         '-fdiagnostics-show-option',
         '-fno-common',
         '-fno-strict-aliasing',
-        '-fstack-protector',
-        '-fstack-protector-strong',
         '-fstrict-flex-arrays=1',
         '-fvisibility=hidden',
-        '--param=ssp-buffer-size=4',
 ]
 
 if get_option('buildtype') != 'debug'
@@ -568,6 +571,10 @@ add_project_arguments(
                 basic_disabled_warnings,
                 possible_common_cc_flags
         ),
+        language : 'c')
+
+add_project_link_arguments(
+        cc.get_supported_link_arguments(possible_common_link_flags),
         language : 'c')
 
 userspace_c_args += cc.get_supported_arguments(possible_cc_flags)
