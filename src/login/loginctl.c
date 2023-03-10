@@ -8,6 +8,7 @@
 #include "sd-bus.h"
 
 #include "alloc-util.h"
+#include "build.h"
 #include "bus-error.h"
 #include "bus-locator.h"
 #include "bus-map-properties.h"
@@ -1648,7 +1649,7 @@ static int run(int argc, char *argv[]) {
         if (r <= 0)
                 return r;
 
-        r = bus_connect_transport(arg_transport, arg_host, false, &bus);
+        r = bus_connect_transport(arg_transport, arg_host, RUNTIME_SCOPE_SYSTEM, &bus);
         if (r < 0)
                 return bus_log_connect_error(r, arg_transport);
 

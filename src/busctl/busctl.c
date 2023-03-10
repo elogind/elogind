@@ -5,6 +5,7 @@
 #include "sd-bus.h"
 
 #include "alloc-util.h"
+#include "build.h"
 #include "bus-dump.h"
 #include "bus-internal.h"
 #include "bus-message.h"
@@ -26,6 +27,7 @@
 #include "parse-util.h"
 #include "path-util.h"
 #include "pretty-print.h"
+#include "runtime-scope.h"
 #include "set.h"
 #include "sort-util.h"
 #include "strv.h"
@@ -46,7 +48,7 @@ static bool arg_show_machine = false;
 static char **arg_matches = NULL;
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static const char *arg_host = NULL;
-static bool arg_user = false;
+static RuntimeScope arg_runtime_scope = RUNTIME_SCOPE_SYSTEM;
 static size_t arg_snaplen = 4096;
 static bool arg_list = false;
 static bool arg_quiet = false;
@@ -108,10 +110,21 @@ static int acquire_bus(bool set_monitor, sd_bus **ret) {
                 switch (arg_transport) {
 
                 case BUS_TRANSPORT_LOCAL:
-                        if (arg_user)
+
+                        switch (arg_runtime_scope) {
+
+                        case RUNTIME_SCOPE_USER:
                                 r = bus_set_address_user(bus);
-                        else
+                                break;
+
+                        case RUNTIME_SCOPE_SYSTEM:
                                 r = bus_set_address_system(bus);
+                                break;
+
+                        default:
+                                assert_not_reached();
+                        }
+
                         break;
 
                 case BUS_TRANSPORT_REMOTE:
@@ -119,7 +132,7 @@ static int acquire_bus(bool set_monitor, sd_bus **ret) {
                         break;
 
                 case BUS_TRANSPORT_MACHINE:
-                        r = bus_set_address_machine(bus, arg_user, arg_host);
+                        r = bus_set_address_machine(bus, arg_runtime_scope, arg_host);
                         break;
 
                 default:
@@ -1029,16 +1042,16 @@ static int introspect(int argc, char **argv, void *userdata) {
                         return bus_log_parse_error(r);
 
                 for (;;) {
-                        Member *z;
-                        _cleanup_free_ char *buf = NULL;
                         _cleanup_fclose_ FILE *mf = NULL;
+                        _cleanup_free_ char *buf = NULL;
+                        const char *name, *contents;
                         size_t sz = 0;
-                        const char *name;
+                        Member *z;
+                        char type;
 
                         r = sd_bus_message_enter_container(reply, 'e', "sv");
                         if (r < 0)
                                 return bus_log_parse_error(r);
-
                         if (r == 0)
                                 break;
 
@@ -1046,7 +1059,13 @@ static int introspect(int argc, char **argv, void *userdata) {
                         if (r < 0)
                                 return bus_log_parse_error(r);
 
-                        r = sd_bus_message_enter_container(reply, 'v', NULL);
+                        r = sd_bus_message_peek_type(reply, &type, &contents);
+                        if (r < 0)
+                                return bus_log_parse_error(r);
+                        if (type != 'v')
+                                return bus_log_parse_error(EINVAL);
+
+                        r = sd_bus_message_enter_container(reply, 'v', contents);
                         if (r < 0)
                                 return bus_log_parse_error(r);
 
@@ -1063,6 +1082,7 @@ static int introspect(int argc, char **argv, void *userdata) {
                         z = set_get(members, &((Member) {
                                                 .type = "property",
                                                 .interface = m->interface,
+                                                .signature = (char*) contents,
                                                 .name = (char*) name }));
                         if (z)
                                 free_and_replace(z->value, buf);
@@ -2405,11 +2425,11 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case ARG_USER:
-                        arg_user = true;
+                        arg_runtime_scope = RUNTIME_SCOPE_USER;
                         break;
 
                 case ARG_SYSTEM:
-                        arg_user = false;
+                        arg_runtime_scope = RUNTIME_SCOPE_SYSTEM;
                         break;
 
                 case ARG_ADDRESS:
