@@ -671,6 +671,9 @@ static int parse_timestamp_impl(
          *   +5min
          *   -5days
          *   @2147483647          (seconds since epoch)
+         *
+         * Note, on DST change, 00:00:00 may not exist and in that case the time part may be shifted.
+         * E.g. "Sun 2023-03-13 America/Havana" is parsed as "Sun 2023-03-13 01:00:00 CDT".
          */
 
         assert(t);
@@ -1003,8 +1006,6 @@ int parse_timestamp(const char *t, usec_t *ret) {
                         shared->return_value = negative_errno();
                         _exit(EXIT_FAILURE);
                 }
-
-                tzset();
 
                 shared->return_value = parse_timestamp_maybe_with_tz(t, tz_offset, /* valid_tz = */ true, &shared->usec);
 
