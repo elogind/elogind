@@ -4,10 +4,11 @@
 #include <unistd.h>
 
 #include "format-util.h"
+#include "io-util.h"
 #include "log.h"
 #include "process-util.h"
 #include "string-util.h"
-#include "util.h"
+#include "strv.h"
 
 assert_cc(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(EINVAL)));
 assert_cc(!IS_SYNTHETIC_ERRNO(EINVAL));
@@ -70,6 +71,97 @@ static void test_log_syntax(void) {
         assert_se(log_syntax("unit", LOG_ERR, "filename", 10, SYNTHETIC_ERRNO(ENOTTY), "ENOTTY: %s: %m", "hogehoge") == -ENOTTY);
 }
 
+static void test_log_context(void) {
+        {
+                char **strv = STRV_MAKE("FIRST=abc", "SECOND=qrs");
+
+                LOG_CONTEXT_PUSH("THIRD=pfs");
+                LOG_CONTEXT_PUSH("FOURTH=def");
+                LOG_CONTEXT_PUSH_STRV(strv);
+                LOG_CONTEXT_PUSH_STRV(strv);
+
+                /* Test that the log context was set up correctly. */
+                assert_se(log_context_num_contexts() == 4);
+                assert_se(log_context_num_fields() == 6);
+
+                /* Test that everything still works with modifications to the log context. */
+                test_log_struct();
+                test_long_lines();
+                test_log_syntax();
+
+                {
+                        LOG_CONTEXT_PUSH("FIFTH=123");
+                        LOG_CONTEXT_PUSH_STRV(strv);
+
+                        /* Check that our nested fields got added correctly. */
+                        assert_se(log_context_num_contexts() == 6);
+                        assert_se(log_context_num_fields() == 9);
+
+                        /* Test that everything still works in a nested block. */
+                        test_log_struct();
+                        test_long_lines();
+                        test_log_syntax();
+                }
+
+                /* Check that only the fields from the nested block got removed. */
+                assert_se(log_context_num_contexts() == 4);
+                assert_se(log_context_num_fields() == 6);
+        }
+
+        assert_se(log_context_num_contexts() == 0);
+        assert_se(log_context_num_fields() == 0);
+
+        {
+                _cleanup_(log_context_freep) LogContext *ctx = NULL;
+
+                char **strv = STRV_MAKE("SIXTH=ijn", "SEVENTH=PRP");
+                assert_se(ctx = log_context_new(strv, /*owned=*/ false));
+
+                assert_se(log_context_num_contexts() == 1);
+                assert_se(log_context_num_fields() == 2);
+
+                /* Test that everything still works with a manually configured log context. */
+                test_log_struct();
+                test_long_lines();
+                test_log_syntax();
+        }
+
+        {
+                char **strv = NULL;
+
+                assert_se(strv = strv_new("ABC", "DEF"));
+                LOG_CONTEXT_CONSUME_STRV(strv);
+
+                assert_se(log_context_num_contexts() == 1);
+                assert_se(log_context_num_fields() == 2);
+        }
+
+        {
+                /* Test that everything still works with a mixed strv and iov. */
+                struct iovec iov[] = {
+                        IOVEC_MAKE_STRING("ABC=def"),
+                        IOVEC_MAKE_STRING("GHI=jkl"),
+                };
+                _cleanup_free_ struct iovec_wrapper *iovw = iovw_new();
+                assert_se(iovw);
+                assert_se(iovw_consume(iovw, strdup("MNO=pqr"), STRLEN("MNO=pqr") + 1) == 0);
+
+                LOG_CONTEXT_PUSH_IOV(iov, ELEMENTSOF(iov));
+                LOG_CONTEXT_CONSUME_IOV(iovw->iovec, iovw->count);
+                LOG_CONTEXT_PUSH("STU=vwx");
+
+                assert_se(log_context_num_contexts() == 3);
+                assert_se(log_context_num_fields() == 4);
+
+                test_log_struct();
+                test_long_lines();
+                test_log_syntax();
+        }
+
+        assert_se(log_context_num_contexts() == 0);
+        assert_se(log_context_num_fields() == 0);
+}
+
 int main(int argc, char* argv[]) {
         test_file();
 
@@ -82,6 +174,7 @@ int main(int argc, char* argv[]) {
                 test_log_struct();
                 test_long_lines();
                 test_log_syntax();
+                test_log_context();
         }
 
         return 0;

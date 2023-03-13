@@ -82,6 +82,8 @@ typedef struct LogContext {
         /* Depending on which destructor is used (log_context_free() or log_context_detach()) the memory
          * referenced by this is freed or not */
         char **fields;
+        struct iovec *input_iovec;
+        size_t n_input_iovec;
         bool owned;
         LIST_FIELDS(struct LogContext, ll);
 } LogContext;
@@ -660,7 +662,7 @@ static void log_do_context(struct iovec *iovec, size_t iovec_len, size_t *n) {
         assert(iovec);
         assert(n);
 
-        LIST_FOREACH(ll, c, _log_context)
+        LIST_FOREACH(ll, c, _log_context) {
                 STRV_FOREACH(s, c->fields) {
                         if (*n + 2 >= iovec_len)
                                 return;
@@ -668,6 +670,15 @@ static void log_do_context(struct iovec *iovec, size_t iovec_len, size_t *n) {
                         iovec[(*n)++] = IOVEC_MAKE_STRING(*s);
                         iovec[(*n)++] = IOVEC_MAKE_STRING("\n");
                 }
+
+                for (size_t i = 0; i < c->n_input_iovec; i++) {
+                        if (*n + 2 >= iovec_len)
+                                return;
+
+                        iovec[(*n)++] = c->input_iovec[i];
+                        iovec[(*n)++] = IOVEC_MAKE_STRING("\n");
+                }
+        }
 }
 
 static int write_to_journal(
@@ -1274,6 +1285,7 @@ static bool should_parse_proc_cmdline(void) {
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }
 
@@ -1630,6 +1642,7 @@ LogContext* log_context_attach(LogContext *c) {
         assert(c);
 
         _log_context_num_fields += strv_length(c->fields);
+        _log_context_num_fields += c->n_input_iovec;
 
         return LIST_PREPEND(ll, _log_context, c);
 }
@@ -1638,8 +1651,9 @@ LogContext* log_context_detach(LogContext *c) {
         if (!c)
                 return NULL;
 
-        assert(_log_context_num_fields >= strv_length(c->fields));
+        assert(_log_context_num_fields >= strv_length(c->fields) + c->n_input_iovec);
         _log_context_num_fields -= strv_length(c->fields);
+        _log_context_num_fields -= c->n_input_iovec;
 
         LIST_REMOVE(ll, _log_context, c);
         return NULL;
@@ -1658,14 +1672,33 @@ LogContext* log_context_new(char **fields, bool owned) {
         return log_context_attach(c);
 }
 
+LogContext* log_context_newv(struct iovec *input_iovec, size_t n_input_iovec, bool owned) {
+        if (!input_iovec || n_input_iovec == 0)
+                return NULL; /* Nothing to do */
+
+        LogContext *c = new(LogContext, 1);
+        if (!c)
+                return NULL;
+
+        *c = (LogContext) {
+                .input_iovec = input_iovec,
+                .n_input_iovec = n_input_iovec,
+                .owned = owned,
+        };
+
+        return log_context_attach(c);
+}
+
 LogContext* log_context_free(LogContext *c) {
         if (!c)
                 return NULL;
 
         log_context_detach(c);
 
-        if (c->owned)
+        if (c->owned) {
                 strv_free(c->fields);
+                iovec_array_free(c->input_iovec, c->n_input_iovec);
+        }
 
         return mfree(c);
 }
@@ -1674,6 +1707,14 @@ LogContext* log_context_new_consume(char **fields) {
         LogContext *c = log_context_new(fields, /*owned=*/ true);
         if (!c)
                 strv_free(fields);
+
+        return c;
+}
+
+LogContext* log_context_new_consumev(struct iovec *input_iovec, size_t n_input_iovec) {
+        LogContext *c = log_context_newv(input_iovec, n_input_iovec, /*owned=*/ true);
+        if (!c)
+                iovec_array_free(input_iovec, n_input_iovec);
 
         return c;
 }
