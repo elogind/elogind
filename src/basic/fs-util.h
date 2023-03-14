@@ -22,6 +22,7 @@
 #define PTR_TO_MODE(p) ((mode_t) ((uintptr_t) (p)-1))
 #define MODE_TO_PTR(u) ((void *) ((uintptr_t) (u)+1))
 
+int unlink_noerrno(const char *path);
 
 #if 0 /// UNNEEDED by elogind
 int rmdir_parents(const char *path, const char *stop);
@@ -112,7 +113,7 @@ static inline char* unlink_and_free(char *p) {
         if (!p)
                 return NULL;
 
-        (void) unlink(p);
+        (void) unlink_noerrno(p);
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
@@ -147,3 +148,5 @@ int open_mkdir_at(int dirfd, const char *path, int flags, mode_t mode);
 
 int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, bool *ret_newly_created);
 #endif // 0
+
+int xopenat(int dir_fd, const char *path, int flags, mode_t mode);
