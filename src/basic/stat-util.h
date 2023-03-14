@@ -11,6 +11,7 @@
 
 #include "macro.h"
 #include "missing_stat.h"
+#include "siphash24.h"
 
 #if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path);
@@ -75,6 +76,7 @@ int path_is_network_fs(const char *path);
 
 int stat_verify_regular(const struct stat *st);
 int fd_verify_regular(int fd);
+int verify_regular_at(int dir_fd, const char *path, bool follow);
 
 #if 0 /// UNNEEDED by elogind
 int stat_verify_directory(const struct stat *st);
@@ -109,3 +111,7 @@ int statx_fallback(int dfd, const char *path, int flags, unsigned mask, struct s
                 struct new_statx nsx;           \
         } var
 #endif
+
+void inode_hash_func(const struct stat *q, struct siphash *state);
+int inode_compare_func(const struct stat *a, const struct stat *b);
+extern const struct hash_ops inode_hash_ops;
