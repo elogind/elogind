@@ -22,7 +22,6 @@
 #define PTR_TO_MODE(p) ((mode_t) ((uintptr_t) (p)-1))
 #define MODE_TO_PTR(u) ((void *) ((uintptr_t) (u)+1))
 
-int unlink_noerrno(const char *path);
 
 #if 0 /// UNNEEDED by elogind
 int rmdir_parents(const char *path, const char *stop);
@@ -113,7 +112,7 @@ static inline char* unlink_and_free(char *p) {
         if (!p)
                 return NULL;
 
-        (void) unlink_noerrno(p);
+        (void) unlink(p);
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
@@ -132,7 +131,10 @@ typedef enum UnlinkDeallocateFlags {
 int unlinkat_deallocate(int fd, const char *name, UnlinkDeallocateFlags flags);
 #endif // 0
 
-int open_parent(const char *path, int flags, mode_t mode);
+int open_parent_at(int dir_fd, const char *path, int flags, mode_t mode);
+static inline int open_parent(const char *path, int flags, mode_t mode) {
+        return open_parent_at(AT_FDCWD, path, flags, mode);
+}
 
 #if 0 /// No need for encrypted devices in elogind
 int conservative_renameat(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
