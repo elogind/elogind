@@ -514,6 +514,24 @@ TEST(chase_symlinks_at) {
         fd = safe_close(fd);
 }
 
+TEST(unlink_noerrno) {
+        char *name;
+        int fd;
+
+        name = strjoina(arg_test_dir ?: "/tmp", "/test-close_nointr.XXXXXX");
+        fd = mkostemp_safe(name);
+        assert_se(fd >= 0);
+        assert_se(close_nointr(fd) >= 0);
+
+        {
+                PROTECT_ERRNO;
+                errno = 42;
+                assert_se(unlink_noerrno(name) >= 0);
+                assert_se(errno == 42);
+                assert_se(unlink_noerrno(name) < 0);
+                assert_se(errno == 42);
+        }
+}
 
 #if 0 /// UNNEEDED by elogind
 TEST(readlink_and_make_absolute) {
@@ -1150,6 +1168,31 @@ TEST(openat_report_new) {
         assert_se(b);
 }
 #endif // 0
+
+TEST(xopenat) {
+        _cleanup_close_ int tfd = -EBADF, fd = -EBADF;
+        _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
+
+        assert_se((tfd = mkdtemp_open(NULL, 0, &t)) >= 0);
+
+        /* Test that xopenat() creates directories if O_DIRECTORY is specified. */
+
+        assert_se((fd = xopenat(tfd, "abc", O_DIRECTORY|O_CREAT|O_EXCL|O_CLOEXEC, 0755)) >= 0);
+        assert_se((fd_verify_directory(fd) >= 0));
+        fd = safe_close(fd);
+
+        assert_se(xopenat(tfd, "abc", O_DIRECTORY|O_CREAT|O_EXCL|O_CLOEXEC, 0755) == -EEXIST);
+
+        assert_se((fd = xopenat(tfd, "abc", O_DIRECTORY|O_CREAT|O_CLOEXEC, 0755)) >= 0);
+        assert_se((fd_verify_directory(fd) >= 0));
+        fd = safe_close(fd);
+
+        /* Test that xopenat() creates regular files if O_DIRECTORY is not specified. */
+
+        assert_se((fd = xopenat(tfd, "def", O_CREAT|O_EXCL|O_CLOEXEC, 0644)) >= 0);
+        assert_se(fd_verify_regular(fd) >= 0);
+        fd = safe_close(fd);
+}
 
 static int intro(void) {
         arg_test_dir = saved_argv[1];
