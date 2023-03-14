@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+int memfd_create_wrapper(const char *name, unsigned mode);
+
 int memfd_new(const char *name);
 #if 0 /// UNNEEDED by elogind
 int memfd_new_and_map(const char *name, size_t sz, void **p);
