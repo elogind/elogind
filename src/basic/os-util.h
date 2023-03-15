@@ -1,7 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
+#include <stdbool.h>
 #include <stdio.h>
+
+#include "time-util.h"
 
 /* The *_extension_release flavours will look for /usr/lib/extension-release/extension-release.NAME
  * in accordance with the OS extension specification, rather than for /usr/lib/ or /etc/os-release. */
@@ -41,5 +44,7 @@ int load_extension_release_pairs(const char *root, const char *extension, bool r
 int load_os_release_pairs(const char *root, char ***ret);
 int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char ***ret);
 
-int os_release_support_ended(const char *support_end, bool quiet);
 #endif // 0
+int os_release_support_ended(const char *support_end, bool quiet, usec_t *ret_eol);
+
+const char *os_release_pretty_name(const char *pretty_name, const char *name);
