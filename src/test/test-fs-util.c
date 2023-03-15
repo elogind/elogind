@@ -514,24 +514,6 @@ TEST(chase_symlinks_at) {
         fd = safe_close(fd);
 }
 
-TEST(unlink_noerrno) {
-        char *name;
-        int fd;
-
-        name = strjoina(arg_test_dir ?: "/tmp", "/test-close_nointr.XXXXXX");
-        fd = mkostemp_safe(name);
-        assert_se(fd >= 0);
-        assert_se(close_nointr(fd) >= 0);
-
-        {
-                PROTECT_ERRNO;
-                errno = 42;
-                assert_se(unlink_noerrno(name) >= 0);
-                assert_se(errno == 42);
-                assert_se(unlink_noerrno(name) < 0);
-                assert_se(errno == 42);
-        }
-}
 
 #if 0 /// UNNEEDED by elogind
 TEST(readlink_and_make_absolute) {

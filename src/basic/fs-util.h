@@ -22,7 +22,6 @@
 #define PTR_TO_MODE(p) ((mode_t) ((uintptr_t) (p)-1))
 #define MODE_TO_PTR(u) ((void *) ((uintptr_t) (u)+1))
 
-int unlink_noerrno(const char *path);
 
 #if 0 /// UNNEEDED by elogind
 int rmdir_parents(const char *path, const char *stop);
@@ -37,7 +36,10 @@ int readlink_value(const char *p, char **ret);
 int readlink_and_make_absolute(const char *p, char **r);
 #endif // 0
 
-int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid);
+int chmod_and_chown_at(int dir_fd, const char *path, mode_t mode, uid_t uid, gid_t gid);
+static inline int chmod_and_chown(const char *path, mode_t mode, uid_t uid, gid_t gid) {
+        return chmod_and_chown_at(AT_FDCWD, path, mode, uid, gid);
+}
 int fchmod_and_chown_with_fallback(int fd, const char *path, mode_t mode, uid_t uid, gid_t gid);
 static inline int fchmod_and_chown(int fd, mode_t mode, uid_t uid, gid_t gid) {
         return fchmod_and_chown_with_fallback(fd, NULL, mode, uid, gid); /* no fallback */
@@ -110,7 +112,7 @@ static inline char* unlink_and_free(char *p) {
         if (!p)
                 return NULL;
 
-        (void) unlink_noerrno(p);
+        (void) unlink(p);
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
