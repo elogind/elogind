@@ -8,8 +8,9 @@
 #include "sd-device.h"
 
 #include "alloc-util.h"
-//#include "bus-error.h"
-//#include "bus-util.h"
+#include "bus-error.h"
+#include "bus-locator.h"
+#include "bus-util.h"
 #include "cgroup-util.h"
 #include "conf-parser.h"
 #include "device-util.h"
@@ -588,15 +589,7 @@ int manager_spawn_autovt(Manager *m, unsigned vtnr) {
         }
 
         xsprintf(name, "autovt@tty%u.service", vtnr);
-        r = sd_bus_call_method(
-                        m->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "StartUnit",
-                        &error,
-                        NULL,
-                        "ss", name, "fail");
+        r = bus_call_method(m->bus, bus_elogind_mgr, "StartUnit", &error, NULL, "ss", name, "fail");
         if (r < 0)
                 return log_error_errno(r, "Failed to start %s: %s", name, bus_error_message(&error, r));
 
