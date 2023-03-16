@@ -83,15 +83,14 @@ libcore_sources = files(
 #if 0 /// Almost the rest is not needed by elogind, we use the sources directly in login
 #
 # subdir('bpf/socket_bind')
-# if conf.get('BPF_FRAMEWORK') == 1
-#         libcore_sources += [socket_bind_skel_h]
-#         subdir('bpf/restrict_fs')
-#         libcore_sources += [restrict_fs_skel_h]
-# endif
-#
+# subdir('bpf/restrict_fs')
 # subdir('bpf/restrict_ifaces')
+#
 # if conf.get('BPF_FRAMEWORK') == 1
-#         libcore_sources += [restrict_ifaces_skel_h]
+#         libcore_sources += [
+#                 socket_bind_skel_h,
+#                 restrict_fs_skel_h,
+#                 restrict_ifaces_skel_h]
 # endif
 #
 # load_fragment_gperf_gperf = custom_target(
