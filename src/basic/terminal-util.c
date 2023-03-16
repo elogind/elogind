@@ -49,6 +49,7 @@ static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
 
 static volatile int cached_on_tty = -1;
+static volatile int cached_on_dev_null = -1;
 static volatile int cached_color_mode = _COLOR_INVALID;
 static volatile int cached_underline_enabled = -1;
 
@@ -901,6 +902,7 @@ void reset_terminal_feature_caches(void) {
         cached_color_mode = _COLOR_INVALID;
         cached_underline_enabled = -1;
         cached_on_tty = -1;
+        cached_on_dev_null = -1;
 }
 #endif // 0
 
@@ -1234,6 +1236,20 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
 }
 #endif // 0
 
+static bool on_dev_null(void) {
+        struct stat dst, ost, est;
+
+        if (cached_on_dev_null >= 0)
+                return cached_on_dev_null;
+
+        if (stat("/dev/null", &dst) < 0 || fstat(STDOUT_FILENO, &ost) < 0 || fstat(STDERR_FILENO, &est) < 0)
+                cached_on_dev_null = false;
+        else
+                cached_on_dev_null = stat_inode_same(&dst, &ost) && stat_inode_same(&dst, &est);
+
+        return cached_on_dev_null;
+}
+
 static bool getenv_terminal_is_dumb(void) {
         const char *e;
 
@@ -1245,7 +1261,7 @@ static bool getenv_terminal_is_dumb(void) {
 }
 
 bool terminal_is_dumb(void) {
-        if (!on_tty())
+        if (!on_tty() && !on_dev_null())
                 return true;
 
         return getenv_terminal_is_dumb();
