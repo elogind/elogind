@@ -21,7 +21,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-//#include "def.h"
+#include "constants.h"
 #include "devnum-util.h"
 //#include "env-util.h"
 #include "fd-util.h"
@@ -44,17 +44,17 @@
 #include "terminal-util.h"
 #include "time-util.h"
 #include "user-util.h"
-//#include "util.h"
 
 static volatile unsigned cached_columns = 0;
 static volatile unsigned cached_lines = 0;
 
 static volatile int cached_on_tty = -1;
+static volatile int cached_on_dev_null = -1;
 static volatile int cached_color_mode = _COLOR_INVALID;
 static volatile int cached_underline_enabled = -1;
 
 int chvt(int vt) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         /* Switch to the specified vt number. If the VT is specified <= 0 switch to the VT the kernel log messages go,
          * if that's configured. */
@@ -270,7 +270,7 @@ int reset_terminal_fd(int fd, bool switch_to_text) {
 
         termios.c_iflag &= ~(IGNBRK | BRKINT | ISTRIP | INLCR | IGNCR | IUCLC);
         termios.c_iflag |= ICRNL | IMAXBEL | IUTF8;
-        termios.c_oflag |= ONLCR;
+        termios.c_oflag |= ONLCR | OPOST;
         termios.c_cflag |= CREAD;
         termios.c_lflag = ISIG | ICANON | IEXTEN | ECHO | ECHOE | ECHOK | ECHOCTL | ECHOPRT | ECHOKE;
 
@@ -302,7 +302,7 @@ finish:
 }
 
 int reset_terminal(const char *name) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         /* We open the terminal with O_NONBLOCK here, to ensure we
          * don't block on carrier if this is a terminal with carrier
@@ -317,7 +317,7 @@ int reset_terminal(const char *name) {
 #endif // 0
 
 int open_terminal(const char *name, int mode) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         unsigned c = 0;
 
         /*
@@ -359,7 +359,7 @@ int acquire_terminal(
                 AcquireTerminalFlags flags,
                 usec_t timeout) {
 
-        _cleanup_close_ int notify = -1, fd = -1;
+        _cleanup_close_ int notify = -EBADF, fd = -EBADF;
         usec_t ts = USEC_INFINITY;
         int r, wd = -1;
 
@@ -487,7 +487,7 @@ int release_terminal(void) {
                 .sa_flags = SA_RESTART,
         };
 
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         struct sigaction sa_old;
         int r;
 
@@ -512,7 +512,7 @@ int terminal_vhangup_fd(int fd) {
 }
 
 int terminal_vhangup(const char *name) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         fd = open_terminal(name, O_RDWR|O_NOCTTY|O_CLOEXEC|O_NONBLOCK);
         if (fd < 0)
@@ -534,7 +534,7 @@ int vt_disallocate(const char *name) {
                 return -EINVAL;
 
         if (tty_is_vc(name)) {
-                _cleanup_close_ int fd = -1;
+                _cleanup_close_ int fd = -EBADF;
                 unsigned u;
                 const char *n;
 
@@ -902,6 +902,7 @@ void reset_terminal_feature_caches(void) {
         cached_color_mode = _COLOR_INVALID;
         cached_underline_enabled = -1;
         cached_on_tty = -1;
+        cached_on_dev_null = -1;
 }
 #endif // 0
 
@@ -1093,7 +1094,7 @@ int ptsname_malloc(int fd, char **ret) {
 }
 
 int openpt_allocate(int flags, char **ret_slave) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ char *p = NULL;
         int r;
 
@@ -1139,8 +1140,8 @@ static int ptsname_namespace(int pty, char **ret) {
 }
 
 int openpt_allocate_in_namespace(pid_t pid, int flags, char **ret_slave) {
-        _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, usernsfd = -1, rootfd = -1, fd = -1;
-        _cleanup_close_pair_ int pair[2] = { -1, -1 };
+        _cleanup_close_ int pidnsfd = -EBADF, mntnsfd = -EBADF, usernsfd = -EBADF, rootfd = -EBADF, fd = -EBADF;
+        _cleanup_close_pair_ int pair[2] = PIPE_EBADF;
         pid_t child;
         int r;
 
@@ -1192,8 +1193,8 @@ int openpt_allocate_in_namespace(pid_t pid, int flags, char **ret_slave) {
 }
 
 int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
-        _cleanup_close_ int pidnsfd = -1, mntnsfd = -1, usernsfd = -1, rootfd = -1;
-        _cleanup_close_pair_ int pair[2] = { -1, -1 };
+        _cleanup_close_ int pidnsfd = -EBADF, mntnsfd = -EBADF, usernsfd = -EBADF, rootfd = -EBADF;
+        _cleanup_close_pair_ int pair[2] = PIPE_EBADF;
         pid_t child;
         int r;
 
@@ -1235,6 +1236,20 @@ int open_terminal_in_namespace(pid_t pid, const char *name, int mode) {
 }
 #endif // 0
 
+static bool on_dev_null(void) {
+        struct stat dst, ost, est;
+
+        if (cached_on_dev_null >= 0)
+                return cached_on_dev_null;
+
+        if (stat("/dev/null", &dst) < 0 || fstat(STDOUT_FILENO, &ost) < 0 || fstat(STDERR_FILENO, &est) < 0)
+                cached_on_dev_null = false;
+        else
+                cached_on_dev_null = stat_inode_same(&dst, &ost) && stat_inode_same(&dst, &est);
+
+        return cached_on_dev_null;
+}
+
 static bool getenv_terminal_is_dumb(void) {
         const char *e;
 
@@ -1246,7 +1261,7 @@ static bool getenv_terminal_is_dumb(void) {
 }
 
 bool terminal_is_dumb(void) {
-        if (!on_tty())
+        if (!on_tty() && !on_dev_null())
                 return true;
 
         return getenv_terminal_is_dumb();
