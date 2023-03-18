@@ -98,7 +98,7 @@ char** strv_new_ap(const char *x, va_list ap);
 
 #if 0 /// UNNEEDED by elogind
 static inline const char* STRV_IFNOTNULL(const char *x) {
-        return x ? x : STRV_IGNORE;
+        return x ?: STRV_IGNORE;
 }
 #endif // 0
 
@@ -143,9 +143,7 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 #if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;

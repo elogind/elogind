@@ -46,7 +46,7 @@ int event_reset_time(
                         return log_debug_errno(SYNTHETIC_ERRNO(EINVAL),
                                                "sd-event: Current clock id %i of event source \"%s\" is different from specified one %i.",
                                                (int)c,
-                                               strna((*s)->description ? : description),
+                                               strna((*s)->description ?: description),
                                                (int)clock);
 
                 r = sd_event_source_set_time(*s, usec);
@@ -112,7 +112,7 @@ int event_reset_time_relative(
 
 int event_add_time_change(sd_event *e, sd_event_source **ret, sd_event_io_handler_t callback, void *userdata) {
         _cleanup_(sd_event_source_unrefp) sd_event_source *s = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         int r;
 
         assert(e);
