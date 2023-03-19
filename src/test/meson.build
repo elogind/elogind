@@ -60,6 +60,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-cgroup-util.c',
 #         'test-cgroup.c',
 #         'test-clock.c',
+#         'test-compare-operator.c',
 #         'test-condition.c',
 #         'test-conf-files.c',
 #         'test-conf-parser.c',
