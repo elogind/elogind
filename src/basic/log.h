@@ -57,6 +57,7 @@ LogTarget log_target_from_string(const char *s) _pure_;
 void log_set_target(LogTarget target);
 int log_set_target_from_string(const char *e);
 LogTarget log_get_target(void) _pure_;
+void log_settle_target(void);
 
 void log_set_max_level(int level);
 int log_set_max_level_from_string(const char *e);
