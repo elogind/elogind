@@ -134,6 +134,7 @@ libcore_sources = files(
 #                         libblkid,
 #                         libdl,
 #                         libkmod,
+#                         libm,
 #                         libmount,
 #                         libpam,
 #                         librt,
