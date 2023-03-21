@@ -9,6 +9,7 @@
 #include "sd-bus.h"
 
 #include "alloc-util.h"
+#include "build.h"
 #include "bus-error.h"
 #include "bus-util.h"
 #include "fd-util.h"
@@ -22,7 +23,6 @@
 #include "strv.h"
 #include "terminal-util.h"
 #include "user-util.h"
-#include "util.h"
 
 /// Additional includes needed by elogind
 #include "musl_missing.h"
@@ -213,6 +213,9 @@ static int parse_argv(int argc, char *argv[]) {
         assert(argc >= 0);
         assert(argv);
 
+        /* Resetting to 0 forces the invocation of an internal initialization routine of getopt_long()
+         * that checks for GNU extensions in optstring ('-' or '+' at the beginning). */
+        optind = 0;
         while ((c = getopt_long(argc, argv, "+h", options, NULL)) >= 0)
 
                 switch (c) {
@@ -291,7 +294,7 @@ static int run(int argc, char *argv[]) {
                 _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
                 _cleanup_strv_free_ char **arguments = NULL;
                 _cleanup_free_ char *w = NULL;
-                _cleanup_close_ int fd = -1;
+                _cleanup_close_ int fd = -EBADF;
                 pid_t pid;
 
                 /* Ignore SIGINT and allow the forked process to receive it */
