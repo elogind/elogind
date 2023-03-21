@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include "alloc-util.h"
-#include "chase-symlinks.h"
+#include "chase.h"
 #include "dirent-util.h"
 #include "env-file.h"
 #include "env-util.h"
@@ -110,9 +110,7 @@ int open_extension_release(const char *root, const char *extension, bool relax_e
                                                "The extension name %s is invalid.", extension);
 
                 extension_full_path = strjoina("/usr/lib/extension-release.d/extension-release.", extension);
-                r = chase_symlinks(extension_full_path, root, CHASE_PREFIX_ROOT,
-                                   ret_path ? &q : NULL,
-                                   ret_fd ? &fd : NULL);
+                r = chase(extension_full_path, root, CHASE_PREFIX_ROOT, ret_path ? &q : NULL, ret_fd ? &fd : NULL);
                 log_full_errno_zerook(LOG_DEBUG, MIN(r, 0), "Checking for %s: %m", extension_full_path);
 
                 /* Cannot find the expected extension-release file? The image filename might have been
@@ -124,8 +122,8 @@ int open_extension_release(const char *root, const char *extension, bool relax_e
                         _cleanup_free_ char *extension_release_dir_path = NULL;
                         _cleanup_closedir_ DIR *extension_release_dir = NULL;
 
-                        r = chase_symlinks_and_opendir("/usr/lib/extension-release.d/", root, CHASE_PREFIX_ROOT,
-                                                       &extension_release_dir_path, &extension_release_dir);
+                        r = chase_and_opendir("/usr/lib/extension-release.d/", root, CHASE_PREFIX_ROOT,
+                                              &extension_release_dir_path, &extension_release_dir);
                         if (r < 0)
                                 return log_debug_errno(r, "Cannot open %s/usr/lib/extension-release.d/, ignoring: %m", root);
 
@@ -173,7 +171,7 @@ int open_extension_release(const char *root, const char *extension, bool relax_e
 
                                 /* We already found what we were looking for, but there's another candidate?
                                  * We treat this as an error, as we want to enforce that there are no ambiguities
-                                 * in case we are in the fallback path.*/
+                                 * in case we are in the fallback path. */
                                 if (r == 0) {
                                         r = -ENOTUNIQ;
                                         break;
@@ -194,14 +192,10 @@ int open_extension_release(const char *root, const char *extension, bool relax_e
         } else {
                 const char *var = secure_getenv("SYSTEMD_OS_RELEASE");
                 if (var)
-                        r = chase_symlinks(var, root, 0,
-                                           ret_path ? &q : NULL,
-                                           ret_fd ? &fd : NULL);
+                        r = chase(var, root, 0, ret_path ? &q : NULL, ret_fd ? &fd : NULL);
                 else
                         FOREACH_STRING(path, "/etc/os-release", "/usr/lib/os-release") {
-                                r = chase_symlinks(path, root, CHASE_PREFIX_ROOT,
-                                                   ret_path ? &q : NULL,
-                                                   ret_fd ? &fd : NULL);
+                                r = chase(path, root, CHASE_PREFIX_ROOT, ret_path ? &q : NULL, ret_fd ? &fd : NULL);
                                 if (r != -ENOENT)
                                         break;
                         }
@@ -229,7 +223,7 @@ int open_extension_release(const char *root, const char *extension, bool relax_e
 
 int fopen_extension_release(const char *root, const char *extension, bool relax_extension_release_check, char **ret_path, FILE **ret_file) {
         _cleanup_free_ char *p = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         FILE *f;
         int r;
 
@@ -341,7 +335,7 @@ int load_extension_release_pairs(const char *root, const char *extension, bool r
         return load_env_file_pairs(f, p, ret);
 }
 
-int os_release_support_ended(const char *support_end, bool quiet) {
+int os_release_support_ended(const char *support_end, bool quiet, usec_t *ret_eol) {
         _cleanup_free_ char *_support_end_alloc = NULL;
         int r;
 
@@ -351,28 +345,39 @@ int os_release_support_ended(const char *support_end, bool quiet) {
 
                 r = parse_os_release(NULL,
                                      "SUPPORT_END", &_support_end_alloc);
-                if (r < 0)
-                        return log_full_errno((r == -ENOENT || quiet) ? LOG_DEBUG : LOG_WARNING, r,
+                if (r < 0 && r != -ENOENT)
+                        return log_full_errno(quiet ? LOG_DEBUG : LOG_WARNING, r,
                                               "Failed to read os-release file, ignoring: %m");
-                if (!_support_end_alloc)
-                        return false;  /* no end date defined */
 
                 support_end = _support_end_alloc;
         }
 
-        struct tm tm = {};
+        if (isempty(support_end)) /* An empty string is a explicit way to say "no EOL exists" */
+                return false;  /* no end date defined */
 
+        struct tm tm = {};
         const char *k = strptime(support_end, "%Y-%m-%d", &tm);
         if (!k || *k)
                 return log_full_errno(quiet ? LOG_DEBUG : LOG_WARNING, SYNTHETIC_ERRNO(EINVAL),
                                       "Failed to parse SUPPORT_END= in os-release file, ignoring: %m");
 
-        time_t eol = mktime(&tm);
+        time_t eol = timegm(&tm);
         if (eol == (time_t) -1)
                 return log_full_errno(quiet ? LOG_DEBUG : LOG_WARNING, SYNTHETIC_ERRNO(EINVAL),
                                       "Failed to convert SUPPORT_END= in os-release file, ignoring: %m");
 
-        usec_t ts = now(CLOCK_REALTIME);
-        return DIV_ROUND_UP(ts, USEC_PER_SEC) > (usec_t) eol;
+        if (ret_eol)
+                *ret_eol = eol * USEC_PER_SEC;
+
+        return DIV_ROUND_UP(now(CLOCK_REALTIME), USEC_PER_SEC) > (usec_t) eol;
+}
+
+const char *os_release_pretty_name(const char *pretty_name, const char *name) {
+        /* Distills a "pretty" name to show from os-release data. First argument is supposed to be the
+         * PRETTY_NAME= field, the second one the NAME= field. This function is trivial, of course, and
+         * exists mostly to ensure we use the same logic wherever possible. */
+
+        return empty_to_null(pretty_name) ?:
+                empty_to_null(name) ?: "Linux";
 }
 #endif // 0
