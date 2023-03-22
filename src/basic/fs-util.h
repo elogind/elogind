@@ -12,6 +12,7 @@
 
 #include "alloc-util.h"
 #include "errno-util.h"
+#include "lock-util.h"
 #include "time-util.h"
 #include "user-util.h"
 
@@ -152,3 +153,5 @@ int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, b
 #endif // 0
 
 int xopenat(int dir_fd, const char *path, int flags, mode_t mode);
+
+int xopenat_lock(int dir_fd, const char *path, int flags, mode_t mode, LockType locktype, int operation);
