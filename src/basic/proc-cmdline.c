@@ -7,17 +7,18 @@
 #include "efivars.h"
 #include "extract-word.h"
 #include "fileio.h"
+#include "initrd-util.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
 #include "process-util.h"
 //#include "special.h"
 #include "string-util.h"
-//#include "util.h"
 #include "virt.h"
 
 int proc_cmdline(char **ret) {
         const char *e;
+
         assert(ret);
 
         /* For testing purposes it is sometimes useful to be able to override what we consider /proc/cmdline to be */
