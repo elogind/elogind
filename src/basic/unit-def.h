@@ -132,7 +132,9 @@ typedef enum ServiceState {
         SERVICE_START_POST,
         SERVICE_RUNNING,
         SERVICE_EXITED,            /* Nothing is running anymore, but RemainAfterExit is true hence this is OK */
-        SERVICE_RELOAD,
+        SERVICE_RELOAD,            /* Reloading via ExecReload= */
+        SERVICE_RELOAD_SIGNAL,     /* Reloading via SIGHUP requested */
+        SERVICE_RELOAD_NOTIFY,     /* Waiting for READY=1 after RELOADING=1 notify */
         SERVICE_STOP,              /* No STOP_PRE state, instead just register multiple STOP executables */
         SERVICE_STOP_WATCHDOG,
         SERVICE_STOP_SIGTERM,
@@ -142,6 +144,8 @@ typedef enum ServiceState {
         SERVICE_FINAL_SIGTERM,     /* In case the STOP_POST executable hangs, we shoot that down, too */
         SERVICE_FINAL_SIGKILL,
         SERVICE_FAILED,
+        SERVICE_DEAD_BEFORE_AUTO_RESTART,
+        SERVICE_FAILED_BEFORE_AUTO_RESTART,
         SERVICE_AUTO_RESTART,
         SERVICE_CLEANING,
         _SERVICE_STATE_MAX,
