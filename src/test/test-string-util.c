@@ -9,7 +9,6 @@
 #include "strv.h"
 #include "tests.h"
 #include "utf8.h"
-#include "util.h"
 
 #if 0 /// UNNEEDED by elogind
 TEST(string_erase) {
@@ -1181,6 +1180,85 @@ TEST(streq_skip_trailing_chars) {
         assert_se(!streq_skip_trailing_chars(NULL, "foo bar", NULL));
         assert_se(!streq_skip_trailing_chars("foo", NULL, NULL));
         assert_se(!streq_skip_trailing_chars("", "f", NULL));
+}
+
+#define TEST_MAKE_CSTRING_ONE(x, ret, mode, expect)                     \
+        do {                                                            \
+                _cleanup_free_ char *b = NULL;                          \
+                assert_se(make_cstring((x), ELEMENTSOF(x), (mode), &b) == (ret)); \
+                assert_se(streq_ptr(b, (expect)));                      \
+        } while(false)
+
+TEST(make_cstring) {
+        static const char test1[] = "this is a test",
+                test2[] = "",
+                test3[] = "a",
+                test4[] = "aa\0aa",
+                test5[] = { 'b', 'b', 0, 'b' , 'b' },
+                test6[] = {},
+                test7[] = { 'x' },
+                test8[] = { 'x', 'y', 'z' };
+
+        TEST_MAKE_CSTRING_ONE(test1, -EINVAL, MAKE_CSTRING_REFUSE_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test1, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "this is a test");
+        TEST_MAKE_CSTRING_ONE(test1, 0, MAKE_CSTRING_REQUIRE_TRAILING_NUL, "this is a test");
+
+        TEST_MAKE_CSTRING_ONE(test2, -EINVAL, MAKE_CSTRING_REFUSE_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test2, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "");
+        TEST_MAKE_CSTRING_ONE(test2, 0, MAKE_CSTRING_REQUIRE_TRAILING_NUL, "");
+
+        TEST_MAKE_CSTRING_ONE(test3, -EINVAL, MAKE_CSTRING_REFUSE_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test3, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "a");
+        TEST_MAKE_CSTRING_ONE(test3, 0, MAKE_CSTRING_REQUIRE_TRAILING_NUL, "a");
+
+        TEST_MAKE_CSTRING_ONE(test4, -EINVAL, MAKE_CSTRING_REFUSE_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test4, -EINVAL, MAKE_CSTRING_ALLOW_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test4, -EINVAL, MAKE_CSTRING_REQUIRE_TRAILING_NUL, NULL);
+
+        TEST_MAKE_CSTRING_ONE(test5, -EINVAL, MAKE_CSTRING_REFUSE_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test5, -EINVAL, MAKE_CSTRING_ALLOW_TRAILING_NUL, NULL);
+        TEST_MAKE_CSTRING_ONE(test5, -EINVAL, MAKE_CSTRING_REQUIRE_TRAILING_NUL, NULL);
+
+        TEST_MAKE_CSTRING_ONE(test6, 0, MAKE_CSTRING_REFUSE_TRAILING_NUL, "");
+        TEST_MAKE_CSTRING_ONE(test6, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "");
+        TEST_MAKE_CSTRING_ONE(test6, -EINVAL, MAKE_CSTRING_REQUIRE_TRAILING_NUL, NULL);
+
+        TEST_MAKE_CSTRING_ONE(test7, 0, MAKE_CSTRING_REFUSE_TRAILING_NUL, "x");
+        TEST_MAKE_CSTRING_ONE(test7, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "x");
+        TEST_MAKE_CSTRING_ONE(test7, -EINVAL, MAKE_CSTRING_REQUIRE_TRAILING_NUL, NULL);
+
+        TEST_MAKE_CSTRING_ONE(test8, 0, MAKE_CSTRING_REFUSE_TRAILING_NUL, "xyz");
+        TEST_MAKE_CSTRING_ONE(test8, 0, MAKE_CSTRING_ALLOW_TRAILING_NUL, "xyz");
+        TEST_MAKE_CSTRING_ONE(test8, -EINVAL, MAKE_CSTRING_REQUIRE_TRAILING_NUL, NULL);
+}
+
+TEST(find_line_startswith) {
+        static const char text[] =
+                "foobar\n"
+                "this is a test\n"
+                "foobar: waldo\n"
+                "more\n"
+                "\n"
+                "piff\n"
+                "foobarfoobar\n"
+                "iff\n";
+        static const char emptystring[] = "";
+
+        assert_se(find_line_startswith(text, "") == text);
+        assert_se(find_line_startswith(text, "f") == text+1);
+        assert_se(find_line_startswith(text, "foobar") == text+6);
+        assert_se(!find_line_startswith(text, "foobarx"));
+        assert_se(!find_line_startswith(text, "oobar"));
+        assert_se(find_line_startswith(text, "t") == text + 8);
+        assert_se(find_line_startswith(text, "th") == text + 9);
+        assert_se(find_line_startswith(text, "this") == text + 11);
+        assert_se(find_line_startswith(text, "foobarf") == text + 54);
+        assert_se(find_line_startswith(text, "more\n") == text + 41);
+        assert_se(find_line_startswith(text, "\n") == text + 42);
+        assert_se(find_line_startswith(text, "iff") == text + 63);
+
+        assert_se(find_line_startswith(emptystring, "") == emptystring);
+        assert_se(!find_line_startswith(emptystring, "x"));
 }
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
