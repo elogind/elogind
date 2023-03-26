@@ -163,6 +163,16 @@ static void user_group_data_release(struct user_group_data *d) {
         json_variant_unref(d->record);
 }
 
+struct membership_data {
+        char *user_name;
+        char *group_name;
+};
+
+static void membership_data_done(struct membership_data *d) {
+        free(d->user_name);
+        free(d->group_name);
+}
+
 static int userdb_on_query_reply(
                 Varlink *link,
                 JsonVariant *parameters,
@@ -305,14 +315,11 @@ static int userdb_on_query_reply(
         }
 
         case LOOKUP_MEMBERSHIP: {
-                struct membership_data {
-                        const char *user_name;
-                        const char *group_name;
-                } membership_data = {};
+                _cleanup_(membership_data_done) struct membership_data membership_data = {};
 
                 static const JsonDispatch dispatch_table[] = {
-                        { "userName",  JSON_VARIANT_STRING, json_dispatch_const_string, offsetof(struct membership_data, user_name),  JSON_SAFE },
-                        { "groupName", JSON_VARIANT_STRING, json_dispatch_const_string, offsetof(struct membership_data, group_name), JSON_SAFE },
+                        { "userName",  JSON_VARIANT_STRING, json_dispatch_user_group_name, offsetof(struct membership_data, user_name),  JSON_RELAX },
+                        { "groupName", JSON_VARIANT_STRING, json_dispatch_user_group_name, offsetof(struct membership_data, group_name), JSON_RELAX },
                         {}
                 };
 
@@ -323,21 +330,8 @@ static int userdb_on_query_reply(
                 if (r < 0)
                         goto finish;
 
-                iterator->found_user_name = mfree(iterator->found_user_name);
-                iterator->found_group_name = mfree(iterator->found_group_name);
-
-                iterator->found_user_name = strdup(membership_data.user_name);
-                if (!iterator->found_user_name) {
-                        r = -ENOMEM;
-                        goto finish;
-                }
-
-                iterator->found_group_name = strdup(membership_data.group_name);
-                if (!iterator->found_group_name) {
-                        r = -ENOMEM;
-                        goto finish;
-                }
-
+                iterator->found_user_name = TAKE_PTR(membership_data.user_name);
+                iterator->found_group_name = TAKE_PTR(membership_data.group_name);
                 iterator->n_found++;
 
                 if (FLAGS_SET(flags, VARLINK_REPLY_CONTINUES))
@@ -488,7 +482,7 @@ static int userdb_start_query(
                     streq(de->d_name, "io.systemd.DynamicUser"))
                         continue;
 
-                /* Avoid NSS is this is requested. Note that we also skip NSS when we were asked to skip the
+                /* Avoid NSS if this is requested. Note that we also skip NSS when we were asked to skip the
                  * multiplexer, since in that case it's safer to do NSS in the client side emulation below
                  * (and when we run as part of systemd-userdbd.service we don't want to talk to ourselves
                  * anyway). */
