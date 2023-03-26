@@ -97,7 +97,7 @@
 #         'kernel-image.c',
 #         'keyring-util.c',
 #         'killall.c',
-#         'label.c',
+#         'label-util.c',
 #         'libcrypt-util.c',
 #         'libfido2-util.c',
 #         'libmount-util.c',
