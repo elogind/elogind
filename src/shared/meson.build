@@ -11,6 +11,7 @@
 #         'bitmap.c',
 #         'blockdev-util.c',
 #         'bond-util.c',
+#         'boot-entry.c',
 #         'boot-timestamps.c',
 #         'bootspec.c',
 #         'bpf-dlopen.c',
