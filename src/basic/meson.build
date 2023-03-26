@@ -45,6 +45,7 @@
 #         'inotify-util.c',
 #         'io-util.c',
 #         'ioprio-util.c',
+#         'label.c',
 #         'limits-util.c',
 #         'locale-util.c',
 #         'lock-util.c',
