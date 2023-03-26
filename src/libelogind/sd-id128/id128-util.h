@@ -22,7 +22,7 @@ typedef enum Id128FormatFlag {
 } Id128FormatFlag;
 
 int id128_read_fd(int fd, Id128FormatFlag f, sd_id128_t *ret);
-int id128_read(const char *p, Id128FormatFlag f, sd_id128_t *ret);
+int id128_read(const char *root, const char *p, Id128FormatFlag f, sd_id128_t *ret);
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 int id128_write_fd(int fd, Id128FormatFlag f, sd_id128_t id);
