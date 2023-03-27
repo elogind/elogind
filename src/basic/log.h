@@ -60,6 +60,7 @@ void log_set_target(LogTarget target);
 void log_set_target_and_open(LogTarget target);
 int log_set_target_from_string(const char *e);
 LogTarget log_get_target(void) _pure_;
+void log_settle_target(void);
 
 void log_set_max_level(int level);
 int log_set_max_level_from_string(const char *e);
@@ -467,6 +468,16 @@ typedef struct LogRateLimit {
 #define log_ratelimit_warning_errno(error, ...)   log_ratelimit_full_errno(LOG_WARNING, error, __VA_ARGS__)
 #define log_ratelimit_error_errno(error, ...)     log_ratelimit_full_errno(LOG_ERR,     error, __VA_ARGS__)
 #define log_ratelimit_emergency_errno(error, ...) log_ratelimit_full_errno(log_emergency_level(), error, __VA_ARGS__)
+
+const char *_log_set_prefix(const char *prefix, bool force);
+static inline const char *_log_unset_prefixp(const char **p) {
+        assert(p);
+        _log_set_prefix(*p, true);
+        return NULL;
+}
+
+#define LOG_SET_PREFIX(prefix) \
+        _cleanup_(_log_unset_prefixp) _unused_ const char *CONCATENATE(_cleanup_log_unset_prefix_, UNIQ) = _log_set_prefix(prefix, false);
 
 /*
  * The log context allows attaching extra metadata to log messages written to the journal via log.h. We keep
