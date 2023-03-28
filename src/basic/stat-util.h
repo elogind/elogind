@@ -36,7 +36,6 @@ static inline int dir_is_empty(const char *path, bool ignore_hidden_or_backup) {
 bool null_or_empty(struct stat *st) _pure_;
 int null_or_empty_path_with_root(const char *fn, const char *root);
 #if 0 /// UNNEEDED by elogind
-int null_or_empty_fd(int fd);
 #endif // 0
 
 static inline int null_or_empty_path(const char *fn) {
