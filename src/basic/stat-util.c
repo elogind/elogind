@@ -157,16 +157,6 @@ int null_or_empty_path_with_root(const char *fn, const char *root) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int null_or_empty_fd(int fd) {
-        struct stat st;
-
-        assert(fd >= 0);
-
-        if (fstat(fd, &st) < 0)
-                return -errno;
-
-        return null_or_empty(&st);
-}
 #endif // 0
 
 static int fd_is_read_only_fs(int fd) {
