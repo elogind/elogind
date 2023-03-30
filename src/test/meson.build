@@ -59,6 +59,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-cgroup-setup.c',
 #         'test-cgroup-util.c',
 #         'test-cgroup.c',
+#         'test-chase.c',
 #         'test-clock.c',
 #         'test-compare-operator.c',
 #         'test-condition.c',
