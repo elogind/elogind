@@ -101,7 +101,6 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-hostname-setup.c',
 #         'test-hostname-util.c',
 #         'test-id128.c',
-#         'test-image-policy.c',
 #         'test-import-util.c',
 #         'test-in-addr-prefix-util.c',
 #         'test-in-addr-util.c',
@@ -147,7 +146,6 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-rm-rf.c',
 #         'test-sd-hwdb.c',
 #         'test-sd-path.c',
-#         'test-secure-bits.c',
 #         'test-selinux.c',
 #         'test-serialize.c',
 #         'test-set.c',
@@ -286,25 +284,6 @@ tests += [
                 'condition' : 'ENABLE_EFI',
         },
         {
-                'sources' : files('test-bpf-devices.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-bpf-firewall.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-bpf-foreign-programs.c'),
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-bpf-lsm.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
                 'sources' : files('test-btrfs.c'),
                 'type' : 'manual',
         },
@@ -320,25 +299,8 @@ tests += [
                 'dependencies' : libcap,
         },
         {
-                'sources' : files('test-cgroup-cpu.c'),
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-cgroup-mask.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-cgroup-unit-default.c'),
-                'base' : test_core_base,
-        },
-        {
                 'sources' : files('test-chase-manual.c'),
                 'type' : 'manual',
-        },
-        {
-                'sources' : files('test-chown-rec.c'),
-                'base' : test_core_base,
         },
         {
                 'sources' : files('test-compress-benchmark.c'),
@@ -366,25 +328,10 @@ tests += [
                 'dependencies' : libp11kit_cflags
         },
         {
-                'sources' : files('test-emergency-action.c'),
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-engine.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
                 'sources' : [
                         files('test-errno-list.c'),
                         generated_gperf_headers,
                 ],
-        },
-        {
-                'sources' : files('test-execute.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-                'timeout' : 360,
         },
         {
                 'sources' : files('test-fd-util.c'),
@@ -399,11 +346,6 @@ tests += [
                 'timeout' : 180,
         },
         {
-                'sources' : files('test-install.c'),
-                'base' : test_core_base,
-                'type' : 'manual',
-        },
-        {
                 'sources' : [
                         files('test-ip-protocol-list.c'),
                         shared_generated_gperf_headers,
@@ -412,11 +354,6 @@ tests += [
         {
                 'sources' : files('test-ipcrm.c'),
                 'type' : 'unsafe',
-        },
-        {
-                'sources' : files('test-job-type.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
         },
         {
                 'sources' : files('test-json.c'),
@@ -435,23 +372,8 @@ tests += [
                 ],
         },
         {
-                'sources' : files('test-load-fragment.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-        },
-        {
-                'sources' : files('test-loop-block.c'),
-                'dependencies' : [threads, libblkid],
-                'base' : test_core_base,
-                'parallel' : false,
-        },
-        {
                 'sources' : files('test-loopback.c'),
                 'dependencies' : common_test_dependencies,
-        },
-        {
-                'sources' : files('test-manager.c'),
-                'base' : test_core_base,
         },
         {
                 'sources' : files('test-math-util.c'),
@@ -462,23 +384,9 @@ tests += [
                 'dependencies' : threads,
         },
         {
-                'sources' : files('test-namespace.c'),
-                'dependencies' : [
-                        libblkid,
-                        threads,
-                ],
-                'base' : test_core_base,
-        },
-        {
                 'sources' : files('test-netlink-manual.c'),
                 'dependencies' : libkmod,
                 'condition' : 'HAVE_KMOD',
-                'type' : 'manual',
-        },
-        {
-                'sources' : files('test-ns.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
                 'type' : 'manual',
         },
         {
@@ -508,12 +416,6 @@ tests += [
                 'dependencies' : libm,
         },
         {
-                'sources' : files('test-path.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
-                'timeout' : 120,
-        },
-        {
                 'sources' : files('test-process-util.c'),
                 'dependencies' : threads,
         },
@@ -530,11 +432,6 @@ tests += [
                 'sources' : files('test-sbat.c'),
                 'condition' : 'ENABLE_BOOTLOADER',
                 'c_args' : '-I@0@'.format(efi_config_h_dir),
-        },
-        {
-                'sources' : files('test-sched-prio.c'),
-                'dependencies' : common_test_dependencies,
-                'base' : test_core_base,
         },
         {
                 'sources' : files('test-seccomp.c'),
@@ -594,6 +491,128 @@ tests += [
                 'type' : 'manual',
         },
         {
+                'sources' : files('test-utmp.c'),
+                'condition' : 'ENABLE_UTMP',
+        },
+        {
+                'sources' : files('test-varlink.c'),
+                'dependencies' : threads,
+        },
+        {
+                'sources' : files('test-watchdog.c'),
+                'type' : 'unsafe',
+        },
+
+
+        # Tests that link to libcore, i.e. tests for pid1 code.
+        {
+                'sources' : files('test-bpf-devices.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-bpf-firewall.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-bpf-foreign-programs.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-bpf-lsm.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-cgroup-cpu.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-cgroup-mask.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-cgroup-unit-default.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-chown-rec.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-emergency-action.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-engine.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-execute.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+                'timeout' : 360,
+        },
+        {
+                'sources' : files('test-install.c'),
+                'base' : test_core_base,
+                'type' : 'manual',
+        },
+        {
+                'sources' : files('test-job-type.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-load-fragment.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-loop-block.c'),
+                'dependencies' : [threads, libblkid],
+                'base' : test_core_base,
+                'parallel' : false,
+        },
+        {
+                'sources' : files('test-manager.c'),
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-namespace.c'),
+                'dependencies' : [
+                        libblkid,
+                        threads,
+                ],
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-ns.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+                'type' : 'manual',
+        },
+        {
+                'sources' : files('test-path.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+                'timeout' : 120,
+        },
+        {
+                'sources' : files('test-sched-prio.c'),
+                'dependencies' : common_test_dependencies,
+                'base' : test_core_base,
+        },
+        {
+                'sources' : files('test-socket-bind.c'),
+                'dependencies' : libdl,
+                'condition' : 'BPF_FRAMEWORK',
+                'base' : test_core_base,
+        },
+        {
                 'sources' : files('test-unit-name.c'),
                 'dependencies' : common_test_dependencies,
                 'base' : test_core_base,
@@ -604,34 +623,15 @@ tests += [
                 'base' : test_core_base,
         },
         {
-                'sources' : files('test-utmp.c'),
-                'condition' : 'ENABLE_UTMP',
-        },
-        {
-                'sources' : files('test-varlink.c'),
-                'dependencies' : threads,
-        },
-        {
                 'sources' : files('test-watch-pid.c'),
                 'dependencies' : common_test_dependencies,
                 'base' : test_core_base,
         },
-        {
-                'sources' : files('test-watchdog.c'),
-                'type' : 'unsafe',
-        },
-]
 
-############################################################
-
-# define some tests here, because the link_with deps were not defined earlier
-
-tests += [
-
-#if 0 /// elogind does not ship libudev itself
-#endif // 0
+/// elogind empty mask removed (elogind does not ship libudev itself)
 
 #if 0 /// UNNEEDED by elogind
+#         # Tests from other directories that have link_with deps that were not defined earlier
 #         {
 #                 'sources' : files('../libelogind/sd-bus/test-bus-error.c'),
 #                 'link_with' : [
@@ -648,12 +648,6 @@ tests += [
 #                 'sources' : files('../libudev/test-udev-device-thread.c'),
 #                 'link_with' : libudev,
 #                 'dependencies' : threads,
-#         },
-#         {
-#                 'sources' : files('test-socket-bind.c'),
-#                 'dependencies' : libdl,
-#                 'condition' : 'BPF_FRAMEWORK',
-#                 'base' : test_core_base,
 #         },
 # ]
 #endif // 0
