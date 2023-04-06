@@ -120,7 +120,9 @@ static int files_add(
 }
 
 static int base_cmp(char * const *a, char * const *b) {
-        return strcmp(basename(*a), basename(*b));
+        assert(a);
+        assert(b);
+        return path_compare_filename(*a, *b);
 }
 
 int conf_files_list_strv(
@@ -240,7 +242,6 @@ int conf_files_insert(char ***strv, const char *root, char **dirs, const char *p
         return r;
 }
 #endif // 0
-
 
 int conf_files_list(char ***ret, const char *suffix, const char *root, unsigned flags, const char *dir) {
         return conf_files_list_strv(ret, suffix, root, flags, STRV_MAKE_CONST(dir));
