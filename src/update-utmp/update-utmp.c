@@ -50,20 +50,23 @@ static void context_clear(Context *c) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static usec_t get_startup_monotonic_time(Context *c) {
+static int get_startup_monotonic_time(Context *c, usec_t *ret) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        usec_t t = 0;
         int r;
 
         assert(c);
+        assert(ret);
 
-        r = bus_get_property_trivial(c->bus, bus_elogind_mgr, "UserspaceTimestampMonotonic", &error, 't', &t);
-        if (r < 0) {
-                log_error_errno(r, "Failed to get timestamp: %s", bus_error_message(&error, r));
-                return 0;
-        }
+        r = bus_get_property_trivial(
+                        c->bus,
+                        bus_elogind_mgr,
+                        "UserspaceTimestampMonotonic",
+                        &error,
+                        't', ret);
+        if (r < 0)
+                return log_warning_errno(r, "Failed to get timestamp, ignoring: %s", bus_error_message(&error, r));
 
-        return t;
+        return 0;
 }
 
 static int get_current_runlevel(Context *c) {
@@ -112,7 +115,7 @@ static int get_current_runlevel(Context *c) {
 
 static int on_reboot(int argc, char *argv[], void *userdata) {
         Context *c = ASSERT_PTR(userdata);
-        usec_t t, boottime;
+        usec_t t = 0, boottime;
         int r = 0, q;
 
         /* We finished start-up, so let's write the utmp record and send the audit msg. */
@@ -125,12 +128,12 @@ static int on_reboot(int argc, char *argv[], void *userdata) {
 #endif
 
 #if 0 /// systemd hasn't started the system, so elogind always uses NOW()
-        /* If this call fails it will return 0, which utmp_put_reboot() will then fix to the current time. */
-        t = get_startup_monotonic_time(c);
 #else // 0
         t = now(CLOCK_REALTIME);
 #endif // 0
 
+        /* If this call fails, then utmp_put_reboot() will fix to the current time. */
+        (void) get_startup_monotonic_time(c, &t);
         boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
         /* We query the recorded monotonic time here (instead of the system clock CLOCK_REALTIME), even
          * though we actually want the system clock time. That's because there's a likely chance that the
