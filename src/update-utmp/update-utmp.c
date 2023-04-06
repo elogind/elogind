@@ -251,8 +251,8 @@ void update_utmp(int argc, char* argv[]) {
         /* If the kernel lacks netlink or audit support, don't worry about it. */
         c.audit_fd = audit_open();
         if (c.audit_fd < 0)
-                log_full_errno(IN_SET(errno, EAFNOSUPPORT, EPROTONOSUPPORT) ? LOG_DEBUG : LOG_ERR,
-                               errno, "Failed to connect to audit log: %m");
+                log_full_errno(IN_SET(errno, EAFNOSUPPORT, EPROTONOSUPPORT) ? LOG_DEBUG : LOG_WARNING,
+                               errno, "Failed to connect to audit log, ignoring: %m");
 #endif
 #if 0 /// UNNEEDED by elogind
         r = bus_connect_system_systemd(&c.bus);
