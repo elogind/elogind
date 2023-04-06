@@ -57,7 +57,6 @@ typedef struct BootConfig {
         char *auto_entries;
         char *auto_firmware;
         char *console_mode;
-        char *random_seed_mode;
         char *beep;
 
         char *entry_oneshot;
@@ -80,6 +79,7 @@ typedef struct BootConfig {
         }
 
 const char* boot_entry_type_to_string(BootEntryType);
+const char* boot_entry_type_json_to_string(BootEntryType);
 
 BootEntry* boot_config_find_entry(BootConfig *config, const char *id);
 
