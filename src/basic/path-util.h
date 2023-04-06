@@ -72,16 +72,19 @@ char *path_startswith_full(const char *path, const char *prefix, bool accept_dot
 static inline char* path_startswith(const char *path, const char *prefix) {
         return path_startswith_full(path, prefix, true);
 }
-int path_compare(const char *a, const char *b) _pure_;
 
+int path_compare(const char *a, const char *b) _pure_;
 static inline bool path_equal(const char *a, const char *b) {
         return path_compare(a, b) == 0;
 }
 
+int path_compare_filename(const char *a, const char *b);
+static inline bool path_equal_filename(const char *a, const char *b) {
+        return path_compare_filename(a, b) == 0;
+}
+
 bool path_equal_or_files_same(const char *a, const char *b, int flags);
 #if 0 /// UNNEEDED by elogind
-/* Compares only the last portion of the input paths, ie: the filenames */
-bool path_equal_filename(const char *a, const char *b);
 #endif // 0
 
 char* path_extend_internal(char **x, ...);
@@ -142,6 +145,7 @@ int fsck_exists_for_fstype(const char *fstype);
 
 /* Similar to path_join(), but only works for two components, and only the first one may be NULL and returns
  * an alloca() buffer, or possibly a const pointer into the path parameter. */
+/* DEPRECATED: use path_join() instead */
 #define prefix_roota(root, path)                                        \
         ({                                                              \
                 const char* _path = (path), *_root = (root), *_ret;     \
@@ -182,8 +186,8 @@ static inline bool path_is_safe(const char *p) {
 bool path_is_normalized(const char *p) _pure_;
 
 #if 0 /// UNNEEDED by elogind
-char *file_in_same_dir(const char *path, const char *filename);
 #endif // 0
+int file_in_same_dir(const char *path, const char *filename, char **ret);
 
 bool hidden_or_backup_file(const char *filename) _pure_;
 

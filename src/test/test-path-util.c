@@ -16,7 +16,6 @@
 #include "strv.h"
 #include "tests.h"
 #include "tmpfile-util.h"
-#include "util.h"
 
 TEST(print_paths) {
         log_info("DEFAULT_PATH=%s", DEFAULT_PATH);
@@ -53,10 +52,6 @@ TEST(path) {
         assert_se(!path_equal_ptr(NULL, "/a"));
 
 #if 0 /// UNNEEDED by elogind
-        assert_se(path_equal_filename("/a/c", "/b/c"));
-        assert_se(path_equal_filename("/a", "/a"));
-        assert_se(!path_equal_filename("/a/b", "/a/c"));
-        assert_se(!path_equal_filename("/b", "/c"));
 #endif // 0
 }
 
@@ -157,6 +152,55 @@ TEST(path_compare) {
         test_path_compare_one("/foo/a/b", "/foo/aaa", -1);
 }
 
+static void test_path_compare_filename_one(const char *a, const char *b, int expected) {
+        int r;
+
+        assert_se(path_compare_filename(a, a) == 0);
+        assert_se(path_compare_filename(b, b) == 0);
+
+        r = path_compare_filename(a, b);
+        assert_se((r > 0) == (expected > 0) && (r < 0) == (expected < 0));
+        r = path_compare_filename(b, a);
+        assert_se((r < 0) == (expected > 0) && (r > 0) == (expected < 0));
+
+        assert_se(path_equal_filename(a, a) == 1);
+        assert_se(path_equal_filename(b, b) == 1);
+        assert_se(path_equal_filename(a, b) == (expected == 0));
+        assert_se(path_equal_filename(b, a) == (expected == 0));
+}
+
+TEST(path_compare_filename) {
+        test_path_compare_filename_one("/goo", "/goo", 0);
+        test_path_compare_filename_one("/goo", "/goo", 0);
+        test_path_compare_filename_one("//goo", "/goo", 0);
+        test_path_compare_filename_one("//goo/////", "/goo", 0);
+        test_path_compare_filename_one("goo/////", "goo", 0);
+        test_path_compare_filename_one("/goo/boo", "/goo//boo", 0);
+        test_path_compare_filename_one("//goo/boo", "/goo/boo//", 0);
+        test_path_compare_filename_one("//goo/././//./boo//././//", "/goo/boo//.", 0);
+        test_path_compare_filename_one("/.", "//.///", -1);
+        test_path_compare_filename_one("/x", "x/", 0);
+        test_path_compare_filename_one("x/", "/", 1);
+        test_path_compare_filename_one("/x/./y", "x/y", 0);
+        test_path_compare_filename_one("/x/./y", "/x/y", 0);
+        test_path_compare_filename_one("/x/./././y", "/x/y/././.", 0);
+        test_path_compare_filename_one("./x/./././y", "./x/y/././.", 0);
+        test_path_compare_filename_one(".", "./.", -1);
+        test_path_compare_filename_one(".", "././.", -1);
+        test_path_compare_filename_one("./..", ".", 1);
+        test_path_compare_filename_one("x/.y", "x/y", -1);
+        test_path_compare_filename_one("foo", "/foo", 0);
+        test_path_compare_filename_one("/foo", "/foo/bar", 1);
+        test_path_compare_filename_one("/foo/aaa", "/foo/b", -1);
+        test_path_compare_filename_one("/foo/aaa", "/foo/b/a", 1);
+        test_path_compare_filename_one("/foo/a", "/foo/aaa", -1);
+        test_path_compare_filename_one("/foo/a/b", "/foo/aaa", 1);
+        test_path_compare_filename_one("/a/c", "/b/c", 0);
+        test_path_compare_filename_one("/a", "/a", 0);
+        test_path_compare_filename_one("/a/b", "/a/c", -1);
+        test_path_compare_filename_one("/b", "/c", -1);
+}
+
 TEST(path_equal_root) {
         /* Nail down the details of how path_equal("/", ...) works. */
 
@@ -203,7 +247,7 @@ TEST(path_equal_root) {
 TEST(find_executable_full) {
         char *p;
         char* test_file_name;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         char fn[] = "/tmp/test-XXXXXX";
 
         assert_se(find_executable_full("sh", NULL, NULL, true, &p, NULL) == 0);
@@ -286,7 +330,7 @@ TEST(find_executable) {
 
 static void test_find_executable_exec_one(const char *path) {
         _cleanup_free_ char *t = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         pid_t pid;
         int r;
 
@@ -612,23 +656,19 @@ TEST(prefix_root) {
 TEST(file_in_same_dir) {
         char *t;
 
-        t = file_in_same_dir("/", "a");
+        assert_se(file_in_same_dir("/", "a", &t) == -EADDRNOTAVAIL);
+
+        assert_se(file_in_same_dir("/", "/a", &t) >= 0);
         assert_se(streq(t, "/a"));
         free(t);
 
-        t = file_in_same_dir("/", "/a");
-        assert_se(streq(t, "/a"));
+        assert_se(file_in_same_dir("", "a", &t) == -EINVAL);
+
+        assert_se(file_in_same_dir("a/", "x", &t) >= 0);
+        assert_se(streq(t, "x"));
         free(t);
 
-        t = file_in_same_dir("", "a");
-        assert_se(streq(t, "a"));
-        free(t);
-
-        t = file_in_same_dir("a/", "a");
-        assert_se(streq(t, "a/a"));
-        free(t);
-
-        t = file_in_same_dir("bar/foo", "bar");
+        assert_se(file_in_same_dir("bar/foo", "bar", &t) >= 0);
         assert_se(streq(t, "bar/bar"));
         free(t);
 }
