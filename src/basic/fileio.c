@@ -269,7 +269,8 @@ int write_string_file_ts_at(
                 const struct timespec *ts) {
 
         _cleanup_fclose_ FILE *f = NULL;
-        int q, r, fd;
+        _cleanup_close_ int fd = -EBADF;
+        int q, r;
 
         assert(fn);
         assert(line);
@@ -310,11 +311,9 @@ int write_string_file_ts_at(
                 if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                         flags ^= WRITE_STRING_FILE_DISABLE_BUFFER;
 #endif // __GLIBC__
-        r = fdopen_unlocked(fd, "w", &f);
-        if (r < 0) {
-                safe_close(fd);
+        r = take_fdopen_unlocked(&fd, "w", &f);
+        if (r < 0)
                 goto fail;
-        }
 
         if (flags & WRITE_STRING_FILE_DISABLE_BUFFER)
                 setvbuf(f, NULL, _IONBF, 0);
@@ -360,19 +359,18 @@ int write_string_filef(
         return write_string_file(fn, p, flags);
 }
 
-int read_one_line_file_at(int dir_fd, const char *filename, char **ret) {
+int read_one_line_file(const char *fn, char **line) {
         _cleanup_fclose_ FILE *f = NULL;
         int r;
 
-        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
-        assert(filename);
-        assert(ret);
+        assert(fn);
+        assert(line);
 
-        r = fopen_unlocked_at(dir_fd, filename, "re", 0, &f);
+        r = fopen_unlocked(fn, "re", &f);
         if (r < 0)
                 return r;
 
-        return read_line(f, LONG_LINE_MAX, ret);
+        return read_line(f, LONG_LINE_MAX, line);
 }
 
 int verify_file_at(int dir_fd, const char *fn, const char *blob, bool accept_extra_nl) {
@@ -815,11 +813,9 @@ int read_full_file_full(
                 if (shutdown(sk, SHUT_WR) < 0)
                         return -errno;
 
-                f = fdopen(sk, "r");
+                f = take_fdopen(&sk, "r");
                 if (!f)
                         return -errno;
-
-                TAKE_FD(sk);
         }
 
         (void) __fsetlocking(f, FSETLOCKING_BYCALLER);
@@ -931,8 +927,7 @@ int get_proc_field(const char *filename, const char *pattern, const char *termin
 }
 
 DIR *xopendirat(int fd, const char *name, int flags) {
-        int nfd;
-        DIR *d;
+        _cleanup_close_ int nfd = -EBADF;
 
         assert(!(flags & O_CREAT));
 
@@ -943,13 +938,7 @@ DIR *xopendirat(int fd, const char *name, int flags) {
         if (nfd < 0)
                 return NULL;
 
-        d = fdopendir(nfd);
-        if (!d) {
-                safe_close(nfd);
-                return NULL;
-        }
-
-        return d;
+        return take_fdopendir(&nfd);
 }
 
 int fopen_mode_to_flags(const char *mode) {
@@ -1003,12 +992,16 @@ int xfopenat(int dir_fd, const char *path, const char *mode, int flags, FILE **r
 
         /* A combination of fopen() with openat() */
 
-        if (dir_fd == AT_FDCWD && flags == 0) {
+        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
+        assert(path);
+        assert(mode);
+        assert(ret);
+
+        if (dir_fd == AT_FDCWD && flags == 0)
                 f = fopen(path, mode);
-                if (!f)
-                        return -errno;
-        } else {
-                int fd, mode_flags;
+        else {
+                _cleanup_close_ int fd = -EBADF;
+                int mode_flags;
 
                 mode_flags = fopen_mode_to_flags(mode);
                 if (mode_flags < 0)
@@ -1018,12 +1011,10 @@ int xfopenat(int dir_fd, const char *path, const char *mode, int flags, FILE **r
                 if (fd < 0)
                         return -errno;
 
-                f = fdopen(fd, mode);
-                if (!f) {
-                        safe_close(fd);
-                        return -errno;
-                }
+                f = take_fdopen(&fd, mode);
         }
+        if (!f)
+                return -errno;
 
         *ret = f;
         return 0;
@@ -1049,11 +1040,10 @@ int fdopen_independent(int fd, const char *mode, FILE **ret) {
         if (copy_fd < 0)
                 return copy_fd;
 
-        f = fdopen(copy_fd, mode);
+        f = take_fdopen(&copy_fd, mode);
         if (!f)
                 return -errno;
 
-        TAKE_FD(copy_fd);
         *ret = TAKE_PTR(f);
         return 0;
 }
