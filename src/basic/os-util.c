@@ -151,6 +151,7 @@ int open_extension_release(
 
         _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ char *q = NULL;
+        bool found = false;
         int r;
 
         assert(!extension || (image_class >= 0 && image_class < _IMAGE_CLASS_MAX));
@@ -185,7 +186,6 @@ int open_extension_release(
         if (r < 0)
                 return log_debug_errno(r, "Cannot open %s%s, ignoring: %m", root, image_class_release_info[image_class].release_file_directory);
 
-        r = -ENOENT;
         FOREACH_DIRENT(de, extension_release_dir, return -errno) {
                 int k;
 
@@ -230,12 +230,10 @@ int open_extension_release(
                 /* We already found what we were looking for, but there's another candidate? We treat this as
                  * an error, as we want to enforce that there are no ambiguities in case we are in the
                  * fallback path. */
-                if (r == 0) {
-                        r = -ENOTUNIQ;
-                        break;
-                }
+                if (found)
+                        return -ENOTUNIQ;
 
-                r = 0; /* Found it! */
+                found = true;
 
                 if (ret_fd)
                         fd = TAKE_FD(extension_release_fd);
@@ -246,8 +244,8 @@ int open_extension_release(
                                 return -ENOMEM;
                 }
         }
-        if (r < 0)
-                return r;
+        if (!found)
+                return -ENOENT;
 
         if (ret_fd)
                 *ret_fd = TAKE_FD(fd);
