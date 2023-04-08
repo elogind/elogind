@@ -33,7 +33,9 @@ static inline int path_is_os_tree(const char *path) {
 #if 0 /// UNNEEDED by elogind
 int open_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 #endif // 0
+int open_extension_release_at(int rfd, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 int open_os_release(const char *root, char **ret_path, int *ret_fd);
+int open_os_release_at(int rfd, char **ret_path, int *ret_fd);
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 /// elogind empty mask removed (UNNEEDED by elogind)
@@ -44,6 +46,12 @@ int parse_extension_release_sentinel(const char *root, ImageClass image_class, b
         parse_extension_release_sentinel(root, _IMAGE_CLASS_INVALID, false, NULL, __VA_ARGS__, NULL)
 
 #if 0 /// UNNEEDED by elogind
+int parse_extension_release_at_sentinel(int rfd, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
+#define parse_extension_release_at(rfd, image_class, extension, relax_extension_release_check, ...) \
+        parse_extension_release_at_sentinel(rfd, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
+#define parse_os_release_at(rfd, ...)                                     \
+        parse_extension_release_at_sentinel(rfd, _IMAGE_CLASS_INVALID, false, NULL, __VA_ARGS__, NULL)
+
 int load_extension_release_pairs(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char ***ret);
 static inline int load_os_release_pairs(const char *root, char ***ret) {
         return load_extension_release_pairs(root, _IMAGE_CLASS_INVALID, NULL, false, ret);
