@@ -32,10 +32,8 @@ static inline int path_is_os_tree(const char *path) {
 
 #if 0 /// UNNEEDED by elogind
 int open_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
-static inline int open_os_release(const char *root, char **ret_path, int *ret_fd) {
-        return open_extension_release(root, _IMAGE_CLASS_INVALID, NULL, false, ret_path, ret_fd);
-}
 #endif // 0
+int open_os_release(const char *root, char **ret_path, int *ret_fd);
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
