@@ -35,13 +35,13 @@ int open_extension_release(const char *root, ImageClass image_class, const char 
 #endif // 0
 int open_os_release(const char *root, char **ret_path, int *ret_fd);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-int _parse_extension_release(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
-int _parse_os_release(const char *root, ...) _sentinel_;
 /// elogind empty mask removed (UNNEEDED by elogind)
-#define parse_extension_release(root, image_class, extension, relax_extension_release_check, ...) _parse_extension_release(root, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
-#define parse_os_release(root, ...) _parse_os_release(root, __VA_ARGS__, NULL)
+/// elogind empty mask removed (UNNEEDED by elogind)
+int parse_extension_release_sentinel(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
+#define parse_extension_release(root, image_class, extension, relax_extension_release_check, ...) \
+        parse_extension_release_sentinel(root, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
+#define parse_os_release(root, ...)                                     \
+        parse_extension_release_sentinel(root, _IMAGE_CLASS_INVALID, false, NULL, __VA_ARGS__, NULL)
 
 #if 0 /// UNNEEDED by elogind
 int load_extension_release_pairs(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char ***ret);
