@@ -26,21 +26,21 @@ bool image_name_is_valid(const char *s) _pure_;
 #if 0 /// UNNEEDED by elogind
 int path_is_extension_tree(ImageClass image_class, const char *path, const char *extension, bool relax_extension_release_check);
 static inline int path_is_os_tree(const char *path) {
-        return path_is_extension_tree(IMAGE_SYSEXT, path, NULL, false);
+        return path_is_extension_tree(_IMAGE_CLASS_INVALID, path, NULL, false);
 }
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int open_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 static inline int open_os_release(const char *root, char **ret_path, int *ret_fd) {
-        return open_extension_release(root, IMAGE_SYSEXT, NULL, false, ret_path, ret_fd);
+        return open_extension_release(root, _IMAGE_CLASS_INVALID, NULL, false, ret_path, ret_fd);
 }
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
 int fopen_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, FILE **ret_file);
 static inline int fopen_os_release(const char *root, char **ret_path, FILE **ret_file) {
-        return fopen_extension_release(root, IMAGE_SYSEXT, NULL, false, ret_path, ret_file);
+        return fopen_extension_release(root, _IMAGE_CLASS_INVALID, NULL, false, ret_path, ret_file);
 }
 
 #endif // 0
