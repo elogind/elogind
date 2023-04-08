@@ -39,9 +39,8 @@ int open_os_release(const char *root, char **ret_path, int *ret_fd);
 #endif // 0
 int _parse_extension_release(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
 int _parse_os_release(const char *root, ...) _sentinel_;
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#define parse_extension_release(root, image_class, relax_extension_release_check, extension, ...) _parse_extension_release(root, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
+/// elogind empty mask removed (UNNEEDED by elogind)
+#define parse_extension_release(root, image_class, extension, relax_extension_release_check, ...) _parse_extension_release(root, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
 #define parse_os_release(root, ...) _parse_os_release(root, __VA_ARGS__, NULL)
 
 #if 0 /// UNNEEDED by elogind
