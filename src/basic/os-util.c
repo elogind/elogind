@@ -314,18 +314,6 @@ int _parse_os_release(const char *root, ...) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int load_os_release_pairs(const char *root, char ***ret) {
-        _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_free_ char *p = NULL;
-        int r;
-
-        r = fopen_os_release(root, &p, &f);
-        if (r < 0)
-                return r;
-
-        return load_env_file_pairs(f, p, ret);
-}
-
 int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char ***ret) {
         _cleanup_strv_free_ char **os_release_pairs = NULL, **os_release_pairs_prefixed = NULL;
         int r;
@@ -359,9 +347,6 @@ int load_extension_release_pairs(const char *root, ImageClass image_class, const
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_free_ char *p = NULL;
         int r;
-
-        assert(image_class >= 0);
-        assert(image_class < _IMAGE_CLASS_MAX);
 
         r = fopen_extension_release(root, image_class, extension, relax_extension_release_check, &p, &f);
         if (r < 0)
