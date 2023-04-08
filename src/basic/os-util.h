@@ -38,11 +38,6 @@ static inline int open_os_release(const char *root, char **ret_path, int *ret_fd
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-int fopen_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, FILE **ret_file);
-static inline int fopen_os_release(const char *root, char **ret_path, FILE **ret_file) {
-        return fopen_extension_release(root, _IMAGE_CLASS_INVALID, NULL, false, ret_path, ret_file);
-}
-
 #endif // 0
 int _parse_extension_release(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
 int _parse_os_release(const char *root, ...) _sentinel_;
