@@ -152,6 +152,7 @@ int putsgent_sane(const struct sgrp *sg, FILE *stream);
 #endif // 0
 
 bool is_nologin_shell(const char *shell);
+const char* default_root_shell_at(int rfd);
 const char* default_root_shell(const char *root);
 
 #if 0 /// UNNEEDED by elogind
