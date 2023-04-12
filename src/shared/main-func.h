@@ -5,12 +5,12 @@
 
 #include "sd-daemon.h"
 
+#include "argv-util.h"
 #include "pager.h"
 #include "selinux-util.h"
 //#include "spawn-ask-password-agent.h"
 #include "spawn-polkit-agent.h"
 #include "static-destruct.h"
-#include "util.h"
 
 #if 1 /// elogind has no password agent, so do nothing.
 #define ask_password_agent_close() while(0){}
@@ -24,6 +24,7 @@
                 r = impl;                                               \
                 if (r < 0)                                              \
                         (void) sd_notifyf(0, "ERRNO=%i", -r);           \
+                (void) sd_notifyf(0, "EXIT_STATUS=%i", ret);            \
                 ask_password_agent_close();                             \
                 polkit_agent_close();                                   \
                 pager_close();                                          \
