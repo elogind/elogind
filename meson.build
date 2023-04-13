@@ -4784,7 +4784,7 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# exe = custom_target(
+# kernel_install = custom_target(
 #         'kernel-install',
 #         input : kernel_install_in,
 #         output : 'kernel-install',
@@ -4796,14 +4796,7 @@ public_programs += executable(
 #         public_programs += exe
 # endif
 #
-# if want_tests != 'false' and want_kernel_install
-#         test('test-kernel-install',
-#              test_kernel_install_sh,
-#              env : test_env,
-#              args : [exe.full_path(), loaderentry_install])
-# endif
-#
-# exe = custom_target(
+# ukify = custom_target(
 #         'ukify',
 #         input : 'src/ukify/ukify.py',
 #         output : 'ukify',
@@ -4812,7 +4805,19 @@ public_programs += executable(
 #         install_mode : 'rwxr-xr-x',
 #         install_dir : rootlibexecdir)
 # if want_ukify
-#    public_programs += exe
+#    public_programs += ukify
+# endif
+#
+# if want_tests != 'false' and want_kernel_install
+#         args = [kernel_install.full_path(), loaderentry_install, uki_copy_install]
+#         if want_ukify
+#                 args += [ukify.full_path(), ukify_install]
+#         endif
+#
+#         test('test-kernel-install',
+#              test_kernel_install_sh,
+#              env : test_env,
+#              args : args)
 # endif
 #else // 0
 executable('elogind-uaccess-command',
