@@ -1183,4 +1183,21 @@ TEST(streq_skip_trailing_chars) {
         assert_se(!streq_skip_trailing_chars("", "f", NULL));
 }
 
+TEST(strstrafter) {
+        static const char buffer[] = "abcdefghijklmnopqrstuvwxyz";
+
+        assert_se(!strstrafter(NULL, NULL));
+        assert_se(!strstrafter("", NULL));
+        assert_se(!strstrafter(NULL, ""));
+        assert_se(streq_ptr(strstrafter("", ""), ""));
+
+        assert_se(strstrafter(buffer, "a") == buffer + 1);
+        assert_se(strstrafter(buffer, "") == buffer);
+        assert_se(strstrafter(buffer, "ab") == buffer + 2);
+        assert_se(strstrafter(buffer, "cde") == buffer + 5);
+        assert_se(strstrafter(buffer, "xyz") == strchr(buffer, 0));
+        assert_se(strstrafter(buffer, buffer) == strchr(buffer, 0));
+        assert_se(!strstrafter(buffer, "-"));
+}
+
 DEFINE_TEST_MAIN(LOG_DEBUG);
