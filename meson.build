@@ -4443,20 +4443,20 @@ public_programs += executable(
 #                      args : exe.full_path())
 #         endif
 #
+#         exe = executable(
+#                 'src/sysusers/sysusers.c',
+#                 include_directories : includes,
+#                 c_args : '-DSTANDALONE',
+#                 link_with : [libshared_static,
+#                              libbasic,
+#                              libbasic_gcrypt,
+#                              libelogind_static],
+#                 dependencies : [userspace,
+#                                 versiondep],
+#                 build_by_default: have_standalone_binaries,
+#                 install : have_standalone_binaries,
+#                 install_dir : rootbindir)
 #         if have_standalone_binaries
-#                 exe = executable(
-#                         'systemd-sysusers.standalone',
-#                         'src/sysusers/sysusers.c',
-#                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
-#                         link_with : [libshared_static,
-#                                      libbasic,
-#                                      libbasic_gcrypt,
-#                                      libsystemd_static],
-#                         dependencies : [userspace,
-#                                         versiondep],
-#                         install : true,
-#                         install_dir : rootbindir)
 #                 public_programs += exe
 #
 #                 if want_tests != 'false'
@@ -4489,21 +4489,21 @@ public_programs += executable(
 #                      args : exe.full_path())
 #         endif
 #
+#         exe = executable(
+#                 elogind_tmpfiles_sources,
+#                 include_directories : includes,
+#                 c_args : '-DSTANDALONE',
+#                 link_with : [libshared_static,
+#                              libbasic,
+#                              libbasic_gcrypt,
+#                              libelogind_static],
+#                 dependencies : [libacl,
+#                                 userspace,
+#                                 versiondep],
+#                 build_by_default: have_standalone_binaries,
+#                 install : have_standalone_binaries,
+#                 install_dir : rootbindir)
 #         if have_standalone_binaries
-#                 exe = executable(
-#                         'systemd-tmpfiles.standalone',
-#                         systemd_tmpfiles_sources,
-#                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
-#                         link_with : [libshared_static,
-#                                      libbasic,
-#                                      libbasic_gcrypt,
-#                                      libsystemd_static],
-#                         dependencies : [libacl,
-#                                         userspace,
-#                                         versiondep],
-#                         install : true,
-#                         install_dir : rootbindir)
 #                 public_programs += exe
 #
 #                 if want_tests != 'false'
@@ -4603,25 +4603,26 @@ public_programs += executable(
 #                 install_dir : rootbindir)
 #         public_programs += exe
 #
+#         exe = executable(
+#                 elogind_repart_sources,
+#                 include_directories : includes,
+#                 c_args : '-DSTANDALONE',
+#                 link_with : [libshared_static,
+#                              libbasic,
+#                              libbasic_gcrypt,
+#                              libelogind_static,
+#                              libshared_fdisk],
+#                 dependencies : [libblkid,
+#                                 libfdisk,
+#                                 libopenssl,
+#                                 threads,
+#                                 userspace,
+#                                 versiondep],
+#                 build_by_default: have_standalone_binaries,
+#                 install_rpath : rootpkglibdir,
+#                 install : have_standalone_binaries,
+#                 install_dir : rootbindir)
 #         if have_standalone_binaries
-#                 exe = executable(
-#                         elogind_repart_sources,
-#                         include_directories : includes,
-#                         c_args : '-DSTANDALONE',
-#                         link_with : [libshared_static,
-#                                      libbasic,
-#                                      libbasic_gcrypt,
-#                                      libelogind_static,
-#                                      libshared_fdisk],
-#                         dependencies : [libblkid,
-#                                         libfdisk,
-#                                         libopenssl,
-#                                         threads,
-#                                         userspace,
-#                                         versiondep],
-#                         install_rpath : rootpkglibdir,
-#                         install : true,
-#                         install_dir : rootbindir)
 #                 public_programs += exe
 #         endif
 # endif
@@ -4638,21 +4639,23 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
+# executable(
+#         'elogind-shutdown.standalone',
+#         elogind_shutdown_sources,
+#         include_directories : includes,
+#         c_args : '-DSTANDALONE',
+#         link_with : [libshared_static,
+#                      libbasic,
+#                      libelogind_static],
+#         dependencies : [libmount,
+#                         userspace,
+#                         versiondep],
+#         build_by_default: have_standalone_binaries,
+#         install_rpath : rootpkglibdir,
+#         install : have_standalone_binaries,
+#         install_dir : rootlibexecdir)
 # if have_standalone_binaries
-#         executable(
-#                 'elogind-shutdown.standalone',
-#                 elogind_shutdown_sources,
-#                 include_directories : includes,
-#                 c_args : '-DSTANDALONE',
-#                 link_with : [libshared_static,
-#                              libbasic,
-#                              libelogind_static],
-#                 dependencies : [libmount,
-#                                 userspace,
-#                                 versiondep],
-#                 install_rpath : rootpkglibdir,
-#                 install : true,
-#                 install_dir : rootlibexecdir)
+#         public_programs += exe
 # endif
 #
 # executable(
