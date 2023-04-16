@@ -959,7 +959,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         /* Talk to logind over the message bus */
 
-        r = pam_acquire_bus_connection(handle, &bus);
+        r = pam_acquire_bus_connection(handle, "pam-elogind", &bus);
         if (r != PAM_SUCCESS)
                 return r;
 
@@ -1128,7 +1128,7 @@ success:
         /* Let's release the D-Bus connection, after all the session might live quite a long time, and we are
          * not going to use the bus connection in that time, so let's better close before the daemon kicks us
          * off because we are not processing anything. */
-        (void) pam_release_bus_connection(handle);
+        (void) pam_release_bus_connection(handle, "pam-elogind");
         return PAM_SUCCESS;
 }
 
@@ -1172,7 +1172,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
                 /* Before we go and close the FIFO we need to tell logind that this is a clean session
                  * shutdown, so that it doesn't just go and slaughter us immediately after closing the fd */
 
-                r = pam_acquire_bus_connection(handle, &bus);
+                r = pam_acquire_bus_connection(handle, "pam-elogind", &bus);
                 if (r != PAM_SUCCESS)
                         return r;
 
