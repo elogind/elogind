@@ -65,7 +65,6 @@ char* path_make_absolute(const char *p, const char *prefix);
 int safe_getcwd(char **ret);
 int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
-int path_prefix_root_cwd(const char *p, const char *root, char **ret);
 int path_make_relative(const char *from, const char *to, char **ret);
 int path_make_relative_parent(const char *from_child, const char *to, char **ret);
 #endif // 0
