@@ -123,7 +123,7 @@ static int fd_fdinfo_mnt_id(int fd, const char *filename, int flags, int *ret_mn
 
         r = read_full_virtual_file(path, &fdinfo, NULL);
         if (r == -ENOENT) /* The fdinfo directory is a relatively new addition */
-                return -EOPNOTSUPP;
+                return proc_mounted() > 0 ? -EOPNOTSUPP : -ENOSYS;
         if (r < 0)
                 return r;
 
@@ -280,7 +280,7 @@ int fd_is_mount_point(int fd, const char *filename, int flags) {
 
 fallback_fdinfo:
         r = fd_fdinfo_mnt_id(fd, filename, flags, &mount_id);
-        if (IN_SET(r, -EOPNOTSUPP, -EACCES, -EPERM))
+        if (IN_SET(r, -EOPNOTSUPP, -EACCES, -EPERM, -ENOSYS))
                 goto fallback_fstat;
         if (r < 0)
                 return r;
@@ -551,6 +551,8 @@ int dev_is_devtmpfs(void) {
                 return r;
 
         r = fopen_unlocked("/proc/self/mountinfo", "re", &proc_self_mountinfo);
+        if (r == -ENOENT)
+                return proc_mounted() > 0 ? -ENOENT : -ENOSYS;
         if (r < 0)
                 return r;
 
@@ -570,12 +572,12 @@ int dev_is_devtmpfs(void) {
                 if (mid != mount_id)
                         continue;
 
-                e = strstr(line, " - ");
+                e = strstrafter(line, " - ");
                 if (!e)
                         continue;
 
                 /* accept any name that starts with the currently expected type */
-                if (startswith(e + 3, "devtmpfs"))
+                if (startswith(e, "devtmpfs"))
                         return true;
         }
 
