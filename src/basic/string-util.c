@@ -1210,3 +1210,15 @@ size_t strspn_from_end(const char *str, const char *accept) {
 
         return n;
 }
+
+char *startswith_strv(const char *string, char **strv) {
+        char *found = NULL;
+
+        STRV_FOREACH(i, strv) {
+                found = startswith(string, *i);
+                if (found)
+                        break;
+        }
+
+        return found;
+}

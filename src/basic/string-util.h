@@ -256,3 +256,8 @@ bool streq_skip_trailing_chars(const char *s1, const char *s2, const char *ok);
 char *string_replace_char(char *str, char old_char, char new_char);
 
 size_t strspn_from_end(const char *str, const char *accept);
+
+char *startswith_strv(const char *string, char **strv);
+
+#define STARTSWITH_SET(p, ...)                                  \
+        startswith_strv(p, STRV_MAKE(__VA_ARGS__))
