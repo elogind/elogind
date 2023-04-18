@@ -94,6 +94,7 @@
 #define SPECIAL_GROWFS_ROOT_SERVICE "elogind-growfs-root.service"
 #define SPECIAL_PCRFS_SERVICE "elogind-pcrfs@.service"
 #define SPECIAL_PCRFS_ROOT_SERVICE "elogind-pcrfs-root.service"
+#define SPECIAL_HIBERNATE_RESUME_SERVICE "elogind-hibernate-resume.service"
 
 /* Services systemd relies on */
 #define SPECIAL_DBUS_SERVICE "dbus.service"
