@@ -599,8 +599,12 @@ static int write_to_kmsg(
         if (kmsg_fd < 0)
                 return 0;
 
-        if (ratelimit_kmsg && !ratelimit_below(&ratelimit))
-                return 0;
+        if (ratelimit_kmsg && !ratelimit_below(&ratelimit)) {
+                if (ratelimit_num_dropped(&ratelimit) > 1)
+                        return 0;
+
+                buffer = "Too many messages being logged to kmsg, ignoring";
+        }
 
         xsprintf(header_priority, "<%i>", level);
         xsprintf(header_pid, "["PID_FMT"]: ", getpid_cached());
@@ -1317,6 +1321,7 @@ static bool should_parse_proc_cmdline(void) {
                 return true;
 
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
+        /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
