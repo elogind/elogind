@@ -13,7 +13,6 @@
 #include "logind-button.h"
 #include "missing_input.h"
 #include "string-util.h"
-#include "util.h"
 
 #define CONST_MAX5(a, b, c, d, e) CONST_MAX(CONST_MAX(a, b), CONST_MAX(CONST_MAX(c, d), e))
 
@@ -49,13 +48,14 @@ Button* button_new(Manager *m, const char *name) {
         }
 
         b->manager = m;
-        b->fd = -1;
+        b->fd = -EBADF;
 
         return b;
 }
 
-void button_free(Button *b) {
-        assert(b);
+Button *button_free(Button *b) {
+        if (!b)
+                return NULL;
 
         hashmap_remove(b->manager->buttons, b->name);
 
@@ -66,7 +66,8 @@ void button_free(Button *b) {
 
         free(b->name);
         free(b->seat);
-        free(b);
+
+        return mfree(b);
 }
 
 int button_set_seat(Button *b, const char *sn) {
@@ -464,7 +465,7 @@ static int button_set_mask(const char *name, int fd) {
 }
 
 int button_open(Button *b) {
-        _cleanup_(asynchronous_closep) int fd = -1;
+        _cleanup_(asynchronous_closep) int fd = -EBADF;
         const char *p;
         char name[256];
         int r;
