@@ -300,8 +300,9 @@ int cg_pid_get_user_slice(pid_t pid, char **slice);
 #if 0 /// UNNEEDED by elogind
 int cg_path_decode_unit(const char *cgroup, char **unit);
 
-char *cg_escape(const char *p);
 #endif // 0
+bool cg_needs_escape(const char *p);
+int cg_escape(const char *p, char **ret);
 char *cg_unescape(const char *p) _pure_;
 
 bool cg_controller_is_valid(const char *p);
