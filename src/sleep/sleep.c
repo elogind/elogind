@@ -23,6 +23,7 @@
 //#include "bus-locator.h"
 //#include "bus-util.h"
 #include "constants.h"
+#include "devnum-util.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -168,7 +169,7 @@ static int execute_external(Manager *m, SleepOperation operation) {
 
 static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
         char offset_str[DECIMAL_STR_MAX(uint64_t)];
-        char resume_str[DECIMAL_STR_MAX(unsigned) * 2 + STRLEN(":")];
+        const char *resume_str;
         int r;
 #if 1 /// To support LVM setups, elogind uses device numbers
         char device_num_str[DECIMAL_STR_MAX(uint32_t) * 2 + 2];
@@ -178,8 +179,6 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
         assert(hibernate_location);
         assert(hibernate_location->swap);
 
-        xsprintf(resume_str, "%u:%u", major(hibernate_location->devno), minor(hibernate_location->devno));
-        r = write_string_file("/sys/power/resume", resume_str, WRITE_STRING_FILE_DISABLE_BUFFER);
 
 #if 1 /// To support LVM setups, elogind uses device numbers if the direct approach failed
         if (r < 0) {
@@ -193,7 +192,9 @@ static int write_hibernate_location_info(const HibernateLocation *hibernate_loca
                 r = write_string_file("/sys/power/resume", device_num_str, 0);
         }
 #endif // 1
+        resume_str = FORMAT_DEVNUM(hibernate_location->devno);
 
+        r = write_string_file("/sys/power/resume", resume_str, WRITE_STRING_FILE_DISABLE_BUFFER);
         if (r < 0)
                 return log_debug_errno(r, "Failed to write partition device to /sys/power/resume for '%s': '%s': %m",
                                        hibernate_location->swap->device, resume_str);
