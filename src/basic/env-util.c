@@ -739,7 +739,7 @@ char *replace_env_n(const char *format, size_t n, char **env, unsigned flags) {
 }
 
 char **replace_env_argv(char **argv, char **env) {
-        char **ret;
+        _cleanup_strv_free_ char **ret = NULL;
         size_t k = 0, l = 0;
 
         l = strv_length(argv);
@@ -763,7 +763,6 @@ char **replace_env_argv(char **argv, char **env) {
                                 r = strv_split_full(&m, e, WHITESPACE, EXTRACT_RELAX|EXTRACT_UNQUOTE);
                                 if (r < 0) {
                                         ret[k] = NULL;
-                                        strv_free(ret);
                                         return NULL;
                                 }
                         } else
@@ -775,7 +774,6 @@ char **replace_env_argv(char **argv, char **env) {
                         w = reallocarray(ret, l + 1, sizeof(char *));
                         if (!w) {
                                 ret[k] = NULL;
-                                strv_free(ret);
                                 strv_free(m);
                                 return NULL;
                         }
@@ -792,15 +790,13 @@ char **replace_env_argv(char **argv, char **env) {
 
                 /* If ${FOO} appears as part of a word, replace it by the variable as-is */
                 ret[k] = replace_env(*i, env, 0);
-                if (!ret[k]) {
-                        strv_free(ret);
+                if (!ret[k])
                         return NULL;
-                }
                 k++;
         }
 
         ret[k] = NULL;
-        return ret;
+        return TAKE_PTR(ret);
 }
 #endif // 0
 
