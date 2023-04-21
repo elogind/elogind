@@ -17,7 +17,6 @@
 #include "missing_drm.h"
 #include "missing_input.h"
 #include "parse-util.h"
-#include "util.h"
 
 enum SessionDeviceNotifications {
         SESSION_DEVICE_RESUME,
@@ -334,7 +333,7 @@ int session_device_new(Session *s, dev_t dev, bool open_device, SessionDevice **
 
         sd->session = s;
         sd->dev = dev;
-        sd->fd = -1;
+        sd->fd = -EBADF;
         sd->type = DEVICE_TYPE_UNKNOWN;
 
         r = session_device_verify(sd);
@@ -376,8 +375,9 @@ error:
         return r;
 }
 
-void session_device_free(SessionDevice *sd) {
-        assert(sd);
+SessionDevice *session_device_free(SessionDevice *sd) {
+        if (!sd)
+                return NULL;
 
         /* Make sure to remove the pushed fd. */
         if (sd->pushed_fd)
@@ -392,7 +392,8 @@ void session_device_free(SessionDevice *sd) {
         hashmap_remove(sd->session->devices, &sd->dev);
 
         free(sd->node);
-        free(sd);
+
+        return mfree(sd);
 }
 
 void session_device_complete_pause(SessionDevice *sd) {
