@@ -8,13 +8,13 @@
 
 #include "alloc-util.h"
 #include "fd-util.h"
+#include "fs-util.h"
 #include "macro.h"
 #include "path-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "tests.h"
 #include "tmpfile-util.h"
-#include "util.h"
 
 #define LOREM_IPSUM "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor " \
         "incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation " \
@@ -42,7 +42,7 @@ TEST(read_one_char) {
         _cleanup_fclose_ FILE *file = NULL;
         char r;
         bool need_nl;
-        char name[] = "/tmp/test-read_one_char.XXXXXX";
+        _cleanup_(unlink_tempfilep) char name[] = "/tmp/test-read_one_char.XXXXXX";
 
         assert_se(fmkostemp_safe(name, "r+", &file) == 0);
 
@@ -62,14 +62,12 @@ TEST(read_one_char) {
         assert_se(fputs("\n", file) >= 0);
         rewind(file);
         assert_se(read_one_char(file, &r, 1000000, &need_nl) < 0);
-
-        assert_se(unlink(name) >= 0);
 }
 #endif // 0
 
 TEST(getttyname_malloc) {
         _cleanup_free_ char *ttyname = NULL;
-        _cleanup_close_ int master = -1;
+        _cleanup_close_ int master = -EBADF;
 
         assert_se((master = posix_openpt(O_RDWR|O_NOCTTY)) >= 0);
         assert_se(getttyname_malloc(master, &ttyname) >= 0);
