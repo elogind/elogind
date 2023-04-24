@@ -12,9 +12,12 @@
 #include <sys/stat.h>
 //#include <sys/types.h>
 #include <sys/timerfd.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
+#include "sd-device.h"
+#include "sd-id128.h"
 #include "sd-messages.h"
 
 #include "battery-util.h"
@@ -25,13 +28,17 @@
 #include "bus-util.h"
 #include "constants.h"
 #include "devnum-util.h"
+#include "efivars.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
 //#include "format-util.h"
+#include "id128-util.h"
 #include "io-util.h"
+#include "json.h"
 #include "log.h"
 #include "main-func.h"
+#include "os-util.h"
 #include "parse-util.h"
 #include "pretty-print.h"
 #include "sleep-util.h"
@@ -94,8 +101,19 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                                 break;
                         }
                 }
+static int write_efi_hibernate_location(const HibernateLocation *hibernate_location, bool required) {
+        int r = 0;
 
                 strv_free(sessions);
+#if ENABLE_EFI
+        _cleanup_(json_variant_unrefp) JsonVariant *v = NULL;
+        _cleanup_free_ char *formatted = NULL, *id = NULL, *image_id = NULL,
+                       *version_id = NULL, *image_version = NULL;
+        _cleanup_(sd_device_unrefp) sd_device *device = NULL;
+        const char *uuid_str;
+        sd_id128_t uuid;
+        struct utsname uts = {};
+        int log_level, log_level_ignore;
 
                 // Get to a safe non-gui VT
                 if ( (vt > 0) && (vt < 63) ) {
@@ -103,6 +121,8 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                         *vtnr = vt;
                         (void) chvt(63);
                 }
+        assert(hibernate_location);
+        assert(hibernate_location->swap);
 
                 // Okay, go to sleep.
                 if (operation == SLEEP_SUSPEND) {
@@ -112,6 +132,8 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                         log_debug_elogind("Writing 'hibernate' into %s", drv_suspend);
                         r = write_string_file(drv_suspend, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
                 }
+        if (!is_efi_boot())
+                return 0;
 
                 if (r)
                         return 0;
@@ -125,33 +147,69 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                         (void) chvt((int)(*vtnr));
                 }
         }
+        log_level = required ? LOG_ERR : LOG_DEBUG;
+        log_level_ignore = required ? LOG_WARNING : LOG_DEBUG;
 
         return 1;
 }
 #endif // 1
+        r = sd_device_new_from_devnum(&device, 'b', hibernate_location->devno);
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to create sd-device object for '%s': %m",
+                                      hibernate_location->swap->path);
 
 #if 1 /// If an external program is configured to suspend/hibernate, elogind calls that one first.
 static int execute_external(Manager *m, SleepOperation operation) {
         int r = -1;
         char **tools = NULL;
+        r = sd_device_get_property_value(device, "ID_FS_UUID", &uuid_str);
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to get filesystem UUID for device '%s': %m",
+                                      hibernate_location->swap->path);
 
         if ( (SLEEP_SUSPEND == operation) && !strv_isempty(m->suspend_by_using) )
                 tools = m->suspend_by_using;
+        r = sd_id128_from_string(uuid_str, &uuid);
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to parse ID_FS_UUID '%s' for device '%s': %m",
+                                      uuid_str, hibernate_location->swap->path);
 
         if ( ( (SLEEP_HIBERNATE == operation) || (SLEEP_HYBRID_SLEEP == operation) ) && !strv_isempty(m->hibernate_by_using) )
                 tools = m->hibernate_by_using;
+        if (uname(&uts) < 0)
+                log_full_errno(log_level_ignore, errno, "Failed to get kernel info, ignoring: %m");
 
         if ( tools ) {
                 STRV_FOREACH(tool, tools) {
                         int k;
+        r = parse_os_release(NULL,
+                             "ID", &id,
+                             "IMAGE_ID", &image_id,
+                             "VERSION_ID", &version_id,
+                             "IMAGE_VERSION", &image_version);
+        if (r < 0)
+                log_full_errno(log_level_ignore, r, "Failed to parse os-release, ignoring: %m");
 
                         log_debug_elogind("Calling '%s' to '%s'...", *tool, sleep_operation_to_string(operation));
                         k = safe_fork( *tool, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+        r = json_build(&v, JSON_BUILD_OBJECT(
+                               JSON_BUILD_PAIR_UUID("uuid", uuid),
+                               JSON_BUILD_PAIR_UNSIGNED("offset", hibernate_location->offset),
+                               JSON_BUILD_PAIR_CONDITION(!isempty(uts.release), "kernelVersion", JSON_BUILD_STRING(uts.release)),
+                               JSON_BUILD_PAIR_CONDITION(id, "osReleaseId", JSON_BUILD_STRING(id)),
+                               JSON_BUILD_PAIR_CONDITION(image_id, "osReleaseImageId", JSON_BUILD_STRING(image_id)),
+                               JSON_BUILD_PAIR_CONDITION(version_id, "osReleaseVersionId", JSON_BUILD_STRING(version_id)),
+                               JSON_BUILD_PAIR_CONDITION(image_version, "osReleaseImageVersion", JSON_BUILD_STRING(image_version))));
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to build JSON object: %m");
 
                         if ( k < 0 ) {
                                 r = log_error_errno(errno, "Failed to fork run %s: %m", *tool);
                                 continue;
                         }
+        r = json_variant_format(v, 0, &formatted);
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to format JSON object: %m");
 
                         if ( 0 == k ) {
                                 /* Child */
@@ -159,21 +217,26 @@ static int execute_external(Manager *m, SleepOperation operation) {
                                 log_error_errno( errno, "Failed to execute %s: %m", *tool );
                                 _exit( EXIT_FAILURE );
                         }
+        r = efi_set_variable_string(EFI_SYSTEMD_VARIABLE(HibernateLocation), formatted);
+        if (r < 0)
+                return log_full_errno(log_level, r, "Failed to set EFI variable HibernateLocation: %m");
 
                         return 0;
                 }
         }
+        log_debug("Set EFI variable HibernateLocation to '%s'.", formatted);
+#endif
 
         return r;
 }
 #endif // 1
 
-static int write_hibernate_location_info(const HibernateLocation *hibernate_location) {
 #if 1 /// To support LVM setups, elogind uses device numbers
         char device_num_str[DECIMAL_STR_MAX(uint32_t) * 2 + 2];
         struct stat stb;
 #endif // 1
 
+static int write_kernel_hibernate_location(const HibernateLocation *hibernate_location) {
         assert(hibernate_location);
         assert(hibernate_location->swap);
         assert(IN_SET(hibernate_location->swap->type, SWAP_BLOCK, SWAP_FILE));
@@ -388,12 +451,16 @@ static int execute(
                 resume_set = r > 0;
 
                 if (!resume_set) {
-                        r = write_hibernate_location_info(hibernate_location);
+                        r = write_kernel_hibernate_location(hibernate_location);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to prepare for hibernation: %m");
                 }
 
 #if 0 /// elogind supports suspend modes, and our write_mode() variant does more and logs on error
+                r = write_efi_hibernate_location(hibernate_location, !resume_set);
+                if (r < 0 && !resume_set)
+                        return r;
+
                 r = write_mode(modes);
                 if (r < 0)
                         return log_error_errno(r, "Failed to write mode to /sys/power/disk: %m");
