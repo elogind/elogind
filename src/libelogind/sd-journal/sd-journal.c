@@ -33,7 +33,8 @@
 #include "list.h"
 //#include "lookup3.h"
 #include "nulstr-util.h"
-//#include "path-util.h"
+#include "origin-id.h"
+#include "path-util.h"
 #include "prioq.h"
 #include "process-util.h"
 //#include "replace-var.h"
@@ -52,19 +53,13 @@
 
 #define DEFAULT_DATA_THRESHOLD (64*1024)
 
+DEFINE_PRIVATE_ORIGIN_ID_HELPERS(sd_journal, journal);
+
 static void remove_file_real(sd_journal *j, JournalFile *f);
 #endif // 0
 static int journal_file_read_tail_timestamp(sd_journal *j, JournalFile *f);
 static void journal_file_unlink_newest_by_bood_id(sd_journal *j, JournalFile *f);
 
-static bool journal_pid_changed(sd_journal *j) {
-        assert(j);
-
-        /* We don't support people creating a journal object and
-         * keeping it around over a fork(). Let's complain. */
-
-        return j->original_pid != getpid_cached();
-}
 
 #if 0 /// UNNEEDED by elogind
 static int journal_put_error(sd_journal *j, int r, const char *path) {
@@ -239,7 +234,7 @@ _public_ int sd_journal_add_match(sd_journal *j, const void *data, size_t size) 
         uint64_t hash;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(data, -EINVAL);
 
         if (size == 0)
@@ -338,7 +333,7 @@ fail:
 
 _public_ int sd_journal_add_conjunction(sd_journal *j) {
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (!j->level0)
                 return 0;
@@ -357,7 +352,7 @@ _public_ int sd_journal_add_conjunction(sd_journal *j) {
 
 _public_ int sd_journal_add_disjunction(sd_journal *j) {
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (!j->level0)
                 return 0;
@@ -417,7 +412,7 @@ char *journal_make_match_string(sd_journal *j) {
 
 _public_ void sd_journal_flush_matches(sd_journal *j) {
 #if 0 /// UNSUPPORTED by elogind
-        if (!j)
+        if (!j || journal_origin_changed(j))
                 return;
 
         if (j->level0)
@@ -943,7 +938,7 @@ static int real_journal_next(sd_journal *j, direction_t direction) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         r = iterated_cache_get(j->files_cache, NULL, &files, &n_files);
         if (r < 0)
@@ -1011,7 +1006,7 @@ static int real_journal_next_skip(sd_journal *j, direction_t direction, uint64_t
         int c = 0, r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(skip <= INT_MAX, -ERANGE);
 
         if (skip == 0) {
@@ -1064,7 +1059,7 @@ _public_ int sd_journal_get_cursor(sd_journal *j, char **cursor) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(cursor, -EINVAL);
 
         if (!j->current_file || j->current_file->current_offset <= 0)
@@ -1101,7 +1096,7 @@ _public_ int sd_journal_seek_cursor(sd_journal *j, const char *cursor) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(!isempty(cursor), -EINVAL);
 
         for (const char *p = cursor;;) {
@@ -1201,7 +1196,7 @@ _public_ int sd_journal_test_cursor(sd_journal *j, const char *cursor) {
         Object *o;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(!isempty(cursor), -EINVAL);
 
         if (!j->current_file || j->current_file->current_offset <= 0)
@@ -1284,7 +1279,7 @@ _public_ int sd_journal_test_cursor(sd_journal *j, const char *cursor) {
 _public_ int sd_journal_seek_monotonic_usec(sd_journal *j, sd_id128_t boot_id, uint64_t usec) {
 #if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         detach_location(j);
 
@@ -1304,7 +1299,7 @@ _public_ int sd_journal_seek_monotonic_usec(sd_journal *j, sd_id128_t boot_id, u
 _public_ int sd_journal_seek_realtime_usec(sd_journal *j, uint64_t usec) {
 #if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         detach_location(j);
 
@@ -1323,7 +1318,7 @@ _public_ int sd_journal_seek_realtime_usec(sd_journal *j, uint64_t usec) {
 _public_ int sd_journal_seek_head(sd_journal *j) {
 #if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         detach_location(j);
 
@@ -1340,7 +1335,7 @@ _public_ int sd_journal_seek_head(sd_journal *j) {
 _public_ int sd_journal_seek_tail(sd_journal *j) {
 #if 0 /// UNSUPPORTED by elogind
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         detach_location(j);
 
@@ -2062,7 +2057,7 @@ static sd_journal *journal_new(int flags, const char *path, const char *namespac
                 return NULL;
 
         *j = (sd_journal) {
-                .original_pid = getpid_cached(),
+                .origin_id = origin_id_query(),
                 .toplevel_fd = -EBADF,
                 .inotify_fd = -EBADF,
                 .flags = flags,
@@ -2341,7 +2336,7 @@ _public_ void sd_journal_close(sd_journal *j) {
         Directory *d;
         Prioq *p;
 
-        if (!j)
+        if (!j || journal_origin_changed(j))
                 return;
 
         while ((p = hashmap_first(j->newest_by_boot_id)))
@@ -2559,7 +2554,7 @@ _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         f = j->current_file;
         if (!f)
@@ -2591,7 +2586,7 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         f = j->current_file;
         if (!f)
@@ -2640,7 +2635,7 @@ _public_ int sd_journal_get_seqnum(
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         f = j->current_file;
         if (!f)
@@ -2696,7 +2691,7 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(field, -EINVAL);
         assert_return(data, -EINVAL);
         assert_return(size, -EINVAL);
@@ -2755,7 +2750,7 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(data, -EINVAL);
         assert_return(size, -EINVAL);
 
@@ -2823,7 +2818,7 @@ _public_ int sd_journal_enumerate_available_data(sd_journal *j, const void **dat
 }
 
 _public_ void sd_journal_restart_data(sd_journal *j) {
-        if (!j)
+        if (!j || journal_origin_changed(j))
                 return;
 
         j->current_field = 0;
@@ -2854,7 +2849,7 @@ _public_ int sd_journal_get_fd(sd_journal *j) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (j->no_inotify)
                 return -EMEDIUMTYPE;
@@ -2884,7 +2879,7 @@ _public_ int sd_journal_get_events(sd_journal *j) {
         int fd;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         fd = sd_journal_get_fd(j);
         if (fd < 0)
@@ -2901,7 +2896,7 @@ _public_ int sd_journal_get_timeout(sd_journal *j, uint64_t *timeout_usec) {
         int fd;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(timeout_usec, -EINVAL);
 
         fd = sd_journal_get_fd(j);
@@ -3030,7 +3025,7 @@ _public_ int sd_journal_process(sd_journal *j) {
         bool got_something = false;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (j->inotify_fd < 0) /* We have no inotify fd yet? Then there's noting to process. */
                 return 0;
@@ -3066,7 +3061,7 @@ _public_ int sd_journal_wait(sd_journal *j, uint64_t timeout_usec) {
         uint64_t t;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (j->inotify_fd < 0) {
                 JournalFile *f;
@@ -3123,7 +3118,7 @@ _public_ int sd_journal_get_cutoff_realtime_usec(sd_journal *j, uint64_t *from, 
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(from || to, -EINVAL);
         assert_return(from != to, -EINVAL);
 
@@ -3172,7 +3167,7 @@ _public_ int sd_journal_get_cutoff_monotonic_usec(
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(ret_from != ret_to, -EINVAL);
 
         ORDERED_HASHMAP_FOREACH(f, j->files) {
@@ -3231,7 +3226,7 @@ _public_ int sd_journal_get_usage(sd_journal *j, uint64_t *ret) {
         uint64_t sum = 0;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(ret, -EINVAL);
 
         ORDERED_HASHMAP_FOREACH(f, j->files) {
@@ -3264,7 +3259,7 @@ _public_ int sd_journal_query_unique(sd_journal *j, const char *field) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(!isempty(field), -EINVAL);
         assert_return(field_is_valid(field), -EINVAL);
 
@@ -3291,7 +3286,7 @@ _public_ int sd_journal_enumerate_unique(
         size_t k;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(j->unique_field, -EINVAL);
 
         k = strlen(j->unique_field);
@@ -3431,7 +3426,7 @@ _public_ int sd_journal_enumerate_available_unique(sd_journal *j, const void **d
 }
 
 _public_ void sd_journal_restart_unique(sd_journal *j) {
-        if (!j)
+        if (!j || journal_origin_changed(j))
                 return;
 
         j->unique_file = NULL;
@@ -3444,7 +3439,7 @@ _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(field, -EINVAL);
 
         if (!j->fields_file) {
@@ -3586,7 +3581,7 @@ _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
 }
 
 _public_ void sd_journal_restart_fields(sd_journal *j) {
-        if (!j)
+        if (!j || journal_origin_changed(j))
                 return;
 
         j->fields_file = NULL;
@@ -3597,7 +3592,7 @@ _public_ void sd_journal_restart_fields(sd_journal *j) {
 
 _public_ int sd_journal_reliable_fd(sd_journal *j) {
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         return !j->on_network;
 }
@@ -3632,7 +3627,7 @@ _public_ int sd_journal_get_catalog(sd_journal *j, char **ret) {
         int r;
 
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(ret, -EINVAL);
 
         r = sd_journal_get_data(j, "MESSAGE_ID", &data, &size);
@@ -3674,7 +3669,7 @@ _public_ int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **ret) {
 
 _public_ int sd_journal_set_data_threshold(sd_journal *j, size_t sz) {
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
 
         j->data_threshold = sz;
         return 0;
@@ -3682,7 +3677,7 @@ _public_ int sd_journal_set_data_threshold(sd_journal *j, size_t sz) {
 
 _public_ int sd_journal_get_data_threshold(sd_journal *j, size_t *sz) {
         assert_return(j, -EINVAL);
-        assert_return(!journal_pid_changed(j), -ECHILD);
+        assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(sz, -EINVAL);
 
         *sz = j->data_threshold;
