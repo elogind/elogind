@@ -165,8 +165,10 @@ libsystemd_c_args = ['-fvisibility=default']
 #                         userspace],
 #         build_by_default : false)
 #
+# libelogind_dir_path = meson.current_source_dir()
+#
 # libsystemd_sym = files('libsystemd.sym')
-# libsystemd_sym_path = meson.current_source_dir() / 'libsystemd.sym'
+# libelogind_sym_path = libelogind_dir_path / 'libelogind.sym'
 #
 # static_libsystemd = get_option('static-libsystemd')
 # static_libsystemd_pic = static_libsystemd == 'true' or static_libsystemd == 'pic'

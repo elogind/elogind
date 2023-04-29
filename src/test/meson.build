@@ -23,18 +23,18 @@ generate_sym_test_py = find_program('generate-sym-test.py')
 
 test_libelogind_sym_c = custom_target(
         'test-libelogind-sym.c',
-        input : [libelogind_sym_path] + systemd_headers,
         output : 'test-libelogind-sym.c',
-        command : [generate_sym_test_py, libelogind_sym_path] + systemd_headers,
+        input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
+        command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
         capture : true,
         build_by_default : want_tests != 'false')
 
 #if 0 /// UNNEEDED in elogind
 # test_libudev_sym_c = custom_target(
 #         'test-libudev-sym.c',
-#         input : [libudev_sym_path, libudev_h_path],
+#         input : [libudev_sym_path, libudev_h_path] + libudev_sources,
 #         output : 'test-libudev-sym.c',
-#         command : [generate_sym_test_py, '@INPUT0@', '@INPUT1@'],
+#         command : [generate_sym_test_py, libudev_sym_path, libudev_dir_path, libudev_h_path],
 #         capture : true,
 #         build_by_default : want_tests != 'false')
 #endif // 0
@@ -101,6 +101,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-hostname-setup.c',
 #         'test-hostname-util.c',
 #         'test-id128.c',
+#         'test-image-policy.c',
 #         'test-import-util.c',
 #         'test-in-addr-prefix-util.c',
 #         'test-in-addr-util.c',
@@ -146,6 +147,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-rm-rf.c',
 #         'test-sd-hwdb.c',
 #         'test-sd-path.c',
+#         'test-secure-bits.c',
 #         'test-selinux.c',
 #         'test-serialize.c',
 #         'test-set.c',
