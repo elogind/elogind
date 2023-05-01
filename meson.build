@@ -824,6 +824,7 @@ perl = find_program('perl', required : false)
 # rsync = find_program('rsync', required : false)
 #endif // 0
 diff = find_program('diff')
+find = find_program('find')
 meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #if 0 /// UNNEEDED by elogind
 #endif // 0
