@@ -208,5 +208,12 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #                 ],
 #                 'dependencies' : libmount,
 #         },
+#         {
+#                 'sources' : files('fuzz-manager-serialize.c'),
+#                 'link_with' : [
+#                         libcore,
+#                         libshared
+#                 ],
+#         },
 # ]
 #endif // 0
