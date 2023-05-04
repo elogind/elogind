@@ -192,7 +192,7 @@ tomorrow Pacific/Auckland → Thu 2012-11-23 19:00:00
     <para>Note that a relative timestamp is also accepted where a timestamp is expected (see above).</para>
 
     <para>Use the <command>timestamp</command> command of
-    <citerefentry><refentrytitle>elogind-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry> to
+    <citerefentry><refentrytitle>systemd-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry> to
     validate and normalize timestamps for testing purposes.</para>
   </refsect1>
 
@@ -235,8 +235,8 @@ tomorrow Pacific/Auckland → Thu 2012-11-23 19:00:00
     decimal places.</para>
 
     <para>Either time or date specification may be omitted, in which
-    case the current day and 00:00:00 is implied, respectively. If the
-    second component is not specified, <literal>:00</literal> is
+    case *-*-* and 00:00:00 is implied, respectively. If the
+    seconds component is not specified, <literal>:00</literal> is
     assumed.</para>
 
     <para>Timezone can be specified as the literal string <literal>UTC</literal>, or
