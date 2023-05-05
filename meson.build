@@ -819,7 +819,6 @@ stat = find_program('stat')
 ln = find_program('ln')
 git = find_program('git', required : false)
 env = find_program('env')
-perl = find_program('perl', required : false)
 #if 0 /// UNNEEDED by elogind
 # rsync = find_program('rsync', required : false)
 #endif // 0
