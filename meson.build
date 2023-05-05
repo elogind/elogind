@@ -2401,7 +2401,7 @@ conf.set10('ENABLE_UKIFY', want_ukify)
 
 #if 0 /// UNNEEDED by elogind
 # ############################################################
-# #
+#
 # elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
 # elf2efi_py = find_program('tools/elf2efi.py')
 # export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
@@ -4902,10 +4902,10 @@ foreach test : tests
                 message('@0@ is an unsafe test'.format(name))
         elif want_tests != 'false'
                 test(name, exe,
-                        env : test_env,
-                        timeout : test.get('timeout', 30),
-                        suite : suite,
-                        is_parallel : test.get('parallel', true))
+                     env : test_env,
+                     timeout : test.get('timeout', 30),
+                     suite : suite,
+                     is_parallel : test.get('parallel', true))
         endif
 endforeach
 
