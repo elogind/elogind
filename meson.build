@@ -5228,19 +5228,28 @@ if git.found()
                 run_target(
                         'ctags',
                         command : [env, 'ctags', '--tag-relative=never', '-o', '@0@/tags'.format(project_source_root)] + all_files)
+
+                ############################################
+
+                if want_tests != 'false' and conf.get('BUILD_MODE_DEVELOPER') == 1
+                        test('check-includes',
+                             files('tools/check-includes.py'),
+                             args: all_files,
+                             env : ['PROJECT_SOURCE_ROOT=@0@'.format(project_source_root)])
+                endif
         endif
-endif
 
 #if 0 /// UNNEEDED by elogind
-# if git.found()
+#         ####################################################
+#
 #         git_contrib_sh = find_program('tools/git-contrib.sh')
 #         run_target(
 #                 'git-contrib',
 #                 command : [git_contrib_sh])
-# endif
 #endif // 0
 
-if git.found()
+        ####################################################
+
         git_head = run_command(
                 git, '--git-dir=@0@/.git'.format(project_source_root),
                      'rev-parse', 'HEAD',
