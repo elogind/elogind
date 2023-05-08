@@ -102,6 +102,7 @@ int bus_event_loop_with_idle(
                 usec_t timeout,
                 check_idle_t check_idle,
                 void *userdata) {
+
         bool exiting = false;
         int r, code;
 
@@ -137,7 +138,6 @@ int bus_event_loop_with_idle(
                                 return r;
 
                         exiting = true;
-                        continue;
                 }
         }
 
