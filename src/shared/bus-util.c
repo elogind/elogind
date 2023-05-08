@@ -102,6 +102,7 @@ int bus_event_loop_with_idle(
                 usec_t timeout,
                 check_idle_t check_idle,
                 void *userdata) {
+
         bool exiting = false;
         int r, code;
 
@@ -137,7 +138,6 @@ int bus_event_loop_with_idle(
                                 return r;
 
                         exiting = true;
-                        continue;
                 }
         }
 
@@ -368,6 +368,7 @@ int bus_connect_transport_elogind(BusTransport transport, const char *host, Runt
 
                 case RUNTIME_SCOPE_SYSTEM:
                         if (sd_booted() <= 0)
+                                /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with elogind as init system (PID 1). Can't operate.");
