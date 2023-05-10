@@ -12,6 +12,7 @@ bool dirent_is_file(const struct dirent *de) _pure_;
 #if 0 /// UNNEEDED by elogind
 bool dirent_is_file_with_suffix(const struct dirent *de, const char *suffix) _pure_;
 #endif // 0
+int dirent_ensure_type(int dir_fd, struct dirent *de);
 
 struct dirent *readdir_ensure_type(DIR *d);
 #if 0 /// UNNEEDED by elogind
@@ -39,6 +40,7 @@ struct dirent *readdir_no_dot(DIR *dirp);
 /* Only if 64bit off_t is enabled struct dirent + struct dirent64 are actually the same. We require this, and
  * we want them to be interchangeable to make getdents64() work, hence verify that. */
 assert_cc(_FILE_OFFSET_BITS == 64);
+#if HAVE_STRUCT_DIRENT64
 assert_cc(sizeof(struct dirent) == sizeof(struct dirent64));
 assert_cc(offsetof(struct dirent, d_ino) == offsetof(struct dirent64, d_ino));
 assert_cc(sizeof_field(struct dirent, d_ino) == sizeof_field(struct dirent64, d_ino));
@@ -50,6 +52,7 @@ assert_cc(offsetof(struct dirent, d_type) == offsetof(struct dirent64, d_type));
 assert_cc(sizeof_field(struct dirent, d_type) == sizeof_field(struct dirent64, d_type));
 assert_cc(offsetof(struct dirent, d_name) == offsetof(struct dirent64, d_name));
 assert_cc(sizeof_field(struct dirent, d_name) == sizeof_field(struct dirent64, d_name));
+#endif
 
 #define FOREACH_DIRENT_IN_BUFFER(de, buf, sz)                           \
         for (void *_end = (uint8_t*) ({ (de) = (buf); }) + (sz);        \
