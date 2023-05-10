@@ -599,6 +599,7 @@ decl_headers = '''
 #   define _GNU_SOURCE 1
 # endif // _GNU_SOURCE
 #endif // 1
+#include <dirent.h>
 #include <uchar.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
@@ -608,6 +609,7 @@ foreach decl : ['char16_t',
                 'char32_t',
                 'struct mount_attr',
                 'struct statx',
+                'struct dirent64',
                ]
 
         # We get -1 if the size cannot be determined
