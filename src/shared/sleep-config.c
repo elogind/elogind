@@ -24,7 +24,7 @@
 #include "def.h"
 #include "device-util.h"
 #include "devnum-util.h"
-//#include "env-util.h"
+#include "env-util.h"
 //#include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -1073,10 +1073,8 @@ static bool enough_swap_for_hibernation(void) {
         unsigned long long act = 0;
         int r;
 
-#if 0 /// elogind does not allow any bypass, we are never init!
         if (getenv_bool("SYSTEMD_BYPASS_HIBERNATION_MEMORY_CHECK") > 0)
                 return true;
-#endif // 0
 
         r = find_hibernate_location(&hibernate_location);
         if (r < 0)
