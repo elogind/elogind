@@ -1277,8 +1277,13 @@ void log_settle_target(void) {
         if (t != LOG_TARGET_AUTO)
                 return;
 
+#if 0 /// elogind does not support journald
         t = getpid_cached() == 1 || stderr_is_journal() ? (prohibit_ipc ? LOG_TARGET_KMSG : LOG_TARGET_JOURNAL_OR_KMSG)
                                                         : LOG_TARGET_CONSOLE;
+#else // 0
+        t = LOG_TARGET_SYSLOG_OR_KMSG;
+#endif // 0
+
         log_set_target(t);
 }
 
