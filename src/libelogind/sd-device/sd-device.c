@@ -2352,7 +2352,6 @@ _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_get_sysattr_int(sd_device *device, const char *sysattr, int *ret_value) {
         const char *value;
         int r;
@@ -2371,7 +2370,6 @@ int device_get_sysattr_int(sd_device *device, const char *sysattr, int *ret_valu
         /* We return "true" if the value is positive. */
         return v > 0;
 }
-#endif // 0
 
 int device_get_sysattr_unsigned(sd_device *device, const char *sysattr, unsigned *ret_value) {
         const char *value;
