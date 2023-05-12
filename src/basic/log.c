@@ -1213,14 +1213,13 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
 }
 
 static bool should_parse_proc_cmdline(void) {
+#if 0 /// elogind is never PID 1
         /* PID1 always reads the kernel command line. */
         if (getpid_cached() == 1)
                 return true;
 
-                /* We know that elogind sets the variable correctly. Something else must have set it. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
+        /* Otherwise, parse the commandline if invoked directly by systemd. */
+#endif // 0
         return invoked_by_elogind();
 }
 

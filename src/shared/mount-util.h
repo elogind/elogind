@@ -30,11 +30,13 @@
  * PID1 because 16MB of free space is required. */
 #define TMPFS_LIMITS_RUN             ",size=20%,nr_inodes=800k"
 
-/* The limit used for various nested tmpfs mounts, in particular for guests started by elogind-nspawn.
+#if 0 /// elogind does not ship an nspawn app
+/* The limit used for various nested tmpfs mounts, in particular for guests started by systemd-nspawn.
  * 10% of RAM (using 16GB of RAM as a baseline) translates to 400k inodes (assuming 4k each) and 25%
  * translates to 1M inodes.
  * (On the host, /tmp is configured through a .mount unit file.) */
 #define NESTED_TMPFS_LIMITS          ",size=10%,nr_inodes=400k"
+#endif // 0
 
 /* More space for volatile root and /var */
 #define TMPFS_LIMITS_VAR             ",size=25%,nr_inodes=1m"

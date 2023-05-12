@@ -555,7 +555,7 @@ finish:
 static const char *const container_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_LXC]            = "lxc",
         [VIRTUALIZATION_LXC_LIBVIRT]    = "lxc-libvirt",
-        [VIRTUALIZATION_SYSTEMD_NSPAWN] = "elogind-nspawn",
+        [VIRTUALIZATION_SYSTEMD_NSPAWN] = "systemd-nspawn",
         [VIRTUALIZATION_DOCKER]         = "docker",
         [VIRTUALIZATION_PODMAN]         = "podman",
         [VIRTUALIZATION_RKT]            = "rkt",
@@ -1045,7 +1045,7 @@ static const char *const virtualization_table[_VIRTUALIZATION_MAX] = {
         [VIRTUALIZATION_SRE]             = "sre",
         [VIRTUALIZATION_VM_OTHER]        = "vm-other",
 
-        [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "elogind-nspawn",
+        [VIRTUALIZATION_SYSTEMD_NSPAWN]  = "systemd-nspawn",
         [VIRTUALIZATION_LXC_LIBVIRT]     = "lxc-libvirt",
         [VIRTUALIZATION_LXC]             = "lxc",
         [VIRTUALIZATION_OPENVZ]          = "openvz",

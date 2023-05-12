@@ -812,6 +812,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         r = pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.tasks_max data: @PAMERR@");
+
 #if 0 /// elogind neither handles io_weight nor cpu_weight
         r = pam_get_data(handle, "systemd.cpu_weight", (const void **)&cpu_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
@@ -820,6 +821,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.io_weight data: @PAMERR@");
 #endif // 0
+
         r = pam_get_data(handle, "elogind.runtime_max_sec", (const void **)&runtime_max_sec);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.runtime_max_sec data: @PAMERR@");
