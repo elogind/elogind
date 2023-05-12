@@ -270,8 +270,6 @@ node /org/freedesktop/login1 {
 };
     </programlisting>
 
-    <!--method ReloadConfig is not documented!-->
-
     <!--property HandlePowerKeyLongPress is not documented!-->
 
     <!--property HandleRebootKey is not documented!-->
@@ -289,8 +287,6 @@ node /org/freedesktop/login1 {
     <variablelist class="dbus-interface" generated="True" extra-ref="org.freedesktop.login1.Manager"/>
 
     <variablelist class="dbus-interface" generated="True" extra-ref="org.freedesktop.login1.Manager"/>
-
-    <variablelist class="dbus-method" generated="True" extra-ref="ReloadConfig()"/>
 
     <variablelist class="dbus-method" generated="True" extra-ref="GetSession()"/>
 
@@ -427,6 +423,8 @@ node /org/freedesktop/login1 {
     <variablelist class="dbus-property" generated="True" extra-ref="EnableWallMessages"/>
 
     <variablelist class="dbus-property" generated="True" extra-ref="WallMessage"/>
+
+    <variablelist class="dbus-property" generated="True" extra-ref="NAutoVTs"/>
 
     <variablelist class="dbus-property" generated="True" extra-ref="KillOnlyUsers"/>
 

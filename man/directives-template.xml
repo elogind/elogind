@@ -104,10 +104,10 @@
   </refsect1>
 
   <refsect1>
-    <title><citerefentry><refentrytitle>elogind.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    <title><citerefentry><refentrytitle>systemd.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     directives</title>
 
-    <para>Directives for configuring elogind-nspawn containers.</para>
+    <para>Directives for configuring systemd-nspawn containers.</para>
 
     <variablelist id='nspawn-directives' />
   </refsect1>

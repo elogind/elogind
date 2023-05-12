@@ -191,9 +191,11 @@ tomorrow Pacific/Auckland → Thu 2012-11-23 19:00:00
 
     <para>Note that a relative timestamp is also accepted where a timestamp is expected (see above).</para>
 
+    <!-- 0 /// no systemd-analyze in elogind
     <para>Use the <command>timestamp</command> command of
-    <citerefentry><refentrytitle>elogind-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry> to
+    <citerefentry><refentrytitle>systemd-analyze</refentrytitle><manvolnum>1</manvolnum></citerefentry> to
     validate and normalize timestamps for testing purposes.</para>
+    // 0 -->
   </refsect1>
 
   <refsect1>

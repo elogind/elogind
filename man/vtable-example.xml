@@ -34,7 +34,7 @@
    <arg type="as" name="invalidated_properties"/>
   </signal>
  </interface>
- <interface name="org.freedesktop.systemd1.VtableExample">
+ <interface name="org.freedesktop.systemd.VtableExample">
   <method name="Method1">
    <arg type="s" direction="in"/>
    <arg type="s" direction="out"/>
