@@ -753,12 +753,25 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
 
                 if (unified) {
                         e = startswith(line, "0:");
+#if 0 /// elogind supports other controllers, where hyprid setups have the session in 1: (like openrc does)
                         if (!e)
                                 continue;
+#else // 0
+                        if (!e) {
+                                e = startswith(line, "1:" SYSTEMD_CGROUP_CONTROLLER_HYBRID);
+                                if (!e)
+                                        continue;
+                                char *l = e + 2; // Skip "1:" to check for the second ':'
+                                e = strchr(l, ':');
+                                if (!e)
+                                        continue;
+                        }
+#endif // 0
 
                         e = strchr(e, ':');
                         if (!e)
                                 continue;
+                        log_debug_elogind("Found unified line %s => '%s'", line, e + 1);
                 } else {
                         char *l;
 
@@ -778,9 +791,9 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
                                 return r;
                         if (r == 0)
                                 continue;
+                        log_debug_elogind("Found legacy line %s => '%s'", line, e + 1);
                 }
 
-                log_debug_elogind("Found %s:%s", line, e+1);
                 char *path = strdup(e + 1);
                 if (!path)
                         return -ENOMEM;
@@ -1058,18 +1071,22 @@ int cg_get_root_path(char **path) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd scopes and slices
+#if 0 /// elogind does not support systemd scopes and slices but other controllers
         e = endswith(p, "/" SPECIAL_INIT_SCOPE);
         if (!e)
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
         if (!e)
                 e = endswith(p, "/system"); /* even more legacy */
 #else // 0
-        e = endswith(p, "/elogind");
+        log_debug_elogind("Determined PID 1 root path: \"%s\"", p);
+        e = endswith(p, "/" CGROUP_CONTROLLER_NAME);
+        if (!e)
+                e = endswith(p, "/elogind"); /* elogind pseudo-controller? */
 #endif // 0
         if (e)
                 *e = 0;
 
+        log_debug_elogind("Resulting PID 1 root path: \"%s\"", p);
         *path = p;
         return 0;
 }
