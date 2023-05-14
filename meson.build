@@ -3364,11 +3364,18 @@ endif
 # public_programs += systemctl
 #
 # if conf.get('ENABLE_PORTABLED') == 1
+#         if get_option('link-portabled-shared')
+#                 portabled_link_with = [libshared]
+#         else
+#                 portabled_link_with = [libsystemd_static,
+#                                        libshared_static]
+#         endif
+#
 #         dbus_programs += executable(
 #                 'systemd-portabled',
 #                 systemd_portabled_sources,
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [portabled_link_with],
 #                 dependencies : [libselinux,
 #                                 threads,
 #                                 userspace,
@@ -3381,7 +3388,7 @@ endif
 #                 'portablectl',
 #                 'src/portable/portablectl.c',
 #                 include_directories : includes,
-#                 link_with : [libshared],
+#                 link_with : [portabled_link_with],
 #                 dependencies : [threads,
 #                                 userspace,
 #                                 versiondep],
@@ -5526,6 +5533,7 @@ foreach tuple : [
 #         ['link-timesyncd-shared',  get_option('link-timesyncd-shared')],
 #         ['link-journalctl-shared', get_option('link-journalctl-shared')],
 #         ['link-boot-shared',       get_option('link-boot-shared')],
+#         ['link-portabled-shared',  get_option('link-portabled-shared')],
 #         ['first-boot-full-preset'],
 #         ['fexecve'],
 #         ['standalone-binaries',    get_option('standalone-binaries')],
