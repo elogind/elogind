@@ -312,8 +312,13 @@ int cg_create(const char *controller, const char *path) {
 
         if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
                 r = cg_create(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path);
+#if 0 /// elogind supports other controllers
                 if (r < 0)
-                        log_warning_errno(r, "Failed to create compat elogind cgroup %s: %m", path);
+                        log_warning_errno(r, "Failed to create compat systemd cgroup %s: %m", path);
+#else // 0
+                if (r < 0)
+                        log_warning_errno(r, "Failed to create compat %s cgroup %s: %m", CGROUP_CONTROLLER_NAME, path);
+#endif // 0
         }
 
         return 1;
@@ -366,8 +371,13 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
 
         if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
                 r = cg_attach(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, pid);
+#if 0 /// elogind supports other controllers
                 if (r < 0)
-                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat elogind cgroup %s: %m", pid, path);
+                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat systemd cgroup %s: %m", pid, path);
+#else // 0
+                if (r < 0)
+                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat %s cgroup %s: %m", pid, CGROUP_CONTROLLER_NAME, path);
+#endif // 0
         }
 
         return 0;

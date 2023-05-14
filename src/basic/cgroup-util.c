@@ -245,8 +245,13 @@ int cg_rmdir(const char *controller, const char *path) {
 
         if (streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
                 r = cg_rmdir(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path);
+#if 0 /// elogind supports other controllers
                 if (r < 0)
                         log_warning_errno(r, "Failed to remove compat systemd cgroup %s: %m", path);
+#else // 0
+                if (r < 0)
+                        log_warning_errno(r, "Failed to remove compat %s cgroup %s: %m", CGROUP_CONTROLLER_NAME, path);
+#endif // 0
         }
 
         return 0;
@@ -749,12 +754,25 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
 
                 if (unified) {
                         e = startswith(line, "0:");
+#if 0 /// elogind supports other controllers, where hyprid setups have the session in 1: (like openrc does)
                         if (!e)
                                 continue;
+#else // 0
+                        if (!e) {
+                                e = startswith(line, "1:" SYSTEMD_CGROUP_CONTROLLER_HYBRID);
+                                if (!e)
+                                        continue;
+                                char *l = e + 2; // Skip "1:" to check for the second ':'
+                                e = strchr(l, ':');
+                                if (!e)
+                                        continue;
+                        }
+#endif // 0
 
                         e = strchr(e, ':');
                         if (!e)
                                 continue;
+                        log_debug_elogind("Found unified line %s => '%s'", line, e + 1);
                 } else {
                         char *l;
 
@@ -774,9 +792,9 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
                                 return r;
                         if (r == 0)
                                 continue;
+                        log_debug_elogind("Found legacy line %s => '%s'", line, e + 1);
                 }
 
-                log_debug_elogind("Found %s:%s", line, e+1);
                 char *path = strdup(e + 1);
                 if (!path)
                         return -ENOMEM;
@@ -1054,18 +1072,22 @@ int cg_get_root_path(char **path) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd scopes and slices
+#if 0 /// elogind does not support systemd scopes and slices but other controllers
         e = endswith(p, "/" SPECIAL_INIT_SCOPE);
         if (!e)
                 e = endswith(p, "/" SPECIAL_SYSTEM_SLICE); /* legacy */
         if (!e)
                 e = endswith(p, "/system"); /* even more legacy */
 #else // 0
-        e = endswith(p, "/elogind");
+        log_debug_elogind("Determined PID 1 root path: \"%s\"", p);
+        e = endswith(p, "/" CGROUP_CONTROLLER_NAME);
+        if (!e)
+                e = endswith(p, "/elogind"); /* elogind pseudo-controller? */
 #endif // 0
         if (e)
                 *e = 0;
 
+        log_debug_elogind("Resulting PID 1 root path: \"%s\"", p);
         *path = p;
         return 0;
 }
@@ -1518,6 +1540,7 @@ int cg_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         int r;
 
         r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        log_debug_elogind("Shifted PID %d to %s (result %d)", pid, cgroup, r);
         if (r < 0)
                 return r;
 
@@ -2230,23 +2253,13 @@ int cg_unified_cached(bool flush) {
                     F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
 #if 0 /// elogind supports other controllers
                         log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for systemd controller");
+#else // 0
+                        log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for %s controller", CGROUP_CONTROLLER_NAME);
 #endif // 0
                         unified_cache = CGROUP_UNIFIED_SYSTEMD;
-#if 0 /// If this is a hybrid setup with any other controller, elogind behaves like systemd did prior v232
                         unified_systemd_v232 = false;
-#else // 0
-                        if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) == 0 &&
-                            F_TYPE_EQUAL(fs.f_type, CGROUP_SUPER_MAGIC)) {
-                                log_debug( "Found cgroup on /sys/fs/cgroup/%s, unified hierarchy for %s controller",
-                                           CGROUP_CONTROLLER_NAME, CGROUP_CONTROLLER_NAME);
-                                unified_systemd_v232 = true;
-                        } else {
-                                log_debug("Found cgroup2 on /sys/fs/cgroup/unified, unified hierarchy for %s controller", CGROUP_CONTROLLER_NAME);
-                                unified_systemd_v232 = false;
-                        }
-#endif // 0
-                } else {
-#if 0 /// elogind supports other controllers than systemd and itself
+#if 0 /// elogind has to check the "legacy" part in any case to account for hybrid controllers
+                }  else {
                         if (statfs("/sys/fs/cgroup/systemd/", &fs) < 0) {
                                 if (errno == ENOENT) {
                                         /* Some other software may have set up /sys/fs/cgroup in a configuration we do not recognize. */
@@ -2257,8 +2270,8 @@ int cg_unified_cached(bool flush) {
                         }
 
 #else // 0
-                        if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) < 0)
-                                return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/%s\" failed: %m", CGROUP_CONTROLLER_NAME);
+                }
+                if (statfs("/sys/fs/cgroup/" CGROUP_CONTROLLER_NAME "/", &fs) >= 0) {
 #endif // 0
                         if (F_TYPE_EQUAL(fs.f_type, CGROUP2_SUPER_MAGIC)) {
 #if 0 /// elogind supports other controllers than systemd and itself
@@ -2288,6 +2301,10 @@ int cg_unified_cached(bool flush) {
                                 unified_cache = CGROUP_UNIFIED_NONE;
                         }
                 }
+#if 1 /// With elogind checking both, stat'ing the legacy structure is only an error if unified_cache is still unknown
+                else if (CGROUP_UNIFIED_UNKNOWN == unified_cache)
+                        return log_debug_errno(errno, "statfs(\"/sys/fs/cgroup/%s\") failed: %m", CGROUP_CONTROLLER_NAME);
+#endif // 1
         } else if (F_TYPE_EQUAL(fs.f_type, SYSFS_MAGIC)) {
                 return log_debug_errno(SYNTHETIC_ERRNO(ENOMEDIUM),
                                        "No filesystem is currently mounted on /sys/fs/cgroup.");
