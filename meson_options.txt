@@ -30,6 +30,8 @@ option('rootprefix', type : 'string',
 #        description : 'link journalctl against libsystemd-shared.so')
 # option('link-boot-shared', type: 'boolean',
 #        description : 'link bootctl and systemd-bless-boot against libsystemd-shared.so')
+# option('link-portabled-shared', type: 'boolean',
+#        description : 'link elogind-portabled and its helpers to libelogind-shared.so')
 # option('first-boot-full-preset', type: 'boolean', value: false,
 #        description : 'during first boot, do full preset-all (default will be changed to true later)')
 #endif // 0
