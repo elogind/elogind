@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout library
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Add most of systemd build devs
         run: |
              sudo apt-get update
