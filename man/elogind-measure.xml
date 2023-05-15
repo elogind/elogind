@@ -86,8 +86,8 @@
         the resulting values with the private/public key pair (RSA) configured via
         <option>--private-key=</option> and <option>--public-key=</option>. This will write a JSON object to
         standard output that contains signatures for all specified PCR banks (see the
-        <option>--pcr-bank=</option> option below), which may be used to unlock encrypted credentials (see
         <citerefentry><refentrytitle>elogind-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>) or
+        <option>--bank=</option> option below), which may be used to unlock encrypted credentials (see
         LUKS volumes (see
         <citerefentry><refentrytitle>elogind-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>).
         This allows binding secrets to a set of kernels for which such PCR 11 signatures can be
@@ -312,6 +312,7 @@ $ openssl rsa -pubout -in tpm2-pcr-initrd-private.pem -out tpm2-pcr-initrd-publi
      vmlinux-1.2.3 initrd.cpio \
      --uname=1.2.3
 + /usr/lib/elogind/elogind-measure sign --linux=vmlinux-1.2.3 \
++ /usr/lib/systemd/systemd-measure sign --linux=vmlinux-1.2.3 \
 --osrel=os-release.txt --cmdline=cmdline.txt --dtb=devicetree.dtb \
 --splash=splash.bmp --initrd=initrd.cpio --bank=sha1 --bank=sha256 \
 --private-key=tpm2-pcr-private.pem --public-key=tpm2-pcr-public.pem \
