@@ -41,8 +41,8 @@
     <title>Description</title>
 
     <para><filename>elogind-pcrphase.service</filename>,
-    <filename>elogind-pcrphase-initrd.service</filename> are system services that measure specific strings
     <filename>elogind-pcrphase-sysinit.service</filename>, and
+    <filename>elogind-pcrphase-initrd.service</filename> are system services that measure specific strings
     into TPM2 PCR 11 during boot at various milestones of the boot process.</para>
 
     <para><filename>elogind-pcrmachine.service</filename> is a system service that measures the machine ID
@@ -64,36 +64,39 @@
     with the following strings:</para>
 
     <orderedlist>
-
       <listitem><para><literal>enter-initrd</literal> — early when the initrd initializes, before activating
       system extension images for the initrd. It acts as a barrier between the time where the kernel
       initializes and where the initrd starts operating and enables system extension images, i.e. code
-      shipped outside of the UKI. (This extension happens when
-      <filename>elogind-pcrphase-initrd.service</filename> is started.)</para></listitem>
+      shipped outside of the UKI. (This extension happens when the
+      <citerefentry><refentrytitle>elogind-pcrphase-initrd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      service is started.)</para></listitem>
+
       <listitem><para><literal>leave-initrd</literal> — when the initrd is about to transition into the host
-      file system. It acts as barrier between initrd code and host OS code. (This extension happens when
-      <filename>elogind-pcrphase-initrd.service</filename> is stopped.)</para></listitem>
+      file system. It acts as barrier between initrd code and host OS code. (This extension happens when the
+      <filename>elogind-pcrphase-initrd.service</filename> service is stopped.)</para></listitem>
 
       <listitem><para><literal>sysinit</literal> — when basic system initialization is complete (which
       includes local file systems having been mounted), and the system begins starting regular system
-      services. (This extension happens when <filename>elogind-pcrphase-sysinit.service</filename> is
-      started.)</para></listitem>
+      services. (This extension happens when the
+      <citerefentry><refentrytitle>elogind-pcrphase-sysinit.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      service is started.)</para></listitem>
 
       <listitem><para><literal>ready</literal> — during later boot-up, after remote file systems have been
       activated (i.e. after <filename>remote-fs.target</filename>), but before users are permitted to log in
       (i.e. before <filename>elogind-user-sessions.service</filename>). It acts as barrier between the time
       where unprivileged regular users are still prohibited to log in and where they are allowed to log in.
-      (This extension happens when <filename>elogind-pcrphase.service</filename> is started.)
+      (This extension happens when the <filename>elogind-pcrphase.service</filename> service is started.)
       </para></listitem>
 
       <listitem><para><literal>shutdown</literal> — when the system shutdown begins. It acts as barrier
       between the time the system is fully up and running and where it is about to shut down. (This extension
-      happens when <filename>elogind-pcrphase.service</filename> is stopped.)</para></listitem>
+      happens when the <filename>elogind-pcrphase.service</filename> service is stopped.)</para></listitem>
 
       <listitem><para><literal>final</literal> — at the end of system shutdown. It acts as barrier between
       the time the service manager still runs and when it transitions into the final shutdown phase where
-      service management is not available anymore. (This extension happens when
-      <filename>elogind-pcrphase-sysinit.service</filename> is stopped.)</para></listitem>
+      service management is not available anymore. (This extension happens when the
+      <citerefentry><refentrytitle>elogind-pcrphase-sysinit.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      service is stopped.)</para></listitem>
     </orderedlist>
 
     <para>During a regular system lifecycle, PCR 11 is extended with the strings
@@ -103,12 +106,12 @@
     <para>Specific phases of the boot process may be referenced via the series of strings measured, separated
     by colons (the "phase path"). For example, the phase path for the regular system runtime is
     <literal>enter-initrd:leave-initrd:sysinit:ready</literal>, while the one for the initrd is just
-
     <literal>enter-initrd</literal>. The phase path for the boot phase before the initrd is an empty string;
     because that's hard to pass around a single colon (<literal>:</literal>) may be used instead. Note that
     the aforementioned six strings are just the default strings and individual systems might measure other
     strings at other times, and thus implement different and more fine-grained boot phases to bind policy
     to.</para>
+
     <para>By binding policy of TPM2 objects to a specific phase path it is possible to restrict access to
     them to specific phases of the boot process, for example making it impossible to access the root file
     system's encryption key after the system transitioned from the initrd into the host root file system.
@@ -185,11 +188,11 @@
   <refsect1>
     <title>See Also</title>
     <para>
-      <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-measure</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-gpt-auto-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind-fstab-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>,
     </para>
   </refsect1>
 
