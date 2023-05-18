@@ -4156,7 +4156,6 @@ _public_ int sd_bus_get_description(sd_bus *bus, const char **description) {
         assert_return(bus, -EINVAL);
         assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(description, -EINVAL);
-        assert_return(!bus_pid_changed(bus), -ECHILD);
 
         if (bus->description)
                 *description = bus->description;
