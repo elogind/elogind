@@ -433,7 +433,7 @@ int bus_message_from_malloc(
                 m->body.data = (uint8_t*) buffer + sizeof(struct bus_header) + ALIGN8(m->fields_size);
                 m->body.size = sz;
                 m->body.sealed = true;
-                m->body.memfd = -1;
+                m->body.memfd = -EBADF;
         }
 
         m->n_iovec = 1;
@@ -483,9 +483,10 @@ _public_ int sd_bus_message_new(
         return 0;
 }
 
-_public_ int sd_bus_message_new_signal(
+_public_ int sd_bus_message_new_signal_to(
                 sd_bus *bus,
                 sd_bus_message **m,
+                const char *destination,
                 const char *path,
                 const char *interface,
                 const char *member) {
@@ -496,6 +497,7 @@ _public_ int sd_bus_message_new_signal(
         assert_return(bus, -ENOTCONN);
         assert_return(bus = bus_resolve(bus), -ENOPKG);
         assert_return(bus->state != BUS_UNSET, -ENOTCONN);
+        assert_return(!destination || service_name_is_valid(destination), -EINVAL);
         assert_return(object_path_is_valid(path), -EINVAL);
         assert_return(interface_name_is_valid(interface), -EINVAL);
         assert_return(member_name_is_valid(member), -EINVAL);
@@ -519,8 +521,24 @@ _public_ int sd_bus_message_new_signal(
         if (r < 0)
                 return r;
 
+        if (destination) {
+                r = message_append_field_string(t, BUS_MESSAGE_HEADER_DESTINATION, SD_BUS_TYPE_STRING, destination, &t->destination);
+                if (r < 0)
+                        return r;
+        }
+
         *m = TAKE_PTR(t);
         return 0;
+}
+
+_public_ int sd_bus_message_new_signal(
+                sd_bus *bus,
+                sd_bus_message **m,
+                const char *path,
+                const char *interface,
+                const char *member) {
+
+        return sd_bus_message_new_signal_to(bus, m, NULL, path, interface, member);
 }
 
 _public_ int sd_bus_message_new_method_call(
@@ -1090,7 +1108,7 @@ static struct bus_body_part *message_append_part(sd_bus_message *m) {
                 m->body_end->next = part;
         }
 
-        part->memfd = -1;
+        part->memfd = -EBADF;
         m->body_end = part;
         m->n_body_parts++;
 
@@ -1285,7 +1303,7 @@ static int message_push_fd(sd_bus_message *m, int fd) {
 }
 
 int message_append_basic(sd_bus_message *m, char type, const void *p, const void **stored) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         struct bus_container *c;
         ssize_t align, sz;
         uint32_t u32;
@@ -1324,10 +1342,19 @@ int message_append_basic(sd_bus_message *m, char type, const void *p, const void
                  * into the empty string */
                 p = strempty(p);
 
-                _fallthrough_;
+                if (!utf8_is_valid(p))
+                        return -EINVAL;
+
+                align = 4;
+                sz = 4 + strlen(p) + 1;
+                break;
+
         case SD_BUS_TYPE_OBJECT_PATH:
 
                 if (!p)
+                        return -EINVAL;
+
+                if (!object_path_is_valid(p))
                         return -EINVAL;
 
                 align = 4;
@@ -1337,6 +1364,9 @@ int message_append_basic(sd_bus_message *m, char type, const void *p, const void
         case SD_BUS_TYPE_SIGNATURE:
 
                 p = strempty(p);
+
+                if (!signature_is_valid(p, /* allow_dict_entry = */ true))
+                        return -EINVAL;
 
                 align = 1;
                 sz = 1 + strlen(p) + 1;
@@ -1404,7 +1434,7 @@ int message_append_basic(sd_bus_message *m, char type, const void *p, const void
         if (c->enclosing != SD_BUS_TYPE_ARRAY)
                 c->index++;
 
-        fd = -1;
+        fd = -EBADF;
         return 0;
 }
 
@@ -2154,7 +2184,7 @@ _public_ int sd_bus_message_append_array_memfd(
                 uint64_t offset,
                 uint64_t size) {
 
-        _cleanup_close_ int copy_fd = -1;
+        _cleanup_close_ int copy_fd = -EBADF;
         struct bus_body_part *part;
         ssize_t align, sz;
         uint64_t real_size;
@@ -2216,7 +2246,7 @@ _public_ int sd_bus_message_append_array_memfd(
         part->memfd_offset = offset;
         part->sealed = true;
         part->size = size;
-        copy_fd = -1;
+        copy_fd = -EBADF;
 
         m->body_size += size;
         message_extend_containers(m, size);
@@ -2230,7 +2260,7 @@ _public_ int sd_bus_message_append_string_memfd(
                 uint64_t offset,
                 uint64_t size) {
 
-        _cleanup_close_ int copy_fd = -1;
+        _cleanup_close_ int copy_fd = -EBADF;
         struct bus_body_part *part;
         struct bus_container *c;
         uint64_t real_size;
@@ -2301,7 +2331,7 @@ _public_ int sd_bus_message_append_string_memfd(
         part->memfd_offset = offset;
         part->sealed = true;
         part->size = size;
-        copy_fd = -1;
+        copy_fd = -EBADF;
 
         m->body_size += size;
         message_extend_containers(m, size);
@@ -4650,4 +4680,27 @@ _public_ int sd_bus_message_sensitive(sd_bus_message *m) {
 
         m->sensitive = true;
         return 0;
+}
+
+char** bus_message_make_log_fields(sd_bus_message *m) {
+        _cleanup_strv_free_ char **strv = NULL;
+
+        assert(m);
+
+        (void) strv_extend_assignment(&strv, "DBUS_MESSAGE_TYPE", bus_message_type_to_string(m->header->type));
+        (void) strv_extend_assignment(&strv, "DBUS_SENDER", sd_bus_message_get_sender(m));
+        (void) strv_extend_assignment(&strv, "DBUS_DESTINATION", sd_bus_message_get_destination(m));
+        (void) strv_extend_assignment(&strv, "DBUS_PATH", sd_bus_message_get_path(m));
+        (void) strv_extend_assignment(&strv, "DBUS_INTERFACE", sd_bus_message_get_interface(m));
+        (void) strv_extend_assignment(&strv, "DBUS_MEMBER", sd_bus_message_get_member(m));
+
+        (void) strv_extendf(&strv, "DBUS_MESSAGE_COOKIE=%" PRIu64, BUS_MESSAGE_COOKIE(m));
+        if (m->reply_cookie != 0)
+                (void) strv_extendf(&strv, "DBUS_MESSAGE_REPLY_COOKIE=%" PRIu64, m->reply_cookie);
+
+        (void) strv_extend_assignment(&strv, "DBUS_SIGNATURE", m->root_container.signature);
+        (void) strv_extend_assignment(&strv, "DBUS_ERROR_NAME", m->error.name);
+        (void) strv_extend_assignment(&strv, "DBUS_ERROR_MESSAGE", m->error.message);
+
+        return TAKE_PTR(strv);
 }
