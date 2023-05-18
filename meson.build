@@ -5052,7 +5052,7 @@ endforeach
 #                         fuzz_in = tuple[1]
 #                         test('@0@_@1@'.format(name, fuzz_in),
 #                              exe,
-#                              suite : 'fuzzers',
+#                              suite : 'fuzz',
 #                              args : [fuzz_dir != '' ? project_source_root / fuzz_dir / name / fuzz_in
 #                                                     : fuzz_generated_in_dir / '@0@_@1@'.format(name, fuzz_in)])
 #                 endforeach
