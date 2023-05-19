@@ -129,6 +129,15 @@ Deprecations and removals:
 
 Features:
 
+* open up creds for uses in generators, and document clearly that encrypted
+  creds are only supported if strictly tpm bound, but not when using the host
+  secret (as that is only avilable if /var/ is around.
+
+* logind: when logging in, always take an fd to the home dir, to keep the dir
+  busy, so that autofs release can never happen. (this is generally a good
+  idea, and specifically works around the fact the autofs ignores busy by mount
+  namespaces)
+
 * mount most file systems with a restrictive uidmap. e.g. mount /usr/ with a
   uidmap that blocks out anything outside 0…1000 (i.e. system users) and similar.
 
@@ -1220,10 +1229,6 @@ Features:
 
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
-
-* change SwitchRoot() implementation in PID 1 to use pivot_root(".", "."), as
-  documented in the pivot_root(2) man page, so that we can drop the /oldroot
-  temporary dir.
 
 * special case some calls of chase() to use openat2() internally, so
   that the kernel does what we otherwise do.
