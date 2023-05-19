@@ -10,9 +10,8 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "process-util.h"
-//#include "signal-util.h"
-//#include "util.h"
+#include "process-util.h"
+#include "signal-util.h"
 
 int asynchronous_job(void* (*func)(void *p), void *arg) {
         sigset_t ss, saved_ss;
@@ -74,7 +73,7 @@ int asynchronous_sync(pid_t *ret_pid) {
                 return r;
         if (r == 0) {
                 /* Child process */
-                (void) sync();
+                sync();
                 _exit(EXIT_SUCCESS);
         }
 
@@ -106,5 +105,5 @@ int asynchronous_close(int fd) {
                          assert_se(close_nointr(fd) != -EBADF);
         }
 
-        return -1;
+        return -EBADF;
 }
