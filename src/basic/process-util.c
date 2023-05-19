@@ -957,7 +957,7 @@ int pid_from_same_root_fs(pid_t pid) {
 
         root = procfs_file_alloca(pid, "root");
 
-        return files_same(root, "/proc/1/root", 0);
+        return inode_same(root, "/proc/1/root", 0);
 }
 #endif // 0
 
