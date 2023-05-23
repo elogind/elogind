@@ -264,7 +264,7 @@ TEST(strextend_with_separator) {
 
 #if 0 /// UNNEEDED by elogind
 TEST(strrep) {
-        _cleanup_free_ char *one, *three, *zero;
+        _cleanup_free_ char *one = NULL, *three = NULL, *zero = NULL;
         one = strrep("waldo", 1);
         three = strrep("waldo", 3);
         zero = strrep("waldo", 0);
