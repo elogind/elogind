@@ -6,8 +6,9 @@
 #include "alloc-util.h"
 //#include "bus-common-errors.h"
 #include "bus-error.h"
-//#include "bus-util.h"
-//#include "cgroup-util.h"
+#include "bus-locator.h"
+#include "bus-util.h"
+#include "cgroup-util.h"
 #include "clean-ipc.h"
 #include "env-file.h"
 #include "escape.h"
@@ -412,13 +413,7 @@ static int user_update_slice(User *u) {
             u->user_record->io_weight == UINT64_MAX)
                 return 0;
 
-        r = sd_bus_message_new_method_call(
-                        u->manager->bus,
-                        &m,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "SetUnitProperties");
+        r = bus_message_new_method_call(u->manager->bus, &m, bus_elogind_mgr, "SetUnitProperties");
         if (r < 0)
                 return bus_log_create_error(r);
 
