@@ -11,19 +11,19 @@
 
 #include "sd-bus.h"
 
-//#include "alloc-util.h"
-//#include "bus-error.h"
-//#include "bus-util.h"
-//#include "format-util.h"
+#include "alloc-util.h"
+#include "bus-error.h"
+#include "bus-locator.h"
+#include "bus-util.h"
+#include "format-util.h"
 #include "log.h"
 #include "macro.h"
 //#include "main-func.h"
 //#include "process-util.h"
 //#include "special.h"
 #include "stdio-util.h"
-//#include "strv.h"
-//#include "unit-name.h"
-//#include "util.h"
+#include "strv.h"
+#include "unit-name.h"
 #include "utmp-wtmp.h"
 
 /// Additional includes needed by elogind
@@ -44,7 +44,7 @@ static void context_clear(Context *c) {
 #if HAVE_AUDIT
         if (c->audit_fd >= 0)
                 audit_close(c->audit_fd);
-        c->audit_fd = -1;
+        c->audit_fd = -EBADF;
 #endif
 }
 
@@ -56,14 +56,7 @@ static usec_t get_startup_monotonic_time(Context *c) {
 
         assert(c);
 
-        r = sd_bus_get_property_trivial(
-                        c->bus,
-                        "org.freedesktop.systemd1",
-                        "/org/freedesktop/systemd1",
-                        "org.freedesktop.systemd1.Manager",
-                        "UserspaceTimestampMonotonic",
-                        &error,
-                        't', &t);
+        r = bus_get_property_trivial(c->bus, bus_systemd_mgr, "UserspaceTimestampMonotonic", &error, 't', &t);
         if (r < 0) {
                 log_error_errno(r, "Failed to get timestamp: %s", bus_error_message(&error, r));
                 return 0;
@@ -239,7 +232,7 @@ void update_utmp(int argc, char* argv[]) {
 #endif // 0
         _cleanup_(context_clear) Context c = {
 #if HAVE_AUDIT
-                .audit_fd = -1,
+                .audit_fd = -EBADF,
 #endif
         };
 #if 0 /// UNNEEDED by elogind
