@@ -3,12 +3,11 @@
 #include <stdio.h>
 
 #include "alloc-util.h"
-#include "def.h"
+#include "constants.h"
 #include "string-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "tests.h"
-#include "util.h"
 #include "utf8.h"
 
 static void test_ellipsize_mem_one(const char *s, size_t old_length, size_t new_length) {
@@ -76,7 +75,7 @@ TEST(ellipsize_mem) {
 }
 
 static void test_ellipsize_one(const char *p) {
-        _cleanup_free_ char *t;
+        _cleanup_free_ char *t = NULL;
         t = ellipsize(p, columns(), 70);
         puts(t);
         free(t);
