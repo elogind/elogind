@@ -161,7 +161,7 @@ TEST(copy_tree) {
         (void) rm_rf(original_dir, REMOVE_ROOT|REMOVE_PHYSICAL);
 
         STRV_FOREACH(p, files) {
-                _cleanup_free_ char *f, *c;
+                _cleanup_free_ char *f = NULL, *c = NULL;
                 int k;
 
                 assert_se(f = path_join(original_dir, *p));
@@ -176,7 +176,7 @@ TEST(copy_tree) {
         }
 
         STRV_FOREACH_PAIR(ll, p, symlinks) {
-                _cleanup_free_ char *f, *l;
+                _cleanup_free_ char *f = NULL, *l = NULL;
 
                 assert_se(f = path_join(original_dir, *p));
                 assert_se(l = path_join(original_dir, *ll));
@@ -186,7 +186,7 @@ TEST(copy_tree) {
         }
 
         STRV_FOREACH_PAIR(ll, p, hardlinks) {
-                _cleanup_free_ char *f, *l;
+                _cleanup_free_ char *f = NULL, *l = NULL;
 
                 assert_se(f = path_join(original_dir, *p));
                 assert_se(l = path_join(original_dir, *ll));
@@ -201,7 +201,7 @@ TEST(copy_tree) {
         assert_se(copy_tree(original_dir, copy_dir, UID_INVALID, GID_INVALID, COPY_REFLINK|COPY_MERGE|COPY_HARDLINKS) == 0);
 
         STRV_FOREACH(p, files) {
-                _cleanup_free_ char *buf, *f, *c = NULL;
+                _cleanup_free_ char *buf = NULL, *f = NULL, *c = NULL;
                 size_t sz;
                 int k;
 
@@ -223,7 +223,7 @@ TEST(copy_tree) {
         }
 
         STRV_FOREACH_PAIR(ll, p, symlinks) {
-                _cleanup_free_ char *target, *f, *l;
+                _cleanup_free_ char *target = NULL, *f = NULL, *l = NULL;
 
                 assert_se(f = strjoin(original_dir, *p));
                 assert_se(l = strjoin(copy_dir, *ll));
@@ -233,7 +233,7 @@ TEST(copy_tree) {
         }
 
         STRV_FOREACH_PAIR(ll, p, hardlinks) {
-                _cleanup_free_ char *f, *l;
+                _cleanup_free_ char *f = NULL, *l = NULL;
                 struct stat a, b;
 
                 assert_se(f = strjoin(copy_dir, *p));
