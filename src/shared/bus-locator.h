@@ -18,11 +18,13 @@ extern const BusLocator* const bus_login_mgr;
 #if 0 /// UNNEEDED by elogind
 extern const BusLocator* const bus_machine_mgr;
 extern const BusLocator* const bus_network_mgr;
+extern const BusLocator* const bus_oom_mgr;
 extern const BusLocator* const bus_portable_mgr;
 extern const BusLocator* const bus_resolve_mgr;
 extern const BusLocator* const bus_systemd_mgr;
 extern const BusLocator* const bus_timedate;
 #endif // 0
+extern const BusLocator* const bus_timesync_mgr;
 extern const BusLocator* const bus_hostname;
 
 /* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface strings encapsulated
