@@ -2571,6 +2571,9 @@ int table_format(Table *t, char **ret) {
 
         f = safe_fclose(f);
 
+        if (!buf)
+                return -ENOMEM;
+
         *ret = TAKE_PTR(buf);
 
         return 0;

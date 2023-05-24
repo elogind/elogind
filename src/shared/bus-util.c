@@ -370,6 +370,7 @@ int bus_connect_transport_elogind(BusTransport transport, const char *host, Runt
                         if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
+                                /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with elogind as init system (PID 1). Can't operate.");
                         return bus_connect_system_elogind(bus);
@@ -640,6 +641,9 @@ static int method_dump_memory_state_by_fd(sd_bus_message *message, void *userdat
                 return r;
 
         dump_file = safe_fclose(dump_file);
+
+        if (!dump)
+                return -ENOMEM;
 
         fd = acquire_data_fd(dump, dump_size, 0);
         if (fd < 0)
