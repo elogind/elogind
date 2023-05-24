@@ -243,6 +243,7 @@ polkitpolicydir = datadir / 'polkit-1/actions'
 # randomseeddir = localstatedir / 'lib/systemd'
 # profiledir = rootlibexecdir / 'portable' / 'profile'
 # ntpservicelistdir = rootprefixdir / 'lib/systemd/ntp-units.d'
+# credstoredir = prefixdir / 'lib/credstore'
 #
 # docdir = get_option('docdir')
 # if docdir == ''
@@ -835,8 +836,8 @@ meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
 
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+mkdir_p_mode = 'mkdir -p $DESTDIR/@0@ -m @1@'
 
 # If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
@@ -4274,6 +4275,14 @@ endif
 #         install_rpath : rootpkglibdir,
 #         install : true,
 #         install_dir : rootbindir)
+#
+# # Protecting files from the distro in /usr doesn't make sense since they can be trivially accessed otherwise,
+# # so don't restrict the access mode in /usr. That doesn't apply to /etc, so we do restrict the access mode
+# # there.
+# meson.add_install_script('sh', '-c', mkdir_p.format(credstoredir))
+# if install_sysconfdir
+#         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore', '0700'))
+# endif
 #
 # executable(
 #         'systemd-volatile-root',
