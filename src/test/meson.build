@@ -121,6 +121,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-memfd-util.c',
 #         'test-memory-util.c',
 #         'test-mempool.c',
+#         'test-memstream-util.c',
 #         'test-mkdir.c',
 #         'test-modhex.c',
 #         'test-mountpoint-util.c',
