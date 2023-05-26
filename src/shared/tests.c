@@ -6,13 +6,6 @@
 #include <sys/mman.h>
 #include <sys/mount.h>
 #include <sys/wait.h>
-#include <util.h>
-
-/* When we include libgen.h because we need dirname() we immediately
- * undefine basename() since libgen.h defines it as a macro to the POSIX
- * version which is really broken. We prefer GNU basename(). */
-#include <libgen.h>
-#undef basename
 
 #include "sd-bus.h"
 
@@ -140,7 +133,7 @@ int log_tests_skipped_errno(int r, const char *message) {
 }
 
 int write_tmpfile(char *pattern, const char *contents) {
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
 
         assert(pattern);
         assert(contents);
@@ -223,7 +216,7 @@ static int allocate_scope(void) {
 
         r = bus_wait_for_jobs_new(bus, &w);
         if (r < 0)
-                return log_oom();
+                return log_error_errno(r, "Could not watch jobs: %m");
 
         if (asprintf(&scope, "%s-%" PRIx64 ".scope", program_invocation_short_name, random_u64()) < 0)
                 return log_oom();
