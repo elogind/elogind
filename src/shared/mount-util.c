@@ -103,7 +103,7 @@ int umount_recursive_full(const char *prefix, int flags, char **keep) {
                                 continue;
                         }
 
-                        log_debug("Successfully unmounted %s", path);
+                        log_trace("Successfully unmounted %s", path);
 
                         again = true;
                         n++;
@@ -380,7 +380,7 @@ int bind_remount_recursive_with_mountinfo(
                                 continue;
                         }
 
-                        log_debug("Remounted %s.", x);
+                        log_trace("Remounted %s.", x);
                 }
         }
 }
