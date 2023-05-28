@@ -1003,6 +1003,16 @@ _public_ int sd_journal_previous(sd_journal *j) {
 }
 
 #if 0 /// UNNEEDED by elogind
+_public_ int sd_journal_step_one(sd_journal *j, int advanced) {
+        assert_return(j, -EINVAL);
+
+        if (j->current_location.type == LOCATION_HEAD)
+                return sd_journal_next(j);
+        if (j->current_location.type == LOCATION_TAIL)
+                return sd_journal_previous(j);
+        return real_journal_next(j, advanced ? DIRECTION_DOWN : DIRECTION_UP);
+}
+
 static int real_journal_next_skip(sd_journal *j, direction_t direction, uint64_t skip) {
         int c = 0, r;
 
