@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2022-05-15 13:10+0200\n"
+"POT-Creation-Date: 2023-05-28 10:50+0000\n"
+"PO-Revision-Date: 2023-05-28 13:01+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -68,6 +68,17 @@ msgstr ""
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
 # msgstr "Wymagane jest uwierzytelnienie, aby ponownie wczytać stan systemd."
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:74
+# msgid "Dump the elogind state without rate limits"
+# msgstr "Zrzucenie stanu elogind bez ograniczeń częstotliwości"
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:75
+# msgid ""
+# "Authentication is required to dump the elogind state without rate limits."
+# msgstr ""
+# "Wymagane jest uwierzytelnienie, aby zrzucić stan elogind bez ograniczeń "
+# "częstotliwości."
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
@@ -937,25 +948,25 @@ msgstr "Wymagane jest uwierzytelnienie, aby zmienić terminal wirtualny."
 # "Wymagane jest uwierzytelnienie, aby kontrolować, czy włączyć synchronizację "
 # "czasu przez sieć."
 #
-# #: src/core/dbus-unit.c:359
+# #: src/core/dbus-unit.c:364
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Wymagane jest uwierzytelnienie, aby uruchomić jednostkę „$(unit)”."
 #
-# #: src/core/dbus-unit.c:360
+# #: src/core/dbus-unit.c:365
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Wymagane jest uwierzytelnienie, aby zatrzymać jednostkę „$(unit)”."
 #
-# #: src/core/dbus-unit.c:361
+# #: src/core/dbus-unit.c:366
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr ""
 # "Wymagane jest uwierzytelnienie, aby ponownie wczytać jednostkę „$(unit)”."
 #
-# #: src/core/dbus-unit.c:362 src/core/dbus-unit.c:363
+# #: src/core/dbus-unit.c:367 src/core/dbus-unit.c:368
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr ""
 # "Wymagane jest uwierzytelnienie, aby ponownie uruchomić jednostkę „$(unit)”."
 #
-# #: src/core/dbus-unit.c:546
+# #: src/core/dbus-unit.c:565
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
@@ -963,18 +974,18 @@ msgstr "Wymagane jest uwierzytelnienie, aby zmienić terminal wirtualny."
 # "Wymagane jest uwierzytelnienie, aby wysłać sygnał uniksowy do procesów "
 # "jednostki „$(unit)”."
 #
-# #: src/core/dbus-unit.c:576
+# #: src/core/dbus-unit.c:595
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "Wymagane jest uwierzytelnienie, aby przywrócić stan „failed” (niepowodzenia) "
 # "jednostki „$(unit)”."
 #
-# #: src/core/dbus-unit.c:608
+# #: src/core/dbus-unit.c:627
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Wymagane jest uwierzytelnienie, aby ustawić właściwości jednostki „$(unit)”."
 #
-# #: src/core/dbus-unit.c:714
+# #: src/core/dbus-unit.c:728
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -982,7 +993,7 @@ msgstr "Wymagane jest uwierzytelnienie, aby zmienić terminal wirtualny."
 # "Wymagane jest uwierzytelnienie, aby usunąć pliki i katalogi powiązane "
 # "z jednostką „$(unit)”."
 #
-# #: src/core/dbus-unit.c:762
+# #: src/core/dbus-unit.c:776
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
