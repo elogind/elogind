@@ -578,7 +578,7 @@ option('urlify', type : 'boolean', value : true,
 
 #if 0 /// BPF is nowhere used or usable within elogind
 # option('bpf-compiler', type : 'combo', choices : ['clang', 'gcc'],
-#     description: 'compiler used to build BPF programs, note: gcc is experimental')
+#     description: 'compiler used to build BPF programs')
 # option('bpf-framework', type : 'combo', choices : ['auto', 'true', 'false'],
 #     description: 'build BPF programs from source code in restricted C')
 #endif // 0
