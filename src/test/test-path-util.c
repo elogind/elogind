@@ -214,11 +214,11 @@ TEST(path_equal_root) {
 
         /* Make sure that files_same works as expected. */
 
-
         assert_se(inode_same("/", "/", 0) > 0);
         assert_se(inode_same("/", "/", AT_SYMLINK_NOFOLLOW) > 0);
         assert_se(inode_same("/", "//", 0) > 0);
         assert_se(inode_same("/", "//", AT_SYMLINK_NOFOLLOW) > 0);
+
         assert_se(inode_same("/", "/./", 0) > 0);
         assert_se(inode_same("/", "/./", AT_SYMLINK_NOFOLLOW) > 0);
         assert_se(inode_same("/", "/../", 0) > 0);
@@ -229,11 +229,11 @@ TEST(path_equal_root) {
 
         /* The same for path_equal_or_files_same. */
 
-
         assert_se(path_equal_or_inode_same("/", "/", 0));
         assert_se(path_equal_or_inode_same("/", "/", AT_SYMLINK_NOFOLLOW));
         assert_se(path_equal_or_inode_same("/", "//", 0));
         assert_se(path_equal_or_inode_same("/", "//", AT_SYMLINK_NOFOLLOW));
+
         assert_se(path_equal_or_inode_same("/", "/./", 0));
         assert_se(path_equal_or_inode_same("/", "/./", AT_SYMLINK_NOFOLLOW));
         assert_se(path_equal_or_inode_same("/", "/../", 0));
@@ -610,6 +610,17 @@ TEST(path_startswith) {
         test_path_startswith_one("/foo/bar/barfoo/", "/foo////bar/barfoo/", "/foo/bar/barfoo/", "");
         test_path_startswith_one("/foo/bar/barfoo/", "////foo/bar/barfoo/", "/foo/bar/barfoo/", "");
         test_path_startswith_one("/foo/bar/barfoo/", "/foo/bar/barfoo", "/foo/bar/barfoo/", "");
+
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo", "/foo/./", "bar///barfoo/./.");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo/", "/foo/./", "bar///barfoo/./.");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/", "/", "foo/./bar///barfoo/./.");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "////", "/",  "foo/./bar///barfoo/./.");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo//bar/////barfoo///", "/foo/./bar///barfoo/./.", "");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo/bar/barfoo////", "/foo/./bar///barfoo/./.", "");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo/bar///barfoo/", "/foo/./bar///barfoo/./.", "");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo////bar/barfoo/", "/foo/./bar///barfoo/./.", "");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "////foo/bar/barfoo/", "/foo/./bar///barfoo/./.", "");
+        test_path_startswith_one("/foo/./bar///barfoo/./.", "/foo/bar/barfoo", "/foo/./bar///barfoo/./.", "");
 
         test_path_startswith_one("/foo/bar/barfoo/", "/foo/bar/barfooa/", NULL, NULL);
         test_path_startswith_one("/foo/bar/barfoo/", "/foo/bar/barfooa", NULL, NULL);
