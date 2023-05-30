@@ -464,6 +464,7 @@ possible_common_cc_flags = [
         '-Werror=return-type',
         '-Werror=shift-count-overflow',
         '-Werror=shift-overflow=2',
+        '-Werror=strict-flex-arrays',
         '-Werror=undef',
         '-Wfloat-equal',
         # gperf prevents us from enabling this because it does not emit fallthrough
@@ -4281,9 +4282,7 @@ endif
 # # there.
 # meson.add_install_script('sh', '-c', mkdir_p.format(credstoredir))
 # if install_sysconfdir
-#         # Keep in sync with tmpfiles.d/credstore.conf
 #         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore', '0700'))
-#         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore.encrypted', '0700'))
 # endif
 #
 # executable(
