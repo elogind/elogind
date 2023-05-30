@@ -343,6 +343,15 @@ ethtool_link_mode_h = custom_target(
         capture : true)
 shared_sources += ethtool_link_mode_h
 
+fname = 'ethtool-link-mode.xml'
+ethtool_link_mode_xml = custom_target(
+        fname,
+        input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+        output : fname,
+        command : [python, '@INPUT0@', '--xml', '@INPUT1@'],
+        capture : true)
+man_page_depends += ethtool_link_mode_xml
+
 libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 
 #if 0 /// elogind doesn't need all this
@@ -378,6 +387,7 @@ libshared_deps = [threads,
 #endif // 0
 
 libshared_sym_path = '@0@/libshared.sym'.format(meson.current_source_dir())
+libshared_build_dir = meson.current_build_dir()
 
 libshared_static = static_library(
         libshared_name,

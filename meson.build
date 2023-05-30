@@ -464,7 +464,6 @@ possible_common_cc_flags = [
         '-Werror=return-type',
         '-Werror=shift-count-overflow',
         '-Werror=shift-overflow=2',
-        '-Werror=strict-flex-arrays',
         '-Werror=undef',
         '-Wfloat-equal',
         # gperf prevents us from enabling this because it does not emit fallthrough
@@ -1327,10 +1326,10 @@ else
                         clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
                 endif
         elif bpf_compiler == 'gcc'
+                warning('GCC BPF Compiler support is experimental and not recommended.')
                 bpf_gcc = find_program('bpf-gcc',
-                                       'bpf-none-gcc',
                                        required : true,
-                                       version : '>= 13.1.0')
+                                       version : '>= 12.1.0')
                 bpf_gcc_found = bpf_gcc.found()
         endif
 
@@ -1738,7 +1737,7 @@ conf.set10('HAVE_PAM', have)
 #
 # want_tpm2 = get_option('tpm2')
 # if want_tpm2 != 'false' and not skip_deps
-#         tpm2 = dependency('tss2-esys tss2-rc tss2-mu tss2-tcti-device',
+#         tpm2 = dependency('tss2-esys tss2-rc tss2-mu',
 #                           required : want_tpm2 == 'true')
 #         have = tpm2.found()
 #         have_esys3 = tpm2.version().version_compare('>= 3.0.0')
@@ -2462,6 +2461,8 @@ userspace = declare_dependency(
         link_args : userspace_c_ld_args,
 )
 
+man_page_depends = []
+
 ############################################################
 
 # binaries that have --help and are intended for use by humans,
@@ -2522,6 +2523,7 @@ subdir('src/shared')
 # subdir('src/libudev')
 # subdir('src/cryptsetup/cryptsetup-tokens')
 #
+# alias_target('devel', libelogind_pc, libudev_pc)
 #else // 0
 alias_target('devel', libelogind_pc)
 #endif // 0
@@ -2772,7 +2774,6 @@ subdir('rules.d')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 #endif // 0
 
-alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 
 ############################################################
 
@@ -4283,9 +4284,7 @@ endif
 # # there.
 # meson.add_install_script('sh', '-c', mkdir_p.format(credstoredir))
 # if install_sysconfdir
-#         # Keep in sync with tmpfiles.d/credstore.conf
 #         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore', '0700'))
-#         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore.encrypted', '0700'))
 # endif
 #
 # executable(
@@ -4808,17 +4807,17 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# kernel_install = executable(
+# kernel_install = custom_target(
 #         'kernel-install',
-#         'src/kernel-install/kernel-install.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace,
-#                         versiondep],
-#         install_rpath : rootpkglibdir,
+#         input : kernel_install_in,
+#         output : 'kernel-install',
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : want_kernel_install,
+#         install_mode : 'rwxr-xr-x',
 #         install_dir : bindir)
-# public_programs += kernel_install
+# if want_kernel_install
+#         public_programs += exe
+# endif
 #
 # ukify = custom_target(
 #         'ukify',
@@ -4829,22 +4828,19 @@ public_programs += executable(
 #         install_mode : 'rwxr-xr-x',
 #         install_dir : rootlibexecdir)
 # if want_ukify
-#         public_programs += ukify
+#    public_programs += ukify
 # endif
 #
 # if want_tests != 'false' and want_kernel_install
-#         args = [kernel_install.full_path(), loaderentry_install.full_path(), uki_copy_install]
-#         deps = [kernel_install, loaderentry_install]
+#         args = [kernel_install.full_path(), loaderentry_install, uki_copy_install]
 #         if want_ukify and boot_stubs.length() > 0
-#                 args += [ukify.full_path(), ukify_install.full_path(), boot_stubs[0]]
-#                 deps += [ukify, ukify_install, boot_stubs[0]]
+#                 args += [ukify.full_path(), ukify_install, boot_stubs[0]]
 #         endif
 #
 #         test('test-kernel-install',
 #              test_kernel_install_sh,
 #              env : test_env,
-#              args : args,
-#              depends: deps)
+#              args : args)
 # endif
 #else // 0
 executable('elogind-uaccess-command',
