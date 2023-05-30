@@ -7,7 +7,6 @@
 #         'ask-password-api.c',
 #         'barrier.c',
 #         'base-filesystem.c',
-#         'battery-util.c',
 #         'binfmt-util.c',
 #         'bitmap.c',
 #         'blockdev-util.c',
@@ -98,7 +97,7 @@
 #         'kernel-image.c',
 #         'keyring-util.c',
 #         'killall.c',
-#         'label-util.c',
+#         'label.c',
 #         'libcrypt-util.c',
 #         'libfido2-util.c',
 #         'libmount-util.c',
@@ -155,6 +154,7 @@
 #         'tomoyo-util.c',
 #         'tpm2-util.c',
 #         'udev-util.c',
+#         'uid-alloc-range.c',
 #         'user-record-nss.c',
 #         'user-record-show.c',
 #         'user-record.c',
@@ -333,6 +333,15 @@ endif
 # shared_generated_gperf_headers = [target1, target2]
 # shared_sources += shared_generated_gperf_headers
 #endif // 0
+
+fname = 'ethtool-link-mode.h'
+ethtool_link_mode_h = custom_target(
+        fname,
+        input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+        output : fname,
+        command : [python, '@INPUT0@', '@INPUT1@'],
+        capture : true)
+shared_sources += ethtool_link_mode_h
 
 libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 
