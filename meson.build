@@ -4274,7 +4274,9 @@ endif
 # # there.
 # meson.add_install_script('sh', '-c', mkdir_p.format(credstoredir))
 # if install_sysconfdir
+#         # Keep in sync with tmpfiles.d/credstore.conf
 #         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore', '0700'))
+#         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore.encrypted', '0700'))
 # endif
 #
 # executable(
