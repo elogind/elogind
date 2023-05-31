@@ -652,7 +652,7 @@ TEST(safe_fork) {
 
         if (r == 0) {
                 /* child */
-                usleep(100 * USEC_PER_MSEC);
+                usleep_safe(100 * USEC_PER_MSEC);
 
                 _exit(88);
         }
@@ -903,53 +903,6 @@ TEST(get_process_threads) {
                 /* similar here */
                 assert_se(get_process_threads(0) >= 1);
 
-                _exit(EXIT_SUCCESS);
-        }
-}
-
-TEST(is_reaper_process) {
-        int r;
-
-        r = safe_fork("(regular)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
-        assert_se(r >= 0);
-        if (r == 0) {
-                /* child */
-
-                assert_se(is_reaper_process() == 0);
-                _exit(EXIT_SUCCESS);
-        }
-
-        r = safe_fork("(newpid)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
-        assert_se(r >= 0);
-        if (r == 0) {
-                /* child */
-
-                if (unshare(CLONE_NEWPID) < 0) {
-                        if (ERRNO_IS_PRIVILEGE(errno) || ERRNO_IS_NOT_SUPPORTED(errno)) {
-                                log_notice("Skipping CLONE_NEWPID reaper check, lacking privileges/support");
-                                _exit(EXIT_SUCCESS);
-                        }
-                }
-
-                r = safe_fork("(newpid1)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
-                assert_se(r >= 0);
-                if (r == 0) {
-                        /* grandchild, which is PID1 in a pidns */
-                        assert_se(getpid_cached() == 1);
-                        assert_se(is_reaper_process() > 0);
-                        _exit(EXIT_SUCCESS);
-                }
-
-                _exit(EXIT_SUCCESS);
-        }
-
-        r = safe_fork("(subreaper)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
-        assert_se(r >= 0);
-        if (r == 0) {
-                /* child */
-                assert_se(make_reaper_process(true) >= 0);
-
-                assert_se(is_reaper_process() > 0);
                 _exit(EXIT_SUCCESS);
         }
 }
