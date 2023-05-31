@@ -5,8 +5,9 @@
 #endif // 0
 #include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 
 #define __STDC_WANT_IEC_60559_TYPES_EXT__
 #include <float.h>
@@ -30,6 +31,18 @@ DISABLE_WARNING_TYPE_LIMITS;
                (t)-1 < (t)0 ? ", signed" : ", unsigned",                \
                alignof(t))
 
+#define check_no_sign(t, size)                  \
+        do {                                    \
+                info_no_sign(t);                \
+                assert_se(sizeof(t) == size);   \
+        } while (false)
+
+#define check(t, size)                          \
+        do {                                    \
+                info(t);                        \
+                assert_se(sizeof(t) == size);   \
+        } while (false)
+
 enum Enum {
         enum_value,
 };
@@ -45,6 +58,12 @@ enum BigEnum2 {
 
 int main(void) {
         int (*function_pointer)(void);
+
+        check_no_sign(dev_t, SIZEOF_DEV_T);
+        check_no_sign(ino_t, SIZEOF_INO_T);
+        check_no_sign(rlim_t, SIZEOF_RLIM_T);
+        check(time_t, SIZEOF_TIME_T);
+        check(typeof(((struct timex *)0)->freq), SIZEOF_TIMEX_MEMBER);
 
         info_no_sign(typeof(function_pointer));
         info_no_sign(void*);
@@ -80,7 +99,6 @@ int main(void) {
 
         info(size_t);
         info(ssize_t);
-        info(time_t);
         info(usec_t);
 #ifdef __GLIBC__
         info(__time_t);
