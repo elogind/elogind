@@ -23,4 +23,5 @@ session  required   pam_selinux.so nottys open
 # -session optional   pam_elogind_home.so
 # {% endif %}
 #endif // 0
+session  optional   pam_umask.so silent
 session  optional   pam_elogind.so
