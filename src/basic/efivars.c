@@ -37,7 +37,7 @@ int efi_get_variable(
                 void **ret_value,
                 size_t *ret_size) {
 
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ void *buf = NULL;
         struct stat st;
         usec_t begin = 0; /* Unnecessary initialization to appease gcc */
@@ -93,7 +93,7 @@ int efi_get_variable(
                                 return -EBUSY;
 
                         if (try >= EFI_N_RETRIES_NO_DELAY)
-                                (void) usleep(EFI_RETRY_DELAY);
+                                (void) usleep_safe(EFI_RETRY_DELAY);
                 }
 
                 if (n != sizeof(a))
@@ -181,7 +181,7 @@ int efi_set_variable(const char *variable, const void *value, size_t size) {
                 uint32_t attr;
                 char buf[];
         } _packed_ * _cleanup_free_ buf = NULL;
-        _cleanup_close_ int fd = -1;
+        _cleanup_close_ int fd = -EBADF;
         uint32_t attr = EFI_VARIABLE_NON_VOLATILE|EFI_VARIABLE_BOOTSERVICE_ACCESS|EFI_VARIABLE_RUNTIME_ACCESS;
         bool saved_flags_valid = false;
         unsigned saved_flags;
@@ -355,7 +355,7 @@ static int read_efi_options_variable(char **ret) {
         int r;
 
         /* In SecureBoot mode this is probably not what you want. As your cmdline is cryptographically signed
-         * like when using Type #2 EFI Unified Kernel Images (https://systemd.io/BOOT_LOADER_SPECIFICATION)
+         * like when using Type #2 EFI Unified Kernel Images (https://uapi-group.org/specifications/specs/boot_loader_specification)
          * The user's intention is then that the cmdline should not be modified. You want to make sure that
          * the system starts up as exactly specified in the signed artifact.
          *
