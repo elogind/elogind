@@ -302,6 +302,7 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      bindir / 'systemctl')
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elogind')
+# conf.set_quoted('SYSTEMD_EXECUTOR_BINARY_PATH',               libexecdir / 'elogind-executor')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
 #else // 0
 conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
