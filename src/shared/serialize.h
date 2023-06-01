@@ -29,5 +29,6 @@ int deserialize_usec(const char *value, usec_t *timestamp);
 int deserialize_dual_timestamp(const char *value, dual_timestamp *t);
 int deserialize_environment(const char *value, char ***environment);
 #endif // 0
+int deserialize_strv(char ***l, const char *value);
 
 int open_serialization_fd(const char *ident);
