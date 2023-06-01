@@ -91,8 +91,10 @@ static inline int btrfs_subvol_snapshot(const char *old_path, const char *new_pa
 }
 #endif // 0
 
-int btrfs_subvol_remove(const char *path, BtrfsRemoveFlags flags);
-int btrfs_subvol_remove_fd(int fd, const char *subvolume, BtrfsRemoveFlags flags);
+int btrfs_subvol_remove_at(int dir_fd, const char *path, BtrfsRemoveFlags flags);
+static inline int btrfs_subvol_remove(const char *path, BtrfsRemoveFlags flags) {
+        return btrfs_subvol_remove_at(AT_FDCWD, path, flags);
+}
 
 int btrfs_subvol_set_read_only_fd(int fd, bool b);
 #if 0 /// UNNEEDED by elogind
