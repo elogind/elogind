@@ -58,9 +58,11 @@ int main(void) {
 #ifdef __GLIBC__
         info(unsigned long);
         info(unsigned long long);
+#ifdef __GLIBC__
         info(__syscall_ulong_t);
         info(__syscall_slong_t);
 #endif // ifdef __GLIBC__
+#endif
         info(intmax_t);
         info(uintmax_t);
 
@@ -82,15 +84,17 @@ int main(void) {
         info(usec_t);
 #ifdef __GLIBC__
         info(__time_t);
-#endif // ifdef __GLIBC__
+#endif
         info(pid_t);
         info(uid_t);
         info(gid_t);
         info(socklen_t);
 
 #if 0 /// UNNEEDED by elogind (Only needed for *cpu_set* stuff in systemd we don't use)
+#ifdef __GLIBC__
         info(__cpu_mask);
 #endif // 0
+#endif
 
         info(enum Enum);
         info(enum BigEnum);
