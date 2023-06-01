@@ -152,12 +152,27 @@ libcore_sources = files(
 #         'crash-handler.c',
 # )
 #
+# elogind_executor_sources = files(
+#         'executor.c',
+# )
+#
 # executables += [
 #         libexec_template + {
 #                 'name' : 'elogind',
 #                 'dbus' : true,
 #                 'public' : true,
 #                 'sources' : elogind_sources,
+#                 'link_with' : [
+#                         libcore,
+#                         libshared,
+#                 ],
+#                 'dependencies' : libseccomp,
+#         },
+#         libexec_template + {
+#                 'name' : 'elogind-executor',
+#                 'public' : true,
+#                 'sources' : elogind_executor_sources,
+#                 'include_directories' : core_includes,
 #                 'link_with' : [
 #                         libcore,
 #                         libshared,

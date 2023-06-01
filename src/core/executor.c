@@ -7,7 +7,6 @@
 
 #include "alloc-util.h"
 #include "build.h"
-#include "exec-invoke.h"
 #include "execute-serialize.h"
 #include "execute.h"
 #include "exit-status.h"
