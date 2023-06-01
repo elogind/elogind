@@ -155,11 +155,16 @@ int btrfs_subvol_make_fallback(const char *path, mode_t mode) {
 }
 #endif // 0
 
-int btrfs_subvol_set_read_only_fd(int fd, bool b) {
+int btrfs_subvol_set_read_only_at(int dir_fd, const char *path, bool b) {
+        _cleanup_close_ int fd = -EBADF;
         uint64_t flags, nflags;
         struct stat st;
 
-        assert(fd >= 0);
+        assert(dir_fd >= 0 || dir_fd == AT_FDCWD);
+
+        fd = xopenat(dir_fd, path, O_RDONLY|O_NOCTTY|O_CLOEXEC|O_DIRECTORY, /* xopen_flags = */ 0, /* mode = */ 0);
+        if (fd < 0)
+                return fd;
 
         if (fstat(fd, &st) < 0)
                 return -errno;
@@ -178,16 +183,6 @@ int btrfs_subvol_set_read_only_fd(int fd, bool b) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int btrfs_subvol_set_read_only(const char *path, bool b) {
-        _cleanup_close_ int fd = -EBADF;
-
-        fd = open(path, O_RDONLY|O_NOCTTY|O_CLOEXEC|O_DIRECTORY);
-        if (fd < 0)
-                return -errno;
-
-        return btrfs_subvol_set_read_only_fd(fd, b);
-}
-
 int btrfs_subvol_get_read_only_fd(int fd) {
         uint64_t flags;
         struct stat st;
