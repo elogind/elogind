@@ -4,12 +4,12 @@
 # Seong-ho Cho <shcho@gnome.org>, 2015, 2021.
 # Dongsu Park <dongsu@endocode.com>, 2015.
 # simmon <simmon@nplob.com>, 2021.
-# 김인수 <simmon@nplob.com>, 2022.
+# 김인수 <simmon@nplob.com>, 2022, 2023.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2022-10-22 17:19+0000\n"
+"PO-Revision-Date: 2023-06-03 15:48+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/elogind/"
 "master/ko/>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.17\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
 #if 0 /// UNNEEDED by elogind
@@ -33,19 +33,19 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr "시스템 서비스 또는 기타 유닛 관리"
+# msgstr "시스템 서비스 또는 기타 단위 관리"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
-# msgstr "시스템 서비스 또는 기타 유닛을 관리하려면 인증이 필요합니다."
+# msgstr "시스템 서비스 또는 기타 단위를 관리하려면 인증이 필요합니다."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr "시스템 서비스 또는 유닛 파일 관리"
+# msgstr "시스템 서비스 또는 단위 파일 관리"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
-# msgstr "시스템 서비스 또는 유닛 파일을 관리하려면 인증이 필요합니다."
+# msgstr "시스템 서비스 또는 단위 파일을 관리하려면 인증이 필요합니다."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:54
 # msgid "Set or unset system and service manager environment variables"
@@ -187,19 +187,19 @@ msgstr ""
 #
 # #: src/import/org.freedesktop.import1.policy:42
 # msgid "Download a VM or container image"
-# msgstr "가상 머신 또는 컨테이너 이미지 다운로드"
+# msgstr "가상 머신 또는 컨테이너 이미지 내려받기"
 #
 # #: src/import/org.freedesktop.import1.policy:43
 # msgid "Authentication is required to download a VM or container image"
-# msgstr "가상 머신 또는 컨테이너 이미지를 다운로드하려면 인증이 필요합니다"
+# msgstr "가상 머신 또는 컨테이너 이미지를 내려받기하려면 인증이 필요합니다"
 #
 # #: src/locale/org.freedesktop.locale1.policy:22
 # msgid "Set system locale"
-# msgstr "시스템 로캘 설정"
+# msgstr "시스템 로케일 설정"
 #
 # #: src/locale/org.freedesktop.locale1.policy:23
 # msgid "Authentication is required to set the system locale."
-# msgstr "시스템 로캘을 설정하려면 인증이 필요합니다."
+# msgstr "시스템 로케일을 설정하려면 인증이 필요합니다."
 #
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
