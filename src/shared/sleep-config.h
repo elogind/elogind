@@ -71,7 +71,6 @@ int can_sleep_state(char **types);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
-int battery_is_discharging_and_low(void);
 int get_total_suspend_interval(Hashmap *last_capacity, usec_t *ret);
 int fetch_batteries_capacity_by_name(Hashmap **ret_current_capacity);
 int get_capacity_by_name(Hashmap *capacities_by_name, const char *name);
