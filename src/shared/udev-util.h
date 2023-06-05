@@ -59,7 +59,6 @@ int udev_queue_is_empty(void);
 int udev_queue_init(void);
 #endif // 0
 
-int on_ac_power(void);
 
 #if 0 /// UNNEEDED by elogind
 bool udev_available(void);
