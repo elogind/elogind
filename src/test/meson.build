@@ -17,6 +17,10 @@ test_env = environment()
 test_env.set('PATH', project_build_root + ':' + path)
 test_env.set('PROJECT_BUILD_ROOT', project_build_root)
 
+if efi_addon != ''
+        test_env.set('EFI_ADDON', efi_addon)
+endif
+
 ############################################################
 
 generate_sym_test_py = find_program('generate-sym-test.py')
