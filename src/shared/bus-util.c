@@ -373,6 +373,7 @@ int bus_connect_transport_elogind(BusTransport transport, const char *host, Runt
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
+                                /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with elogind as init system (PID 1). Can't operate.");
                         return bus_connect_system_elogind(bus);
@@ -693,3 +694,22 @@ const struct hash_ops bus_message_hash_ops = {
         .compare = trivial_compare_func,
         .free_value = bus_message_unref_wrapper,
 };
+
+int bus_message_append_string_set(sd_bus_message *m, Set *set) {
+        const char *s;
+        int r;
+
+        assert(m);
+
+        r = sd_bus_message_open_container(m, 'a', "s");
+        if (r < 0)
+                return r;
+
+        SET_FOREACH(s, set) {
+                r = sd_bus_message_append(m, "s", s);
+                if (r < 0)
+                        return r;
+        }
+
+        return sd_bus_message_close_container(m);
+}
