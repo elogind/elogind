@@ -374,6 +374,7 @@ int bus_connect_transport_elogind(BusTransport transport, const char *host, Runt
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 /* Print a friendly message when the local system is actually not running elogind as PID 1. */
+                                /* Print a friendly message when the local system is actually not running elogind as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with elogind as init system (PID 1). Can't operate.");
                         return bus_connect_system_elogind(bus);
@@ -712,4 +713,22 @@ int bus_message_append_string_set(sd_bus_message *m, Set *set) {
         }
 
         return sd_bus_message_close_container(m);
+}
+
+int bus_property_get_string_set(
+                sd_bus *bus,
+                const char *path,
+                const char *interface,
+                const char *property,
+                sd_bus_message *reply,
+                void *userdata,
+                sd_bus_error *error) {
+
+        Set **s = ASSERT_PTR(userdata);
+
+        assert(bus);
+        assert(property);
+        assert(reply);
+
+        return bus_message_append_string_set(reply, *s);
 }
