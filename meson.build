@@ -2517,7 +2517,6 @@ subdir('src/shared')
 # subdir('src/libudev')
 # subdir('src/cryptsetup/cryptsetup-tokens')
 #
-# alias_target('devel', libsystemd_pc, libudev_pc)
 #else // 0
 alias_target('devel', libelogind_pc)
 #endif // 0
@@ -2765,6 +2764,8 @@ subdir('rules.d')
 # subdir('test')
 #endif // 0
 subdir('src/ukify/test')  # needs to be last for test_env variable
+
+alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 
 ############################################################
 
