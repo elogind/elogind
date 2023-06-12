@@ -141,7 +141,7 @@ libcore_sources = files(
 #                         userspace,
 #                         versiondep],
 #         install : true,
-#         install_dir : rootpkglibdir)
+#         install_dir : pkglibdir)
 #
 # core_includes = [includes, include_directories('.')]
 #

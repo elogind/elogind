@@ -419,7 +419,7 @@ libshared = shared_library(
         dependencies : [libshared_deps,
                         userspace],
         install : true,
-        install_dir : rootpkglibdir)
+        install_dir : pkglibdir)
 
 #if 0 /// elogind does not provide libshared_fdisk
 # shared_fdisk_sources = files(

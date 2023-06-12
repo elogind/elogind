@@ -9,8 +9,8 @@
 
 prefix={{PREFIX}}
 exec_prefix={{PREFIX}}
-libdir={{ROOTLIBDIR}}
 #if 0 /// To be able to act as a drop-in replacement, elogind has a systemd subdir
+# libdir={{LIBDIR}}
 # includedir={{INCLUDE_DIR}}
 #else // 0
 includedir={{INCLUDE_DIR}}/elogind
