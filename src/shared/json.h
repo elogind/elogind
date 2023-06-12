@@ -416,6 +416,7 @@ int json_dispatch_boolean(const char *name, JsonVariant *variant, JsonDispatchFl
 int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 #if 0 /// UNNEEDED by elogind
+int json_dispatch_variant_noref(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
 #endif // 0
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata);
