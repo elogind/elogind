@@ -464,6 +464,7 @@ possible_common_cc_flags = [
         '-Werror=return-type',
         '-Werror=shift-count-overflow',
         '-Werror=shift-overflow=2',
+        '-Werror=strict-flex-arrays',
         '-Werror=undef',
         '-Wfloat-equal',
         # gperf prevents us from enabling this because it does not emit fallthrough
@@ -614,7 +615,7 @@ has_wstringop_truncation = cc.has_argument('-Wstringop-truncation')
 #####################################################################
 # compilation result tests
 
-conf.set('_GNU_SOURCE', true)
+conf.set('_GNU_SOURCE', 1)
 conf.set('__SANE_USERSPACE_TYPES__', true)
 conf.set10('HAVE_WSTRINGOP_TRUNCATION', has_wstringop_truncation)
 
@@ -1326,10 +1327,10 @@ else
                         clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
                 endif
         elif bpf_compiler == 'gcc'
-                warning('GCC BPF Compiler support is experimental and not recommended.')
                 bpf_gcc = find_program('bpf-gcc',
+                                       'bpf-none-gcc',
                                        required : true,
-                                       version : '>= 12.1.0')
+                                       version : '>= 13.1.0')
                 bpf_gcc_found = bpf_gcc.found()
         endif
 
@@ -1737,7 +1738,7 @@ conf.set10('HAVE_PAM', have)
 #
 # want_tpm2 = get_option('tpm2')
 # if want_tpm2 != 'false' and not skip_deps
-#         tpm2 = dependency('tss2-esys tss2-rc tss2-mu',
+#         tpm2 = dependency('tss2-esys tss2-rc tss2-mu tss2-tcti-device',
 #                           required : want_tpm2 == 'true')
 #         have = tpm2.found()
 #         have_esys3 = tpm2.version().version_compare('>= 3.0.0')
@@ -2461,8 +2462,6 @@ userspace = declare_dependency(
         link_args : userspace_c_ld_args,
 )
 
-man_page_depends = []
-
 ############################################################
 
 # binaries that have --help and are intended for use by humans,
@@ -2773,7 +2772,6 @@ subdir('rules.d')
 # subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 #endif // 0
-
 
 ############################################################
 
@@ -4284,7 +4282,9 @@ endif
 # # there.
 # meson.add_install_script('sh', '-c', mkdir_p.format(credstoredir))
 # if install_sysconfdir
+#         # Keep in sync with tmpfiles.d/credstore.conf
 #         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore', '0700'))
+#         meson.add_install_script('sh', '-c', mkdir_p_mode.format(sysconfdir / 'credstore.encrypted', '0700'))
 # endif
 #
 # executable(
