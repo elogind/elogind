@@ -4664,7 +4664,17 @@ int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFl
         JsonVariant **p = ASSERT_PTR(userdata);
         assert(variant);
 
+        /* Takes a reference */
         JSON_VARIANT_REPLACE(*p, json_variant_ref(variant));
+        return 0;
+}
+
+int json_dispatch_variant_noref(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
+        JsonVariant **p = ASSERT_PTR(userdata);
+        assert(variant);
+
+        /* Doesn't take a reference */
+        *p = variant;
         return 0;
 }
 
