@@ -599,8 +599,7 @@ static int pam_putenv_and_log(pam_handle_t *handle, const char *e, bool debug) {
                 return pam_syslog_pam_error(handle, LOG_ERR, r,
                                             "Failed to set PAM environment variable %s: @PAMERR@", e);
 
-        if (debug)
-                pam_syslog(handle, LOG_DEBUG, "PAM environment variable %s set based on user record.", e);
+        pam_debug_syslog(handle, debug, "PAM environment variable %s set based on user record.", e);
 
         return PAM_SUCCESS;
 }
@@ -618,9 +617,7 @@ static int apply_user_record_settings(
 
         if (ur->umask != MODE_INVALID) {
                 umask(ur->umask);
-
-                if (debug)
-                        pam_syslog(handle, LOG_DEBUG, "Set user umask to %04o based on user record.", ur->umask);
+                pam_debug_syslog(handle, debug, "Set user umask to %04o based on user record.", ur->umask);
         }
 
         STRV_FOREACH(i, ur->environment) {
@@ -634,8 +631,8 @@ static int apply_user_record_settings(
                         return pam_log_oom(handle);
 
                 if (pam_getenv(handle, n)) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "PAM environment variable $%s already set, not changing based on record.", *i);
+                        pam_debug_syslog(handle, debug,
+                                         "PAM environment variable $%s already set, not changing based on record.", *i);
                         continue;
                 }
 
@@ -645,10 +642,10 @@ static int apply_user_record_settings(
         }
 
         if (ur->email_address) {
-                if (pam_getenv(handle, "EMAIL")) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "PAM environment variable $EMAIL already set, not changing based on user record.");
-                } else {
+                if (pam_getenv(handle, "EMAIL"))
+                        pam_debug_syslog(handle, debug,
+                                         "PAM environment variable $EMAIL already set, not changing based on user record.");
+                else {
                         _cleanup_free_ char *joined = NULL;
 
                         joined = strjoin("EMAIL=", ur->email_address);
@@ -662,13 +659,13 @@ static int apply_user_record_settings(
         }
 
         if (ur->time_zone) {
-                if (pam_getenv(handle, "TZ")) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "PAM environment variable $TZ already set, not changing based on user record.");
-                } else if (!timezone_is_valid(ur->time_zone, LOG_DEBUG)) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "Time zone specified in user record is not valid locally, not setting $TZ.");
-                } else {
+                if (pam_getenv(handle, "TZ"))
+                        pam_debug_syslog(handle, debug,
+                                         "PAM environment variable $TZ already set, not changing based on user record.");
+                else if (!timezone_is_valid(ur->time_zone, LOG_DEBUG))
+                        pam_debug_syslog(handle, debug,
+                                         "Time zone specified in user record is not valid locally, not setting $TZ.");
+                else {
                         _cleanup_free_ char *joined = NULL;
 
                         joined = strjoin("TZ=:", ur->time_zone);
@@ -682,13 +679,13 @@ static int apply_user_record_settings(
         }
 
         if (ur->preferred_language) {
-                if (pam_getenv(handle, "LANG")) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "PAM environment variable $LANG already set, not changing based on user record.");
-                } else if (locale_is_installed(ur->preferred_language) <= 0) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "Preferred language specified in user record is not valid or not installed, not setting $LANG.");
-                } else {
+                if (pam_getenv(handle, "LANG"))
+                        pam_debug_syslog(handle, debug,
+                                         "PAM environment variable $LANG already set, not changing based on user record.");
+                else if (locale_is_installed(ur->preferred_language) <= 0)
+                        pam_debug_syslog(handle, debug,
+                                         "Preferred language specified in user record is not valid or not installed, not setting $LANG.");
+                else {
                         _cleanup_free_ char *joined = NULL;
 
                         joined = strjoin("LANG=", ur->preferred_language);
@@ -705,9 +702,9 @@ static int apply_user_record_settings(
                 if (nice(ur->nice_level) < 0)
                         pam_syslog_errno(handle, LOG_ERR, errno,
                                          "Failed to set nice level to %i, ignoring: %m", ur->nice_level);
-                else if (debug)
-                        pam_syslog(handle, LOG_DEBUG,
-                                   "Nice level set to %i, based on user record.", ur->nice_level);
+                else
+                        pam_debug_syslog(handle, debug,
+                                         "Nice level set to %i, based on user record.", ur->nice_level);
         }
 
         for (int rl = 0; rl < _RLIMIT_MAX; rl++) {
@@ -719,9 +716,9 @@ static int apply_user_record_settings(
                 if (r < 0)
                         pam_syslog_errno(handle, LOG_ERR, r,
                                          "Failed to set resource limit %s, ignoring: %m", rlimit_to_string(rl));
-                else if (debug)
-                        pam_syslog(handle, LOG_DEBUG,
-                                   "Resource limit %s set, based on user record.", rlimit_to_string(rl));
+                else
+                        pam_debug_syslog(handle, debug,
+                                         "Resource limit %s set, based on user record.", rlimit_to_string(rl));
         }
 
         uint64_t a, b;
@@ -828,8 +825,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                        &default_capability_ambient_set) < 0)
                 return PAM_SESSION_ERR;
 
-        if (debug)
-                pam_syslog(handle, LOG_DEBUG, "pam-elogind initializing");
+        pam_debug_syslog(handle, debug, "pam-elogind initializing");
 
         r = acquire_user_record(handle, &ur);
         if (r != PAM_SUCCESS)
@@ -929,8 +925,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         }
 
         if (seat && !streq(seat, "seat0") && vtnr != 0) {
-                if (debug)
-                        pam_syslog(handle, LOG_DEBUG, "Ignoring vtnr %"PRIu32" for %s which is not seat0", vtnr, seat);
+                pam_debug_syslog(handle, debug, "Ignoring vtnr %"PRIu32" for %s which is not seat0", vtnr, seat);
                 vtnr = 0;
         }
 
@@ -966,18 +961,18 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (r != PAM_SUCCESS)
                 return r;
 
-        if (debug) {
-                pam_syslog(handle, LOG_DEBUG, "Asking logind to create session: "
-                           "uid="UID_FMT" pid="PID_FMT" service=%s type=%s class=%s desktop=%s seat=%s vtnr=%"PRIu32" tty=%s display=%s remote=%s remote_user=%s remote_host=%s",
-                           ur->uid, getpid_cached(),
-                           strempty(service),
-                           type, class, strempty(desktop),
-                           strempty(seat), vtnr, strempty(tty), strempty(display),
-                           yes_no(remote), strempty(remote_user), strempty(remote_host));
-                pam_syslog(handle, LOG_DEBUG, "Session limits: "
-                           "memory_max=%s tasks_max=%s cpu_weight=%s io_weight=%s runtime_max_sec=%s",
-                           strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
-        }
+        pam_debug_syslog(handle, debug,
+                         "Asking logind to create session: "
+                         "uid="UID_FMT" pid="PID_FMT" service=%s type=%s class=%s desktop=%s seat=%s vtnr=%"PRIu32" tty=%s display=%s remote=%s remote_user=%s remote_host=%s",
+                         ur->uid, getpid_cached(),
+                         strempty(service),
+                         type, class, strempty(desktop),
+                         strempty(seat), vtnr, strempty(tty), strempty(display),
+                         yes_no(remote), strempty(remote_user), strempty(remote_host));
+        pam_debug_syslog(handle, debug,
+                         "Session limits: "
+                         "memory_max=%s tasks_max=%s cpu_weight=%s io_weight=%s runtime_max_sec=%s",
+                         strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
 
         r = bus_message_new_method_call(bus, &m, bus_login_mgr, "CreateSession");
         if (r < 0)
@@ -1033,13 +1028,13 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         r = sd_bus_call(bus, m, LOGIN_SLOW_BUS_CALL_TIMEOUT_USEC, &error, &reply);
         if (r < 0) {
                 if (sd_bus_error_has_name(&error, BUS_ERROR_SESSION_BUSY)) {
-                        if (debug)
-                                pam_syslog(handle, LOG_DEBUG, "Not creating session: %s", bus_error_message(&error, r));
-
+                        pam_debug_syslog(handle, debug,
+                                         "Not creating session: %s", bus_error_message(&error, r));
                         /* We are already in a session, don't do anything */
                         goto success;
                 } else {
-                        pam_syslog(handle, LOG_ERR, "Failed to create session: %s", bus_error_message(&error, r));
+                        pam_syslog(handle, LOG_ERR,
+                                   "Failed to create session: %s", bus_error_message(&error, r));
                         return PAM_SESSION_ERR;
                 }
         }
@@ -1057,10 +1052,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (r < 0)
                 return pam_bus_log_parse_error(handle, r);
 
-        if (debug)
-                pam_syslog(handle, LOG_DEBUG, "Reply from logind: "
-                           "id=%s object_path=%s runtime_path=%s session_fd=%d seat=%s vtnr=%u original_uid=%u",
-                           id, object_path, runtime_path, session_fd, seat, vtnr, original_uid);
+        pam_debug_syslog(handle, debug,
+                         "Reply from logind: "
+                         "id=%s object_path=%s runtime_path=%s session_fd=%d seat=%s vtnr=%u original_uid=%u",
+                         id, object_path, runtime_path, session_fd, seat, vtnr, original_uid);
 
         r = update_environment(handle, "XDG_SESSION_ID", id);
         if (r != PAM_SUCCESS)
@@ -1149,8 +1144,7 @@ _public_ PAM_EXTERN int pam_sm_close_session(
                        NULL) < 0)
                 return PAM_SESSION_ERR;
 
-        if (debug)
-                pam_syslog(handle, LOG_DEBUG, "pam-elogind shutting down");
+        pam_debug_syslog(handle, debug, "pam-elogind shutting down");
 
         /* Only release session if it wasn't pre-existing when we
          * tried to create it */
