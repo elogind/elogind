@@ -3341,7 +3341,7 @@ endif
 #
 # public_programs += executable(
 #         'systemd-socket-activate',
-#         'src/activate/activate.c',
+#         'src/socket-activate/socket-activate.c',
 #         include_directories : includes,
 #         link_with : [libshared],
 #         dependencies : [threads,
@@ -5178,7 +5178,7 @@ check_help = find_program('tools/check-help.sh')
 check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
-        name = fs.name(exec.full_path())
+        name = exec.full_path().split('/')[-1]
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
