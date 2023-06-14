@@ -101,7 +101,7 @@ foreach header : _systemd_headers
 #endif // 0
         foreach opt : opts
                 std_name = opt.length() == 2 ? '_'.join(opt[1].split(':')) : ''
-                test('cc-' + header.split('/')[-1] + '_' + opt[0] + std_name,
+                test('cc-' + fs.name(header) + '_' + opt[0] + std_name,
                      env,
                      suite : 'headers',
                      args : [cc.cmd_array(),

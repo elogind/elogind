@@ -2462,6 +2462,8 @@ userspace = declare_dependency(
         link_args : userspace_c_ld_args,
 )
 
+man_page_depends = []
+
 ############################################################
 
 # binaries that have --help and are intended for use by humans,
@@ -2522,7 +2524,6 @@ subdir('src/shared')
 # subdir('src/libudev')
 # subdir('src/cryptsetup/cryptsetup-tokens')
 #
-# alias_target('devel', libelogind_pc, libudev_pc)
 #else // 0
 alias_target('devel', libelogind_pc)
 #endif // 0
@@ -2772,6 +2773,8 @@ subdir('rules.d')
 # subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 #endif // 0
+
+alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 
 ############################################################
 
@@ -4807,17 +4810,17 @@ public_programs += executable(
 #         install : true,
 #         install_dir : rootlibexecdir)
 #
-# kernel_install = custom_target(
+# kernel_install = executable(
 #         'kernel-install',
-#         input : kernel_install_in,
-#         output : 'kernel-install',
-#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         'src/kernel-install/kernel-install.c',
+#         include_directories : includes,
+#         link_with : [libshared],
+#         dependencies : [userspace,
+#                         versiondep],
+#         install_rpath : rootpkglibdir,
 #         install : want_kernel_install,
-#         install_mode : 'rwxr-xr-x',
 #         install_dir : bindir)
-# if want_kernel_install
-#         public_programs += exe
-# endif
+# public_programs += kernel_install
 #
 # ukify = custom_target(
 #         'ukify',
@@ -4828,19 +4831,22 @@ public_programs += executable(
 #         install_mode : 'rwxr-xr-x',
 #         install_dir : rootlibexecdir)
 # if want_ukify
-#    public_programs += ukify
+#         public_programs += ukify
 # endif
 #
 # if want_tests != 'false' and want_kernel_install
-#         args = [kernel_install.full_path(), loaderentry_install, uki_copy_install]
+#         args = [kernel_install.full_path(), loaderentry_install.full_path(), uki_copy_install]
+#         deps = [kernel_install, loaderentry_install]
 #         if want_ukify and boot_stubs.length() > 0
-#                 args += [ukify.full_path(), ukify_install, boot_stubs[0]]
+#                 args += [ukify.full_path(), ukify_install.full_path(), boot_stubs[0]]
+#                 deps += [ukify, ukify_install, boot_stubs[0]]
 #         endif
 #
 #         test('test-kernel-install',
 #              test_kernel_install_sh,
 #              env : test_env,
-#              args : args)
+#              args : args,
+#              depends: deps)
 # endif
 #else // 0
 executable('elogind-uaccess-command',
@@ -5180,7 +5186,7 @@ check_help = find_program('tools/check-help.sh')
 check_version = find_program('tools/check-version.sh')
 
 foreach exec : public_programs
-        name = exec.full_path().split('/')[-1]
+        name = fs.name(exec.full_path())
         if want_tests != 'false'
                 test('check-help-' + name,
                      check_help,
