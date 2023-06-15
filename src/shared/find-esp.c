@@ -817,7 +817,7 @@ int find_xbootldr_and_warn(
         r = verify_xbootldr(p, /* searching= */ true, unprivileged_mode, ret_uuid, ret_devid);
         if (r >= 0)
                 goto found;
-        if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR)) /* This one is not it */
+        if (!IN_SET(r, -ENOENT, -EADDRNOTAVAIL, -ENOTDIR, -ENOTTY)) /* This one is not it */
                 return r;
 
         return -ENOKEY;
