@@ -4960,10 +4960,10 @@ endforeach
 #                 threads,
 #                 userspace,
 #         ],
-#         build_by_default : want_tests != 'false' and static_libsystemd_pic,
-#         install : install_tests and static_libsystemd_pic,
+#         build_by_default : want_tests != 'false' and static_libsystemd != 'false',
+#         install : install_tests and static_libsystemd != 'false',
 #         install_dir : unittestsdir)
-# if want_tests != 'false' and static_libsystemd_pic
+# if want_tests != 'false' and static_libsystemd != 'false'
 #         test('test-libsystemd-static-sym', exe)
 # endif
 #
@@ -4988,10 +4988,10 @@ endforeach
 #         c_args : ['-Wno-deprecated-declarations'] + test_cflags,
 #         link_with : [install_libudev_static],
 #         dependencies : userspace,
-#         build_by_default : want_tests != 'false' and static_libudev_pic,
-#         install : install_tests and static_libudev_pic,
+#         build_by_default : want_tests != 'false' and static_libudev != 'false',
+#         install : install_tests and static_libudev != 'false',
 #         install_dir : unittestsdir)
-# if want_tests != 'false' and static_libudev_pic
+# if want_tests != 'false' and static_libudev != 'false'
 #         test('test-libudev-static-sym', exe)
 # endif
 #
