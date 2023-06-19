@@ -5000,12 +5000,12 @@ endforeach
 # endif
 #
 # if want_tests != 'false'
-#         udev_rule_runner = TESTS['udev-rule-runner'].full_path()
-#
+#         exe = TESTS.get('udev-rule-runner')
 #         test('test-udev',
 #              test_udev_py,
 #              args : ['-v'],
-#              env : ['UDEV_RULE_RUNNER=@0@'.format(udev_rule_runner)],
+#              env : ['UDEV_RULE_RUNNER=' + exe.full_path()],
+#              depends : exe,
 #              timeout : 180)
 # endif
 #
