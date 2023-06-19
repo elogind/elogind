@@ -2091,9 +2091,6 @@ endif
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
 #
-# want_kernel_install = get_option('kernel-install')
-# conf.set10('ENABLE_KERNEL_INSTALL', want_kernel_install)
-#
 # want_homed = get_option('homed')
 # if want_homed != 'false'
 #         have = (conf.get('HAVE_OPENSSL') == 1 and
@@ -2109,9 +2106,6 @@ endif
 #
 # have = have and conf.get('HAVE_PAM') == 1
 # conf.set10('ENABLE_PAM_HOME', have)
-#
-# have = get_option('oomd')
-# conf.set10('ENABLE_OOMD', have)
 #
 # want_remote = get_option('remote')
 # if want_remote != 'false'
@@ -2149,6 +2143,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'idn',
 #                 'ima',
 #                 'initrd',
+#                 'kernel-install',
 #                 'ldconfig',
 #                 'localed',
 #                 'logind',
@@ -2157,6 +2152,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'nscd',
 #                 'nss-myhostname',
 #                 'nss-systemd',
+#                 'oomd',
 #                 'portabled',
 #                 'pstore',
 #                 'quotacheck',
