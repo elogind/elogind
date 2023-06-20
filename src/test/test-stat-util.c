@@ -182,6 +182,21 @@ TEST(dir_is_empty) {
 }
 #endif // 0
 
+TEST(inode_type_from_string) {
+        static const mode_t types[] = {
+                S_IFREG,
+                S_IFDIR,
+                S_IFLNK,
+                S_IFCHR,
+                S_IFBLK,
+                S_IFIFO,
+                S_IFSOCK,
+        };
+
+        FOREACH_ARRAY(m, types, ELEMENTSOF(types))
+                assert_se(inode_type_from_string(inode_type_to_string(*m)) == *m);
+}
+
 static int intro(void) {
         log_show_color(true);
         return EXIT_SUCCESS;
