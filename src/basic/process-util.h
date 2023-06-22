@@ -221,6 +221,7 @@ int setpriority_closest(int priority);
 
 _noreturn_ void freeze(void);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 int get_process_threads(pid_t pid);
+
+int is_reaper_process(void);
