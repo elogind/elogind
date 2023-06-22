@@ -90,7 +90,7 @@
     project='man-pages'><refentrytitle>random</refentrytitle><manvolnum>4</manvolnum></citerefentry> for more
     information. This function also internally caches the returned ID to make this call a cheap operation. It is
     recommended to use this ID as-is only in trusted environments. In untrusted environments it is recommended to
-    derive an application specific ID using <function>sd_id128_get_machine_app_specific()</function>, see below.</para>
+    derive an application specific ID using <function>sd_id128_get_boot_app_specific()</function>, see below.</para>
 
     <para><function>sd_id128_get_boot_app_specific()</function> is analogous to
     <function>sd_id128_get_machine_app_specific()</function> but returns an ID that changes between boots. Some
@@ -98,15 +98,25 @@
     has properties similar to the machine ID during that time.</para>
 
     <para><function>sd_id128_get_invocation()</function> returns the invocation ID of the currently executed
-    service. In its current implementation, this reads and parses the <varname>$INVOCATION_ID</varname> environment
     <!-- 0 /// as elogind does not run under systemd, be a bit more generic
-    variable that the service manager sets when activating a service, see
-    <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> for details. The
     --><!-- else // 0 -->
     variable that the service manager has to set when activating a service. If <varname>$INVOCATION_ID</varname> was
     not set by the service manager, the function returns -ENXIO. The
     <!-- // 0 -->
-    ID is cached internally. In future a different mechanism to determine the invocation ID may be added.</para>
+    service. In its current implementation, this tries to read and parse the following:
+    <itemizedlist>
+      <listitem>
+        <para>The <varname>$INVOCATION_ID</varname> environment variable that the service manager sets when
+        activating a service.</para>
+      </listitem>
+      <listitem>
+        <para>An entry in the kernel keyring that the system service manager sets when activating a service.
+        </para>
+      </listitem>
+    </itemizedlist>
+    See <citerefentry><refentrytitle>elogind.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+    for details. The ID is cached internally. In future a different mechanism to determine the invocation ID
+    may be added.</para>
 
     <para>Note that <function>sd_id128_get_machine_app_specific()</function>,
     <function>sd_id128_get_boot()</function>, <function>sd_id128_get_boot_app_specific()</function>, and
@@ -138,19 +148,34 @@
         <varlistentry>
           <term><constant>-ENOENT</constant></term>
 
-          <listitem><para>Returned by <function>sd_id128_get_machine()</function>,
-          <function>sd_id128_get_machine_app_specific()</function>, and
-          <function>sd_id128_get_boot_app_specific()</function> when <filename>/etc/machine-id</filename> is
-          missing.</para></listitem>
+          <listitem><para>Returned by <function>sd_id128_get_machine()</function> and
+          <function>sd_id128_get_machine_app_specific()</function> when <filename>/etc/machine-id</filename>
+          is missing.</para></listitem>
         </varlistentry>
 
         <varlistentry>
           <term><constant>-ENOMEDIUM</constant></term>
 
-          <listitem><para>Returned by <function>sd_id128_get_machine()</function>,
-          <function>sd_id128_get_machine_app_specific()</function>, and
-          <function>sd_id128_get_boot_app_specific()</function> when <filename>/etc/machine-id</filename> is
-          empty or all zeros.</para></listitem>
+          <listitem><para>Returned by <function>sd_id128_get_machine()</function> and
+          <function>sd_id128_get_machine_app_specific()</function> when <filename>/etc/machine-id</filename>
+          is empty or all zeros. Also returned by <function>sd_id128_get_invocation()</function> when the
+          invocation ID is all zeros.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><constant>-ENOPKG</constant></term>
+
+          <listitem><para>Returned by <function>sd_id128_get_machine()</function> and
+          <function>sd_id128_get_machine_app_specific()</function> when the content of
+          <filename>/etc/machine-id</filename> is <literal>uninitialized</literal>.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><constant>-ENOSYS</constant></term>
+
+          <listitem><para>Returned by <function>sd_id128_get_boot()</function> and
+          <function>sd_id128_get_boot_app_specific()</function> when <filename>/proc/</filename> is not
+          mounted.</para></listitem>
         </varlistentry>
 
         <varlistentry>
@@ -161,7 +186,7 @@
         </varlistentry>
 
         <varlistentry>
-          <term><constant>-EIO</constant></term>
+          <term><constant>-EUCLEAN</constant></term>
 
           <listitem><para>Returned by any of the functions described here when the configured value has
           invalid format.</para></listitem>
