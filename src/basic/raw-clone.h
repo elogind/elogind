@@ -11,6 +11,7 @@
 
 #include "log.h"
 #include "macro.h"
+#include "process-util.h"
 
 /**
  * raw_clone() - uses clone to create a new process with clone flags
@@ -25,6 +26,11 @@
  *
  * Additionally, as this function does not pass the ptid, newtls and ctid parameters to the kernel, flags must not
  * contain CLONE_PARENT_SETTID, CLONE_CHILD_SETTID, CLONE_CHILD_CLEARTID or CLONE_SETTLS.
+ *
+ * WARNING: 💣 this call (just like glibc's own clone() wrapper) will not synchronize on glibc's malloc
+ *          locks, which means they will be in an undefined state in the child if the parent is
+ *          threaded. This means: the parent must either never use threads, or the child cannot use memory
+ *          allocation itself. This is a major pitfall, hence be careful! 💣
  *
  * Returns: 0 in the child process and the child process id in the parent.
  */
