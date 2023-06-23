@@ -103,6 +103,8 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                 }
 static int write_efi_hibernate_location(const HibernateLocation *hibernate_location, bool required) {
         int r = 0;
+        int log_level = required ? LOG_ERR : LOG_DEBUG,
+            log_level_ignore = required ? LOG_WARNING : LOG_DEBUG;
 
                 strv_free(sessions);
 #if ENABLE_EFI
@@ -114,6 +116,7 @@ static int write_efi_hibernate_location(const HibernateLocation *hibernate_locat
         sd_id128_t uuid;
         struct utsname uts = {};
         int log_level, log_level_ignore;
+        int r;
 
                 // Get to a safe non-gui VT
                 if ( (vt > 0) && (vt < 63) ) {
@@ -149,6 +152,8 @@ static int write_efi_hibernate_location(const HibernateLocation *hibernate_locat
         }
         log_level = required ? LOG_ERR : LOG_DEBUG;
         log_level_ignore = required ? LOG_WARNING : LOG_DEBUG;
+                return log_full_errno(log_level, SYNTHETIC_ERRNO(EOPNOTSUPP),
+                                      "Not an EFI boot, passing HibernateLocation via EFI variable is not possible.");
 
         return 1;
 }
@@ -225,6 +230,10 @@ static int execute_external(Manager *m, SleepOperation operation) {
                 }
         }
         log_debug("Set EFI variable HibernateLocation to '%s'.", formatted);
+        return 0;
+#else
+        return log_full_errno(log_level, SYNTHETIC_ERRNO(EOPNOTSUPP),
+                              "EFI support not enabled, passing HibernateLocation via EFI variable is not possible.");
 #endif
 
         return r;
