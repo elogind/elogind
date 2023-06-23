@@ -2668,7 +2668,6 @@ install_libelogind_static = static_library(
         c_args : libelogind_c_args)
 #endif // 0
 
-
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
@@ -2778,6 +2777,10 @@ subdir('src/login')
 # subdir('src/machine')
 # subdir('src/network')
 # subdir('src/nspawn')
+# subdir('src/nss-myhostname')
+# subdir('src/nss-mymachines')
+# subdir('src/nss-resolve')
+# subdir('src/nss-elogind')
 # subdir('src/oom')
 # subdir('src/partition')
 # subdir('src/portable')
@@ -2871,64 +2874,6 @@ test_dlopen = executable(
         build_by_default : want_tests != 'false')
 
 #if 0 /// UNNEEDED by elogind
-# foreach tuple : [['myhostname', 'ENABLE_NSS_MYHOSTNAME'],
-#                  ['systemd',    'ENABLE_NSS_SYSTEMD', ['nss-systemd.h', 'userdb-glue.c', 'userdb-glue.h']],
-#                  ['mymachines', 'ENABLE_NSS_MYMACHINES'],
-#                  ['resolve',    'ENABLE_NSS_RESOLVE', [], resolve_includes]]
-#
-#         condition = tuple[1] == '' or conf.get(tuple[1]) == 1
-#         if condition
-#                 module = tuple[0]
-#
-#                 sym = 'src/nss-@0@/nss-@0@.sym'.format(module)
-#                 version_script_arg = project_source_root / sym
-#
-#                 sources = ['src/nss-@0@/nss-@0@.c'.format(module)]
-#                 if tuple.length() > 2
-#                         foreach s : tuple[2]
-#                                 sources += ['src/nss-@0@/@1@'.format(module, s)]
-#                         endforeach
-#                 endif
-#
-#                 incs = tuple.length() > 3 ? tuple[3] : includes
-#
-#                 nss = shared_library(
-#                         'nss_' + module,
-#                         sources,
-#                         version : '2',
-#                         include_directories : incs,
-#                         # Note that we link NSS modules with '-z nodelete' so that mempools never get orphaned
-#                         link_args : ['-Wl,-z,nodelete',
-#                                      '-shared',
-#                                      '-Wl,--version-script=' + version_script_arg],
-#                         link_with : [libsystemd_static,
-#                                      libshared_static,
-#                                      libbasic],
-#                         dependencies : [librt,
-#                                         threads,
-#                                         userspace],
-#                         link_depends : sym,
-#                         install : true,
-#                         install_tag : 'nss',
-#                         install_dir : libdir)
-#
-#                 # We cannot use shared_module because it does not support version suffix.
-#                 # Unfortunately shared_library insists on creating the symlink…
-#                 meson.add_install_script('sh', '-c',
-#                                          'rm $DESTDIR@0@/libnss_@1@.so'
-#                                          .format(libdir, module),
-#                                          install_tag : 'nss'
-#                                          )
-#
-#                 if want_tests != 'false'
-#                         test('dlopen-nss_' + module,
-#                              test_dlopen,
-#                              # path to dlopen must include a slash
-#                              args : nss.full_path(),
-#                              depends : nss)
-#                 endif
-#         endif
-# endforeach
 #endif // 0
 
 foreach dict : modules
