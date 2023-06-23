@@ -1235,7 +1235,6 @@ if default_user_path != ''
         conf.set_quoted('DEFAULT_USER_PATH', default_user_path)
 endif
 
-
 #####################################################################
 
 threads = dependency('threads')
@@ -2087,9 +2086,6 @@ endif
 # endif
 # conf.set10('ENABLE_IMPORTD', have)
 #
-# want_kernel_install = get_option('kernel-install')
-# conf.set10('ENABLE_KERNEL_INSTALL', want_kernel_install)
-#
 # want_homed = get_option('homed')
 # if want_homed != 'false'
 #         have = (conf.get('HAVE_OPENSSL') == 1 and
@@ -2105,9 +2101,6 @@ endif
 #
 # have = have and conf.get('HAVE_PAM') == 1
 # conf.set10('ENABLE_PAM_HOME', have)
-#
-# have = get_option('oomd')
-# conf.set10('ENABLE_OOMD', have)
 #
 # want_remote = get_option('remote')
 # if want_remote != 'false'
@@ -2145,6 +2138,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'idn',
 #                 'ima',
 #                 'initrd',
+#                 'kernel-install',
 #                 'ldconfig',
 #                 'localed',
 #                 'logind',
@@ -2153,6 +2147,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'nscd',
 #                 'nss-myhostname',
 #                 'nss-systemd',
+#                 'oomd',
 #                 'portabled',
 #                 'pstore',
 #                 'quotacheck',
@@ -4676,9 +4671,6 @@ public_programs += executable(
 #         install_rpath : rootpkglibdir,
 #         install : have_standalone_binaries,
 #         install_dir : rootlibexecdir)
-# if have_standalone_binaries
-#         public_programs += exe
-# endif
 #
 # executable(
 #         'systemd-update-done',
@@ -4894,11 +4886,11 @@ foreach test : tests
                 versiondep,
         ]
 
-        name = fs.stem(sources[0])
+        name = fs.name(sources[0])
         if not name.endswith('.cc')
                 deps += [userspace]
         endif
-        name = name.split('.')[0]
+        name = fs.stem(name)
 
         suite = fs.name(fs.parent(sources[0])).replace('sd-', '')
 
@@ -4960,10 +4952,10 @@ endforeach
 #                 threads,
 #                 userspace,
 #         ],
-#         build_by_default : want_tests != 'false' and static_libsystemd_pic,
-#         install : install_tests and static_libsystemd_pic,
+#         build_by_default : want_tests != 'false' and static_libsystemd != 'false',
+#         install : install_tests and static_libsystemd != 'false',
 #         install_dir : unittestsdir)
-# if want_tests != 'false' and static_libsystemd_pic
+# if want_tests != 'false' and static_libsystemd != 'false'
 #         test('test-libsystemd-static-sym', exe)
 # endif
 #
@@ -4988,20 +4980,20 @@ endforeach
 #         c_args : ['-Wno-deprecated-declarations'] + test_cflags,
 #         link_with : [install_libudev_static],
 #         dependencies : userspace,
-#         build_by_default : want_tests != 'false' and static_libudev_pic,
-#         install : install_tests and static_libudev_pic,
+#         build_by_default : want_tests != 'false' and static_libudev != 'false',
+#         install : install_tests and static_libudev != 'false',
 #         install_dir : unittestsdir)
-# if want_tests != 'false' and static_libudev_pic
+# if want_tests != 'false' and static_libudev != 'false'
 #         test('test-libudev-static-sym', exe)
 # endif
 #
 # if want_tests != 'false'
-#         udev_rule_runner = TESTS['udev-rule-runner'].full_path()
-#
+#         exe = TESTS.get('udev-rule-runner')
 #         test('test-udev',
 #              test_udev_py,
 #              args : ['-v'],
-#              env : ['UDEV_RULE_RUNNER=@0@'.format(udev_rule_runner)],
+#              env : ['UDEV_RULE_RUNNER=' + exe.full_path()],
+#              depends : exe,
 #              timeout : 180)
 # endif
 #
@@ -5235,7 +5227,6 @@ endforeach
 #         endif
 # endforeach
 #endif // 0
-
 
 ############################################################
 

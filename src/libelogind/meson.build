@@ -176,7 +176,6 @@ libelogind_sources = files(
 ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
-
 libsystemd_c_args = ['-fvisibility=default']
 
 #if 0 /// rename to libelogind
