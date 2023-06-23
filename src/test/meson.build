@@ -99,6 +99,7 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-fstab-util.c',
 #         'test-glob-util.c',
 #         'test-gpt.c',
+#         'test-gunicode.c',
 #         'test-hash-funcs.c',
 #         'test-hexdecoct.c',
 #         'test-hmac.c',
