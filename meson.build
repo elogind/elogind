@@ -2551,7 +2551,6 @@ subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/udev')
 # subdir('src/libudev')
-# subdir('src/cryptsetup/cryptsetup-tokens')
 #endif // 0
 
 libelogind = shared_library(
@@ -2669,61 +2668,6 @@ install_libelogind_static = static_library(
         c_args : libelogind_c_args)
 #endif // 0
 
-if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
-        if conf.get('HAVE_TPM2') == 1
-                shared_library(
-                        'cryptsetup-token-elogind-tpm2',
-                        cryptsetup_token_elogind_tpm2_sources,
-                        include_directories : includes,
-                        link_args : ['-shared',
-                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        link_with : [lib_cryptsetup_token_common,
-                                     libshared],
-                        dependencies : [libcryptsetup,
-                                        tpm2,
-                                        userspace],
-                        link_depends : cryptsetup_token_sym,
-                        install_rpath : pkglibdir,
-                        install : true,
-                        install_dir : libcryptsetup_plugins_dir)
-        endif
-
-        if conf.get('HAVE_LIBFIDO2') == 1
-                shared_library(
-                        'cryptsetup-token-elogind-fido2',
-                        cryptsetup_token_elogind_fido2_sources,
-                        include_directories : includes,
-                        link_args : ['-shared',
-                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        link_with : [lib_cryptsetup_token_common,
-                                     libshared],
-                        dependencies : [libcryptsetup,
-                                        libfido2,
-                                        userspace],
-                        link_depends : cryptsetup_token_sym,
-                        install_rpath : pkglibdir,
-                        install : true,
-                        install_dir : libcryptsetup_plugins_dir)
-        endif
-
-        if conf.get('HAVE_P11KIT') == 1
-                shared_library(
-                        'cryptsetup-token-elogind-pkcs11',
-                        cryptsetup_token_elogind_pkcs11_sources,
-                        include_directories : includes,
-                        link_args : ['-shared',
-                                     '-Wl,--version-script=' + cryptsetup_token_sym_path],
-                        link_with : [lib_cryptsetup_token_common,
-                                     libshared],
-                        dependencies : [libcryptsetup,
-                                        libp11kit,
-                                        userspace],
-                        link_depends : cryptsetup_token_sym,
-                        install_rpath : pkglibdir,
-                        install : true,
-                        install_dir : libcryptsetup_plugins_dir)
-        endif
-endif
 
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
