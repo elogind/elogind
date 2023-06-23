@@ -2216,13 +2216,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 ############################################################
 
-tests = []
-simple_tests = []
-fuzzers = []
-simple_fuzzers = []
-catalogs = []
-
-############################################################
 
 #if 0 /// UNSUPPORTED by elogind (we do not build boot images)
 # pymod = import('python')
@@ -2492,6 +2485,12 @@ userspace = declare_dependency(
 man_page_depends = []
 
 ############################################################
+
+tests = []
+simple_tests = []
+fuzzers = []
+simple_fuzzers = []
+catalogs = []
 
 # binaries that have --help and are intended for use by humans,
 # usually, but not always, installed in /bin.
