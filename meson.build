@@ -2821,10 +2821,12 @@ subdir('src/login')
 # subdir('src/resolve')
 # subdir('src/rfkill')
 # subdir('src/rpm')
+# subdir('src/run')
 # subdir('src/run-generator')
 # subdir('src/shutdown')
 # subdir('src/sleep')
 # subdir('src/socket-activate')
+# subdir('src/stdio-bridge')
 # subdir('src/sysctl')
 # subdir('src/sysext')
 # subdir('src/system-update-generator')
@@ -3091,33 +3093,8 @@ public_programs += [exe]
 #                      systemd_id128.full_path()])
 # endif
 #
-# public_programs += executable(
-#         'systemd-run',
-#         'src/run/run.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
-#
-# public_programs += executable(
-#         'systemd-stdio-bridge',
-#         'src/stdio-bridge/stdio-bridge.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
 #endif // 0
 
-public_programs += executable(
-        'busctl',
-        busctl_sources,
-        include_directories : includes,
-        link_with : [libshared],
-        dependencies : [userspace],
-        install_rpath : pkglibdir,
-        install : true)
 
 #if 0 /// UNNEEDED by elogind
 # if enable_sysusers
