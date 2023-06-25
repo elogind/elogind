@@ -2765,6 +2765,7 @@ subdir('src/update-utmp')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
+# subdir('src/cgroups-agent')
 # subdir('src/coredump')
 # subdir('src/creds')
 # subdir('src/cryptenroll')
@@ -2783,6 +2784,7 @@ subdir('src/busctl')
 # subdir('src/hibernate-resume')
 # subdir('src/home')
 # subdir('src/hostname')
+# subdir('src/id128')
 # subdir('src/import')
 # subdir('src/integritysetup')
 # subdir('src/journal-remote')
@@ -2804,6 +2806,7 @@ subdir('src/login')
 # subdir('src/nss-elogind')
 # subdir('src/oom')
 # subdir('src/partition')
+# subdir('src/path')
 # subdir('src/portable')
 # subdir('src/pstore')
 # subdir('src/random-seed')
@@ -2829,6 +2832,7 @@ subdir('src/login')
 # subdir('src/userdb')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
+# subdir('src/volatile-root')
 # subdir('src/xdg-autostart-generator')
 #endif // 0
 
@@ -3069,55 +3073,16 @@ public_programs += [exe]
 #
 # meson.add_install_script(meson_make_symlink,
 #                          bindir / 'udevadm',
-# executable(
-#         'systemd-volatile-root',
-#         'src/volatile-root/volatile-root.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : userspace,
-#         install_rpath : pkglibdir,
-#         install : conf.get('ENABLE_INITRD') == 1,
-#endif // 0
-        install_dir : libexecdir)
-
-executable(
-        'elogind-cgroups-agent',
-        'src/cgroups-agent/cgroups-agent.c',
-        include_directories : includes,
-        link_with : [libshared],
-        dependencies : userspace,
-        install_rpath : pkglibdir,
-        install : true,
-        install_dir : libexecdir)
-
-#if 0 /// UNNEEDED by elogind
-# systemd_id128 = executable(
-#         'systemd-id128',
-#         'src/id128/id128.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
-# public_programs += systemd_id128
 #
 # if want_tests != 'false'
 #         systemctl = executables_by_name.get('systemctl')
+#         systemd_id128 = executables_by_name.get('systemd-id128')
 #         test('test-systemctl-enable',
 #              test_systemctl_enable_sh,
 #              # https://github.com/mesonbuild/meson/issues/2681
 #              args : [systemctl.full_path(),
 #                      systemd_id128.full_path()])
 # endif
-#
-# public_programs += executable(
-#         'systemd-path',
-#         'src/path/path.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
 #
 # public_programs += executable(
 #         'systemd-ask-password',
