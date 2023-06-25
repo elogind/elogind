@@ -73,11 +73,59 @@ loginctl_sources += files(
 #endif // 1
 
 #if 0 /// elogind calls the functions directly and does not need an extra executable.
-# user_runtime_dir_sources = files('user-runtime-dir.c')
 #endif // 0
 
-pam_elogind_sym = 'src/login/pam_elogind.sym'
-pam_elogind_c = files('pam_elogind.c')
+executables += [
+        libexec_template + {
+                'name' : 'elogind',
+                'dbus' : true,
+                'conditions' : ['ENABLE_LOGIND'],
+                'sources' : elogind_logind_sources,
+                'link_with' : [
+                        liblogind_core,
+                        libshared,
+                ],
+                'dependencies' : [
+                        libacl,
+                        threads,
+                ],
+        },
+        executable_template + {
+                'name' : 'loginctl',
+                'public' : true,
+                'conditions' : ['ENABLE_LOGIND'],
+                'sources' : loginctl_sources,
+                'dependencies' : [
+                        liblz4,
+                        libxz,
+                        libzstd,
+                        threads,
+                ],
+        },
+        executable_template + {
+                'name' : 'elogind-inhibit',
+                'public' : true,
+                'conditions' : ['ENABLE_LOGIND'],
+                'sources' : files('inhibit.c'),
+        },
+        libexec_template + {
+                'name' : 'elogind-user-runtime-dir',
+                'conditions' : ['ENABLE_LOGIND'],
+                'sources' : files('user-runtime-dir.c'),
+        },
+]
+
+modules += [
+        pam_template + {
+                'name' : 'pam_elogind',
+                'conditions' : [
+                        'ENABLE_LOGIND',
+                        'HAVE_PAM',
+                ],
+                'sources' : files('pam_elogind.c'),
+                'link_depends' : files('pam_elogind.sym'),
+        },
+]
 
 #if 0 /// elogind builds itself unconditionally
 # enable_logind = conf.get('ENABLE_LOGIND') == 1
