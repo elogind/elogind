@@ -2803,6 +2803,7 @@ subdir('src/login')
 # subdir('src/timedate')
 # subdir('src/timesync')
 # subdir('src/tmpfiles')
+# subdir('src/user-sessions')
 # subdir('src/userdb')
 # subdir('src/xdg-autostart-generator')
 #endif // 0
@@ -3002,17 +3003,7 @@ exe = executable('elogind-inhibit',
 public_programs += [exe]
 #endif // 0
 
-if conf.get('HAVE_PAM') == 1
 #if 0 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
-#         executable(
-#                 'systemd-user-sessions',
-#                 'src/user-sessions/user-sessions.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : userspace,
-#                 install_rpath : pkglibdir,
-#                 install : true,
-#                 install_dir : libexecdir)
 #else // 0
         version_script_arg = project_source_root / pam_elogind_sym
         pam_elogind = shared_library(
@@ -3040,7 +3031,6 @@ if conf.get('HAVE_PAM') == 1
                      args : pam_elogind.full_path())
         endif
 #endif // 0
-endif
 
 #if 0 /// UNNEEDED by elogind
 # if conf.get('HAVE_BLKID') == 1 and conf.get('ENABLE_BOOTLOADER') == 1
