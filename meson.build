@@ -2797,6 +2797,7 @@ subdir('src/login')
 # subdir('src/rpm')
 # subdir('src/run-generator')
 # subdir('src/shutdown')
+# subdir('src/socket-activate')
 # subdir('src/sysext')
 # subdir('src/systemctl')
 # subdir('src/sysupdate')
@@ -3042,16 +3043,6 @@ public_programs += [exe]
 #                      depends : exe)
 #         endif
 # endif
-#
-# public_programs += executable(
-#         'systemd-socket-activate',
-#         'src/socket-activate/socket-activate.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [threads,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
 #
 # systemctl = executable(
 #         'systemctl',
