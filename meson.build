@@ -2671,6 +2671,7 @@ install_libelogind_static = static_library(
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+
 ############################################################
 
 executable_template = {
@@ -2935,24 +2936,6 @@ endforeach
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# exe = executable(
-#         'systemd',
-#         systemd_sources,
-#         include_directories : includes,
-#         link_with : [libcore,
-#                      libshared],
-#         dependencies : [libseccomp,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-# dbus_programs += exe
-# public_programs += exe
-#
-# meson.add_install_script(meson_make_symlink,
-#                          libexecdir / 'elogind',
-#                          sbindir / 'init')
-#
 # exe = executable(
 #         'systemd-analyze',
 #         systemd_analyze_sources,

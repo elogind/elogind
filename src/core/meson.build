@@ -149,6 +149,20 @@ libcore_sources = files(
 #         'crash-handler.c',
 # )
 #
+# executables += [
+#         libexec_template + {
+#                 'name' : 'elogind',
+#                 'dbus' : true,
+#                 'public' : true,
+#                 'sources' : elogind_sources,
+#                 'link_with' : [
+#                         libcore,
+#                         libshared,
+#                 ],
+#                 'dependencies' : libseccomp,
+#         },
+# ]
+#
 # in_files = [['system.conf',                     pkgsysconfdir],
 #             ['user.conf',                       pkgsysconfdir],
 #             ['org.freedesktop.systemd1.policy', polkitpolicydir]]
@@ -197,6 +211,10 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #         meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/systemd'))
 # endif
 #endif // 0
+
+meson.add_install_script(meson_make_symlink,
+                         libexecdir / 'elogind',
+                         sbindir / 'init')
 
 ############################################################
 
