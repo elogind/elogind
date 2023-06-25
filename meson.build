@@ -2861,9 +2861,7 @@ subdir('src/test')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
 #endif // 0
-subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
-# subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 #
 # alias_target('devel', libsystemd_pc, libudev_pc, systemd_pc, udev_pc)
@@ -2991,22 +2989,6 @@ endforeach
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# if want_tests != 'false'
-#         test('test-compare-versions',
-#              test_compare_versions_sh,
-#              args : exe.full_path())
-# endif
-#
-# if want_tests != 'false'
-#         exe = executables_by_name.get('elogind-fstab-generator')
-#         test('test-fstab-generator',
-#              test_fstab_generator_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : exe.full_path(),
-#              env : test_env,
-#              depends : exe)
-# endif
-#
 #else // 0
 
 executable('elogind',
@@ -3049,8 +3031,8 @@ exe = executable('elogind-inhibit',
 public_programs += [exe]
 #endif // 0
 
-#if 0 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
-#else // 0
+/// elogind empty mask else converted
+#if 1 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
         version_script_arg = project_source_root / pam_elogind_sym
         pam_elogind = shared_library(
                 'pam_elogind',
@@ -3076,96 +3058,12 @@ public_programs += [exe]
                      # path to dlopen must include a slash
                      args : pam_elogind.full_path())
         endif
+#endif // 1
+
+#if 0 /// UNNEEDED by elogind
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-# if conf.get('HAVE_BLKID') == 1 and conf.get('ENABLE_BOOTLOADER') == 1
-#         if want_tests != 'false'
-#                 exe = executables_by_name.get('bootctl')
-#                 test('test-bootctl-json',
-#                      test_bootctl_json_sh,
-#                      args : exe.full_path(),
-#                      depends : exe)
-#         endif
-# endif
-#
-# if want_tests != 'false'
-#         systemctl = executables_by_name.get('systemctl')
-#         systemd_id128 = executables_by_name.get('systemd-id128')
-#         test('test-systemctl-enable',
-#              test_systemctl_enable_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : [systemctl.full_path(),
-#                      systemd_id128.full_path()])
-# endif
-#
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-# if enable_sysusers
-#         if want_tests != 'false'
-#                 test('test-sysusers',
-#                      test_sysusers_sh,
-#                      # https://github.com/mesonbuild/meson/issues/2681
-#                      args : exe.full_path())
-#         endif
-#
-#         if have_standalone_binaries
-#                 if want_tests != 'false'
-#                         test('test-sysusers.standalone',
-#                              test_sysusers_sh,
-#                              # https://github.com/mesonbuild/meson/issues/2681
-#                              args : exe.full_path())
-#                 endif
-#         endif
-# endif
-#
-# if conf.get('ENABLE_TMPFILES') == 1
-#         if want_tests != 'false'
-#                 test('test-systemd-tmpfiles',
-#                      test_systemd_tmpfiles_py,
-#                      # https://github.com/mesonbuild/meson/issues/2681
-#                      args : exe.full_path())
-#         endif
-#
-#         if have_standalone_binaries
-#                 if want_tests != 'false'
-#                         test('test-systemd-tmpfiles.standalone',
-#                              test_systemd_tmpfiles_py,
-#                              # https://github.com/mesonbuild/meson/issues/2681
-#                              args : exe.full_path())
-#                 endif
-#         endif
-# endif
-#
-# if conf.get('ENABLE_HWDB') == 1
-#         if want_tests != 'false'
-#                 exe = executables_by_name.get('elogind-hwdb')
-#                 test('hwdb-test',
-#                      hwdb_test_sh,
-#                      suite : 'dist',
-#                      args : exe.full_path(),
-#                      timeout : 90)
-#         endif
-# endif
-#
-# if want_tests != 'false'
-#         exe = executables_by_name.get('udevadm')
-#         test('udev-rules-check',
-#              exe,
-#              suite : 'dist',
-#              args : ['verify', '--resolve-names=never', all_rules])
-# endif
-#
-# if want_tests != 'false'
-#         exe = executables_by_name.get('elogind-network-generator')
-#         test('test-network-generator-conversion',
-#              test_network_generator_conversion_sh,
-#              # https://github.com/mesonbuild/meson/issues/2681
-#              args : exe.full_path(),
-#              depends : exe)
-# endif
-#
 # ukify = custom_target(
 #         'ukify',
 #         input : 'src/ukify/ukify.py',
@@ -3178,21 +3076,6 @@ public_programs += [exe]
 #         public_programs += ukify
 # endif
 #
-# if want_tests != 'false' and conf.get('ENABLE_KERNEL_INSTALL') == 1
-#         kernel_install = executables_by_name.get('kernel-install')
-#         args = [kernel_install.full_path(), loaderentry_install.full_path(), uki_copy_install]
-#         deps = [kernel_install, loaderentry_install]
-#         if want_ukify and boot_stubs.length() > 0
-#                 args += [ukify.full_path(), ukify_install.full_path(), boot_stubs[0]]
-#                 deps += [ukify, ukify_install, boot_stubs[0]]
-#         endif
-#
-#         test('test-kernel-install',
-#              test_kernel_install_sh,
-#              env : test_env,
-#              args : args,
-#              depends: deps)
-# endif
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
@@ -3208,6 +3091,9 @@ executable('elogind-uaccess-command',
 #endif // 0
 
 ############################################################
+
+subdir('rules.d')
+subdir('test')
 
 runtest_env = custom_target(
         'elogind-runtest.env',
