@@ -2769,6 +2769,8 @@ subdir('src/busctl')
 # subdir('src/debug-generator')
 # subdir('src/dissect')
 # subdir('src/environment-d-generator')
+# subdir('src/firstboot')
+# subdir('src/fsck')
 # subdir('src/fstab-generator')
 # subdir('src/getty-generator')
 # subdir('src/gpt-auto-generator')
@@ -2786,6 +2788,7 @@ subdir('src/login')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/machine')
+# subdir('src/machine-id-setup')
 # subdir('src/network')
 # subdir('src/nspawn')
 # subdir('src/nss-myhostname')
@@ -2798,6 +2801,7 @@ subdir('src/login')
 # subdir('src/pstore')
 # subdir('src/random-seed')
 # subdir('src/rc-local-generator')
+# subdir('src/remount-fs')
 # subdir('src/resolve')
 # subdir('src/rfkill')
 # subdir('src/rpm')
@@ -3056,47 +3060,6 @@ public_programs += [exe]
 #
 # meson.add_install_script(meson_make_symlink,
 #                          bindir / 'udevadm',
-# if conf.get('ENABLE_FIRSTBOOT') == 1
-#         public_programs += executable(
-#                 'systemd-firstboot',
-#                 'src/firstboot/firstboot.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [libcrypt,
-#                                 userspace],
-#                 install_rpath : pkglibdir,
-#                 install : true)
-# endif
-#
-# executable(
-#         'systemd-remount-fs',
-#         'src/remount-fs/remount-fs.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
-# executable(
-#         'systemd-machine-id-setup',
-#         'src/machine-id-setup/machine-id-setup-main.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
-#
-# executable(
-#         'systemd-fsck',
-#         'src/fsck/fsck.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
 # executable(
 #         'systemd-growfs',
 #         'src/partition/growfs.c',
