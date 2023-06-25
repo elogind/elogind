@@ -45,7 +45,6 @@ test_libelogind_sym_c = custom_target(
 #         build_by_default : want_tests != 'false')
 #endif // 0
 
-test_dlopen_c = files('test-dlopen.c')
 
 ############################################################
 
@@ -273,56 +272,56 @@ common_test_dependencies = [
         threads,
 ]
 
-tests += [
 #if 0 /// the functions elogind uses are not covered in these tests
-#         {
+# executables += [
+#         test_template + {
 #                 'sources' : files('test-acl-util.c'),
-#                 'condition' : 'HAVE_ACL',
+#                 'conditions' : ['HAVE_ACL'],
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-af-list.c') +
 #                             generated_gperf_headers,
 #         },
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-arphrd-util.c') +
 #                             generated_gperf_headers,
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-ask-password-api.c'),
 #                 'type' : 'manual',
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-async.c'),
                 'timeout' : 120,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-boot-timestamps.c'),
-#                 'condition' : 'ENABLE_EFI',
+#                 'conditions' : ['ENABLE_EFI'],
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-btrfs.c'),
                 'type' : 'manual',
         },
-        {
+        test_template + {
                 'sources' : files('test-cap-list.c') +
                             generated_gperf_headers,
                 'dependencies' : libcap,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-capability.c'),
 #                 'dependencies' : libcap,
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-chase-manual.c'),
 #                 'type' : 'manual',
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-compress-benchmark.c'),
 #                 'link_with' : [
 #                         libbasic_compress,
@@ -330,61 +329,69 @@ tests += [
 #                 ],
 #                 'timeout' : 90,
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-compress.c'),
 #                 'link_with' : [
 #                         libbasic_compress,
 #                         libshared,
 #                 ],
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-cryptolib.c'),
-#                 'link_with' : libshared,
 #                 'dependencies' : lib_openssl_or_gcrypt,
-#                 'condition' : 'HAVE_OPENSSL_OR_GCRYPT',
+#                 'conditions' : ['HAVE_OPENSSL_OR_GCRYPT'],
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-dlopen-so.c'),
 #                 'dependencies' : libp11kit_cflags
 #         },
 #endif // 0
-        {
+        test_template + {
+                # only static linking apart from libdl, to make sure that the
+                # module is linked to all libraries that it uses.
+                'sources' : files('test-dlopen.c'),
+                'link_with' : libbasic,
+                'dependencies' : libdl,
+                'install' : false,
+                'type' : 'manual',
+        },
+        test_template + {
                 'sources' : files('test-errno-list.c') +
                             generated_gperf_headers,
         },
-        {
+        test_template + {
                 'sources' : files('test-fd-util.c'),
                 'dependencies' : libseccomp,
         },
-        {
+        test_template + {
                 'sources' : files(
-                                  'test-hashmap.c',
-                                  'test-hashmap-plain.c',
-                            ) + [
-                                   test_hashmap_ordered_c,
-                            ],
+                        'test-hashmap.c',
+                        'test-hashmap-plain.c',
+                ) + [
+                        test_hashmap_ordered_c,
+                ],
                 'timeout' : 180,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-ip-protocol-list.c') +
 #                             shared_generated_gperf_headers,
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-ipcrm.c'),
                 'type' : 'unsafe',
         },
-        {
+        test_template + {
                 'sources' : files('test-json.c'),
                 'dependencies' : libm,
         },
-        {
+        test_template + {
                 'sources' : files('test-libcrypt-util.c'),
                 'dependencies' : libcrypt,
                 'timeout' : 120,
         },
-        {
+        test_template + {
                 'sources' : files('test-libmount.c'),
                 'dependencies' : [
                         libmount,
@@ -392,94 +399,94 @@ tests += [
                 ],
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-loopback.c'),
 #                 'dependencies' : common_test_dependencies,
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-math-util.c'),
                 'dependencies' : libm,
         },
-        {
+        test_template + {
                 'sources' : files('test-mempress.c'),
                 'dependencies' : threads,
         },
-        {
+        test_template + {
                 'sources' : files('test-mount-util.c'),
                 'dependencies' : libmount,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-netlink-manual.c'),
 #                 'dependencies' : libkmod,
-#                 'condition' : 'HAVE_KMOD',
+#                 'conditions' : ['HAVE_KMOD'],
 #                 'type' : 'manual',
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-nscd-flush.c'),
-#                 'condition' : 'ENABLE_NSCD',
+#                 'conditions' : ['ENABLE_NSCD'],
 #                 'type' : 'manual',
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files(
 #                         'test-nss-hosts.c',
 #                         'nss-test-util.c',
 #                 ),
 #                 'dependencies' : libdl,
-#                 'condition' : 'ENABLE_NSS',
+#                 'conditions' : ['ENABLE_NSS'],
 #                 'timeout' : 120,
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files(
 #                         'test-nss-users.c',
 #                         'nss-test-util.c',
 #                 ),
 #                 'dependencies' : libdl,
-#                 'condition' : 'ENABLE_NSS',
+#                 'conditions' : ['ENABLE_NSS'],
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-parse-util.c'),
                 'dependencies' : libm,
         },
-        {
+        test_template + {
                 'sources' : files('test-process-util.c'),
                 'dependencies' : threads,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-qrcode-util.c'),
 #                 'dependencies' : libdl,
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-random-util.c'),
                 'dependencies' : libm,
                 'timeout' : 120,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-sbat.c'),
-#                 'condition' : 'ENABLE_BOOTLOADER',
+#                 'conditions' : ['ENABLE_BOOTLOADER'],
 #                 'c_args' : '-I@0@'.format(efi_config_h_dir),
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-seccomp.c'),
 #                 'dependencies' : libseccomp,
-#                 'condition' : 'HAVE_SECCOMP',
+#                 'conditions' : ['HAVE_SECCOMP'],
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-set-disable-mempool.c'),
                 'dependencies' : threads,
         },
-        {
+        test_template + {
                 'sources' : files('test-sizeof.c'),
                 'link_with' : libbasic,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('test-tables.c'),
 #                 'link_with' : [
 #                         libcore,
@@ -496,184 +503,198 @@ tests += [
 #                         libxz,
 #                         threads,
 #                 ],
-#                 'includes' : [
+#                 'include_directories' : [
 #                         core_includes,
 #                         journal_includes,
 #                         udev_includes,
 #                 ],
 #         },
 #endif // 0
-        {
+        test_template + {
                 'sources' : files('test-time-util.c'),
                 'timeout' : 120,
         },
-#if 0 /// elogind does not provide libudev
-#endif // 0
-        {
+/// elogind empty mask removed (elogind does not provide libudev)
+        test_template + {
                 'sources' : files('test-utmp.c'),
-                'condition' : 'ENABLE_UTMP',
+                'conditions' : ['ENABLE_UTMP'],
         },
 #if 0 /// elogind does not provide libudev
-#         {
+#         test_template + {
 #                 'sources' : files('test-varlink.c'),
 #                 'dependencies' : threads,
 #         },
-#         {
+#         test_template + {
 #                 'sources' : files('test-watchdog.c'),
 #                 'type' : 'unsafe',
 #         },
 #endif // 0
 
+        # Symbol tests
+        test_template + {
+                'name' : 'test-libelogind-sym',
+                'sources' : test_libelogind_sym_c,
+                'link_with' : libelogind,
+                'suite' : 'libelogind',
+        },
+        test_template + {
+                'name' : 'test-libelogind-static-sym',
+                'sources' : test_libelogind_sym_c,
+                'link_with' : install_libelogind_static,
+                'build_by_default' : want_tests != 'false' and static_libelogind != 'false',
+                'install' : install_tests and static_libelogind != 'false',
+                'suite' : 'libelogind',
+        },
+        test_template + {
+                'name' : 'test-libudev-sym',
+                'sources' : test_libudev_sym_c,
+                'include_directories' : libudev_includes,
+                'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
+                'link_with' : libudev,
+                'suite' : 'libudev',
+        },
+        test_template + {
+                'name' : 'test-libudev-static-sym',
+                'sources' : test_libudev_sym_c,
+                'include_directories' : libudev_includes,
+                'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
+                'link_with' : install_libudev_static,
+                'build_by_default' : want_tests != 'false' and static_libudev != 'false',
+                'install' : install_tests and static_libudev != 'false',
+                'suite' : 'libudev',
+        },
 
 #if 0 /// elogind is never PID 1
 #         # Tests that link to libcore, i.e. tests for pid1 code.
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-bpf-devices.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-bpf-firewall.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-bpf-foreign-programs.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-bpf-lsm.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-cgroup-cpu.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-cgroup-mask.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-cgroup-unit-default.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-chown-rec.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-core-unit.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-emergency-action.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-engine.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-execute.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #                 'timeout' : 360,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-install.c'),
-#                 'base' : test_core_base,
 #                 'type' : 'manual',
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-job-type.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-load-fragment.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-loop-block.c'),
 #                 'dependencies' : [threads, libblkid],
-#                 'base' : test_core_base,
 #                 'parallel' : false,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-manager.c'),
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-namespace.c'),
 #                 'dependencies' : [
 #                         libblkid,
 #                         threads,
 #                 ],
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-ns.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #                 'type' : 'manual',
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-path.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #                 'timeout' : 120,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-sched-prio.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-socket-bind.c'),
 #                 'dependencies' : libdl,
-#                 'condition' : 'BPF_FRAMEWORK',
-#                 'base' : test_core_base,
+#                 'conditions' : ['BPF_FRAMEWORK'],
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-unit-name.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-unit-serialize.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
-#         {
+#         core_test_template + {
 #                 'sources' : files('test-watch-pid.c'),
 #                 'dependencies' : common_test_dependencies,
-#                 'base' : test_core_base,
 #         },
 #endif // 0
 
         # Tests from other directories that have link_with deps that were not defined earlier
-        {
                 'sources' : files('../libelogind/sd-bus/test-bus-error.c'),
+        test_template + {
                 'link_with' : [
                         libshared_static,
                         libelogind_static,
                 ],
         },
-        {
                 'sources' : files('../libelogind/sd-device/test-sd-device-thread.c'),
                 'link_with' : libelogind,
+        test_template + {
                 'dependencies' : threads,
         },
 #if 0 /// UNNEEDED by elogind
-#         {
+#         test_template + {
 #                 'sources' : files('../libudev/test-udev-device-thread.c'),
 #                 'link_with' : libudev,
 #                 'dependencies' : threads,
 #         },
 #endif // 0
+        test_template + {
+                'sources' : files('../libudev/test-libudev.c'),
+                'link_with' : [
+                        libshared,
+                        libudev_basic,
+                ],
+        },
 ]

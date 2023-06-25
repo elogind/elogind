@@ -222,7 +222,7 @@ libelogind_pc = custom_target(
 #         'sd-journal/test-mmap-cache.c',
 # )
 #
-# tests += [
+# libelogind_tests += [
 #         {
 #                 'sources' : files('sd-journal/test-journal-enum.c'),
 #                 'timeout' : 360,
@@ -247,7 +247,7 @@ simple_tests += files(
 #endif // 0
 )
 
-tests += [
+libelogind_tests += [
         {
                 'sources' : files('sd-bus/test-bus-address.c'),
                 'dependencies' : threads
