@@ -2936,20 +2936,6 @@ endforeach
 ############################################################
 
 #if 0 /// UNNEEDED by elogind
-# exe = executable(
-#         'systemd-analyze',
-#         systemd_analyze_sources,
-#         include_directories : core_includes,
-#         link_with : [libcore,
-#                      libshared],
-#         dependencies : [libseccomp,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : conf.get('ENABLE_ANALYZE') == 1)
-# if conf.get('ENABLE_ANALYZE') == 1
-#         public_programs += exe
-# endif
-#
 # if want_tests != 'false'
 #         test('test-compare-versions',
 #              test_compare_versions_sh,
