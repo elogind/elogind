@@ -3044,22 +3044,6 @@ public_programs += [exe]
 #         endif
 # endif
 #
-# systemctl = executable(
-#         'systemctl',
-#         systemctl_sources,
-#         include_directories : includes,
-#         link_with : systemctl_link_with,
-#         dependencies : [libcap,
-#                         liblz4,
-#                         libselinux,
-#                         libxz,
-#                         libzstd,
-#                         threads,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
-# public_programs += systemctl
-#
 # if conf.get('ENABLE_PORTABLED') == 1
 #         if get_option('link-portabled-shared')
 #                 portabled_link_with = [libshared]
@@ -3212,13 +3196,6 @@ public_programs += [exe]
 #                 endif
 #         endif
 # endif
-#
-# foreach alias : (['halt', 'poweroff', 'reboot', 'shutdown'] +
-#                  (conf.get('HAVE_SYSV_COMPAT') == 1 ? ['runlevel', 'telinit'] : []))
-#         meson.add_install_script(meson_make_symlink,
-#                                  bindir / 'systemctl',
-#                                  sbindir / alias)
-# endforeach
 #
 # meson.add_install_script(meson_make_symlink,
 #                          bindir / 'udevadm',
@@ -3957,6 +3934,7 @@ executable(
 # public_programs += systemd_id128
 #
 # if want_tests != 'false'
+#         systemctl = executables_by_name.get('systemctl')
 #         test('test-systemctl-enable',
 #              test_systemctl_enable_sh,
 #              # https://github.com/mesonbuild/meson/issues/2681
