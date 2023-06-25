@@ -1,4 +1,10 @@
-update_utmp_files = files('''
-        update-utmp.c
-        update-utmp.h
-'''.split())
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+executables += [
+        libexec_template + {
+                'name' : 'elogind-update-utmp',
+                'conditions' : ['ENABLE_UTMP'],
+                'sources' : files('update-utmp.c'),
+                'dependencies' : libaudit,
+        },
+]

@@ -2803,6 +2803,7 @@ subdir('src/login')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/machine')
 # subdir('src/machine-id-setup')
+# subdir('src/modules-load')
 # subdir('src/mount')
 # subdir('src/network')
 # subdir('src/notify')
@@ -2842,6 +2843,8 @@ subdir('src/login')
 # subdir('src/timesync')
 # subdir('src/tmpfiles')
 # subdir('src/tty-ask-password-agent')
+# subdir('src/update-done')
+# subdir('src/update-utmp')
 # subdir('src/user-sessions')
 # subdir('src/userdb')
 # subdir('src/vconsole')
@@ -3152,59 +3155,6 @@ public_programs += [exe]
 #              suite : 'dist',
 #              args : ['verify', '--resolve-names=never', all_rules])
 # endif
-#
-# executable(
-#         'systemd-update-done',
-#         'src/update-done/update-done.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
-# executable(
-#         'systemd-update-utmp',
-#         'src/update-utmp/update-utmp.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [libaudit,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : (conf.get('ENABLE_UTMP') == 1),
-#         install_dir : libexecdir)
-#
-# if conf.get('HAVE_KMOD') == 1
-#         executable(
-#                 'systemd-modules-load',
-#                 'src/modules-load/modules-load.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [libkmod,
-#                                 userspace],
-#                 install_rpath : pkglibdir,
-#                 install : true,
-#                 install_dir : libexecdir)
-#
-#         meson.add_install_script('sh', '-c',
-#                                  mkdir_p.format(modulesloaddir))
-#         if install_sysconfdir
-#                 meson.add_install_script('sh', '-c',
-#                                          mkdir_p.format(sysconfdir / 'modules-load.d'))
-#         endif
-# endif
-#
-# public_programs += executable(
-#         'systemd-nspawn',
-#         systemd_nspawn_sources,
-#         include_directories : includes,
-#         link_with : [libnspawn_core,
-#                      libshared],
-#         dependencies : [libblkid,
-#                         libseccomp,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
 #
 # if conf.get('ENABLE_NETWORKD') == 1
 #         dbus_programs += executable(
