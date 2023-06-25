@@ -3044,17 +3044,6 @@ public_programs += [exe]
 #         endif
 # endif
 #
-# if conf.get('ENABLE_SYSEXT') == 1
-#         public_programs += executable(
-#                 'systemd-sysext',
-#                 systemd_sysext_sources,
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [userspace],
-#                 install_rpath : pkglibdir,
-#                 install : true)
-# endif
-#
 # if conf.get('ENABLE_USERDB') == 1
 #         executable(
 #                 'systemd-userwork',
