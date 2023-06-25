@@ -2549,7 +2549,6 @@ subdir('src/basic')
 subdir('src/libelogind')
 subdir('src/shared')
 #if 0 /// UNNEEDED by elogind
-# subdir('src/udev')
 # subdir('src/libudev')
 #endif // 0
 
@@ -2749,6 +2748,8 @@ subdir('src/core')
 subdir('src/sleep')
 subdir('src/update-utmp')
 #endif // 1
+# hwdb requires 'udev_link_with' and 'udev_rpath'
+subdir('src/udev')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/ac-power')
@@ -2815,6 +2816,7 @@ subdir('src/login')
 # subdir('src/path')
 # subdir('src/portable')
 # subdir('src/pstore')
+# subdir('src/quotacheck')
 # subdir('src/random-seed')
 # subdir('src/rc-local-generator')
 # subdir('src/remount-fs')
@@ -2827,6 +2829,7 @@ subdir('src/login')
 # subdir('src/shutdown')
 # subdir('src/sleep')
 # subdir('src/socket-activate')
+# subdir('src/socket-proxy')
 # subdir('src/stdio-bridge')
 # subdir('src/sysctl')
 # subdir('src/sysext')
@@ -3082,9 +3085,6 @@ public_programs += [exe]
 #         endif
 # endif
 #
-# meson.add_install_script(meson_make_symlink,
-#                          bindir / 'udevadm',
-#
 # if want_tests != 'false'
 #         systemctl = executables_by_name.get('systemctl')
 #         systemd_id128 = executables_by_name.get('systemd-id128')
@@ -3145,76 +3145,13 @@ public_programs += [exe]
 #         endif
 # endif
 #
-# if conf.get('ENABLE_QUOTACHECK') == 1
-#         executable(
-#                 'systemd-quotacheck',
-#                 'src/quotacheck/quotacheck.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : userspace,
-#                 install_rpath : pkglibdir,
-#                 install : true,
-#                 install_dir : libexecdir)
-# endif
-#
-# public_programs += executable(
-#         'systemd-socket-proxyd',
-#         'src/socket-proxy/socket-proxyd.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [threads,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
-# udevadm = executable(
-#         'udevadm',
-#         udevadm_sources,
-#         include_directories : includes,
-#         link_with : [libudevd_core],
-#         dependencies : [libacl,
-#                         libblkid,
-#                         libidn,
-#                         libkmod,
-#                         threads,
-#                         userspace],
-#         install_rpath : udev_rpath,
-#         install : true)
-# public_programs += udevadm
-#
 # if want_tests != 'false'
+#         exe = executables_by_name.get('udevadm')
 #         test('udev-rules-check',
-#              udevadm,
+#              exe,
 #              suite : 'dist',
 #              args : ['verify', '--resolve-names=never', all_rules])
 # endif
-#
-# executable(
-#         'systemd-shutdown',
-#         systemd_shutdown_sources,
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [libmount,
-#                         userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
-# executable(
-#         'systemd-shutdown.standalone',
-#         systemd_shutdown_sources,
-#         include_directories : includes,
-#         c_args : '-DSTANDALONE',
-#         link_with : [libshared_static,
-#                      libbasic,
-#                      libsystemd_static],
-#         dependencies : [libmount,
-#                         userspace],
-#         build_by_default: have_standalone_binaries,
-#         install_rpath : pkglibdir,
-#         install : have_standalone_binaries,
-#         install_dir : libexecdir)
 #
 # executable(
 #         'systemd-update-done',
