@@ -2787,6 +2787,7 @@ subdir('src/busctl')
 # subdir('src/hibernate-resume')
 # subdir('src/home')
 # subdir('src/hostname')
+# subdir('src/hwdb')
 # subdir('src/id128')
 # subdir('src/import')
 # subdir('src/initctl')
@@ -2832,6 +2833,7 @@ subdir('src/login')
 # subdir('src/system-update-generator')
 # subdir('src/systemctl')
 # subdir('src/sysupdate')
+# subdir('src/sysusers')
 # subdir('src/sysv-generator')
 # subdir('src/timedate')
 # subdir('src/timesync')
@@ -3095,19 +3097,8 @@ public_programs += [exe]
 #
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
 # if enable_sysusers
-#         exe = executable(
-#                 'systemd-sysusers',
-#                 'src/sysusers/sysusers.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [userspace],
-#                 install_rpath : pkglibdir,
-#                 install : true)
-#         public_programs += exe
-#
 #         if want_tests != 'false'
 #                 test('test-sysusers',
 #                      test_sysusers_sh,
@@ -3115,21 +3106,7 @@ public_programs += [exe]
 #                      args : exe.full_path())
 #         endif
 #
-#         exe = executable(
-#                 'systemd-sysusers.standalone',
-#                 'src/sysusers/sysusers.c',
-#                 include_directories : includes,
-#                 c_args : '-DSTANDALONE',
-#                 link_with : [libshared_static,
-#                              libbasic,
-#                              libbasic_gcrypt,
-#                              libsystemd_static],
-#                 dependencies : [userspace],
-#                 build_by_default: have_standalone_binaries,
-#                 install : have_standalone_binaries)
 #         if have_standalone_binaries
-#                 public_programs += exe
-#
 #                 if want_tests != 'false'
 #                         test('test-sysusers.standalone',
 #                              test_sysusers_sh,
@@ -3140,17 +3117,6 @@ public_programs += [exe]
 # endif
 #
 # if conf.get('ENABLE_TMPFILES') == 1
-#         exe = executable(
-#                 'systemd-tmpfiles',
-#                 systemd_tmpfiles_sources,
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : [libacl,
-#                                 userspace],
-#                 install_rpath : pkglibdir,
-#                 install : true)
-#         public_programs += exe
-#
 #         if want_tests != 'false'
 #                 test('test-systemd-tmpfiles',
 #                      test_systemd_tmpfiles_py,
@@ -3158,22 +3124,7 @@ public_programs += [exe]
 #                      args : exe.full_path())
 #         endif
 #
-#         exe = executable(
-#                 'systemd-tmpfiles.standalone',
-#                 systemd_tmpfiles_sources,
-#                 include_directories : includes,
-#                 c_args : '-DSTANDALONE',
-#                 link_with : [libshared_static,
-#                              libbasic,
-#                              libbasic_gcrypt,
-#                              libsystemd_static],
-#                 dependencies : [libacl,
-#                                 userspace],
-#                 build_by_default: have_standalone_binaries,
-#                 install : have_standalone_binaries)
 #         if have_standalone_binaries
-#                 public_programs += exe
-#
 #                 if want_tests != 'false'
 #                         test('test-systemd-tmpfiles.standalone',
 #                              test_systemd_tmpfiles_py,
@@ -3184,21 +3135,12 @@ public_programs += [exe]
 # endif
 #
 # if conf.get('ENABLE_HWDB') == 1
-#         systemd_hwdb = executable(
-#                 'systemd-hwdb',
-#                 'src/hwdb/hwdb.c',
-#                 include_directories : includes,
-#                 link_with : udev_link_with,
-#                 dependencies : [userspace],
-#                 install_rpath : udev_rpath,
-#                 install : true)
-#         public_programs += systemd_hwdb
-#
 #         if want_tests != 'false'
+#                 exe = executables_by_name.get('elogind-hwdb')
 #                 test('hwdb-test',
 #                      hwdb_test_sh,
 #                      suite : 'dist',
-#                      args : [systemd_hwdb.full_path()],
+#                      args : exe.full_path(),
 #                      timeout : 90)
 #         endif
 # endif
