@@ -2755,6 +2755,7 @@ subdir('src/update-utmp')
 #endif // 0
 
 #if 0 /// elogind does not provide bootctl (for now)
+# subdir('src/backlight')
 # subdir('src/boot')
 # subdir('src/boot/efi')
 #endif // 0
@@ -2794,11 +2795,13 @@ subdir('src/login')
 # subdir('src/portable')
 # subdir('src/pstore')
 # subdir('src/resolve')
+# subdir('src/rfkill')
 # subdir('src/rpm')
 # subdir('src/run-generator')
 # subdir('src/shutdown')
 # subdir('src/socket-activate')
 # subdir('src/sysext')
+# subdir('src/system-update-generator')
 # subdir('src/systemctl')
 # subdir('src/sysupdate')
 # subdir('src/timedate')
@@ -3046,40 +3049,6 @@ public_programs += [exe]
 #
 # meson.add_install_script(meson_make_symlink,
 #                          bindir / 'udevadm',
-# if conf.get('ENABLE_BACKLIGHT') == 1
-#         executable(
-#                 'systemd-backlight',
-#                 'src/backlight/backlight.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : userspace,
-#                 install_rpath : pkglibdir,
-#                 install : true,
-#                 install_dir : libexecdir)
-# endif
-#
-# if conf.get('ENABLE_RFKILL') == 1
-#         executable(
-#                 'systemd-rfkill',
-#                 'src/rfkill/rfkill.c',
-#                 include_directories : includes,
-#                 link_with : [libshared],
-#                 dependencies : userspace,
-#                 install_rpath : pkglibdir,
-#                 install : true,
-#                 install_dir : libexecdir)
-# endif
-#
-# executable(
-#         'systemd-system-update-generator',
-#         'src/system-update-generator/system-update-generator.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : userspace,
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : systemgeneratordir)
-#
 # if conf.get('HAVE_LIBCRYPTSETUP') == 1
 #         executable(
 #                 'systemd-cryptsetup',
