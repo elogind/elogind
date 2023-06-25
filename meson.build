@@ -2751,6 +2751,7 @@ subdir('src/update-utmp')
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
+# subdir('src/ac-power')
 # subdir('src/analyze')
 #endif // 0
 
@@ -2767,6 +2768,7 @@ subdir('src/busctl')
 # subdir('src/cryptenroll')
 # subdir('src/cryptsetup')
 # subdir('src/debug-generator')
+# subdir('src/detect-virt')
 # subdir('src/dissect')
 # subdir('src/environment-d-generator')
 # subdir('src/firstboot')
@@ -2807,7 +2809,9 @@ subdir('src/login')
 # subdir('src/rpm')
 # subdir('src/run-generator')
 # subdir('src/shutdown')
+# subdir('src/sleep')
 # subdir('src/socket-activate')
+# subdir('src/sysctl')
 # subdir('src/sysext')
 # subdir('src/system-update-generator')
 # subdir('src/systemctl')
@@ -3060,50 +3064,6 @@ public_programs += [exe]
 #
 # meson.add_install_script(meson_make_symlink,
 #                          bindir / 'udevadm',
-# executable(
-#         'systemd-sleep',
-#         'src/sleep/sleep.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#endif // 0
-        install_dir : libexecdir)
-
-if install_sysconfdir_samples
-        install_data('src/sleep/sleep.conf',
-                     install_dir : pkgsysconfdir)
-endif
-
-#if 0 /// UNNEEDED by elogind
-# public_programs += executable(
-#         'systemd-sysctl',
-#         'src/sysctl/sysctl.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true,
-#         install_dir : libexecdir)
-#
-# public_programs += executable(
-#         'systemd-ac-power',
-#         'src/ac-power/ac-power.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
-#
-# public_programs += executable(
-#         'systemd-detect-virt',
-#         'src/detect-virt/detect-virt.c',
-#         include_directories : includes,
-#         link_with : [libshared],
-#         dependencies : [userspace],
-#         install_rpath : pkglibdir,
-#         install : true)
 #
 # public_programs += executable(
 #         'systemd-delta',
