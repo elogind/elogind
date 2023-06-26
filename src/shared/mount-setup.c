@@ -64,6 +64,21 @@ typedef struct MountPoint {
 #define N_EARLY_MOUNT 4
 #endif
 
+static bool check_recursiveprot_supported(void) {
+        int r;
+
+        if (!cg_is_unified_wanted())
+                return false;
+
+        r = mount_option_supported("cgroup2", "memory_recursiveprot", NULL);
+        if (r < 0)
+                log_debug_errno(r, "Failed to determiner whether the 'memory_recursiveprot' mount option is supported, assuming not: %m");
+        else if (r == 0)
+                log_debug("This kernel version does not support 'memory_recursiveprot', not using mount option.");
+
+        return r > 0;
+}
+
 static const MountPoint mount_table[] = {
 #if 0 /// UNNEEDED by elogind
         { "proc",        "/proc",                     "proc",       NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
@@ -92,7 +107,7 @@ static const MountPoint mount_table[] = {
           NULL,          MNT_FATAL|MNT_IN_CONTAINER },
 #endif // 0
         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    "nsdelegate,memory_recursiveprot",          MS_NOSUID|MS_NOEXEC|MS_NODEV,
-          cg_is_unified_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
+          check_recursiveprot_supported, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    "nsdelegate",                               MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_unified_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
         { "cgroup2",     "/sys/fs/cgroup",            "cgroup2",    NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
