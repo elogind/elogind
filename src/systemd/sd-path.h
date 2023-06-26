@@ -83,6 +83,7 @@ enum {
          * replaces "path" by "search"), since this API is about dirs/paths anyway, and contains "path"
          * already in the prefix */
         SD_PATH_SYSTEMD_UTIL,
+
 #if 0 /** INVALID in elogind */
         SD_PATH_SYSTEMD_SYSTEM_UNIT,
         SD_PATH_SYSTEMD_SYSTEM_PRESET,
