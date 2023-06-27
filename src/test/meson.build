@@ -240,7 +240,6 @@ simple_tests += files(
         'test-terminal-util.c',
         'test-tmpfile-util.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-tpm2.c',
 #         'test-udev-util.c',
 #endif // 0
         'test-uid-alloc-range.c',
@@ -519,6 +518,10 @@ common_test_dependencies = [
                 'timeout' : 120,
         },
         test_template + {
+                'sources' : files('test-tpm2.c'),
+                'dependencies' : libopenssl,
+        },
+        test_template + {
                 'sources' : files('test-utmp.c'),
                 'conditions' : ['ENABLE_UTMP'],
         },
@@ -536,9 +539,7 @@ common_test_dependencies = [
         # Symbol tests
         test_template + {
                 'name' : 'test-libelogind-sym',
-                'sources' : test_libelogind_sym_c,
                 'link_with' : libelogind,
-                'suite' : 'libelogind',
                 'sources' : test_libsystemd_sym_c,
                 'suite' : 'libsystemd',
         },
