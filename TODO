@@ -131,12 +131,6 @@ Deprecations and removals:
 
 Features:
 
-* use kernel 6.3's "noswap" parameter in tmpfs in place of ramfs for storing
-  credentials.
-
-* import-creds: allocate a non-swap-backed fs for /run/credentials/@system,
-  like we do for services.
-
 * new "elogind-pcrlock" component for dealing with PCR4. Design idea:
   1. define /{etc,usr,var/lib}/pcrlock.d/<component>/<version>.pcrlock
   2. these files contain list of hashes that will be measured when component is
@@ -1321,8 +1315,6 @@ Features:
 
 * when configuring loopback netif, and it fails due to EPERM, eat up error if
   it happens to be set up alright already.
-
-* at boot: check if battery above some threshold, if not power off again after explanation
 
 * userdb: add field for ambient caps, so that a user can have CAP_WAKE_ALARM
   for example. And add code that resets ambient caps for all services by
