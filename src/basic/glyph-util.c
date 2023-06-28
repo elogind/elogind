@@ -9,21 +9,21 @@ bool emoji_enabled(void) {
         static int cached_emoji_enabled = -1;
 
         if (cached_emoji_enabled < 0) {
-                int val;
+                int val = getenv_bool("SYSTEMD_EMOJI");
+                if (val >= 0)
+                        return (cached_emoji_enabled = val);
 
-                val = getenv_bool("SYSTEMD_EMOJI");
-                if (val < 0)
-                        cached_emoji_enabled =
-                                is_locale_utf8() &&
-                                !STRPTR_IN_SET(getenv("TERM"), "dumb", "linux");
-                else
-                        cached_emoji_enabled = val;
+                const char *term = getenv("TERM");
+                if (!term || STR_IN_SET(term, "dumb", "linux"))
+                        return (cached_emoji_enabled = false);
+
+                cached_emoji_enabled = is_locale_utf8();
         }
 
         return cached_emoji_enabled;
 }
 
-const char *special_glyph(SpecialGlyph code) {
+const char *special_glyph_full(SpecialGlyph code, bool force_utf) {
 
         /* A list of a number of interesting unicode glyphs we can use to decorate our output. It's probably wise to be
          * conservative here, and primarily stick to the glyphs defined in the eurlatgr font, so that display still
@@ -71,6 +71,8 @@ const char *special_glyph(SpecialGlyph code) {
                         [SPECIAL_GLYPH_RECYCLING]               = "~",
                         [SPECIAL_GLYPH_DOWNLOAD]                = "\\",
                         [SPECIAL_GLYPH_SPARKLES]                = "*",
+                        [SPECIAL_GLYPH_LOW_BATTERY]             = "!",
+                        [SPECIAL_GLYPH_WARNING_SIGN]            = "!",
                 },
 
                 /* UTF-8 */
@@ -124,10 +126,12 @@ const char *special_glyph(SpecialGlyph code) {
                         /* This emoji is a single character cell glyph in Unicode, and two in ASCII */
                         [SPECIAL_GLYPH_TOUCH]                   = u8"👆",       /* actually called: BACKHAND INDEX POINTING UP */
 
-                        /* These three emojis are single character cell glyphs in Unicode and also in ASCII. */
+                        /* These four emojis are single character cell glyphs in Unicode and also in ASCII. */
                         [SPECIAL_GLYPH_RECYCLING]               = u8"♻️",        /* actually called: UNIVERSAL RECYCLNG SYMBOL */
                         [SPECIAL_GLYPH_DOWNLOAD]                = u8"⤵️",        /* actually called: RIGHT ARROW CURVING DOWN */
                         [SPECIAL_GLYPH_SPARKLES]                = u8"✨",
+                        [SPECIAL_GLYPH_LOW_BATTERY]             = u8"🪫",
+                        [SPECIAL_GLYPH_WARNING_SIGN]            = u8"⚠️",
                 },
         };
 
@@ -135,5 +139,5 @@ const char *special_glyph(SpecialGlyph code) {
                 return NULL;
 
         assert(code < _SPECIAL_GLYPH_MAX);
-        return draw_table[code >= _SPECIAL_GLYPH_FIRST_EMOJI ? emoji_enabled() : is_locale_utf8()][code];
+        return draw_table[force_utf || (code >= _SPECIAL_GLYPH_FIRST_EMOJI ? emoji_enabled() : is_locale_utf8())][code];
 }
