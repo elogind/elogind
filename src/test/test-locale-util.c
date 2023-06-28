@@ -121,6 +121,7 @@ TEST(dump_special_glyphs) {
         dump_glyph(SPECIAL_GLYPH_RECYCLING);
         dump_glyph(SPECIAL_GLYPH_DOWNLOAD);
         dump_glyph(SPECIAL_GLYPH_SPARKLES);
+        dump_glyph(SPECIAL_GLYPH_LOW_BATTERY);
         dump_glyph(SPECIAL_GLYPH_WARNING_SIGN);
 }
 
