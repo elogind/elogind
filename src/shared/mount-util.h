@@ -151,3 +151,5 @@ int bind_mount_submounts(
 int make_mount_point_inode_from_stat(const struct stat *st, const char *dest, mode_t mode);
 int make_mount_point_inode_from_path(const char *source, const char *dest, mode_t mode);
 #endif // 0
+
+int trigger_automount_at(int dir_fd, const char *path);
