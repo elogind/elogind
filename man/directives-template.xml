@@ -33,6 +33,14 @@
   </refsect1>
 
   <refsect1>
+    <title>SMBIOS Type 11 Variables</title>
+
+    <para>Data passed from VMM to system via SMBIOS Type 11.</para>
+
+    <variablelist id='smbios-type-11-options' />
+  </refsect1>
+
+  <refsect1>
     <title>Environment variables</title>
 
     <para>Environment variables understood by the elogind manager and other programs and environment
@@ -107,7 +115,7 @@
     <title><citerefentry><refentrytitle>elogind.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     directives</title>
 
-    <para>Directives for configuring elogind-nspawn containers.</para>
+    <para>Directives for configuring systemd-nspawn containers.</para>
 
     <variablelist id='nspawn-directives' />
   </refsect1>
