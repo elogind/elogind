@@ -73,9 +73,10 @@
         <listitem><para>Pre-calculate the expected values seen in PCR register 11 after boot-up of a unified
         kernel image consisting of the components specified with <option>--linux=</option>,
         <option>--osrel=</option>, <option>--cmdline=</option>, <option>--initrd=</option>,
-        <option>--splash=</option>, <option>--dtb=</option>, <option>--pcrpkey=</option> see below. Only
-        <option>--linux=</option> is mandatory. (Alternatively, specify <option>--current</option> to use the
-        current values of PCR register 11 instead.)</para></listitem>
+        <option>--splash=</option>, <option>--dtb=</option>, <option>--sbat=</option>,
+        <option>--pcrpkey=</option> see below. Only <option>--linux=</option> is mandatory. (Alternatively,
+        specify <option>--current</option> to use the current values of PCR register 11 instead.)</para>
+        </listitem>
       </varlistentry>
 
       <varlistentry>
@@ -86,8 +87,8 @@
         the resulting values with the private/public key pair (RSA) configured via
         <option>--private-key=</option> and <option>--public-key=</option>. This will write a JSON object to
         standard output that contains signatures for all specified PCR banks (see the
-        <citerefentry><refentrytitle>elogind-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>) or
         <option>--bank=</option> option below), which may be used to unlock encrypted credentials (see
+        <citerefentry><refentrytitle>elogind-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry>) or
         LUKS volumes (see
         <citerefentry><refentrytitle>elogind-cryptsetup@.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>).
         This allows binding secrets to a set of kernels for which such PCR 11 signatures can be
@@ -112,6 +113,7 @@
         <term><option>--initrd=<replaceable>PATH</replaceable></option></term>
         <term><option>--splash=<replaceable>PATH</replaceable></option></term>
         <term><option>--dtb=<replaceable>PATH</replaceable></option></term>
+        <term><option>--sbat=<replaceable>PATH</replaceable></option></term>
         <term><option>--pcrpkey=<replaceable>PATH</replaceable></option></term>
 
         <listitem><para>When used with the <command>calculate</command> or <command>sign</command> verb,
@@ -311,7 +313,6 @@ $ openssl rsa -pubout -in tpm2-pcr-initrd-private.pem -out tpm2-pcr-initrd-publi
      --phases=enter-initrd \
      vmlinux-1.2.3 initrd.cpio \
      --uname=1.2.3
-+ /usr/lib/elogind/elogind-measure sign --linux=vmlinux-1.2.3 \
 + /usr/lib/systemd/systemd-measure sign --linux=vmlinux-1.2.3 \
 --osrel=os-release.txt --cmdline=cmdline.txt --dtb=devicetree.dtb \
 --splash=splash.bmp --initrd=initrd.cpio --bank=sha1 --bank=sha256 \
