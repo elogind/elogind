@@ -23,6 +23,7 @@ extern const BusLocator* const bus_oom_mgr;
 extern const BusLocator* const bus_portable_mgr;
 extern const BusLocator* const bus_resolve_mgr;
 extern const BusLocator* const bus_systemd_mgr;
+extern const BusLocator* const bus_sysupdate_mgr;
 extern const BusLocator* const bus_timedate;
 #endif // 0
 extern const BusLocator* const bus_timesync_mgr;

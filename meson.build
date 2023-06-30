@@ -370,6 +370,7 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 # conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        libexecdir / 'systemd-makefs')
 # conf.set_quoted('SYSTEMD_PULL_PATH',                          libexecdir / 'systemd-pull')
 # conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               libexecdir / 'systemd-shutdown')
+# conf.set_quoted('SYSTEMD_SYSUPDATE_PATH',                     libexecdir / 'elogind-sysupdate')
 # conf.set_quoted('SYSTEMD_TEST_DATA',                          testdata_dir)
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', bindir / 'systemd-tty-ask-password-agent')
 # conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 libexecdir / 'systemd-update-helper')
