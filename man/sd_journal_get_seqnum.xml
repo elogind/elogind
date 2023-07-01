@@ -39,11 +39,11 @@
 
     <para><function>sd_journal_get_seqnum()</function> returns the sequence number of the current journal
     entry. It takes three arguments: the journal context object, a pointer to a 64-bit unsigned integer to
-    store the sequence number in, and a buffer to return the 128bit sequence number ID in.</para>
+    store the sequence number in, and a buffer to return the 128-bit sequence number ID in.</para>
 
-    them sequentially, starting from 1 for the first entry written after subsystem intialization. Each such
-    series of sequence numbers is associated with a 128bit sequence number ID which is initialized randomly,
     once at <command>elogind-journal</command> initialization. Thus, while multiple instances of
+    them sequentially, starting from 1 for the first entry written after subsystem initialization. Each such
+    series of sequence numbers is associated with a 128-bit sequence number ID which is initialized randomly,
     entries, they will have a distinct sequence number IDs. The sequence number is assigned at the moment of
     writing the entry to disk. If log entries are rewritten (for example because the volatile logs from
     <filename>/run/log/</filename> are flushed to <filename>/var/log/</filename> via
