@@ -1491,7 +1491,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atou8(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as byte (unsigned 8bit integer): %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as byte (unsigned 8-bit integer): %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1502,7 +1502,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atoi16(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as signed 16bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as signed 16-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1513,7 +1513,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atou16(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as unsigned 16bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as unsigned 16-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1524,7 +1524,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atoi32(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as signed 32bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as signed 32-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1535,7 +1535,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atou32(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as unsigned 32bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as unsigned 32-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1546,7 +1546,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atoi64(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as signed 64bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as signed 64-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
@@ -1557,7 +1557,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
 
                         r = safe_atou64(v, &z);
                         if (r < 0)
-                                return log_error_errno(r, "Failed to parse '%s' as unsigned 64bit integer: %m", v);
+                                return log_error_errno(r, "Failed to parse '%s' as unsigned 64-bit integer: %m", v);
 
                         r = sd_bus_message_append_basic(m, t, &z);
                         break;
