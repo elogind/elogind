@@ -1312,10 +1312,10 @@ static int help(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return log_oom();
 
-        printf("%s [OPTIONS...] COMMAND ...\n\n"
-               "%sSend control commands to or query the login manager.%s\n"
-               "\nSession Commands:\n"
 #if 0 /// elogind has "list" as a shorthand for "list-sessions"
+        printf("%1$s [OPTIONS...] COMMAND ...\n\n"
+               "%5$sSend control commands to or query the login manager.%6$s\n"
+               "\n%3$sSession Commands:%4$s\n"
                "  list-sessions            List sessions\n"
 #else // 0
                "  list[-sessions]          List sessions (default command)\n"
@@ -1329,7 +1329,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  unlock-sessions          Screen unlock all current sessions\n"
                "  terminate-session ID...  Terminate one or more sessions\n"
                "  kill-session ID...       Send signal to processes of a session\n"
-               "\nUser Commands:\n"
+               "\n%3$sUser Commands:%4$s\n"
                "  list-users               List users\n"
                "  user-status [USER...]    Show user status\n"
                "  show-user [USER...]      Show properties of users or the manager\n"
@@ -1337,7 +1337,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  disable-linger [USER...] Disable linger state of one or more users\n"
                "  terminate-user USER...   Terminate all sessions of one or more users\n"
                "  kill-user USER...        Send signal to processes of a user\n"
-               "\nSeat Commands:\n"
+               "\n%3$sSeat Commands:%4$s\n"
                "  list-seats               List seats\n"
                "  seat-status [NAME...]    Show seat status\n"
                "  show-seat [NAME...]      Show properties of seats or the manager\n"
@@ -1355,7 +1355,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
                "                            time and put it into hibernate\n"
 #endif // 1
-               "\nOptions:\n"
+               "\n%3$sOptions:%4$s\n"
                "  -h --help                Show this help\n"
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
@@ -1397,11 +1397,13 @@ static int help(int argc, char *argv[], void *userdata) {
 #endif
 #endif // 1
                "                             verbose, export, with-unit)\n"
-               "\nSee the %s for details.\n",
+               "\nSee the %2$s for details.\n",
                program_invocation_short_name,
-               ansi_highlight(),
+               link,
+               ansi_underline(),
                ansi_normal(),
-               link);
+               ansi_highlight(),
+               ansi_normal());
 
         return 0;
 }
