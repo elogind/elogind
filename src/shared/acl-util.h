@@ -4,6 +4,9 @@
 #include <errno.h>
 #include <unistd.h>
 
+int fd_acl_make_read_only_fallback(int fd);
+int fd_acl_make_writable_fallback(int fd);
+
 #if HAVE_ACL
 #include <acl/libacl.h>
 #include <stdbool.h>
@@ -26,6 +29,9 @@ int acls_for_file(const char *path, acl_type_t type, acl_t new, acl_t *ret);
 int fd_add_uid_acl_permission(int fd, uid_t uid, unsigned mask);
 #endif // 0
 
+int fd_acl_make_read_only(int fd);
+int fd_acl_make_writable(int fd);
+
 /* acl_free takes multiple argument types.
  * Multiple cleanup functions are necessary. */
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(acl_t, acl_free, NULL);
@@ -46,4 +52,13 @@ static inline int fd_add_uid_acl_permission(int fd, uid_t uid, unsigned mask) {
         return -EOPNOTSUPP;
 }
 #endif // 0
+
+static inline int fd_acl_make_read_only(int fd) {
+        return fd_acl_make_read_only_fallback(fd);
+}
+
+static inline int fd_acl_make_writable(int fd) {
+        return fd_acl_make_writable_fallback(fd);
+}
+
 #endif
