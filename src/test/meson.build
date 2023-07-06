@@ -45,7 +45,6 @@ test_libelogind_sym_c = custom_target(
 #         build_by_default : want_tests != 'false')
 #endif // 0
 
-
 ############################################################
 
 simple_tests += files(
@@ -447,6 +446,11 @@ common_test_dependencies = [
 #         },
 #endif // 0
         test_template + {
+                'sources' : files('test-openssl.c'),
+                'dependencies' : libopenssl,
+                'conditions' : ['HAVE_OPENSSL'],
+        },
+        test_template + {
                 'sources' : files('test-parse-util.c'),
                 'dependencies' : libm,
         },
@@ -514,7 +518,6 @@ common_test_dependencies = [
                 'sources' : files('test-time-util.c'),
                 'timeout' : 120,
         },
-/// elogind empty mask removed (elogind does not provide libudev)
         test_template + {
                 'sources' : files('test-utmp.c'),
                 'conditions' : ['ENABLE_UTMP'],
@@ -536,6 +539,8 @@ common_test_dependencies = [
                 'sources' : test_libelogind_sym_c,
                 'link_with' : libelogind,
                 'suite' : 'libelogind',
+                'sources' : test_libsystemd_sym_c,
+                'suite' : 'libsystemd',
         },
         test_template + {
                 'name' : 'test-libelogind-static-sym',
