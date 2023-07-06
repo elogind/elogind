@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 10:35+0200\n"
+"POT-Creation-Date: 2023-07-06 20:45+0100\n"
 "PO-Revision-Date: 2022-10-22 17:19+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -16,8 +16,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 4.14.1\n"
 
 #if 0 /// UNNEEDED by elogind
@@ -70,6 +70,16 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
+# msgstr "Для перезавантаження стану systemd слід пройти розпізнавання."
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:74
+# msgid "Dump the systemd state without rate limits"
+# msgstr ""
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:75
+# #, fuzzy
+# msgid ""
+# "Authentication is required to dump the systemd state without rate limits."
 # msgstr "Для перезавантаження стану systemd слід пройти розпізнавання."
 #
 # #: src/home/org.freedesktop.home1.policy:13
@@ -945,39 +955,39 @@ msgstr "Для зміни віртуального термінала слід �
 # "Для керування тим, чи слід вмикати синхронізацію часу за допомогою мережі, "
 # "слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:359
+# #: src/core/dbus-unit.c:364
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Для запуску «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:360
+# #: src/core/dbus-unit.c:365
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Для зупинення «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:361
+# #: src/core/dbus-unit.c:366
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Для перезавантаження «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:362 src/core/dbus-unit.c:363
+# #: src/core/dbus-unit.c:367 src/core/dbus-unit.c:368
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Для перезапуску «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:546
+# #: src/core/dbus-unit.c:565
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr ""
 # "Для надсилання сигналу UNIX до процесів «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:576
+# #: src/core/dbus-unit.c:595
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "Для скидання «пошкодженого» стану з «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:608
+# #: src/core/dbus-unit.c:627
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Для визначення властивостей на «$(unit)» слід пройти розпізнавання."
 #
-# #: src/core/dbus-unit.c:714
+# #: src/core/dbus-unit.c:728
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -985,7 +995,7 @@ msgstr "Для зміни віртуального термінала слід �
 # "Для вилучення файлів і каталогів, які пов'язано із «$(unit)», слід пройти "
 # "розпізнавання."
 #
-# #: src/core/dbus-unit.c:762
+# #: src/core/dbus-unit.c:776
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""

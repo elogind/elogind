@@ -5,20 +5,21 @@
 #
 # Julien Humbert <julroy67@gmail.com>, 2020, 2021.
 # Arnaud T. <listes.00@gmail.com>, 2021.
+# blutch112 <vincent.lefebvre59@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2021-01-14 06:37+0000\n"
-"Last-Translator: Julien Humbert <julroy67@gmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/elogind/"
+"POT-Creation-Date: 2023-07-06 20:45+0100\n"
+"PO-Revision-Date: 2022-11-07 08:19+0000\n"
+"Last-Translator: blutch112 <vincent.lefebvre59@gmail.com>\n"
 "master/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.4.1\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -69,6 +70,16 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
+# msgstr "Authentification requise pour recharger l’état de systemd."
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:74
+# msgid "Dump the systemd state without rate limits"
+# msgstr ""
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:75
+# #, fuzzy
+# msgid ""
+# "Authentication is required to dump the systemd state without rate limits."
 # msgstr "Authentification requise pour recharger l’état de systemd."
 #
 # #: src/home/org.freedesktop.home1.policy:13
@@ -168,22 +179,20 @@ msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:61
 # msgid "Get hardware serial number"
-# msgstr ""
+# msgstr "Obtenir le numéro de série du matériel"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:62
-# #, fuzzy
 # msgid "Authentication is required to get hardware serial number."
-# msgstr "Authentification requise pour définir l’heure du système."
+# msgstr ""
+# "L'authentification est requise pour obtenir le numéro de série du matériel."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:71
-# #, fuzzy
 # msgid "Get system description"
-# msgstr "Définir le fuseau horaire du système"
+# msgstr "Obtenir la description du système"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:72
-# #, fuzzy
 # msgid "Authentication is required to get system description."
-# msgstr "Authentification requise pour définir le fuseau horaire du système."
+# msgstr "L'authentification est requise pour obtenir la description du système."
 #
 # #: src/import/org.freedesktop.import1.policy:22
 # msgid "Import a VM or container image"
@@ -961,23 +970,23 @@ msgstr "Authentification requise pour changer de terminal virtuel."
 # "Authentification requise pour activer ou désactiver la synchronisation de "
 # "l’heure avec le réseau."
 #
-# #: src/core/dbus-unit.c:359
+# #: src/core/dbus-unit.c:364
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Authentification requise pour démarrer « $(unit) »."
 #
-# #: src/core/dbus-unit.c:360
+# #: src/core/dbus-unit.c:365
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Authentification requise pour arrêter « $(unit) »."
 #
-# #: src/core/dbus-unit.c:361
+# #: src/core/dbus-unit.c:366
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Authentification requise pour recharger « $(unit) »."
 #
-# #: src/core/dbus-unit.c:362 src/core/dbus-unit.c:363
+# #: src/core/dbus-unit.c:367 src/core/dbus-unit.c:368
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Authentification requise pour redémarrer « $(unit) »."
 #
-# #: src/core/dbus-unit.c:546
+# #: src/core/dbus-unit.c:565
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
@@ -985,17 +994,17 @@ msgstr "Authentification requise pour changer de terminal virtuel."
 # "Authentification requise pour envoyer un signal UNIX aux processus de "
 # "« $(unit) »."
 #
-# #: src/core/dbus-unit.c:576
+# #: src/core/dbus-unit.c:595
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "Authentification requise pour réinitialiser l’état d’« échec » de "
 # "« $(unit) »."
 #
-# #: src/core/dbus-unit.c:608
+# #: src/core/dbus-unit.c:627
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Authentification requise pour définir des propriétés de « $(unit) »."
 #
-# #: src/core/dbus-unit.c:714
+# #: src/core/dbus-unit.c:728
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -1003,7 +1012,7 @@ msgstr "Authentification requise pour changer de terminal virtuel."
 # "Authentification requise pour supprimer les fichiers et les dossiers "
 # "associés à « $(unit) »."
 #
-# #: src/core/dbus-unit.c:762
+# #: src/core/dbus-unit.c:776
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""

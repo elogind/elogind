@@ -2,20 +2,21 @@
 #
 # Finnish translation of elogind.
 # Jan Kuparinen <copper_fin@hotmail.com>, 2021, 2022.
+# Ricky Tigg <ricky.tigg@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 10:35+0200\n"
-"PO-Revision-Date: 2022-10-22 17:19+0000\n"
-"Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/elogind/"
+"POT-Creation-Date: 2023-07-06 20:45+0100\n"
+"PO-Revision-Date: 2022-11-10 19:19+0000\n"
+"Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "master/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.14.2\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -65,6 +66,16 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
+# msgstr "Todennus vaaditaan, jotta järjestelmätila voidaan ladata uudelleen."
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:74
+# msgid "Dump the systemd state without rate limits"
+# msgstr ""
+#
+# #: src/core/org.freedesktop.systemd1.policy.in:75
+# #, fuzzy
+# msgid ""
+# "Authentication is required to dump the systemd state without rate limits."
 # msgstr "Todennus vaaditaan, jotta järjestelmätila voidaan ladata uudelleen."
 #
 # #: src/home/org.freedesktop.home1.policy:13
@@ -120,7 +131,7 @@ msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:20
 # msgid "Set hostname"
-# msgstr "Määritä isäntänimi"
+# msgstr "Määritä konenimi"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:21
 # msgid "Authentication is required to set the local hostname."
@@ -910,38 +921,38 @@ msgstr "Todennus vaaditaan virtuaalipäätteen vaihtamiseksi."
 # "Todennus vaaditaan sen hallitsemiseksi, onko verkkoajan synkronointi "
 # "käytössä."
 #
-# #: src/core/dbus-unit.c:359
+# #: src/core/dbus-unit.c:364
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Todennus vaaditaan $(unit):n aloittamiseksi."
 #
-# #: src/core/dbus-unit.c:360
+# #: src/core/dbus-unit.c:365
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Todennus vaaditaan $(unit):n lopettamiseksi."
 #
-# #: src/core/dbus-unit.c:361
+# #: src/core/dbus-unit.c:366
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Todennus vaaditaan $(unit):n uudelleen lataamiseksi."
 #
-# #: src/core/dbus-unit.c:362 src/core/dbus-unit.c:363
+# #: src/core/dbus-unit.c:367 src/core/dbus-unit.c:368
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Todennus vaaditaan $(unit):n uudelleen käynnistämiseksi."
 #
-# #: src/core/dbus-unit.c:546
+# #: src/core/dbus-unit.c:565
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr ""
 # "Todennus vaaditaan UNIX-signaalin lähettämiseen '$(unit)'-prosesseihin."
 #
-# #: src/core/dbus-unit.c:576
+# #: src/core/dbus-unit.c:595
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr "Todennus vaaditaan \"epäonnistuneen\" tilan \"$(unit)\" nollaamiseksi."
 #
-# #: src/core/dbus-unit.c:608
+# #: src/core/dbus-unit.c:627
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Todennus vaaditaan, jotta ominaisuudet asetetaan arvoon '$(unit)'."
 #
-# #: src/core/dbus-unit.c:714
+# #: src/core/dbus-unit.c:728
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -949,7 +960,7 @@ msgstr "Todennus vaaditaan virtuaalipäätteen vaihtamiseksi."
 # "Todennus vaaditaan tiedostojen ja hakemistojen poistamiseen, jotka liittyvät "
 # "'$(unit)':iin."
 #
-# #: src/core/dbus-unit.c:762
+# #: src/core/dbus-unit.c:776
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
