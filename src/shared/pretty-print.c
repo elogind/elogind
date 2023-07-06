@@ -6,7 +6,7 @@
 
 #include "alloc-util.h"
 #include "conf-files.h"
-#include "def.h"
+#include "constants.h"
 #include "env-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -16,7 +16,6 @@
 #include "string-util.h"
 #include "strv.h"
 #include "terminal-util.h"
-#include "util.h"
 
 bool urlify_enabled(void) {
 #if ENABLE_URLIFY
@@ -43,7 +42,7 @@ int terminal_urlify(const char *url, const char *text, char **ret) {
 
         assert(url);
 
-        /* Takes an URL and a pretty string and formats it as clickable link for the terminal. See
+        /* Takes a URL and a pretty string and formats it as clickable link for the terminal. See
          * https://gist.github.com/egmontkob/eb114294efbcd5adb1944c9f3cb5feda for details. */
 
         if (isempty(text))
