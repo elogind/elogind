@@ -1242,7 +1242,11 @@ threads = dependency('threads')
 #endif //  0
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
-libcrypt = dependency('libcrypt')
+libcrypt = dependency('libcrypt', 'libxcrypt', required : false)
+if not libcrypt.found()
+        # fallback to use find_library() if libcrypt is provided by glibc, e.g. for LibreELEC.
+        libcrypt = cc.find_library('crypt')
+endif
 libcap = dependency('libcap')
 
 # On some architectures, libatomic is required. But on some installations,
