@@ -105,6 +105,7 @@ static int write_efi_hibernate_location(const HibernateLocation *hibernate_locat
         int r = 0;
         int log_level = required ? LOG_ERR : LOG_DEBUG,
             log_level_ignore = required ? LOG_WARNING : LOG_DEBUG;
+        int log_level = required ? LOG_ERR : LOG_DEBUG;
 
                 strv_free(sessions);
 #if ENABLE_EFI
@@ -117,6 +118,7 @@ static int write_efi_hibernate_location(const HibernateLocation *hibernate_locat
         struct utsname uts = {};
         int log_level, log_level_ignore;
         int r;
+        int r, log_level_ignore = required ? LOG_WARNING : LOG_DEBUG;
 
                 // Get to a safe non-gui VT
                 if ( (vt > 0) && (vt < 63) ) {
