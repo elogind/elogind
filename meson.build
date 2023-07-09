@@ -2405,12 +2405,14 @@ conf.set10('HAVE_GNU_EFI', false)
 # endif
 #
 # efi_arch_alt = ''
+# efi_cpu_family_alt = ''
 # if efi_arch == 'x64' and cc.links('''
 #                 #include <limits.h>
 #                 int main(int argc, char *argv[]) {
 #                         return __builtin_popcount(argc - CHAR_MAX);
 #                 }''', args : ['-m32', '-march=i686'], name : '32bit build possible')
 #         efi_arch_alt = 'ia32'
+#         efi_cpu_family_alt = 'x86'
 # endif
 #
 # have_pyelftools = pymod.find_installation('python3', required : false, modules : ['elftools']).found()
