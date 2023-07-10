@@ -6,6 +6,7 @@
 #include <stddef.h>
 
 #include "macro.h"
+#include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
@@ -84,7 +85,9 @@ static inline bool path_equal_filename(const char *a, const char *b) {
 }
 
 /// elogind empty mask removed (UNNEEDED by elogind)
-bool path_equal_or_inode_same(const char *a, const char *b, int flags);
+static inline bool path_equal_or_inode_same(const char *a, const char *b, int flags) {
+        return path_equal(a, b) || inode_same(a, b, flags) > 0;
+}
 
 char* path_extend_internal(char **x, ...);
 #define path_extend(x, ...) path_extend_internal(x, __VA_ARGS__, POINTER_MAX)
