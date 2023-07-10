@@ -628,7 +628,7 @@ TEST(getpid_measure) {
                 (void) getpid();
         q = now(CLOCK_MONOTONIC) - t;
 
-        log_info(" glibc getpid(): %lf μs each\n", (double) q / iterations);
+        log_info(" glibc getpid(): %lf μs each", (double) q / iterations);
 
         iterations *= 50; /* _cached() is about 50 times faster, so we need more iterations */
 
@@ -637,7 +637,7 @@ TEST(getpid_measure) {
                 (void) getpid_cached();
         q = now(CLOCK_MONOTONIC) - t;
 
-        log_info("getpid_cached(): %lf μs each\n", (double) q / iterations);
+        log_info("getpid_cached(): %lf μs each", (double) q / iterations);
 }
 
 TEST(safe_fork) {
@@ -903,6 +903,53 @@ TEST(get_process_threads) {
                 /* similar here */
                 assert_se(get_process_threads(0) >= 1);
 
+                _exit(EXIT_SUCCESS);
+        }
+}
+
+TEST(is_reaper_process) {
+        int r;
+
+        r = safe_fork("(regular)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
+        assert_se(r >= 0);
+        if (r == 0) {
+                /* child */
+
+                assert_se(is_reaper_process() == 0);
+                _exit(EXIT_SUCCESS);
+        }
+
+        r = safe_fork("(newpid)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
+        assert_se(r >= 0);
+        if (r == 0) {
+                /* child */
+
+                if (unshare(CLONE_NEWPID) < 0) {
+                        if (ERRNO_IS_PRIVILEGE(errno) || ERRNO_IS_NOT_SUPPORTED(errno)) {
+                                log_notice("Skipping CLONE_NEWPID reaper check, lacking privileges/support");
+                                _exit(EXIT_SUCCESS);
+                        }
+                }
+
+                r = safe_fork("(newpid1)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
+                assert_se(r >= 0);
+                if (r == 0) {
+                        /* grandchild, which is PID1 in a pidns */
+                        assert_se(getpid_cached() == 1);
+                        assert_se(is_reaper_process() > 0);
+                        _exit(EXIT_SUCCESS);
+                }
+
+                _exit(EXIT_SUCCESS);
+        }
+
+        r = safe_fork("(subreaper)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_WAIT, NULL);
+        assert_se(r >= 0);
+        if (r == 0) {
+                /* child */
+                assert_se(make_reaper_process(true) >= 0);
+
+                assert_se(is_reaper_process() > 0);
                 _exit(EXIT_SUCCESS);
         }
 }
