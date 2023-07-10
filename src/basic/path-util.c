@@ -492,9 +492,6 @@ int path_compare(const char *a, const char *b) {
         }
 }
 
-bool path_equal_or_inode_same(const char *a, const char *b, int flags) {
-        return path_equal(a, b) || inode_same(a, b, flags) > 0;
-}
 
 #if 0 /// UNNEEDED by elogind
 int path_compare_filename(const char *a, const char *b) {
