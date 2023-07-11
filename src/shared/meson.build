@@ -71,6 +71,7 @@
 #         'exit-status.c',
 #         'extension-util.c',
 #         'fdset.c',
+#         'fido2-util.c',
 #         'fileio-label.c',
 #         'find-esp.c',
 #         'firewall-util-nft.c',
@@ -194,6 +195,7 @@
 #         'varlink-io.elogind.NamespaceResource.c',
 #         'varlink-io.elogind.MountFileSystem.c',
 #         'varlink-io.elogind.Machine.c',
+#         'varlink-io.elogind.Import.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
@@ -314,10 +316,6 @@ if conf.get('HAVE_PAM') == 1
 endif
 
 #if 0 /// elogind does not need all this networking stuff
-# if conf.get('ENABLE_NSCD') == 1
-#         shared_sources += files('nscd-flush.c')
-# endif
-#
 # if conf.get('HAVE_LIBFIDO2') == 1 and conf.get('HAVE_LIBCRYPTSETUP') == 1
 #         shared_sources += files('cryptsetup-fido2.c')
 # endif
@@ -369,7 +367,7 @@ endif
 # fname = 'ethtool-link-mode.h'
 # ethtool_link_mode_h = custom_target(
 #         fname,
-#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+#         input : ['ethtool-link-mode.py', '../basic/linux/ethtool.h'],
 #         output : fname,
 #         command : [python, '@INPUT0@', '--header', cpp, '@INPUT1@'],
 #         capture : true)
@@ -378,7 +376,7 @@ endif
 # fname = 'ethtool-link-mode.xml'
 # ethtool_link_mode_xml = custom_target(
 #         fname,
-#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+#         input : ['ethtool-link-mode.py', '../basic/linux/ethtool.h'],
 #         output : fname,
 #         command : [python, '@INPUT0@', '--xml', cpp, '@INPUT1@'],
 #         capture : true)

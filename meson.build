@@ -1964,7 +1964,6 @@ conf.set10('ENABLE_HOMED', false)
 #                 'machined',
 #                 'mountfsd',
 #                 'networkd',
-#                 'nscd',
 #                 'nsresourced',
 #                 'nss-myhostname',
 #                 'nss-systemd',
@@ -3578,7 +3577,6 @@ foreach tuple : [
 #endif // 0
         ['polkit'],
 #if 0 /// UNNEEDED by elogind
-#         ['nscd'],
 #         ['legacy-pkla',            install_polkit_pkla],
 #         ['kmod'],
 #endif // 0
