@@ -475,9 +475,7 @@ static bool match_property(sd_device_enumerator *enumerator, sd_device *device) 
         if (hashmap_isempty(enumerator->match_property))
                 return true;
 
-        HASHMAP_FOREACH_KEY(value_patterns, property_pattern, enumerator->match_property) {
-                const char *property, *value;
-
+        HASHMAP_FOREACH_KEY(value_patterns, property_pattern, enumerator->match_property)
                 FOREACH_DEVICE_PROPERTY(device, property, value) {
                         if (fnmatch(property_pattern, property, 0) != 0)
                                 continue;
@@ -485,7 +483,6 @@ static bool match_property(sd_device_enumerator *enumerator, sd_device *device) 
                         if (strv_fnmatch(value_patterns, value))
                                 return true;
                 }
-        }
 
         return false;
 }
