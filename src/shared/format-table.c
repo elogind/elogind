@@ -2610,6 +2610,14 @@ size_t table_get_columns(Table *t) {
 }
 
 #if 0 /// UNNEEDED by elogind
+size_t table_get_current_column(Table *t) {
+        if (!t)
+                return 0;
+
+        assert(t->n_columns > 0);
+        return t->n_cells % t->n_columns;
+}
+
 int table_set_reverse(Table *t, size_t column, bool b) {
         assert(t);
         assert(column < t->n_columns);
