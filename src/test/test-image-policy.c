@@ -77,6 +77,8 @@ TEST_RET(test_image_policy_to_string) {
         test_policy(&image_policy_ignore, "-");
         test_policy(&image_policy_deny, "~");
         test_policy(&image_policy_sysext, "sysext");
+        test_policy(&image_policy_sysext_strict, "sysext-strict");
+        test_policy(&image_policy_confext, "confext");
         test_policy(&image_policy_container, "container");
         test_policy(&image_policy_host, "host");
         test_policy(&image_policy_service, "service");
@@ -116,6 +118,15 @@ TEST_RET(test_image_policy_to_string) {
         assert_se(image_policy_from_string("wowza=grbl", NULL) == -EBADSLT);
 
         return 0;
+}
+
+TEST(extend) {
+        assert_se(partition_policy_flags_extend(0) == _PARTITION_POLICY_MASK);
+        assert_se(partition_policy_flags_extend(_PARTITION_POLICY_MASK) == _PARTITION_POLICY_MASK);
+        assert_se(partition_policy_flags_extend(PARTITION_POLICY_UNPROTECTED) == (PARTITION_POLICY_UNPROTECTED|_PARTITION_POLICY_PFLAGS_MASK));
+        assert_se(partition_policy_flags_extend(PARTITION_POLICY_UNPROTECTED|PARTITION_POLICY_READ_ONLY_ON) == (PARTITION_POLICY_UNPROTECTED|PARTITION_POLICY_READ_ONLY_ON|_PARTITION_POLICY_GROWFS_MASK));
+        assert_se(partition_policy_flags_extend(PARTITION_POLICY_UNPROTECTED|PARTITION_POLICY_READ_ONLY_ON|PARTITION_POLICY_GROWFS_OFF) == (PARTITION_POLICY_UNPROTECTED|PARTITION_POLICY_READ_ONLY_ON|PARTITION_POLICY_GROWFS_OFF));
+        assert_se(partition_policy_flags_extend(PARTITION_POLICY_GROWFS_ON) == (PARTITION_POLICY_GROWFS_ON|_PARTITION_POLICY_USE_MASK|_PARTITION_POLICY_READ_ONLY_MASK));
 }
 
 DEFINE_TEST_MAIN(LOG_INFO);
