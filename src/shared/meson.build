@@ -112,7 +112,6 @@
 #         'loop-util.c',
 #         'loopback-setup.c',
 #         'lsm-util.c',
-#         'machine-credential.c',
 #         'machine-id-setup.c',
 #         'machine-pool.c',
 #         'macvlan-util.c',
@@ -162,6 +161,7 @@
 #         'tmpfile-util-label.c',
 #         'tomoyo-util.c',
 #         'tpm2-util.c',
+#         'tpm2-event-log.c',
 #         'udev-util.c',
 #         'user-record-nss.c',
 #         'user-record-show.c',
@@ -393,7 +393,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
-#                   libxenctrl,
+#                   libxenctrl_cflags,
 #                   libxz,
 #                   libzstd]
 #else // 0
