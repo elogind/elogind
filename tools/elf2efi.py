@@ -27,6 +27,7 @@ import io
 import os
 import pathlib
 import time
+import typing
 from ctypes import (
     c_char,
     c_uint8,
@@ -79,7 +80,7 @@ class PeRelocationBlock(LittleEndianStructure):
 
     def __init__(self, PageRVA: int):
         super().__init__(PageRVA)
-        self.entries: list[PeRelocationEntry] = []
+        self.entries: typing.List[PeRelocationEntry] = []
 
 
 class PeRelocationEntry(LittleEndianStructure):
@@ -280,7 +281,7 @@ def convert_elf_section(elf_s: ELFSection) -> PeSection:
     return pe_s
 
 
-def copy_sections(elf: ELFFile, opt: PeOptionalHeader) -> list[PeSection]:
+def copy_sections(elf: ELFFile, opt: PeOptionalHeader) -> typing.List[PeSection]:
     sections = []
 
     for elf_s in elf.iter_sections():
@@ -303,7 +304,7 @@ def copy_sections(elf: ELFFile, opt: PeOptionalHeader) -> list[PeSection]:
 
 
 def apply_elf_relative_relocation(
-    reloc: ElfRelocation, image_base: int, sections: list[PeSection], addend_size: int
+    reloc: ElfRelocation, image_base: int, sections: typing.List[PeSection], addend_size: int
 ):
     # fmt: off
     [target] = [
@@ -329,8 +330,8 @@ def convert_elf_reloc_table(
     elf: ELFFile,
     elf_reloc_table: ElfRelocationTable,
     image_base: int,
-    sections: list[PeSection],
-    pe_reloc_blocks: dict[int, PeRelocationBlock],
+    sections: typing.List[PeSection],
+    pe_reloc_blocks: typing.Dict[int, PeRelocationBlock],
 ):
     NONE_RELOC = {
         "EM_386": ENUM_RELOC_TYPE_i386["R_386_NONE"],
@@ -376,8 +377,8 @@ def convert_elf_reloc_table(
 
 
 def convert_elf_relocations(
-    elf: ELFFile, opt: PeOptionalHeader, sections: list[PeSection]
-) -> PeSection:
+    elf: ELFFile, opt: PeOptionalHeader, sections: typing.List[PeSection]
+) -> typing.Optional[PeSection]:
     dynamic = elf.get_section_by_name(".dynamic")
     if dynamic is None:
         raise RuntimeError("ELF .dynamic section is missing.")
@@ -386,13 +387,16 @@ def convert_elf_relocations(
     if not flags_tag["d_val"] & ENUM_DT_FLAGS_1["DF_1_PIE"]:
         raise RuntimeError("ELF file is not a PIE.")
 
-    pe_reloc_blocks: dict[int, PeRelocationBlock] = {}
+    pe_reloc_blocks: typing.Dict[int, PeRelocationBlock] = {}
     for reloc_type, reloc_table in dynamic.get_relocation_tables().items():
         if reloc_type not in ["REL", "RELA"]:
             raise RuntimeError("Unsupported relocation type {elf_reloc_type}.")
         convert_elf_reloc_table(
             elf, reloc_table, opt.ImageBase, sections, pe_reloc_blocks
         )
+
+    if len(pe_reloc_blocks) == 0:
+        return None
 
     data = bytearray()
     for rva in sorted(pe_reloc_blocks):
@@ -429,7 +433,7 @@ def convert_elf_relocations(
 
 
 def write_pe(
-    file, coff: PeCoffHeader, opt: PeOptionalHeader, sections: list[PeSection]
+    file, coff: PeCoffHeader, opt: PeOptionalHeader, sections: typing.List[PeSection]
 ):
     file.write(b"MZ")
     file.seek(0x3C, io.SEEK_SET)
@@ -508,10 +512,11 @@ def elf2efi(args: argparse.Namespace):
     opt.SizeOfImage = align_to(
         sections[-1].VirtualAddress + sections[-1].VirtualSize, SECTION_ALIGNMENT
     )
+
     opt.SizeOfHeaders = align_to(
         PE_OFFSET
         + coff.SizeOfOptionalHeader
-        + sizeof(PeSection) * coff.NumberOfSections,
+        + sizeof(PeSection) * max(coff.NumberOfSections, args.minimum_sections),
         FILE_ALIGNMENT,
     )
     # DYNAMIC_BASE|NX_COMPAT|HIGH_ENTROPY_VA or DYNAMIC_BASE|NX_COMPAT
@@ -524,9 +529,10 @@ def elf2efi(args: argparse.Namespace):
     opt.SizeOfHeapCommit = 0x001000
 
     opt.NumberOfRvaAndSizes = N_DATA_DIRECTORY_ENTRIES
-    opt.BaseRelocationTable = PeDataDirectory(
-        pe_reloc_s.VirtualAddress, pe_reloc_s.VirtualSize
-    )
+    if pe_reloc_s:
+        opt.BaseRelocationTable = PeDataDirectory(
+            pe_reloc_s.VirtualAddress, pe_reloc_s.VirtualSize
+        )
 
     write_pe(args.PE, coff, opt, sections)
 
@@ -572,6 +578,12 @@ def main():
         "PE",
         type=argparse.FileType("wb"),
         help="Output PE/EFI file",
+    )
+    parser.add_argument(
+        "--minimum-sections",
+        type=int,
+        default=0,
+        help="Minimum number of sections to leave space for",
     )
 
     elf2efi(parser.parse_args())
