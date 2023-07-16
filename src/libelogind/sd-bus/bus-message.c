@@ -2009,6 +2009,8 @@ _public_ int sd_bus_message_appendv(
                         r = signature_element_length(t, &k);
                         if (r < 0)
                                 return r;
+                        if (k < 2)
+                                return -ERANGE;
 
                         {
                                 char s[k - 1];
@@ -3452,6 +3454,8 @@ _public_ int sd_bus_message_readv(
                         r = signature_element_length(t, &k);
                         if (r < 0)
                                 return r;
+                        if (k < 2)
+                                return -ERANGE;
 
                         {
                                 char s[k - 1];
@@ -3632,6 +3636,8 @@ _public_ int sd_bus_message_skip(sd_bus_message *m, const char *types) {
                 r = signature_element_length(types, &k);
                 if (r < 0)
                         return r;
+                if (k < 2)
+                        return -ERANGE;
 
                 {
                         char s[k-1];
