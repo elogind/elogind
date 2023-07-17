@@ -116,7 +116,7 @@ int memfd_get_sealed(int fd) {
                 return -errno;
 
         /* We ignore F_SEAL_EXEC here to support older kernels. */
-        return FLAGS_SET(r, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL);
+        return FLAGS_SET(r, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE);
 }
 #endif // 0
 
