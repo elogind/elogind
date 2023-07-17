@@ -69,6 +69,26 @@ int memfd_new(const char *name) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int memfd_add_seals(int fd, unsigned int seals) {
+        assert(fd >= 0);
+
+        return RET_NERRNO(fcntl(fd, F_ADD_SEALS, seals));
+}
+
+int memfd_get_seals(int fd, unsigned int *ret_seals) {
+        int r;
+
+        assert(fd >= 0);
+
+        r = RET_NERRNO(fcntl(fd, F_GET_SEALS));
+        if (r < 0)
+                return r;
+
+        if (ret_seals)
+                *ret_seals = r;
+        return 0;
+}
+
 int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
         void *q;
         int sealed;
@@ -94,23 +114,20 @@ int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
 #endif // 0
 
 int memfd_set_sealed(int fd) {
-        assert(fd >= 0);
-
-        return RET_NERRNO(fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE));
+        return memfd_add_seals(fd, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE);
 }
 
 #if 0 /// UNNEEDED by elogind
 int memfd_get_sealed(int fd) {
+        unsigned int seals;
         int r;
 
-        assert(fd >= 0);
-
-        r = fcntl(fd, F_GET_SEALS);
+        r = memfd_get_seals(fd, &seals);
         if (r < 0)
-                return -errno;
+                return r;
 
         /* We ignore F_SEAL_EXEC here to support older kernels. */
-        return FLAGS_SET(r, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE);
+        return FLAGS_SET(seals, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE);
 }
 #endif // 0
 
