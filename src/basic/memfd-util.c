@@ -94,15 +94,9 @@ int memfd_map(int fd, uint64_t offset, size_t size, void **p) {
 #endif // 0
 
 int memfd_set_sealed(int fd) {
-        int r;
-
         assert(fd >= 0);
 
-        r = RET_NERRNO(fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_EXEC | F_SEAL_SEAL));
-        if (r == -EINVAL) /* old kernel ? */
-                r = RET_NERRNO(fcntl(fd, F_ADD_SEALS, F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE | F_SEAL_SEAL));
-
-        return r;
+        return RET_NERRNO(fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW | F_SEAL_WRITE));
 }
 
 #if 0 /// UNNEEDED by elogind
