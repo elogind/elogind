@@ -58,7 +58,6 @@ bool devpath_conflict(const char *a, const char *b);
 
 int udev_queue_is_empty(void);
 #if 0 /// UNNEEDED by elogind
-int udev_queue_init(void);
 #endif // 0
 
 bool udev_available(void);

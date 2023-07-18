@@ -2,7 +2,6 @@
 
 //#include <ctype.h>
 #include <errno.h>
-//#include <sys/inotify.h>
 #include <unistd.h>
 
 //#include "alloc-util.h"
@@ -583,18 +582,6 @@ int udev_queue_is_empty(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int udev_queue_init(void) {
-        _cleanup_close_ int fd = -EBADF;
-
-        fd = inotify_init1(IN_CLOEXEC);
-        if (fd < 0)
-                return -errno;
-
-        if (inotify_add_watch(fd, "/run/udev" , IN_DELETE) < 0)
-                return -errno;
-
-        return TAKE_FD(fd);
-}
 #endif // 0
 
 bool udev_available(void) {
