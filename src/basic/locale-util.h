@@ -35,7 +35,7 @@ int get_locales(char ***l);
 bool locale_is_valid(const char *name);
 int locale_is_installed(const char *name);
 
-#define _(String) gettext(String)
+#define _(String) dgettext(GETTEXT_PACKAGE, String)
 #define N_(String) String
 #if 0 /// UNNEEDED by elogind
 void init_gettext(void);
