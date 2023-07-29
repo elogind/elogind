@@ -138,8 +138,7 @@ libcore_sources = files(
 #                         libseccomp,
 #                         libselinux,
 #                         threads,
-#                         userspace,
-#                         versiondep],
+#                         userspace],
 #         install : true,
 #         install_dir : pkglibdir)
 #
