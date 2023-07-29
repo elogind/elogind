@@ -755,33 +755,6 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
 #####################################################################
 #endif // 1
 
-version_tag = get_option('version-tag')
-if version_tag != ''
-        vcs_data = configuration_data()
-        vcs_data.set('VCS_TAG', version_tag)
-        version_h = configure_file(configuration : vcs_data,
-                                   input : 'src/version/version.h.in',
-                                   output : 'version.h')
-else
-        vcs_tagger = [
-                project_source_root + '/tools/meson-vcs-tag.sh',
-                project_source_root,
-                meson.project_version()]
-
-        version_h = vcs_tag(
-                input : 'src/version/version.h.in',
-                output : 'version.h',
-                command: vcs_tagger)
-endif
-
-versiondep = declare_dependency(
-        sources: version_h,
-        include_directories : include_directories('.'))
-
-shared_lib_tag = get_option('shared-lib-tag')
-if shared_lib_tag == ''
-        shared_lib_tag = meson.project_version()
-endif
 
 sh = find_program('sh')
 echo = find_program('echo')
@@ -2460,6 +2433,42 @@ conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 conf.set_quoted('DEBUGTTY',                         '/dev/null')
 ############################################################
 #endif // 1
+
+version_tag = get_option('version-tag')
+if version_tag == ''
+        # Check that we have either .git/ (a normal clone) or a .git file (a work-tree) and that we don't
+        # get confused if a tarball is extracted in a higher-level git repository.
+        if git.found() and fs.exists(project_source_root / '.git')
+                # Apparently git describe has a bug where it always considers the work-tree dirty when
+                # invoked with --git-dir (even though 'git status' is happy). Work around this issue by
+                # cd-ing to the source directory.
+                version_tag = run_command(
+                        sh, '-c',
+                        'cd "$MESON_SOURCE_ROOT"; git describe --abbrev=7 --dirty=^ 2>/dev/null | sed "s/^v//; s/-rc/~rc/"',
+                        check : true,
+                ).stdout().strip()
+        else
+                version_tag = meson.project_version()
+        endif
+endif
+
+vcs_data = configuration_data()
+vcs_data.set('VCS_TAG', version_tag)
+version_h = configure_file(configuration : vcs_data,
+                           input : 'src/version/version.h.in',
+                           output : 'version.h')
+
+versiondep = declare_dependency(
+        sources : version_h,
+        include_directories : include_directories('.'),
+)
+
+shared_lib_tag = get_option('shared-lib-tag')
+if shared_lib_tag == ''
+        shared_lib_tag = meson.project_version()
+endif
+
+############################################################
 
 if get_option('b_coverage')
         userspace_c_args += ['-include', 'src/basic/coverage.h']
