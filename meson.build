@@ -1971,6 +1971,9 @@ endif
 #         endif
 # endif
 #
+# dmi_arches = ['x86', 'x86_64', 'aarch64', 'arm', 'ia64', 'loongarch64', 'mips']
+# conf.set10('HAVE_DMI', host_machine.cpu_family() in dmi_arches)
+#
 # # We support one or the other. If gcrypt is available, we assume it's there to
 # # be used, and use it in preference.
 # opt = get_option('cryptolib')
@@ -3031,7 +3034,6 @@ exe = executable('elogind-inhibit',
 public_programs += [exe]
 #endif // 0
 
-/// elogind empty mask else converted
 #if 1 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
         version_script_arg = project_source_root / pam_elogind_sym
         pam_elogind = shared_library(
@@ -3743,6 +3745,7 @@ foreach tuple : [
 #         ['xdg-autostart'],
 #
 #         # optional features
+#         ['dmi'],
 #         ['idn'],
 #endif // 0
         ['polkit'],
