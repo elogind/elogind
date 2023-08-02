@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/file.h>
 #include <sys/sendfile.h>
 #ifndef __GLIBC__ /// elogind has to include <signal.h> for musl-based systems
 #include <signal.h>
