@@ -508,23 +508,6 @@ tests += [
                 'timeout' : 120,
         },
 #if 0 /// elogind does not provide libudev
-#         {
-#                 'sources' : files('udev-rule-runner.c'),
-#                 'link_with' : [
-#                         libshared,
-#                         libudevd_core,
-#                 ],
-#                 'dependencies' : [
-#                         libacl,
-#                         libblkid,
-#                         libkmod,
-#                         librt,
-#                         libselinux,
-#                         threads,
-#                 ],
-#                 'includes' : udev_includes,
-#                 'type' : 'manual',
-#         },
 #endif // 0
         {
                 'sources' : files('test-utmp.c'),
