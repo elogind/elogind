@@ -137,6 +137,7 @@ endif
 prefixdir_noslash = '/' + prefixdir.strip('/')
 bindir = prefixdir / get_option('bindir')
 sbindir = prefixdir / (split_bin ? 'sbin' : 'bin')
+sbin_to_bin = split_bin ? '../bin/' : ''
 libdir = prefixdir / get_option('libdir')
 sysconfdir = prefixdir / get_option('sysconfdir')
 includedir = prefixdir / get_option('includedir')
@@ -769,17 +770,16 @@ env = find_program('env')
 diff = find_program('diff')
 find = find_program('find')
 #if 0 /// UNNEEDED by elogind
-# meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
 meson_symlink_headers = project_source_root + '/tools/meson-symlink_headers.sh'
 #endif // 1
 
-mkdir_p = 'mkdir -p $DESTDIR/@0@'
 #if 0 /// UNNEEDED by elogind
-# mkdir_p_mode = 'mkdir -p $DESTDIR/@0@ -m @1@'
 #endif // 0
+
+ln_s = ln.full_path() + ' -frsT -- "${DESTDIR:-}@0@" "${DESTDIR:-}@1@"'
 
 # If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
@@ -3313,9 +3313,8 @@ install_data('LICENSE.GPL2',
 # install_subdir('LICENSES',
 #                install_dir : docdir)
 #
-# meson.add_install_script('sh', '-c', mkdir_p.format(systemdstatedir))
 #endif // 0
-meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@'.format(prefixdir))
+install_emptydir(elogindstatedir)
 
 ############################################################
 

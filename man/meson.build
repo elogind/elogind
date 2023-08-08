@@ -92,12 +92,10 @@ foreach tuple : manpages
                                         command : [ln, '-fs', html, '@OUTPUT@'])
                                 if want_html
 #if 0 /// This is configurable in elogind - see above
-#                                         dst = docdir / 'html' / htmlalias
 #else // 0
                                         dst = htmldir / htmlalias
 #endif // 0
-                                        cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
-                                        meson.add_install_script('sh', '-c', cmd)
+                                        meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
                                         p2 += link
                                 endif
                                 html_pages += link
@@ -176,12 +174,10 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                         command : [ln, '-fs', html, '@OUTPUT@'])
                 if want_html
 #if 0 /// This is configurable in elogind - see above
-#                         dst = docdir / 'html' / htmlalias
 #else // 0
                         dst = htmldir / htmlalias
 #endif // 0
-                        cmd = 'ln -fs @0@ $DESTDIR@1@'.format(html, dst)
-                        meson.add_install_script('sh', '-c', cmd)
+                        meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
                         p2 += link
                 endif
                 html_pages += link

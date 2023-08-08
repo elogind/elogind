@@ -210,26 +210,27 @@ libcore_sources = files(
 #              install_dir : dbussystemservicedir)
 #
 #endif // 0
-meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
-meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
 #if 1 /// some package systems like portage might strip empty directories created for elogind
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(systemshutdowndir))
 meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(systemsleepdir))
 #endif // 1
 #if 0 /// UNNEEDED by elogind
-# meson.add_install_script('sh', '-c', mkdir_p.format(systemgeneratordir))
-# meson.add_install_script('sh', '-c', mkdir_p.format(usergeneratordir))
+# install_emptydir(systemshutdowndir)
+# install_emptydir(systemsleepdir)
+# install_emptydir(systemgeneratordir)
+# install_emptydir(usergeneratordir)
 #
 # if install_sysconfdir
-#         meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'system'))
-#         meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'user'))
-#         meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/systemd'))
+#         install_emptydir(pkgsysconfdir / 'system')
+#         install_emptydir(pkgsysconfdir / 'user')
+#         install_emptydir(sysconfdir / 'xdg/elogind')
+#         meson.add_install_script(sh, '-c', ln_s.format(pkgsysconfdir / 'user',
+#                                                        sysconfdir / 'xdg/elogind/user'))
 # endif
 #endif // 0
 
-meson.add_install_script(meson_make_symlink,
-                         libexecdir / 'elogind',
-                         sbindir / 'init')
+install_emptydir(sbindir)
+meson.add_install_script(sh, '-c', ln_s.format(libexecdir / 'elogind', sbindir / 'init'))
 
 ############################################################
 
