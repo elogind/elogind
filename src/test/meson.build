@@ -422,6 +422,10 @@ common_test_dependencies = [
 #                 'type' : 'manual',
 #         },
 #         test_template + {
+#                 'sources' : files('test-nft-set.c'),
+#                 'type' : 'manual',
+#         },
+#         test_template + {
 #                 'sources' : files('test-nscd-flush.c'),
 #                 'conditions' : ['ENABLE_NSCD'],
 #                 'type' : 'manual',
