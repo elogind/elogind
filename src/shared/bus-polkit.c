@@ -220,10 +220,8 @@ static AsyncPolkitQuery *async_polkit_query_free(AsyncPolkitQuery *q) {
 
         sd_event_source_disable_unref(q->defer_event_source);
 
-        while ((a = q->authorized_actions)) {
-                LIST_REMOVE(authorized, q->authorized_actions, a);
+        while ((a = LIST_POP(authorized, q->authorized_actions)))
                 async_polkit_query_action_free(a);
-        }
 
         async_polkit_query_action_free(q->denied_action);
         async_polkit_query_action_free(q->error_action);
@@ -363,7 +361,7 @@ static int async_polkit_callback(sd_bus_message *reply, void *userdata, sd_bus_e
         return r;
 }
 
-static int async_polkit_query_check_action(
+_pure_ static int async_polkit_query_check_action(
                 AsyncPolkitQuery *q,
                 const char *action,
                 const char **details,
