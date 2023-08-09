@@ -425,14 +425,12 @@ libshared = shared_library(
 #         'fdisk-util.c',
 # )
 #
-# if get_option('fdisk') != 'false'
-#         libshared_fdisk = static_library(
-#                 'shared-fdisk',
-#                 shared_fdisk_sources,
-#                 include_directories : includes,
-#                 dependencies : [libfdisk,
-#                                 userspace],
-#                 c_args : ['-fvisibility=default'],
-#                 build_by_default : false)
-# endif
 #endif // 0
+libshared_fdisk = static_library(
+        'shared-fdisk',
+        shared_fdisk_sources,
+        include_directories : includes,
+        dependencies : [libfdisk,
+                        userspace],
+        c_args : ['-fvisibility=default'],
+        build_by_default : false)
