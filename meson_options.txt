@@ -435,7 +435,7 @@ option('smack', type : 'boolean',
 # option('smack-default-process-label', type : 'string',
 #        description : 'default SMACK label for executed processes')
 #endif // 0
-option('polkit', type : 'combo', choices : ['auto', 'true', 'false'],
+option('polkit', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'polkit support')
 #if 0 /// UNNEEDED by elogind
 # option('ima', type : 'boolean',
@@ -456,7 +456,7 @@ option('audit', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : '
 #endif // 0
 option('xenctrl', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'support for Xen kexec')
-option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
+option('pam', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'PAM support')
 #if 0 /// UNNEEDED by elogind
 # option('passwdqc', type : 'combo', choices : ['auto', 'true', 'false'],
@@ -481,7 +481,7 @@ option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'libiptc support')
 # option('qrencode', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'libqrencode support')
-# option('gcrypt', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('gcrypt', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'gcrypt support')
 # option('gnutls', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'gnutls support')
@@ -499,7 +499,7 @@ option('pam', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'elfutils support')
 # option('zlib', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'zlib compression support')
-# option('bzip2', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('bzip2', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'bzip2 compression support')
 # option('xz', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'xz compression support')
