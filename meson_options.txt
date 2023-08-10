@@ -596,5 +596,3 @@ option('urlify', type : 'boolean', value : true,
 #     description: 'build BPF programs from source code in restricted C')
 #endif // 0
 
-option('skip-deps', type : 'boolean', value : false,
-       description : 'skip optional dependencies')
