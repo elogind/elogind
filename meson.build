@@ -1127,9 +1127,9 @@ conf.set10('KILL_USER_PROCESSES', kill_user_processes)
 #
 # default_keymap = get_option('default-keymap')
 # if default_keymap == ''
-#         # We canonicalize empty keymap to 'kernel', as it makes the default value
+#         # We canonicalize empty keymap to '@kernel', as it makes the default value
 #         # in the factory provided /etc/vconsole.conf more obvious.
-#         default_keymap = 'kernel'
+#         default_keymap = '@kernel'
 # endif
 # conf.set_quoted('SYSTEMD_DEFAULT_KEYMAP', default_keymap)
 #
