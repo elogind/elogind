@@ -1402,7 +1402,6 @@ conf.set10('HAVE_APPARMOR', false)
 conf.set10('HAVE_SMACK_RUN_LABEL', false)
 #endif // 0
 
-
 feature = get_option('polkit')
 libpolkit = dependency('polkit-gobject-1',
                        required : feature.disabled() ? feature : false)
@@ -1734,22 +1733,13 @@ conf.set10('HAVE_PCRE2', false)
 conf.set10('HAVE_GLIB', false)
 #endif // 0
 
-want_dbus = get_option('dbus')
-if want_dbus != 'false' and not skip_deps
-        libdbus = dependency('dbus-1',
-                             version : '>= 1.3.2',
-                             required : want_dbus == 'true')
-        have = libdbus.found()
-else
-        have = false
-        libdbus = []
-endif
-conf.set10('HAVE_DBUS', have)
 
-dbusdatadir = datadir / 'dbus-1'
-if conf.get('HAVE_DBUS') == 1
-        dbusdatadir = libdbus.get_variable(pkgconfig: 'datadir', default_value: datadir) / 'dbus-1'
-endif
+libdbus = dependency('dbus-1',
+                     version : '>= 1.3.2',
+                     required : get_option('dbus'))
+conf.set10('HAVE_DBUS', libdbus.found())
+
+dbusdatadir = libdbus.get_variable(pkgconfig: 'datadir', default_value: datadir) / 'dbus-1'
 
 dbuspolicydir = get_option('dbuspolicydir')
 if dbuspolicydir == ''
@@ -1759,19 +1749,13 @@ endif
 #if 0 /// UNNEEDED by elogind
 # dbussessionservicedir = get_option('dbussessionservicedir')
 # if dbussessionservicedir == ''
-#         dbussessionservicedir = dbusdatadir / 'services'
-#         if conf.get('HAVE_DBUS') == 1
-#                 dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
-#         endif
+#         dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbusdatadir / 'services')
 # endif
 #endif // 0
 
 dbussystemservicedir = get_option('dbussystemservicedir')
 if dbussystemservicedir == ''
-        dbussystemservicedir = dbusdatadir / 'system-services'
-        if conf.get('HAVE_DBUS') == 1
-                dbussystemservicedir = libdbus.get_variable(pkgconfig: 'system_bus_services_dir', default_value: dbussystemservicedir)
-        endif
+        dbussystemservicedir = libdbus.get_variable(pkgconfig: 'system_bus_services_dir', default_value: dbusdatadir / 'system-services')
 endif
 
 #if 0 /// UNNEEDED by elogind
@@ -1781,10 +1765,7 @@ endif
 #                 dbus_interfaces_dir = 'no'
 #                 warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
 #         else
-#                 dbus_interfaces_dir = dbusdatadir / 'interfaces'
-#                 if conf.get('HAVE_DBUS') == 1
-#                         dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
-#                 endif
+#                 dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbusdatadir / 'interfaces')
 #         endif
 # endif
 #

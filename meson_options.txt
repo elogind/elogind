@@ -516,7 +516,7 @@ option('pam', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'di
 # option('glib', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'libglib support (for tests only)')
 #endif // 0
-option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
+option('dbus', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'libdbus support (for tests only)')
 
 #if 0 /// UNNEEDED BY elogind
