@@ -138,9 +138,9 @@ option('utmp', type : 'boolean',
 #        description : 'support for environment.d')
 # option('binfmt', type : 'boolean',
 #        description : 'support for custom binary formats')
-# option('repart', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('repart', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'install the systemd-repart tool')
-# option('sysupdate', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('sysupdate', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'install the systemd-sysupdate tool')
 # option('coredump', type : 'boolean',
 #        description : 'install the coredump handler')
@@ -162,7 +162,7 @@ option('utmp', type : 'boolean',
 #        description : 'install the systemd-sysext stack')
 # option('userdb', type : 'boolean',
 #        description : 'install the systemd-userdbd stack')
-# option('homed', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('homed', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'install the systemd-homed stack')
 # option('networkd', type : 'boolean',
 #        description : 'install the systemd-networkd stack')
@@ -196,7 +196,7 @@ option('utmp', type : 'boolean',
 #        description : 'support for the sysusers configuration')
 # option('tmpfiles', type : 'boolean',
 #        description : 'support for tmpfiles.d')
-# option('importd', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('importd', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'install the systemd-importd daemon')
 # option('hwdb', type : 'boolean',
 #        description : 'support for the hardware database')
@@ -491,7 +491,7 @@ option('pam', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'di
 #        description : 'whether to use openssl or gcrypt where both are supported')
 # option('p11kit', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'p11kit support')
-# option('libfido2', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('libfido2', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'FIDO2 support')
 # option('tpm2', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'TPM2 support')
@@ -520,7 +520,7 @@ option('dbus', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'd
        description : 'libdbus support (for tests only)')
 
 #if 0 /// UNNEEDED BY elogind
-# option('bootloader', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('bootloader', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'sd-boot/stub and userspace tools')
 # option('sbat-distro', type : 'string', value : 'auto',
 #        description : 'SBAT distribution ID, e.g. fedora, or auto for autodetection')
@@ -583,7 +583,7 @@ option('urlify', type : 'boolean', value : true,
 #        description : 'build against LLVM libFuzzer')
 # option('kernel-install', type: 'boolean', value: true,
 #        description : 'install kernel-install and associated files')
-# option('ukify', type : 'combo', choices : ['auto', 'true', 'false'],
+# option('ukify', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #        description : 'install ukify')
 # option('analyze', type: 'boolean', value: true,
 #        description : 'install systemd-analyze')
