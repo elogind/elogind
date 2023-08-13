@@ -458,8 +458,12 @@ static int execute(
                                 return r;
 
                         r = write_kernel_hibernate_location(hibernate_location);
-                        if (r < 0)
+                        if (r < 0) {
+                                if (is_efi_boot())
+                                        (void) efi_set_variable(EFI_SYSTEMD_VARIABLE(HibernateLocation), NULL, 0);
+
                                 return log_error_errno(r, "Failed to prepare for hibernation: %m");
+                        }
                 }
 
 #if 0 /// elogind supports suspend modes, and our write_mode() variant does more and logs on error
