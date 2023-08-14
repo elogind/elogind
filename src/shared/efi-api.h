@@ -75,3 +75,6 @@ static inline char *efi_tilt_backslashes(char *s) {
         return string_replace_char(s, '\\', '/');
 }
 #endif // 0
+
+sd_id128_t efi_guid_to_id128(const void *guid);
+void efi_id128_to_guid(sd_id128_t id, void *ret_guid);
