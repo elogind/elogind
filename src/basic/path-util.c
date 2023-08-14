@@ -1126,7 +1126,9 @@ int path_extract_directory(const char *path, char **ret) {
         if (!path_is_valid(a))
                 return -EINVAL;
 
-        *ret = TAKE_PTR(a);
+        if (ret)
+                *ret = TAKE_PTR(a);
+
         return 0;
 }
 
