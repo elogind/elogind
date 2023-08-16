@@ -213,6 +213,7 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # ntpservicelistdir = prefixdir / 'lib/elogind/ntp-units.d'
 # repartdefinitionsdir = libexecdir / 'repart/definitions'
 # credstoredir = prefixdir / 'lib/credstore'
+# pcrlockdir = prefixdir / 'lib/pcrlock.d'
 #
 # configfiledir = get_option('configfiledir')
 # if configfiledir == ''
