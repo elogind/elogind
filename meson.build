@@ -1435,6 +1435,7 @@ libxenctrl = dependency('xencontrol',
                         version : '>= 4.9',
                         required : get_option('xenctrl'))
 conf.set10('HAVE_XENCTRL', libxenctrl.found())
+libxenctrl_cflags = libxenctrl.partial_dependency(includes: true, compile_args: true)
 
 feature = get_option('pam')
 libpam = dependency('pam',
@@ -1821,6 +1822,8 @@ endif
 #         error_message : 'fdisk and openssl required').allowed()
 # conf.set10('ENABLE_SYSUPDATE', have)
 #
+# conf.set10('ENABLE_STORAGETM', get_option('storagetm'))
+#
 # have = get_option('importd').require(
 #         conf.get('HAVE_LIBCURL') == 1 and
 #         conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and
@@ -1897,7 +1900,6 @@ conf.set10('ENABLE_HOMED', false)
 #                 'userdb',
 #                 'utmp',
 #                 'vconsole',
-#                 'vmspawn',
 #                 'xdg-autostart']
 #else // 0
 foreach term : ['efi',
@@ -2569,6 +2571,7 @@ subdir('src/login')
 # subdir('src/partition')
 # subdir('src/path')
 # subdir('src/pcrextend')
+# subdir('src/pcrlock')
 # subdir('src/portable')
 # subdir('src/pstore')
 # subdir('src/quotacheck')
@@ -2594,10 +2597,11 @@ subdir('src/login')
 # subdir('src/sysupdate')
 # subdir('src/sysusers')
 # subdir('src/sysv-generator')
+# subdir('src/storagetm')
 # subdir('src/timedate')
 # subdir('src/timesync')
-# subdir('src/tpm2-setup')
 # subdir('src/tmpfiles')
+# subdir('src/tpm2-setup')
 # subdir('src/tty-ask-password-agent')
 # subdir('src/update-done')
 # subdir('src/update-utmp')
@@ -2606,7 +2610,6 @@ subdir('src/login')
 # subdir('src/varlinkctl')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
-# subdir('src/vmspawn')
 # subdir('src/volatile-root')
 # subdir('src/xdg-autostart-generator')
 #endif // 0
@@ -3375,12 +3378,12 @@ foreach tuple : [
 #         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
 #         ['sysupdate'],
 #         ['sysusers'],
+#         ['storagetm'],
 #         ['timedated'],
 #         ['timesyncd'],
 #         ['tmpfiles'],
 #         ['userdb'],
 #         ['vconsole'],
-#         ['vmspawn'],
 #         ['xdg-autostart'],
 #
 #         # optional features
