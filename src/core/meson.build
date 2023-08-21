@@ -202,8 +202,8 @@ libcore_sources = files(
 #         },
 # ]
 #
-# in_files = [['system.conf',                     pkgsysconfdir],
-#             ['user.conf',                       pkgsysconfdir],
+# in_files = [['system.conf',                     pkgconfigfiledir],
+#             ['user.conf',                       pkgconfigfiledir],
 #             ['org.freedesktop.systemd1.policy', polkitpolicydir]]
 #
 # foreach item : in_files
@@ -215,7 +215,7 @@ libcore_sources = files(
 #                 input : file + '.in',
 #                 output: file,
 #                 command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-#                 install : (dir == pkgsysconfdir) ? install_sysconfdir_samples : (dir != 'no'),
+#                 install : (dir == pkgconfigfiledir) ? install_sysconfdir_samples : (dir != 'no'),
 #                 install_dir : dir)
 # endforeach
 #

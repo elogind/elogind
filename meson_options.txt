@@ -262,7 +262,9 @@ option('pamconfdir', type : 'string',
 option('docdir', type : 'string',
        description : 'documentation directory')
 option('install-sysconfdir', type : 'combo', choices : ['true', 'no-samples', 'false'], value : 'true',
-       description : 'install configuration files and directories to $sysconfdir')
+       description : 'install configuration files and directories')
+option('configfiledir', type : 'string', value : '',
+       description : 'directory for configuration files')
 
 option('fallback-hostname', type : 'string', value : 'localhost',
        description : 'the hostname used if none configured')
@@ -595,4 +597,3 @@ option('urlify', type : 'boolean', value : true,
 # option('bpf-framework', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 #     description: 'build BPF programs from source code in restricted C')
 #endif // 0
-

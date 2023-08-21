@@ -214,11 +214,16 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # repartdefinitionsdir = libexecdir / 'repart/definitions'
 # credstoredir = prefixdir / 'lib/credstore'
 #
+# configfiledir = get_option('configfiledir')
+# if configfiledir == ''
+#         configfiledir= sysconfdir
+# endif
+# pkgconfigfiledir = configfiledir / 'elogind'
+#
 # docdir = get_option('docdir')
 # if docdir == ''
-#         docdir = datadir / 'doc/systemd'
+#         docdir = datadir / 'doc/elogind'
 # endif
-#
 #else // 0
 pkgdatadir = datadir / 'elogind'
 pkgsysconfdir = sysconfdir / 'elogind'
@@ -1060,7 +1065,7 @@ if not meson.is_cross_build()
 endif
 if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
         warning('\n' +
-                'The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
+                'The configured user name "@0@" and group name "@1@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
                 'Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
 endif
 
