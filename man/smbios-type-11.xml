@@ -50,7 +50,9 @@
         form. See
         <citerefentry><refentrytitle>elogind.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> and
         <ulink url="https://systemd.io/CREDENTIALS">System and Service Credentials</ulink> for
-        details.</para></listitem>
+        details.</para>
+
+        <xi:include href="version-info.xml" xpointer="v254"/></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -58,7 +60,9 @@
 
         <listitem><para>This allows configuration of additional kernel command line options, and is read by
         the kernel UEFI stub. For details see
-        <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para></listitem>
+        <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+
+        <xi:include href="version-info.xml" xpointer="v254"/></listitem>
       </varlistentry>
     </variablelist>
   </refsect1>
