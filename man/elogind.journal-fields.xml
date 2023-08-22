@@ -5,7 +5,7 @@
 
 
 <!-- 0 // Rewrite for elogind
-<refentry id="systemd.journal-fields">
+<refentry id="elogind.journal-fields" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>systemd.journal-fields</title>
