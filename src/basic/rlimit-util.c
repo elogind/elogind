@@ -363,13 +363,7 @@ int rlimit_from_string_harder(const char *s) {
 #endif // 0
 
 void rlimit_free_all(struct rlimit **rl) {
-        int i;
-
-        if (!rl)
-                return;
-
-        for (i = 0; i < _RLIMIT_MAX; i++)
-                rl[i] = mfree(rl[i]);
+        free_many((void**) rl, _RLIMIT_MAX);
 }
 
 int rlimit_nofile_bump(int limit) {
