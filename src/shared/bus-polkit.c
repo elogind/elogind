@@ -263,15 +263,18 @@ static int async_polkit_read_reply(sd_bus_message *reply, AsyncPolkitQuery *q) {
 
                 e = sd_bus_message_get_error(reply);
 
-                /* Save error from polkit reply, so it can be returned when the same authorization is
-                 * attempted for second time */
-                if (!bus_error_is_unknown_service(e)) {
+                if (bus_error_is_unknown_service(e))
+                        /* Treat no PK available as access denied */
+                        q->denied_action = TAKE_PTR(a);
+                else {
+                        /* Save error from polkit reply, so it can be returned when the same authorization
+                         * is attempted for second time */
                         q->error_action = TAKE_PTR(a);
-                        return sd_bus_error_copy(&q->error, e);
+                        r = sd_bus_error_copy(&q->error, e);
+                        if (r == -ENOMEM)
+                                return r;
                 }
 
-                /* Treat no PK available as access denied */
-                q->denied_action = TAKE_PTR(a);
                 return 0;
         }
 
@@ -285,7 +288,7 @@ static int async_polkit_read_reply(sd_bus_message *reply, AsyncPolkitQuery *q) {
                 LIST_PREPEND(authorized, q->authorized_actions, TAKE_PTR(a));
         else if (challenge) {
                 q->error_action = TAKE_PTR(a);
-                return sd_bus_error_set(&q->error, SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED, "Interactive authentication required.");
+                sd_bus_error_set_const(&q->error, SD_BUS_ERROR_INTERACTIVE_AUTHORIZATION_REQUIRED, "Interactive authentication required.");
         } else
                 q->denied_action = TAKE_PTR(a);
 
@@ -477,6 +480,7 @@ int bus_verify_polkit_async(
         assert(call);
         assert(action);
         assert(registry);
+        assert(ret_error);
 
         r = check_good_user(call, good_user);
         if (r != 0)
