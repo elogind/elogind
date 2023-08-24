@@ -2019,7 +2019,7 @@ int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l) {
 }
 #endif // 0
 
-int json_variant_merge(JsonVariant **v, JsonVariant *m) {
+int json_variant_merge_object(JsonVariant **v, JsonVariant *m) {
         _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
         _cleanup_free_ JsonVariant **array = NULL;
         size_t v_elements, m_elements, k;
@@ -2080,6 +2080,20 @@ int json_variant_merge(JsonVariant **v, JsonVariant *m) {
         JSON_VARIANT_REPLACE(*v, TAKE_PTR(w));
 
         return 1;
+}
+
+int json_variant_merge_objectb(JsonVariant **v, ...) {
+        _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
+        va_list ap;
+        int r;
+
+        va_start(ap, v);
+        r = json_buildv(&w, ap);
+        va_end(ap);
+        if (r < 0)
+                return r;
+
+        return json_variant_merge_object(v, w);
 }
 
 int json_variant_append_array(JsonVariant **v, JsonVariant *element) {
@@ -4252,30 +4266,6 @@ int json_build(JsonVariant **ret, ...) {
 
         va_start(ap, ret);
         r = json_buildv(ret, ap);
-        va_end(ap);
-
-        return r;
-}
-
-int json_appendv(JsonVariant **v, va_list ap) {
-        _cleanup_(json_variant_unrefp) JsonVariant *w = NULL;
-        int r;
-
-        assert(v);
-
-        r = json_buildv(&w, ap);
-        if (r < 0)
-                return r;
-
-        return json_variant_merge(v, w);
-}
-
-int json_append(JsonVariant **v, ...) {
-        va_list ap;
-        int r;
-
-        va_start(ap, v);
-        r = json_appendv(v, ap);
         va_end(ap);
 
         return r;
