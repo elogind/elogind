@@ -208,6 +208,7 @@ int json_variant_dump(JsonVariant *v, JsonFormatFlags flags, FILE *f, const char
 int json_variant_filter(JsonVariant **v, char **to_remove);
 
 int json_variant_set_field(JsonVariant **v, const char *field, JsonVariant *value);
+int json_variant_set_fieldb(JsonVariant **v, const char *field, ...);
 int json_variant_set_field_string(JsonVariant **v, const char *field, const char *value);
 #if 0 /// UNNEEDED by elogind
 int json_variant_set_field_integer(JsonVariant **v, const char *field, int64_t value);
