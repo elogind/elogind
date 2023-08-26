@@ -13,6 +13,22 @@
 // #include "string-util.h"
 #include "sync-util.h"
 
+int id128_from_string_nonzero(const char *s, sd_id128_t *ret) {
+        sd_id128_t t;
+        int r;
+
+        assert(ret);
+
+        r = sd_id128_from_string(ASSERT_PTR(s), &t);
+        if (r < 0)
+                return r;
+
+        if (sd_id128_is_null(t))
+                return -ENXIO;
+
+        *ret = t;
+        return 0;
+}
 
 #if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) {
