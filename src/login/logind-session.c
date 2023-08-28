@@ -1439,6 +1439,8 @@ int session_kill(Session *s, KillWho who, int signo) {
 static int session_open_vt(Session *s) {
         char path[sizeof("/dev/tty") + DECIMAL_STR_MAX(s->vtnr)];
 
+        assert(s);
+
         if (s->vtnr < 1)
                 return -ENODEV;
 
@@ -1456,6 +1458,8 @@ static int session_open_vt(Session *s) {
 static int session_prepare_vt(Session *s) {
         int vt, r;
         struct vt_mode mode = {};
+
+        assert(s);
 
         if (s->vtnr < 1)
                 return 0;
@@ -1511,6 +1515,8 @@ error:
 
 static void session_restore_vt(Session *s) {
         int r;
+
+        assert(s);
 
         if (s->vtfd < 0)
                 return;
@@ -1589,6 +1595,8 @@ bool session_is_controller(Session *s, const char *sender) {
 static void session_release_controller(Session *s, bool notify) {
         _unused_ _cleanup_free_ char *name = NULL;
         SessionDevice *sd;
+
+        assert(s);
 
         if (!s->controller)
                 return;
