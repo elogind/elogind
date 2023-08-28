@@ -2137,8 +2137,8 @@ version_tag = get_option('version-tag')
 if version_tag == '' and git.found() and fs.exists(project_source_root / '.git')
         # If the working tree has no tags (CI builds), the first git-describe will fail
         # and we fall back to project_version-commitid instead.
-        version_cmd = '''(git -C "$1" describe --abbrev=7 --dirty=^ 2>/dev/null ||
-                          echo "$2-$(git -C "$1" describe --always --abbrev=7)") |
+        version_cmd = '''git -C "$1" describe --abbrev=7 --dirty=^ 2>/dev/null ||
+                         echo "$2-$(git -C "$1" describe --always --abbrev=7)" |
                          sed 's/^v//; s/-rc/~rc/' '''
 else
         version_cmd = '''echo "$2" '''
@@ -2899,11 +2899,14 @@ public_programs += [exe]
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : want_ukify,
 #         install_mode : 'rwxr-xr-x',
-#         install_dir : libexecdir)
+#         install_dir : bindir)
 # if want_ukify
 #         public_programs += ukify
-# endif
 #
+#         meson.add_install_script(sh, '-c',
+#                                  ln_s.format(bindir / 'ukify',
+#                                              libexecdir / 'ukify'))
+# endif
 #else // 0
 executable('elogind-uaccess-command',
            'src/uaccess-command/uaccess-command.c',
