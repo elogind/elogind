@@ -274,6 +274,11 @@ Features:
   idea, and specifically works around the fact the autofs ignores busy by mount
   namespaces)
 
+* refuse using the switch-root operation without /etc/initrd-release. Now
+  that we have a concept of userspace reboot, we can clearly say: switch-root
+  is for transitioning from initrd to host (or initrd to next initrd), while
+  userspace reboot is for switching host to next version of the host.
+
 * mount most file systems with a restrictive uidmap. e.g. mount /usr/ with a
   uidmap that blocks out anything outside 0…1000 (i.e. system users) and similar.
 
@@ -309,6 +314,8 @@ Features:
   them, as long as the data is static. This can then be combined with the
   aforementioned journald subscription varlink service, to enable
   activation-by-message id and similar.
+
+* .service with invalid Sockets= starts successfully.
 
 * landlock: lock down RuntimeDirectory= via landlock, so that services lose
   ability to write anywehere else below /run/. Similar for
