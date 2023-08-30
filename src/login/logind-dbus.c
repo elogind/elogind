@@ -1603,19 +1603,10 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
-static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-        int active = _active;
+static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
+        int k = 0, r, active = _active;
 
         assert(m);
-        assert(IN_SET(w, INHIBIT_SHUTDOWN, INHIBIT_SLEEP));
-
-        return sd_bus_emit_signal(m->bus,
-                                  "/org/freedesktop/login1",
-                                  "org.freedesktop.login1.Manager",
-                                  w == INHIBIT_SHUTDOWN ? "PrepareForShutdown" : "PrepareForSleep",
-                                  "b",
-                                  active);
-}
 
 #if 1 /// elogind specific helper to make HALT and REBOOT possible.
 static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb ) {
@@ -1753,6 +1744,8 @@ static int elogind_execute_shutdown_or_sleep(
 
         if ( r < 0 )
                 return r;
+        assert(a);
+        assert(IN_SET(a->inhibit_what, INHIBIT_SHUTDOWN, INHIBIT_SLEEP));
 
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
@@ -1760,8 +1753,37 @@ static int elogind_execute_shutdown_or_sleep(
          * Note: execute_shutdown_or_sleep() does not send the
          *       signal unless an error occurred. */
         (void) send_prepare_for( m, a->inhibit_what, false );
+        /* We need to send both old and new signal for backward compatibility. The newer one allows clients
+         * to know which type of reboot is going to happen, as they might be doing different actions (e.g.:
+         * on soft-reboot), and it is sent first, so that clients know that if they receive the old one
+         * first then they don't have to wait for the new one, as it means it's not supported. So, do not
+         * change the order here, as it is an API. */
+        if (a->inhibit_what == INHIBIT_SHUTDOWN) {
+                k = sd_bus_emit_signal(m->bus,
+                                       "/org/freedesktop/login1",
+                                       "org.freedesktop.login1.Manager",
+                                       "PrepareForShutdownWithMetadata",
+                                       "ba{sv}",
+                                       active,
+                                       1,
+                                       "type",
+                                       "s",
+                                       handle_action_to_string(a->handle));
+                if (k < 0)
+                        log_debug_errno(k, "Failed to emit PrepareForShutdownWithMetadata(): %m");
+        }
+
+        r = sd_bus_emit_signal(m->bus,
+                               "/org/freedesktop/login1",
+                               "org.freedesktop.login1.Manager",
+                               a->inhibit_what == INHIBIT_SHUTDOWN ? "PrepareForShutdown" : "PrepareForSleep",
+                               "b",
+                               active);
+        if (r < 0)
+                log_debug_errno(r, "Failed to emit PrepareForShutdown(): %m");
 
         return 0;
+        return RET_GATHER(k, r);
 }
 #endif // 1
 
@@ -1815,7 +1837,7 @@ static int execute_shutdown_or_sleep(
 
 error:
         /* Tell people that they now may take a lock again */
-        (void) send_prepare_for(m, a->inhibit_what, false);
+        (void) send_prepare_for(m, a, false);
 
         return r;
 }
@@ -1933,10 +1955,10 @@ int bus_manager_shutdown_or_sleep_now_or_later(
              ( (INHIBIT_SLEEP    == a->inhibit_what) && !m->allow_suspend_interrupts ) ) {
 #endif // 1
         /* Tell everybody to prepare for shutdown/sleep */
-        (void) send_prepare_for(m, a->inhibit_what, true);
 #if 1 /// close if() needed by elogind
         }
 #endif // 1
+        (void) send_prepare_for(m, a, true);
 
         delayed =
                 m->inhibit_delay_max > 0 &&
@@ -4029,6 +4051,9 @@ static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_SIGNAL_WITH_ARGS("PrepareForShutdown",
                                 SD_BUS_ARGS("b", start),
                                 0),
+        SD_BUS_SIGNAL_WITH_ARGS("PrepareForShutdownWithMetadata",
+                                SD_BUS_ARGS("b", start, "a{sv}", metadata),
+                                0),
         SD_BUS_SIGNAL_WITH_ARGS("PrepareForSleep",
                                 SD_BUS_ARGS("b", start),
                                 0),
@@ -4085,7 +4110,7 @@ int match_job_removed(sd_bus_message *message, void *userdata, sd_bus_error *err
                 log_info("Operation '%s' finished.", inhibit_what_to_string(m->delayed_action->inhibit_what));
 
                 /* Tell people that they now may take a lock again */
-                (void) send_prepare_for(m, m->delayed_action->inhibit_what, false);
+                (void) send_prepare_for(m, m->delayed_action, false);
 
                 m->action_job = mfree(m->action_job);
                 m->delayed_action = NULL;
