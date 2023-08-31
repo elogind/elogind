@@ -37,6 +37,7 @@
 #         'emergency-action.c',
 #         'exec-credential.c',
 #         'execute.c',
+#         'execute-serialize.c',
 #         'generator-setup.c',
 #         'ima-setup.c',
 #         'import-creds.c',
