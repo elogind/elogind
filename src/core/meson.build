@@ -154,6 +154,7 @@ libcore_sources = files(
 #
 # elogind_executor_sources = files(
 #         'executor.c',
+#         'exec-invoke.c',
 # )
 #
 # executables += [
@@ -177,7 +178,12 @@ libcore_sources = files(
 #                         libcore,
 #                         libshared,
 #                 ],
-#                 'dependencies' : libseccomp,
+#                 'dependencies' : [
+#                         libapparmor,
+#                         libpam,
+#                         libseccomp,
+#                         libselinux,
+#                 ],
 #         },
 #         fuzz_template + {
 #                 'sources' : files('fuzz-unit-file.c'),
