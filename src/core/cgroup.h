@@ -8,24 +8,23 @@
 //#include "cpu-set-util.h"
 #include "firewall-util.h"
 #include "list.h"
-#include "pidref.h"
 #include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
-typedef struct CGroupTasksMax {
+typedef struct TasksMax {
         /* If scale == 0, just use value; otherwise, value / scale.
          * See tasks_max_resolve(). */
         uint64_t value;
         uint64_t scale;
-} CGroupTasksMax;
+} TasksMax;
 
-#define CGROUP_TASKS_MAX_UNSET ((CGroupTasksMax) { .value = UINT64_MAX, .scale = 0 })
+#define TASKS_MAX_UNSET ((TasksMax) { .value = UINT64_MAX, .scale = 0 })
 
-static inline bool cgroup_tasks_max_isset(const CGroupTasksMax *tasks_max) {
+static inline bool tasks_max_isset(const TasksMax *tasks_max) {
         return tasks_max->value != UINT64_MAX || tasks_max->scale != 0;
 }
 
-uint64_t cgroup_tasks_max_resolve(const CGroupTasksMax *tasks_max);
+uint64_t tasks_max_resolve(const TasksMax *tasks_max);
 
 typedef struct CGroupContext CGroupContext;
 typedef struct CGroupDeviceAllow CGroupDeviceAllow;
@@ -213,7 +212,7 @@ struct CGroupContext {
         LIST_HEAD(CGroupSocketBindItem, socket_bind_deny);
 
         /* Common */
-        CGroupTasksMax tasks_max;
+        TasksMax tasks_max;
 
         /* Settings for systemd-oomd */
         ManagedOOMMode moom_swap;
@@ -228,10 +227,6 @@ struct CGroupContext {
          * triggers, nor triggers for non-memory pressure. We might add that later. */
 
         NFTSetContext nft_set_context;
-
-        /* Forward coredumps for processes that crash within this cgroup.
-         * Requires 'delegate' to also be true. */
-        bool coredump_receive;
 };
 
 /* Used when querying IP accounting data */
@@ -256,9 +251,6 @@ typedef enum CGroupIOAccountingMetric {
 
 typedef struct Unit Unit;
 typedef struct Manager Manager;
-typedef enum ManagerState ManagerState;
-
-uint64_t cgroup_context_cpu_weight(CGroupContext *c, ManagerState state);
 
 usec_t cgroup_cpu_adjust_period(usec_t period, usec_t quota, usec_t resolution, usec_t max_period);
 
@@ -283,10 +275,13 @@ static inline bool cgroup_context_want_memory_pressure(const CGroupContext *c) {
                 (c->memory_pressure_watch == CGROUP_PRESSURE_WATCH_AUTO && c->memory_accounting);
 }
 
-int cgroup_context_add_device_allow(CGroupContext *c, const char *dev, const char *mode);
-int cgroup_context_add_bpf_foreign_program(CGroupContext *c, uint32_t attach_type, const char *path);
+int cgroup_add_device_allow(CGroupContext *c, const char *dev, const char *mode);
+int cgroup_add_bpf_foreign_program(CGroupContext *c, uint32_t attach_type, const char *path);
 
-void unit_modify_nft_set(Unit *u, bool add);
+void cgroup_oomd_xattr_apply(Unit *u, const char *cgroup_path);
+int cgroup_log_xattr_apply(Unit *u, const char *cgroup_path);
+
+void cgroup_modify_nft_set(Unit *u, bool add);
 
 CGroupMask unit_get_own_mask(Unit *u);
 CGroupMask unit_get_delegate_mask(Unit *u);
@@ -333,16 +328,14 @@ void manager_shutdown_cgroup(Manager *m, bool delete);
 unsigned manager_dispatch_cgroup_realize_queue(Manager *m);
 
 Unit *manager_get_unit_by_cgroup(Manager *m, const char *cgroup);
-Unit *manager_get_unit_by_pidref_cgroup(Manager *m, PidRef *pid);
-Unit *manager_get_unit_by_pidref_watching(Manager *m, PidRef *pid);
-Unit* manager_get_unit_by_pidref(Manager *m, PidRef *pid);
+Unit *manager_get_unit_by_pid_cgroup(Manager *m, pid_t pid);
 Unit* manager_get_unit_by_pid(Manager *m, pid_t pid);
 
 uint64_t unit_get_ancestor_memory_min(Unit *u);
 uint64_t unit_get_ancestor_memory_low(Unit *u);
 uint64_t unit_get_ancestor_startup_memory_low(Unit *u);
 
-int unit_search_main_pid(Unit *u, PidRef *ret);
+int unit_search_main_pid(Unit *u, pid_t *ret);
 int unit_watch_all_pids(Unit *u);
 
 int unit_synthesize_cgroup_empty_event(Unit *u);
@@ -385,6 +378,8 @@ CGroupDevicePolicy cgroup_device_policy_from_string(const char *s) _pure_;
 void unit_cgroup_catchup(Unit *u);
 
 bool unit_cgroup_delegate(Unit *u);
+
+int compare_job_priority(const void *a, const void *b);
 
 int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name);
 int unit_cgroup_freezer_action(Unit *u, FreezerAction action);
