@@ -32,7 +32,7 @@ liblogind_core_sources = files(
         'logind-session.c',
         'logind-user-dbus.c',
         'logind-user.c',
-        'logind-utmp.c',
+        'logind-wall.c',
 )
 
 #if 1 /// elogind has some additional files:

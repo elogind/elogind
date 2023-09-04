@@ -22,12 +22,6 @@ int utmp_put_dead_process(const char *id, pid_t pid, int code, int status);
 int utmp_put_init_process(const char *id, pid_t pid, pid_t sid, const char *line, int ut_type, const char *user);
 #endif // 0
 
-int utmp_wall(
-        const char *message,
-        const char *username,
-        const char *origin_tty,
-        bool (*match_tty)(const char *tty, bool is_local, void *userdata),
-        void *userdata);
 
 static inline bool utxent_start(void) {
         setutxent();
@@ -62,13 +56,5 @@ static inline int utmp_put_init_process(const char *id, pid_t pid, pid_t sid, co
         return 0;
 }
 #endif // 0
-static inline int utmp_wall(
-                const char *message,
-                const char *username,
-                const char *origin_tty,
-                bool (*match_tty)(const char *tty, bool is_local, void *userdata),
-                void *userdata) {
-        return 0;
-}
 
 #endif /* ENABLE_UTMP */

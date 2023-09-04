@@ -64,6 +64,7 @@
 #include "sd-login.h"
 #include "sleep.h"
 #include "update-utmp.h"
+#include "wall.h"
 
 /* As a random fun fact sysvinit had a 252 (256-(strlen(" \r\n")+1))
  * character limit for the wall message.
@@ -2626,8 +2627,8 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                            username ? "OPERATOR=%s" : NULL, username);
 
 #if 0 /// elogind wants to allow extra cancellation messages
-                utmp_wall("System shutdown has been cancelled",
-                          username, tty, logind_wall_tty_filter, m);
+                (void) wall("System shutdown has been cancelled",
+                            username, tty, logind_wall_tty_filter, m);
 #else // 0
                 r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
                              strempty(m->wall_message),
