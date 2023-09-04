@@ -29,6 +29,7 @@ systemd_headers = files(_systemd_headers)
 #         'sd-dhcp6-client.h',
 #         'sd-dhcp6-lease.h',
 #         'sd-dhcp6-option.h',
+#         'sd-dhcp6-protocol.h',
 #         'sd-ipv4acd.h',
 #         'sd-ipv4ll.h',
 #         'sd-lldp-rx.h',
