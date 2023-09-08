@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <fcntl.h>
-#include <poll.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,14 +11,11 @@
 
 #include "alloc-util.h"
 #include "errno-util.h"
-#include "fd-util.h"
 #include "hostname-util.h"
-#include "io-util.h"
 #include "macro.h"
 #include "memory-util.h"
 #include "path-util.h"
 #include "string-util.h"
-#include "terminal-util.h"
 #include "time-util.h"
 #include "user-util.h"
 #include "utmp-wtmp.h"
@@ -284,4 +279,3 @@ int utmp_put_runlevel(int runlevel, int previous) {
         return write_entry_both(&store);
 }
 #endif // 0
-
