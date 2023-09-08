@@ -14,6 +14,7 @@
 #include "alloc-util.h"
 #include "format-util.h"
 #include "macro.h"
+#include "namespace-util.h"
 #include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
@@ -54,6 +55,8 @@ int get_process_umask(pid_t pid, mode_t *ret);
 #endif // 0
 
 int container_get_leader(const char *machine, pid_t *pid);
+
+int namespace_get_leader(pid_t pid, NamespaceType type, pid_t *ret);
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 
@@ -232,5 +235,3 @@ int get_process_threads(pid_t pid);
 
 int is_reaper_process(void);
 int make_reaper_process(bool b);
-
-int posix_spawn_wrapper(const char *path, char *const *argv, char *const *envp, pid_t *ret_pid);
