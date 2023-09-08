@@ -363,13 +363,28 @@ int rlimit_from_string_harder(const char *s) {
 #endif // 0
 
 void rlimit_free_all(struct rlimit **rl) {
-        int i;
+        free_many((void**) rl, _RLIMIT_MAX);
+}
 
-        if (!rl)
-                return;
+int rlimit_copy_all(struct rlimit* target[static _RLIMIT_MAX], struct rlimit* const source[static _RLIMIT_MAX]) {
+        struct rlimit* copy[_RLIMIT_MAX] = {};
 
-        for (i = 0; i < _RLIMIT_MAX; i++)
-                rl[i] = mfree(rl[i]);
+        assert(target);
+        assert(source);
+
+        for (int i = 0; i < _RLIMIT_MAX; i++) {
+                if (!source[i])
+                        continue;
+
+                copy[i] = newdup(struct rlimit, source[i], 1);
+                if (!copy[i]) {
+                        rlimit_free_all(copy);
+                        return -ENOMEM;
+                }
+        }
+
+        memcpy(target, copy, sizeof(struct rlimit*) * _RLIMIT_MAX);
+        return 0;
 }
 
 int rlimit_nofile_bump(int limit) {
