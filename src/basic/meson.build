@@ -66,6 +66,7 @@
 #         'path-lookup.c',
 #         'path-util.c',
 #         'percent-util.c',
+#         'pidref.c',
 #         'prioq.c',
 #         'proc-cmdline.c',
 #         'process-util.c',
