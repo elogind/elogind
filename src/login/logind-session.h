@@ -7,6 +7,7 @@ typedef enum KillWho KillWho;
 #include "list.h"
 #include "login-util.h"
 #include "logind-user.h"
+#include "pidref.h"
 #include "string-util.h"
 
 typedef enum SessionState {
@@ -89,7 +90,7 @@ struct Session {
         unsigned vtnr;
         int vtfd;
 
-        pid_t leader;
+        PidRef leader;
         uint32_t audit_id;
 
         int fifo_fd;
