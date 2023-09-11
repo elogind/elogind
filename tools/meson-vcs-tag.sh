@@ -6,14 +6,23 @@ set -o pipefail
 
 dir="${1:?}"
 fallback="${2:?}"
+version_tag="$3"
 
-# Apparently git describe has a bug where it always considers the work-tree
-# dirty when invoked with --git-dir (even though 'git status' is happy). Work
-# around this issue by cd-ing to the source directory.
-cd "$dir"
-# Check that we have either .git/ (a normal clone) or a .git file (a work-tree)
-# and that we don't get confused if a tarball is extracted in a higher-level
-# git repository.
-[ -e .git ] && \
-    git describe --abbrev=7 --dirty=^ 2>/dev/null | sed 's/^v//; s/-rc/~rc/' || \
-    echo "$fallback"
+if [ -n "${version_tag}" ]; then
+    # If -Dversion_tag= was used, just use that without further changes.
+    echo "${version_tag}"
+else
+    # Check that we have either .git/ (a normal clone) or a .git file (a work-tree)
+    # and that we don't get confused if a tarball is extracted in a higher-level
+    # git repository.
+    #
+    # If the working tree has no tags (CI builds), the first git-describe will fail
+    # and we fall back to project_version-commitid instead.
+    if [ -e "${dir}/.git" ]; then
+        c="$(git -C "$dir" describe --abbrev=7 --dirty=^ 2>/dev/null ||
+                    echo "${fallback}-$(git -C "$dir" describe --always --abbrev=7)")"
+    else
+        c="${fallback}"
+    fi
+    echo "$c" | sed 's/^v//; s/-rc/~rc/'
+fi
