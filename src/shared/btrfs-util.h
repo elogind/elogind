@@ -78,7 +78,6 @@ int btrfs_quota_scan_wait(int fd);
 int btrfs_quota_scan_ongoing(int fd);
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
 
 int btrfs_subvol_snapshot_at_full(int dir_fdf, const char *from, int dir_fdt, const char *to, BtrfsSnapshotFlags flags, copy_progress_path_t progress_path, copy_progress_bytes_t progress_bytes, void *userdata);
@@ -166,3 +165,5 @@ static inline bool btrfs_might_be_subvol(const struct stat *st) {
 }
 
 int btrfs_forget_device(const char *path);
+
+int btrfs_get_file_physical_offset_fd(int fd, uint64_t *ret);
