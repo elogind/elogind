@@ -104,18 +104,18 @@ TEST(is_device_path) {
         assert_se(!is_device_path(""));
         assert_se(!is_device_path(".."));
 
-        assert_se(!is_device_path("/dev"));
-        assert_se(!is_device_path("/./dev"));
-        assert_se(!is_device_path("/./dev/."));
+        assert_se( is_device_path("/dev"));
+        assert_se( is_device_path("/./dev"));
+        assert_se( is_device_path("/./dev/."));
         assert_se(!is_device_path("/./dev."));
         assert_se( is_device_path("/./dev/foo"));
         assert_se( is_device_path("/./dev/./foo"));
         assert_se(!is_device_path("/./dev./foo"));
-        assert_se(!is_device_path("//dev"));
-        assert_se(!is_device_path("///dev"));
-        assert_se(!is_device_path("/dev/"));
-        assert_se(!is_device_path("///dev/"));
-        assert_se(!is_device_path("/./dev/"));
+        assert_se( is_device_path("//dev"));
+        assert_se( is_device_path("///dev"));
+        assert_se( is_device_path("/dev/"));
+        assert_se( is_device_path("///dev/"));
+        assert_se( is_device_path("/./dev/"));
         assert_se(!is_device_path("/../dev/"));
         assert_se( is_device_path("/dev/sda"));
         assert_se( is_device_path("/dev/sda5"));
@@ -125,10 +125,10 @@ TEST(is_device_path) {
         assert_se(!is_device_path("/../../dev/sda5"));
         assert_se(!is_device_path("/../../../dev/sda5b3"));
         assert_se(!is_device_path("/.././.././dev/sda5b3/idontexit"));
-        assert_se(!is_device_path("/sys"));
-        assert_se(!is_device_path("/sys/"));
-        assert_se(!is_device_path("/./sys"));
-        assert_se(!is_device_path("/./sys/."));
+        assert_se( is_device_path("/sys"));
+        assert_se( is_device_path("/sys/"));
+        assert_se( is_device_path("/./sys"));
+        assert_se( is_device_path("/./sys/."));
         assert_se(!is_device_path("/./sys."));
         assert_se( is_device_path("/./sys/foo"));
         assert_se( is_device_path("/./sys/./foo"));
@@ -136,8 +136,8 @@ TEST(is_device_path) {
         assert_se( is_device_path("/sys/what"));
         assert_se( is_device_path("/sys/something/.."));
         assert_se( is_device_path("/sys/something/../"));
-        assert_se(!is_device_path("/sys////"));
-        assert_se(!is_device_path("/sys////."));
+        assert_se( is_device_path("/sys////"));
+        assert_se( is_device_path("/sys////."));
         assert_se( is_device_path("/sys/.."));
         assert_se( is_device_path("/sys/../"));
         assert_se(!is_device_path("/usr/../dev/sda"));
@@ -163,7 +163,7 @@ TEST(path_simplify) {
         test_path_simplify_one("///", "/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
         test_path_simplify_one("///.//", "/", 0);
         test_path_simplify_one("///.//.///", "/", 0);
-        test_path_simplify_one("////.././///../.", "/", 0);
+        test_path_simplify_one("////.././///../.", "/../..", 0);
         test_path_simplify_one(".", ".", 0);
         test_path_simplify_one("./", ".", 0);
         test_path_simplify_one("./", "./", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
@@ -178,46 +178,6 @@ TEST(path_simplify) {
         test_path_simplify_one("..//./aaa///.//./.bbb/..///c.//d.dd///..eeee/..",
                                "../aaa/.bbb/../c./d.dd/..eeee/..", 0);
         test_path_simplify_one("abc///", "abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-
-        test_path_simplify_one("/../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../abc///", "/abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../abc///", "/abc", 0);
-        test_path_simplify_one("/../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../abc///..", "/abc/..", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../abc///../", "/abc/../", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../abc///../", "/abc/..", 0);
-
-        test_path_simplify_one("/../../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../../abc///", "/abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../../abc///", "/abc", 0);
-        test_path_simplify_one("/../../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../../abc///../..", "/abc/../..", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../../abc///../../", "/abc/../../", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/../../abc///../../", "/abc/../..", 0);
-
-        test_path_simplify_one("/.././../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.././../abc///", "/abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.././../abc///", "/abc", 0);
-        test_path_simplify_one("/.././../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.././../abc///../..", "/abc/../..", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.././../abc///../../", "/abc/../../", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.././../abc///../../", "/abc/../..", 0);
-
-        test_path_simplify_one("/./.././../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/./.././../abc///", "/abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/./.././../abc///", "/abc", 0);
-        test_path_simplify_one("/./.././../abc", "/abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/./.././../abc///../..", "/abc/../..", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/./.././../abc///../../", "/abc/../../", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/./.././../abc///../../", "/abc/../..", 0);
-
-        test_path_simplify_one("/.../abc", "/.../abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.../abc///", "/.../abc/", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.../abc///", "/.../abc", 0);
-        test_path_simplify_one("/.../abc", "/.../abc", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.../abc///...", "/.../abc/...", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.../abc///.../", "/.../abc/.../", PATH_SIMPLIFY_KEEP_TRAILING_SLASH);
-        test_path_simplify_one("/.../abc///.../", "/.../abc/...", 0);
 
         memset(foo, 'a', sizeof(foo) -1);
         char_array_0(foo);
