@@ -43,7 +43,7 @@ int path_split_and_make_absolute(const char *p, char ***ret) {
 }
 #endif // 0
 
-char* path_make_absolute(const char *p, const char *prefix) {
+char *path_make_absolute(const char *p, const char *prefix) {
         assert(p);
 
         /* Makes every item in the list an absolute path by prepending
@@ -136,9 +136,11 @@ int path_make_relative(const char *from, const char *to, char **ret) {
                                         return -ENOMEM;
                         } else {
                                 /* 'to' is inside of 'from'. */
-                                r = path_simplify_alloc(t, &result);
-                                if (r < 0)
-                                        return r;
+                                result = strdup(t);
+                                if (!result)
+                                        return -ENOMEM;
+
+                                path_simplify(result);
 
                                 if (!path_is_valid(result))
                                         return -EINVAL;
@@ -257,7 +259,7 @@ int path_strv_make_absolute_cwd(char **l) {
 }
 #endif // 0
 
-char** path_strv_resolve(char **l, const char *root) {
+char **path_strv_resolve(char **l, const char *root) {
         unsigned k = 0;
         bool enomem = false;
         int r;
@@ -338,7 +340,7 @@ char** path_strv_resolve(char **l, const char *root) {
         return l;
 }
 
-char** path_strv_resolve_uniq(char **l, const char *root) {
+char **path_strv_resolve_uniq(char **l, const char *root) {
 
         if (strv_isempty(l))
                 return l;
@@ -349,9 +351,9 @@ char** path_strv_resolve_uniq(char **l, const char *root) {
         return strv_uniq(l);
 }
 
-char* path_simplify_full(char *path, PathSimplifyFlags flags) {
-        bool add_slash = false, keep_trailing_slash, absolute, beginning = true;
-        char *f = path;
+char *path_simplify_full(char *path, PathSimplifyFlags flags) {
+        bool add_slash = false, keep_trailing_slash;
+        char *f = ASSERT_PTR(path);
         int r;
 
         /* Removes redundant inner and trailing slashes. Also removes unnecessary dots.
@@ -359,8 +361,6 @@ char* path_simplify_full(char *path, PathSimplifyFlags flags) {
          *
          * ///foo//./bar/.   becomes /foo/bar
          * .//./foo//./bar/. becomes foo/bar
-         * /../foo/bar       becomes /foo/bar
-         * /../foo/bar/..    becomes /foo/bar/..
          */
 
         if (isempty(path))
@@ -368,8 +368,8 @@ char* path_simplify_full(char *path, PathSimplifyFlags flags) {
 
         keep_trailing_slash = FLAGS_SET(flags, PATH_SIMPLIFY_KEEP_TRAILING_SLASH) && endswith(path, "/");
 
-        absolute = path_is_absolute(path);
-        f += absolute;  /* Keep leading /, if present. */
+        if (path_is_absolute(path))
+                f++;
 
         for (const char *p = f;;) {
                 const char *e;
@@ -378,17 +378,11 @@ char* path_simplify_full(char *path, PathSimplifyFlags flags) {
                 if (r == 0)
                         break;
 
-                if (r > 0 && absolute && beginning && path_startswith(e, ".."))
-                        /* If we're at the beginning of an absolute path, we can safely skip ".." */
-                        continue;
-
-                beginning = false;
-
                 if (add_slash)
                         *f++ = '/';
 
                 if (r < 0) {
-                        /* if path is invalid, then refuse to simplify the remaining part. */
+                        /* if path is invalid, then refuse to simplify remaining part. */
                         memmove(f, p, strlen(p) + 1);
                         return path;
                 }
@@ -410,7 +404,7 @@ char* path_simplify_full(char *path, PathSimplifyFlags flags) {
         return path;
 }
 
-char* path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
+char *path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
         assert(path);
         assert(prefix);
 
@@ -671,14 +665,7 @@ static int find_executable_impl(const char *name, const char *root, char **ret_f
         return 0;
 }
 
-int find_executable_full(
-                const char *name,
-                const char *root,
-                char **exec_search_path,
-                bool use_path_envvar,
-                char **ret_filename,
-                int *ret_fd) {
-
+int find_executable_full(const char *name, const char *root, char **exec_search_path, bool use_path_envvar, char **ret_filename, int *ret_fd) {
         int last_error = -ENOENT, r = 0;
         const char *p = NULL;
 
@@ -830,7 +817,7 @@ int fsck_exists_for_fstype(const char *fstype) {
 
 #endif // 0
 
-static const char* skip_slash_or_dot(const char *p) {
+static const char *skip_slash_or_dot(const char *p) {
         for (; !isempty(p); p++) {
                 if (*p == '/')
                         continue;
@@ -914,7 +901,7 @@ int path_find_first_component(const char **p, bool accept_dot_dot, const char **
         return len;
 }
 
-static const char* skip_slash_or_dot_backward(const char *path, const char *q) {
+static const char *skip_slash_or_dot_backward(const char *path, const char *q) {
         assert(path);
         assert(!q || q >= path);
 
@@ -1023,7 +1010,7 @@ int path_find_last_component(const char *path, bool accept_dot_dot, const char *
         return len;
 }
 
-const char* last_path_component(const char *path) {
+const char *last_path_component(const char *path) {
 
         /* Finds the last component of the path, preserving the optional trailing slash that signifies a directory.
          *
