@@ -28,9 +28,6 @@ TEST(path) {
         assert_se(!path_is_absolute("./"));
 
 #if 0 /// UNNEEDED by elogind
-        assert_se(is_path("/dir"));
-        assert_se(is_path("a/b"));
-        assert_se(!is_path("."));
 #endif // 0
 
         assert_se(streq(basename("./aa/bb/../file.da."), "file.da."));
@@ -58,6 +55,100 @@ TEST(path) {
         assert_se(!path_equal_filename("/a/b", "/a/c"));
         assert_se(!path_equal_filename("/b", "/c"));
 #endif // 0
+}
+
+TEST(is_path) {
+        assert_se(!is_path("foo"));
+        assert_se(!is_path("dos.ext"));
+        assert_se( is_path("/dir"));
+        assert_se( is_path("a/b"));
+        assert_se( is_path("a/b.ext"));
+
+        assert_se(!is_path("."));
+        assert_se(!is_path(""));
+        assert_se(!is_path(".."));
+
+        assert_se( is_path("/dev"));
+        assert_se( is_path("/./dev"));
+        assert_se( is_path("/./dev/."));
+        assert_se( is_path("/./dev."));
+        assert_se( is_path("//dev"));
+        assert_se( is_path("///dev"));
+        assert_se( is_path("/dev/"));
+        assert_se( is_path("///dev/"));
+        assert_se( is_path("/./dev/"));
+        assert_se( is_path("/../dev/"));
+        assert_se( is_path("/dev/sda"));
+        assert_se( is_path("/dev/sda5"));
+        assert_se( is_path("/dev/sda5b3"));
+        assert_se( is_path("/dev/sda5b3/idontexit"));
+        assert_se( is_path("/../dev/sda"));
+        assert_se( is_path("/../../dev/sda5"));
+        assert_se( is_path("/../../../dev/sda5b3"));
+        assert_se( is_path("/.././.././dev/sda5b3/idontexit"));
+        assert_se( is_path("/sys"));
+        assert_se( is_path("/sys/"));
+        assert_se( is_path("/./sys"));
+        assert_se( is_path("/./sys/."));
+        assert_se( is_path("/./sys."));
+        assert_se( is_path("/sys/what"));
+        assert_se( is_path("/sys/something/.."));
+        assert_se( is_path("/sys/something/../"));
+        assert_se( is_path("/sys////"));
+        assert_se( is_path("/sys////."));
+        assert_se( is_path("/sys/.."));
+        assert_se( is_path("/sys/../"));
+        assert_se( is_path("/usr/../dev/sda"));
+}
+
+TEST(is_device_path) {
+        assert_se(!is_device_path("foo"));
+        assert_se(!is_device_path("dos.ext"));
+        assert_se(!is_device_path("/dir"));
+        assert_se(!is_device_path("a/b"));
+        assert_se(!is_device_path("a/b.ext"));
+
+        assert_se(!is_device_path("."));
+        assert_se(!is_device_path(""));
+        assert_se(!is_device_path(".."));
+
+        assert_se( is_device_path("/dev"));
+        assert_se( is_device_path("/./dev"));
+        assert_se( is_device_path("/./dev/."));
+        assert_se(!is_device_path("/./dev."));
+        assert_se( is_device_path("/./dev/foo"));
+        assert_se( is_device_path("/./dev/./foo"));
+        assert_se(!is_device_path("/./dev./foo"));
+        assert_se( is_device_path("//dev"));
+        assert_se( is_device_path("///dev"));
+        assert_se( is_device_path("/dev/"));
+        assert_se( is_device_path("///dev/"));
+        assert_se( is_device_path("/./dev/"));
+        assert_se(!is_device_path("/../dev/"));
+        assert_se( is_device_path("/dev/sda"));
+        assert_se( is_device_path("/dev/sda5"));
+        assert_se( is_device_path("/dev/sda5b3"));
+        assert_se( is_device_path("/dev/sda5b3/idontexit"));
+        assert_se(!is_device_path("/../dev/sda"));
+        assert_se(!is_device_path("/../../dev/sda5"));
+        assert_se(!is_device_path("/../../../dev/sda5b3"));
+        assert_se(!is_device_path("/.././.././dev/sda5b3/idontexit"));
+        assert_se( is_device_path("/sys"));
+        assert_se( is_device_path("/sys/"));
+        assert_se( is_device_path("/./sys"));
+        assert_se( is_device_path("/./sys/."));
+        assert_se(!is_device_path("/./sys."));
+        assert_se( is_device_path("/./sys/foo"));
+        assert_se( is_device_path("/./sys/./foo"));
+        assert_se(!is_device_path("/./sys./foo"));
+        assert_se( is_device_path("/sys/what"));
+        assert_se( is_device_path("/sys/something/.."));
+        assert_se( is_device_path("/sys/something/../"));
+        assert_se( is_device_path("/sys////"));
+        assert_se( is_device_path("/sys////."));
+        assert_se( is_device_path("/sys/.."));
+        assert_se( is_device_path("/sys/../"));
+        assert_se(!is_device_path("/usr/../dev/sda"));
 }
 
 static void test_path_simplify_one(const char *in, const char *out, PathSimplifyFlags flags) {
