@@ -110,7 +110,6 @@ simple_tests += files(
         'test-extract-word.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-fdset.c',
-#         'test-fiemap.c',
 #         'test-fileio.c',
 #         'test-firewall-util.c',
 #endif // 0
@@ -219,7 +218,7 @@ simple_tests += files(
         'test-signal-util.c',
         'test-siphash24.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-sleep-config.c',
+#         'test-sleep.c',
 #         'test-socket-netlink.c',
 #         'test-socket-util.c',
 #         'test-specifier.c',
@@ -497,8 +496,30 @@ common_test_dependencies = [
                 'sources' : files('test-sizeof.c'),
                 'link_with' : libbasic,
         },
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+        test_template + {
+                'sources' : files('test-tables.c'),
+                'link_with' : [
+                        libcore,
+                        libjournal_core,
+                        libshared,
+                        libudevd_core,
+                ],
+                'dependencies' : [
+                        libblkid,
+                        liblz4,
+                        libmount,
+                        libseccomp,
+                        libselinux,
+                        libxz,
+                        threads,
+                ],
+                'include_directories' : [
+                        core_includes,
+                        journal_includes,
+                        udev_includes,
+                ],
+        },
         test_template + {
                 'sources' : files('test-time-util.c'),
                 'timeout' : 120,
@@ -514,10 +535,6 @@ common_test_dependencies = [
 #if 0 /// elogind does not provide libudev
 #         test_template + {
 #                 'sources' : files('test-varlink.c'),
-#                 'dependencies' : threads,
-#         },
-#         test_template + {
-#                 'sources' : files('test-varlink-idl.c'),
 #                 'dependencies' : threads,
 #         },
 #         test_template + {
@@ -651,9 +668,6 @@ common_test_dependencies = [
 #                 'sources' : files('test-socket-bind.c'),
 #                 'dependencies' : libdl,
 #                 'conditions' : ['BPF_FRAMEWORK'],
-#         },
-#         core_test_template + {
-#                 'sources' : files('test-tables.c'),
 #         },
 #         core_test_template + {
 #                 'sources' : files('test-unit-name.c'),
