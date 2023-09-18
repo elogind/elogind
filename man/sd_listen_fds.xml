@@ -48,10 +48,11 @@
 
     <!-- 0 /// Be more vague for elogind, as this is a systemd feature not implemented by other service managers(, yet?)
     <para><function>sd_listen_fds()</function> may be invoked by a daemon to check for file descriptors
-    passed by the service manager as part of the socket-based activation logic. It returns the number of
-    received file descriptors. If no file descriptors have been received, zero is returned. The first file
-    descriptor may be found at file descriptor number 3 (i.e. <constant>SD_LISTEN_FDS_START</constant>), the
-    remaining descriptors follow at 4, 5, 6, …, if any.</para>
+    passed by the service manager as part of the socket-based activation and file descriptor store logic. It
+    returns the number of received file descriptors. If no file descriptors have been received, zero is
+    returned. The first file descriptor may be found at file descriptor number 3
+    (i.e. <constant>SD_LISTEN_FDS_START</constant>), the remaining descriptors follow at 4, 5, 6, …, if
+    any.</para>
 
     <para>The file descriptors passed this way may be closed at will by the processes receiving them: it's up
     to the processes themselves to close them after use or whether to leave them open until the process exits
@@ -84,9 +85,8 @@
     for the service to work, hence it should not be verified. On the other hand, whether a socket is a
     datagram or stream socket matters a lot for the most common program logics and should be checked.</para>
 
-    <para>This function call will set the FD_CLOEXEC flag for all
-    passed file descriptors to avoid further inheritance to children
-    of the calling process.</para>
+    <para>This function call will set the <constant>FD_CLOEXEC</constant> flag for all passed file
+    descriptors to avoid further inheritance to children of the calling process.</para>
 
     <!-- 0 /// Do not use the systemd unit term with elogind
     <para>If multiple socket units activate the same service, the order
@@ -183,6 +183,9 @@
       </tgroup>
     </table>
     </para>
+
+    <para>For further information on the file descriptor store see the <ulink
+    url="https://systemd.io/FILE_DESCRIPTOR_STORE">File Descriptor Store</ulink> overview.</para>
   </refsect1>
 
   <refsect1>
