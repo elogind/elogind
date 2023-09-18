@@ -405,6 +405,9 @@
         <literal>FDSTORE=1</literal>. It is recommended to combine <varname>FDSTORE=</varname> with
         <varname>FDNAME=</varname> to make it easier to manage the stored file descriptors.</para>
 
+        <para>For further information on the file descriptor store see the <ulink
+        url="https://systemd.io/FILE_DESCRIPTOR_STORE">File Descriptor Store</ulink> overview.</para>
+
         <xi:include href="version-info.xml" xpointer="v219"/></listitem>
       </varlistentry>
 
@@ -600,12 +603,12 @@ sd_notify_barrier(0, 5 * 1000000);
 
   <refsect1>
     <title>History</title>
-    <para><function>sd_pid_notify()</function> was added in version 219.</para>
-    <para><function>sd_pid_notify_with_fds()</function> was added in version 219.</para>
-    <para><function>sd_pid_notifyf()</function> was added in version 219.</para>
+    <para><function>sd_pid_notify()</function>,
+    <function>sd_pid_notifyf()</function>, and
+    <function>sd_pid_notify_with_fds()</function> were added in version 219.</para>
     <para><function>sd_notify_barrier()</function> was added in version 246.</para>
-    <para><function>sd_pid_notify_barrier()</function> was added in version 254.</para>
-    <para><function>sd_pid_notifyf_with_fds()</function> was added in version 254.</para>
+    <para><function>sd_pid_notifyf_with_fds()</function> and
+    <function>sd_pid_notify_barrier()</function> were added in version 254.</para>
   </refsect1>
 
   <refsect1>
