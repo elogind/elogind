@@ -14,6 +14,7 @@ int serialize_item_escaped(FILE *f, const char *key, const char *value);
 int serialize_item_format(FILE *f, const char *key, const char *value, ...) _printf_(3,4);
 #if 0 /// UNNEEDED by elogind
 int serialize_item_hexmem(FILE *f, const char *key, const void *p, size_t l);
+int serialize_item_base64mem(FILE *f, const char *key, const void *p, size_t l);
 int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd);
 #endif // 0
 int serialize_usec(FILE *f, const char *key, usec_t usec);
