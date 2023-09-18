@@ -570,6 +570,8 @@
           system and session units. See
           <citerefentry><refentrytitle>coredumpctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
           </para>
+
+          <xi:include href="version-info.xml" xpointer="v198"/>
         </listitem>
       </varlistentry>
     </variablelist>
