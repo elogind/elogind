@@ -306,6 +306,10 @@ common_test_dependencies = [
                 'type' : 'manual',
         },
         test_template + {
+                'sources' : files('test-btrfs-physical-offset.c'),
+                'type' : 'manual',
+        },
+        test_template + {
                 'sources' : files('test-cap-list.c') +
                             generated_gperf_headers,
                 'dependencies' : libcap,
