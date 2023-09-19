@@ -129,7 +129,7 @@
     <!-- // 0 -->
     store (see above), the name is set via the
     <varname>FDNAME=</varname> field transmitted via
-    <function>sd_pid_notify_with_fds()</function>. The primary usecase
+    <function>sd_pid_notify_with_fds()</function>. The primary use case
     for these names are services which accept a variety of file
     descriptors which are not recognizable with functions like
     <function>sd_is_socket()</function> alone, and thus require
