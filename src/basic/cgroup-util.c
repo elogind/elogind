@@ -41,12 +41,12 @@
 /// Additional includes needed by elogind
 #include "env-file.h"
 
-static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
+static int cg_enumerate_items(const char *controller, const char *path, FILE **ret, const char *item) {
         _cleanup_free_ char *fs = NULL;
         FILE *f;
         int r;
 
-        assert(_f);
+        assert(ret);
 
         r = cg_get_path(controller, path, item, &fs);
         if (r < 0)
@@ -56,22 +56,21 @@ static int cg_enumerate_items(const char *controller, const char *path, FILE **_
         if (!f)
                 return -errno;
 
-        *_f = f;
+        *ret = f;
         return 0;
 }
 
-int cg_enumerate_processes(const char *controller, const char *path, FILE **_f) {
-        return cg_enumerate_items(controller, path, _f, "cgroup.procs");
+int cg_enumerate_processes(const char *controller, const char *path, FILE **ret) {
+        return cg_enumerate_items(controller, path, ret, "cgroup.procs");
 }
 
-int cg_read_pid(FILE *f, pid_t *_pid) {
+int cg_read_pid(FILE *f, pid_t *ret) {
         unsigned long ul;
 
-        /* Note that the cgroup.procs might contain duplicates! See
-         * cgroups.txt for details. */
+        /* Note that the cgroup.procs might contain duplicates! See cgroups.txt for details. */
 
         assert(f);
-        assert(_pid);
+        assert(ret);
 
         errno = 0;
         if (fscanf(f, "%lu", &ul) != 1) {
@@ -85,7 +84,7 @@ int cg_read_pid(FILE *f, pid_t *_pid) {
         if (ul <= 0)
                 return -EIO;
 
-        *_pid = (pid_t) ul;
+        *ret = (pid_t) ul;
         return 1;
 }
 
@@ -182,12 +181,12 @@ bool cg_kill_supported(void) {
         return supported;
 }
 
-int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
+int cg_enumerate_subgroups(const char *controller, const char *path, DIR **ret) {
         _cleanup_free_ char *fs = NULL;
-        int r;
         DIR *d;
+        int r;
 
-        assert(_d);
+        assert(ret);
 
         /* This is not recursive! */
 
@@ -199,13 +198,13 @@ int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
         if (!d)
                 return -errno;
 
-        *_d = d;
+        *ret = d;
         return 0;
 }
 
-int cg_read_subgroup(DIR *d, char **fn) {
+int cg_read_subgroup(DIR *d, char **ret) {
         assert(d);
-        assert(fn);
+        assert(ret);
 
         FOREACH_DIRENT_ALL(de, d, return -errno) {
                 char *b;
@@ -220,7 +219,7 @@ int cg_read_subgroup(DIR *d, char **fn) {
                 if (!b)
                         return -ENOMEM;
 
-                *fn = b;
+                *ret = b;
                 return 1;
         }
 
