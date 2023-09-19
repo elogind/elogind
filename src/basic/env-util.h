@@ -90,3 +90,5 @@ int getenv_path_list(const char *name, char ***ret_paths);
 
 int getenv_steal_erase(const char *name, char **ret);
 #endif // 0
+
+int set_full_environment(char **env);
