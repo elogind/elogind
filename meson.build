@@ -211,7 +211,6 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # randomseeddir = localstatedir / 'lib/systemd'
 # profiledir = libexecdir / 'portable' / 'profile'
 # ntpservicelistdir = prefixdir / 'lib/elogind/ntp-units.d'
-# repartdefinitionsdir = libexecdir / 'repart/definitions'
 # credstoredir = prefixdir / 'lib/credstore'
 #
 # docdir = get_option('docdir')
@@ -302,7 +301,6 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      bindir / 'systemctl')
 # conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elogind')
-# conf.set_quoted('SYSTEMD_EXECUTOR_BINARY_PATH',               libexecdir / 'elogind-executor')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
 #else // 0
 conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
@@ -578,7 +576,7 @@ if cxx_cmd != ''
         add_project_arguments(cxx.get_supported_arguments(basic_disabled_warnings), language : 'cpp')
 endif
 
-cpp = ' '.join(cc.cmd_array() + get_option('c_args')) + ' -E'
+cpp = ' '.join(cc.cmd_array()) + ' -E'
 
 has_wstringop_truncation = cc.has_argument('-Wstringop-truncation')
 
@@ -917,12 +915,10 @@ endif
 # conf.set('EXTRA_NET_NAMING_MAP', ' '.join(extra_net_naming_map))
 #
 # default_net_naming_scheme = get_option('default-net-naming-scheme')
-# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme,
-#                 description : 'Default naming scheme as a string')
+# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
 # if default_net_naming_scheme != 'latest'
-#         conf.set('_DEFAULT_NET_NAMING_SCHEME',
-#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper(),
-#                  description : 'Default naming scheme as a constant')
+#         conf.set('_DEFAULT_NET_NAMING_SCHEME_TEST',
+#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper())
 # endif
 #
 # time_epoch = get_option('time-epoch')
@@ -2100,7 +2096,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 ############################################################
 
 #if 0 /// UNUSED by elogind
-# check_version_history_py = find_program('tools/check-version-history.py')
+# elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
@@ -2109,7 +2105,6 @@ generate_gperfs = find_program('tools/generate-gperfs.py')
 # make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 #endif // 0
 make_directive_index_py = find_program('tools/make-directive-index.py')
-sync_docs_py = find_program('tools/sync-docs.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
@@ -2484,6 +2479,8 @@ module_additional_kwargs = {
 # systemd-analyze requires 'libcore'
 subdir('src/core')
 #if 0 /// UNNEEDED by elogind
+# # elogind-journal-remote requires 'libjournal_core'
+# subdir('src/journal')
 # # systemd-networkd requires 'libsystemd_network'
 # subdir('src/libsystemd-network')
 #endif // 0
@@ -2537,7 +2534,6 @@ subdir('src/busctl')
 # subdir('src/import')
 # subdir('src/initctl')
 # subdir('src/integritysetup')
-# subdir('src/journal')
 # subdir('src/journal-remote')
 # subdir('src/kernel-install')
 # subdir('src/locale')
@@ -2560,7 +2556,6 @@ subdir('src/login')
 # subdir('src/oom')
 # subdir('src/partition')
 # subdir('src/path')
-# subdir('src/pcrextend')
 # subdir('src/portable')
 # subdir('src/pstore')
 # subdir('src/quotacheck')
@@ -2588,14 +2583,12 @@ subdir('src/login')
 # subdir('src/sysv-generator')
 # subdir('src/timedate')
 # subdir('src/timesync')
-# subdir('src/tpm2-setup')
 # subdir('src/tmpfiles')
 # subdir('src/tty-ask-password-agent')
 # subdir('src/update-done')
 # subdir('src/update-utmp')
 # subdir('src/user-sessions')
 # subdir('src/userdb')
-# subdir('src/varlinkctl')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
 # subdir('src/volatile-root')
@@ -2778,20 +2771,17 @@ foreach dict : modules
 
         kwargs = {}
         foreach key, val : dict
-                if key in ['name', 'conditions', 'version-script']
+                if key in ['name', 'conditions']
                         continue
                 endif
                 kwargs += { key : val }
         endforeach
 
+        sym = meson.current_source_dir() / '@0@'.format(dict.get('link_depends')[0])
         kwargs += {
                 'link_args' : [
                         kwargs.get('link_args', []),
-                        '-Wl,--version-script=' + dict.get('version-script'),
-                ],
-                'link_depends' : [
-                        kwargs.get('link_depends', []),
-                        dict.get('version-script'),
+                        '-Wl,--version-script=' + sym,
                 ],
         }
         foreach key, val : module_additional_kwargs
@@ -2908,7 +2898,6 @@ public_programs += [exe]
 # if want_ukify
 #         public_programs += ukify
 #
-#         # symlink for backwards compatibility after rename
 #         meson.add_install_script(sh, '-c',
 #                                  ln_s.format(bindir / 'ukify',
 #                                              libexecdir / 'ukify'))
