@@ -20,7 +20,6 @@
 #include "sd-id128.h"
 #include "sd-messages.h"
 
-#include "battery-capacity.h"
 #include "battery-util.h"
 #include "btrfs-util.h"
 #include "build.h"
@@ -33,8 +32,7 @@
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "format-util.h"
-#include "hibernate-util.h"
+#include "format-util.h"
 #include "id128-util.h"
 #include "io-util.h"
 #include "json.h"
@@ -43,7 +41,7 @@
 #include "os-util.h"
 #include "parse-util.h"
 #include "pretty-print.h"
-#include "sleep-config.h"
+#include "sleep-util.h"
 #include "special.h"
 #include "stdio-util.h"
 #include "string-util.h"
@@ -355,15 +353,12 @@ static int check_wakeup_type(void) {
         if (r < 0)
                 return log_debug_errno(r, "Unable to read %s: %m", dmi_object_path);
         if (bufsize < 25)
-                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL),
-                                       "Only read %zu bytes from %s (expected 25)",
-                                       bufsize, dmi_object_path);
+                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Only read %zu bytes from %s (expected 25)", bufsize, dmi_object_path);
 
         /* index 1 stores the size of table */
         tablesize = (uint8_t) buf[1];
         if (tablesize < 25)
-                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL),
-                                       "Table size less than the index[0x18] where waketype byte is available.");
+                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Table size lesser than the index[0x18] where waketype byte is available.");
 
         wakeup_type_byte = (uint8_t) buf[24];
         /* 0 is Reserved and 8 is AC Power Restored. As per table 12 in
@@ -870,7 +865,7 @@ static int parse_argv(int argc, char *argv[]) {
 }
 
 static int run(int argc, char *argv[]) {
-        _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
+        _cleanup_(free_sleep_configp) SleepConfig *sleep_config = NULL;
         int r;
 
         log_setup();
