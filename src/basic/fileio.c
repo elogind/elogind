@@ -1117,6 +1117,7 @@ int search_and_fopen(
                 char **ret_path) {
 
         _cleanup_strv_free_ char **copy = NULL;
+        int r;
 
         assert(filename);
         assert(mode);
@@ -1130,13 +1131,9 @@ int search_and_fopen(
                         return -errno;
 
                 if (ret_path) {
-                        char *p;
-
-                        p = strdup(filename);
-                        if (!p)
-                                return -ENOMEM;
-
-                        *ret_path = path_simplify(p);
+                        r = path_simplify_alloc(filename, ret_path);
+                        if (r < 0)
+                                return r;
                 }
 
                 *ret = TAKE_PTR(f);
@@ -1160,6 +1157,7 @@ int search_and_fopen_nulstr(
                 char **ret_path) {
 
         _cleanup_strv_free_ char **s = NULL;
+        int r;
 
         if (path_is_absolute(filename)) {
                 _cleanup_fclose_ FILE *f = NULL;
@@ -1169,13 +1167,9 @@ int search_and_fopen_nulstr(
                         return -errno;
 
                 if (ret_path) {
-                        char *p;
-
-                        p = strdup(filename);
-                        if (!p)
-                                return -ENOMEM;
-
-                        *ret_path = path_simplify(p);
+                        r = path_simplify_alloc(filename, ret_path);
+                        if (r < 0)
+                                return r;
                 }
 
                 *ret = TAKE_PTR(f);
