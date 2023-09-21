@@ -32,8 +32,6 @@
 
 /* The maximum size of the file we'll read in one go in read_full_file() (64M). */
 #define READ_FULL_BYTES_MAX (64U*1024U*1024U - 1U)
-/* Used when a size is specified for read_full_file() with READ_FULL_FILE_UNBASE64 or _UNHEX */
-#define READ_FULL_FILE_ENCODED_STRING_AMPLIFICATION_BOUNDARY 3
 
 /* The maximum size of virtual files (i.e. procfs, sysfs, and other virtual "API" files) we'll read in one go
  * in read_virtual_file(). Note that this limit is different (and much lower) than the READ_FULL_BYTES_MAX
@@ -578,7 +576,7 @@ int read_full_stream_full(
                 size_t *ret_size) {
 
         _cleanup_free_ char *buf = NULL;
-        size_t n, n_next = 0, l, expected_decoded_size = size;
+        size_t n, n_next = 0, l;
         int fd, r;
 
         assert(f);
@@ -588,13 +586,6 @@ int read_full_stream_full(
 
         if (offset != UINT64_MAX && offset > LONG_MAX) /* fseek() can only deal with "long" offsets */
                 return -ERANGE;
-
-        if ((flags & (READ_FULL_FILE_UNBASE64 | READ_FULL_FILE_UNHEX)) != 0) {
-                if (size <= SIZE_MAX / READ_FULL_FILE_ENCODED_STRING_AMPLIFICATION_BOUNDARY)
-                        size *= READ_FULL_FILE_ENCODED_STRING_AMPLIFICATION_BOUNDARY;
-                else
-                        size = SIZE_MAX;
-        }
 
         fd = fileno(f);
         if (fd >= 0) { /* If the FILE* object is backed by an fd (as opposed to memory or such, see
@@ -720,11 +711,6 @@ int read_full_stream_full(
                         explicit_bzero_safe(buf, n);
                 free_and_replace(buf, decoded);
                 n = l = decoded_size;
-
-                if (FLAGS_SET(flags, READ_FULL_FILE_FAIL_WHEN_LARGER) && l > expected_decoded_size) {
-                        r = -E2BIG;
-                        goto finalize;
-                }
         }
 
         if (!ret_size) {
@@ -1082,173 +1068,119 @@ int fdopen_independent(int fd, const char *mode, FILE **ret) {
         return 0;
 }
 
-static int search_and_open_internal(
+static int search_and_fopen_internal(
                 const char *path,
-                int mode,            /* if ret_fd is NULL this is an [FRWX]_OK mode for access(), otherwise an open mode for open() */
+                const char *mode,
                 const char *root,
                 char **search,
-                int *ret_fd,
+                FILE **ret,
                 char **ret_path) {
 
-        int r;
-
-        assert(!ret_fd || !FLAGS_SET(mode, O_CREAT)); /* We don't support O_CREAT for this */
         assert(path);
-
-        if (path_is_absolute(path)) {
-                _cleanup_close_ int fd = -EBADF;
-
-                if (ret_fd)
-                        /* We only specify 0777 here to appease static analyzers, it's never used since we
-                         * don't support O_CREAT here */
-                        r = fd = RET_NERRNO(open(path, mode, 0777));
-                else
-                        r = RET_NERRNO(access(path, mode));
-                if (r < 0)
-                        return r;
-
-                if (ret_path) {
-                        r = path_simplify_alloc(path, ret_path);
-                        if (r < 0)
-                                return r;
-                }
-
-                if (ret_fd)
-                        *ret_fd = TAKE_FD(fd);
-
-                return 0;
-        }
+        assert(mode);
+        assert(ret);
 
         if (!path_strv_resolve_uniq(search, root))
                 return -ENOMEM;
 
         STRV_FOREACH(i, search) {
-                _cleanup_close_ int fd = -EBADF;
                 _cleanup_free_ char *p = NULL;
+                FILE *f;
 
                 p = path_join(root, *i, path);
                 if (!p)
                         return -ENOMEM;
 
-                if (ret_fd)
-                        /* as above, 0777 is static analyzer appeasement */
-                        r = fd = RET_NERRNO(open(p, mode, 0777));
-                else
-                        r = RET_NERRNO(access(p, F_OK));
-                if (r >= 0) {
+                f = fopen(p, mode);
+                if (f) {
                         if (ret_path)
                                 *ret_path = path_simplify(TAKE_PTR(p));
 
-                        if (ret_fd)
-                                *ret_fd = TAKE_FD(fd);
-
+                        *ret = f;
                         return 0;
                 }
-                if (r != -ENOENT)
-                        return r;
+
+                if (errno != ENOENT)
+                        return -errno;
         }
 
         return -ENOENT;
 }
 
 #if 0 /// UNNEEDED by elogind
-int search_and_open(
-                const char *path,
-                int mode,
-                const char *root,
-                char **search,
-                int *ret_fd,
-                char **ret_path) {
-
-        _cleanup_strv_free_ char **copy = NULL;
-
-        assert(path);
-
-        copy = strv_copy((char**) search);
-        if (!copy)
-                return -ENOMEM;
-
-        return search_and_open_internal(path, mode, root, copy, ret_fd, ret_path);
-}
-
-static int search_and_fopen_internal(
-                const char *path,
-                const char *mode,
-                const char *root,
-                char **search,
-                FILE **ret_file,
-                char **ret_path) {
-
-        _cleanup_free_ char *found_path = NULL;
-        _cleanup_close_ int fd = -EBADF;
-        int r;
-
-        assert(path);
-        assert(mode || !ret_file);
-
-        r = search_and_open(
-                        path,
-                        mode ? fopen_mode_to_flags(mode) : 0,
-                        root,
-                        search,
-                        ret_file ? &fd : NULL,
-                        ret_path ? &found_path : NULL);
-        if (r < 0)
-                return r;
-
-        if (ret_file) {
-                FILE *f = take_fdopen(&fd, mode);
-                if (!f)
-                        return -errno;
-
-                *ret_file = f;
-        }
-
-        if (ret_path)
-                *ret_path = TAKE_PTR(found_path);
-
-        return 0;
-}
-
 int search_and_fopen(
-                const char *path,
+                const char *filename,
                 const char *mode,
                 const char *root,
                 const char **search,
-                FILE **ret_file,
+                FILE **ret,
                 char **ret_path) {
 
         _cleanup_strv_free_ char **copy = NULL;
+        int r;
 
-        assert(path);
-        assert(mode || !ret_file);
+        assert(filename);
+        assert(mode);
+        assert(ret);
+
+        if (path_is_absolute(filename)) {
+                _cleanup_fclose_ FILE *f = NULL;
+
+                f = fopen(filename, mode);
+                if (!f)
+                        return -errno;
+
+                if (ret_path) {
+                        r = path_simplify_alloc(filename, ret_path);
+                        if (r < 0)
+                                return r;
+                }
+
+                *ret = TAKE_PTR(f);
+                return 0;
+        }
 
         copy = strv_copy((char**) search);
         if (!copy)
                 return -ENOMEM;
 
-        return search_and_fopen_internal(path, mode, root, copy, ret_file, ret_path);
+        return search_and_fopen_internal(filename, mode, root, copy, ret, ret_path);
 }
 #endif // 0
 
 int search_and_fopen_nulstr(
-                const char *path,
+                const char *filename,
                 const char *mode,
                 const char *root,
                 const char *search,
-                FILE **ret_file,
+                FILE **ret,
                 char **ret_path) {
 
-        _cleanup_strv_free_ char **l = NULL;
+        _cleanup_strv_free_ char **s = NULL;
+        int r;
 
-        assert(path);
-        assert(mode || !ret_file);
+        if (path_is_absolute(filename)) {
+                _cleanup_fclose_ FILE *f = NULL;
 
-        l = strv_split_nulstr(search);
-        if (!l)
+                f = fopen(filename, mode);
+                if (!f)
+                        return -errno;
+
+                if (ret_path) {
+                        r = path_simplify_alloc(filename, ret_path);
+                        if (r < 0)
+                                return r;
+                }
+
+                *ret = TAKE_PTR(f);
+                return 0;
+        }
+
+        s = strv_split_nulstr(search);
+        if (!s)
                 return -ENOMEM;
 
-        return search_and_fopen_internal(path, mode, root, l, ret_file, ret_path);
+        return search_and_fopen_internal(filename, mode, root, s, ret, ret_path);
 }
 
 int fflush_and_check(FILE *f) {

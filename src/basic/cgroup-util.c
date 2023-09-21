@@ -41,12 +41,12 @@
 /// Additional includes needed by elogind
 #include "env-file.h"
 
-static int cg_enumerate_items(const char *controller, const char *path, FILE **ret, const char *item) {
+static int cg_enumerate_items(const char *controller, const char *path, FILE **_f, const char *item) {
         _cleanup_free_ char *fs = NULL;
         FILE *f;
         int r;
 
-        assert(ret);
+        assert(_f);
 
         r = cg_get_path(controller, path, item, &fs);
         if (r < 0)
@@ -56,67 +56,37 @@ static int cg_enumerate_items(const char *controller, const char *path, FILE **r
         if (!f)
                 return -errno;
 
-        *ret = f;
+        *_f = f;
         return 0;
 }
 
-int cg_enumerate_processes(const char *controller, const char *path, FILE **ret) {
-        return cg_enumerate_items(controller, path, ret, "cgroup.procs");
+int cg_enumerate_processes(const char *controller, const char *path, FILE **_f) {
+        return cg_enumerate_items(controller, path, _f, "cgroup.procs");
 }
 
-int cg_read_pid(FILE *f, pid_t *ret) {
+int cg_read_pid(FILE *f, pid_t *_pid) {
         unsigned long ul;
 
-        /* Note that the cgroup.procs might contain duplicates! See cgroups.txt for details. */
+        /* Note that the cgroup.procs might contain duplicates! See
+         * cgroups.txt for details. */
 
         assert(f);
-        assert(ret);
+        assert(_pid);
 
         errno = 0;
         if (fscanf(f, "%lu", &ul) != 1) {
 
-                if (feof(f)) {
-                        *ret = 0;
+                if (feof(f))
                         return 0;
-                }
 
                 return errno_or_else(EIO);
         }
 
         if (ul <= 0)
                 return -EIO;
-        if (ul > PID_T_MAX)
-                return -EIO;
 
-        *ret = (pid_t) ul;
+        *_pid = (pid_t) ul;
         return 1;
-}
-
-int cg_read_pidref(FILE *f, PidRef *ret) {
-        int r;
-
-        assert(f);
-        assert(ret);
-
-        for (;;) {
-                pid_t pid;
-
-                r = cg_read_pid(f, &pid);
-                if (r < 0)
-                        return r;
-                if (r == 0) {
-                        *ret = PIDREF_NULL;
-                        return 0;
-                }
-
-                r = pidref_set_pid(ret, pid);
-                if (r >= 0)
-                        return 1;
-                if (r != -ESRCH)
-                        return r;
-
-                /* ESRCH → gone by now? just skip over it, read the next */
-        }
 }
 
 int cg_read_event(
@@ -212,12 +182,12 @@ bool cg_kill_supported(void) {
         return supported;
 }
 
-int cg_enumerate_subgroups(const char *controller, const char *path, DIR **ret) {
+int cg_enumerate_subgroups(const char *controller, const char *path, DIR **_d) {
         _cleanup_free_ char *fs = NULL;
-        DIR *d;
         int r;
+        DIR *d;
 
-        assert(ret);
+        assert(_d);
 
         /* This is not recursive! */
 
@@ -229,13 +199,13 @@ int cg_enumerate_subgroups(const char *controller, const char *path, DIR **ret) 
         if (!d)
                 return -errno;
 
-        *ret = d;
+        *_d = d;
         return 0;
 }
 
-int cg_read_subgroup(DIR *d, char **ret) {
+int cg_read_subgroup(DIR *d, char **fn) {
         assert(d);
-        assert(ret);
+        assert(fn);
 
         FOREACH_DIRENT_ALL(de, d, return -errno) {
                 char *b;
@@ -250,11 +220,10 @@ int cg_read_subgroup(DIR *d, char **ret) {
                 if (!b)
                         return -ENOMEM;
 
-                *ret = b;
+                *fn = b;
                 return 1;
         }
 
-        *ret = NULL;
         return 0;
 }
 
@@ -1008,6 +977,7 @@ int cg_is_empty_recursive(const char *controller, const char *path) {
 #if 0 /// UNNEEDED by elogind
 int cg_split_spec(const char *spec, char **ret_controller, char **ret_path) {
         _cleanup_free_ char *controller = NULL, *path = NULL;
+        int r;
 
         assert(spec);
 
@@ -1016,11 +986,9 @@ int cg_split_spec(const char *spec, char **ret_controller, char **ret_path) {
                         return -EINVAL;
 
                 if (ret_path) {
-                        path = strdup(spec);
-                        if (!path)
-                                return -ENOMEM;
-
-                        path_simplify(path);
+                        r = path_simplify_alloc(spec, &path);
+                        if (r < 0)
+                                return r;
                 }
 
         } else {
@@ -1067,22 +1035,14 @@ int cg_split_spec(const char *spec, char **ret_controller, char **ret_path) {
 
 int cg_mangle_path(const char *path, char **result) {
         _cleanup_free_ char *c = NULL, *p = NULL;
-        char *t;
         int r;
 
         assert(path);
         assert(result);
 
         /* First, check if it already is a filesystem path */
-        if (path_startswith(path, "/sys/fs/cgroup")) {
-
-                t = strdup(path);
-                if (!t)
-                        return -ENOMEM;
-
-                *result = path_simplify(t);
-                return 0;
-        }
+        if (path_startswith(path, "/sys/fs/cgroup"))
+                return path_simplify_alloc(path, result);
 
         /* Otherwise, treat it as cg spec */
         r = cg_split_spec(path, &c, &p);
