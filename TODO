@@ -133,18 +133,14 @@ Deprecations and removals:
 
 Features:
 
-* in the service manager, pick up ERRNO= + BUSERROR= + VARLINKERROR= error
-  identifiers, and store them along with the exit status of a server and report
-  via "systemctl status".
-
 * enumerate virtiofs devices during boot-up in a generator, and synthesize
   mounts for rootfs, /usr/, /home/, /srv/ and some others from it, depending on
-  the "tag". (waits for: https://gitlab.com/virtio-fs/virtiofsd/-/issues/128)
+  the "tag".
 
 * automatically mount one virtiofs during early boot phase to /run/host/,
   similar to how we do that for nspawn, based on some clear tag.
 
-* make elogind-pcrextend accessible via varlink so that clients can measure
+* make elogind-pcrphase accessible via varlink so that clients can measure
   things reasonably freely, and get a proper entry in the TPM event log we
   maintain, correctly synchronized
 
@@ -389,6 +385,10 @@ Features:
   ENV{SYSTEMD_WANTS} in udev rules, and a bit prettier than using RUN+=
 
 * udevd: extend memory pressure logic: also kill any idle worker processes
+
+* udevadm: to make symlink querying with udevadm nicer:
+  - do not enable the pager for queries like 'udevadm info -q -r symlink'
+  - add mode with newlines instead of spaces (for grep)?
 
 * SIGRTMIN+18 and memory pressure handling should still be added to: hostnamed,
   localed, oomd, timedated.
