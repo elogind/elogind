@@ -167,6 +167,7 @@
 #         'userdb-dropin.c',
 #         'userdb.c',
 #         'varlink.c',
+#         'varlink-idl.c',
 #         'verb-log-control.c',
 #         'verbs.c',
 #         'vlan-util.c',
