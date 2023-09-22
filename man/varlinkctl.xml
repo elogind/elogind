@@ -238,6 +238,7 @@
        URL: https://systemd.io/
 Interfaces: io.elogind
             io.elogind.Resolve
+            io.systemd.Resolve
             org.varlink.service
 $ varlinkctl list-interfaces /run/systemd/resolve/io.systemd.Resolve
 io.elogind
