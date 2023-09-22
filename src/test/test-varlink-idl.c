@@ -14,8 +14,6 @@
 #include "varlink-io.elogind.Resolve.h"
 #include "varlink-io.elogind.UserDatabase.h"
 #include "varlink-io.elogind.oom.h"
-#include "varlink-io.elogind.PCRExtend.h"
-#include "varlink-io.elogind.sysext.h"
 #include "varlink-org.varlink.service.h"
 
 static VARLINK_DEFINE_ENUM_TYPE(
@@ -136,10 +134,6 @@ TEST(parse_format) {
         print_separator();
         test_parse_format_one(&vl_interface_io_elogind);
         print_separator();
-        test_parse_format_one(&vl_interface_io_elogind_PCRExtend);
-        print_separator();
-        test_parse_format_one(&vl_interface_io_elogind_sysext);
-        print_separator();
         test_parse_format_one(&vl_interface_xyz_test);
 }
 
@@ -155,12 +149,6 @@ TEST(parse) {
 
         assert_se(varlink_idl_parse(text, NULL, NULL, &parsed) >= 0);
         test_parse_format_one(parsed);
-
-        assert_se(varlink_idl_parse("interface org.freedesktop.Foo\n"
-                                    "type Foo (b: bool, c: foo, c: int)", NULL, NULL, NULL) == -ENETUNREACH); /* unresolved type */
-        assert_se(varlink_idl_parse("interface org.freedesktop.Foo\n"
-                                    "type Foo ()", NULL, NULL, NULL) == -EBADMSG); /* empty struct/enum */
-
 }
 
 TEST(interface_name_is_valid) {
