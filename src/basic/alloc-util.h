@@ -230,7 +230,6 @@ static inline size_t malloc_sizeof_safe(void **xp) {
                 MALLOC_SIZEOF_SAFE(x)/sizeof((x)[0]),                   \
                 VOID_0))
 
-
 /* These are like strdupa()/strndupa(), but honour ALLOCA_MAX */
 #define strdupa_safe(s)                                                 \
         ({                                                              \
