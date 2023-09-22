@@ -675,14 +675,14 @@ static int find_location_for_match(
                 /* FIXME: missing: find by monotonic */
 
                 if (j->current_location.type == LOCATION_HEAD)
-                        return direction == DIRECTION_DOWN ? journal_file_move_to_entry_for_data(f, d, DIRECTION_DOWN, ret, offset) : 0;
+                        return direction == DIRECTION_DOWN ? journal_file_next_entry_for_data(f, d, DIRECTION_DOWN, ret, offset) : 0;
                 if (j->current_location.type == LOCATION_TAIL)
-                        return direction == DIRECTION_UP ? journal_file_move_to_entry_for_data(f, d, DIRECTION_UP, ret, offset) : 0;
+                        return direction == DIRECTION_UP ? journal_file_next_entry_for_data(f, d, DIRECTION_UP, ret, offset) : 0;
                 if (j->current_location.seqnum_set && sd_id128_equal(j->current_location.seqnum_id, f->header->seqnum_id))
                         return journal_file_move_to_entry_by_seqnum_for_data(f, d, j->current_location.seqnum, direction, ret, offset);
                 if (j->current_location.monotonic_set) {
                         r = journal_file_move_to_entry_by_monotonic_for_data(f, d, j->current_location.boot_id, j->current_location.monotonic, direction, ret, offset);
-                        if (r != 0)
+                        if (r != -ENOENT)
                                 return r;
 
                         /* The data object might have been invalidated. */
@@ -693,7 +693,7 @@ static int find_location_for_match(
                 if (j->current_location.realtime_set)
                         return journal_file_move_to_entry_by_realtime_for_data(f, d, j->current_location.realtime, direction, ret, offset);
 
-                return journal_file_move_to_entry_for_data(f, d, direction, ret, offset);
+                return journal_file_next_entry_for_data(f, d, direction, ret, offset);
 
         } else if (m->type == MATCH_OR_TERM) {
                 uint64_t np = 0;
@@ -777,7 +777,7 @@ static int find_location_with_matches(
                         return journal_file_move_to_entry_by_seqnum(f, j->current_location.seqnum, direction, ret, offset);
                 if (j->current_location.monotonic_set) {
                         r = journal_file_move_to_entry_by_monotonic(f, j->current_location.boot_id, j->current_location.monotonic, direction, ret, offset);
-                        if (r != 0)
+                        if (r != -ENOENT)
                                 return r;
                 }
                 if (j->current_location.realtime_set)
@@ -2749,10 +2749,10 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 p = journal_file_entry_item_object_offset(f, o, i);
                 r = journal_file_data_payload(f, NULL, p, field, field_length, j->data_threshold, &d, &l);
                 if (r == 0)
-                        continue;
+                        goto next;
                 if (IN_SET(r, -EADDRNOTAVAIL, -EBADMSG)) {
                         log_debug_errno(r, "Entry item %"PRIu64" data object is bad, skipping over it: %m", i);
-                        continue;
+                        goto next;
                 }
                 if (r < 0)
                         return r;
@@ -2761,6 +2761,12 @@ _public_ int sd_journal_get_data(sd_journal *j, const char *field, const void **
                 *size = l;
 
                 return 0;
+
+        next:
+                /* journal_file_data_payload() may clear or overwrite cached object. */
+                r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
+                if (r < 0)
+                        return r;
         }
 #endif // 0
 
@@ -2798,7 +2804,7 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
                 r = journal_file_data_payload(f, NULL, p, NULL, 0, j->data_threshold, &d, &l);
                 if (IN_SET(r, -EADDRNOTAVAIL, -EBADMSG)) {
                         log_debug_errno(r, "Entry item %"PRIu64" data object is bad, skipping over it: %m", j->current_field);
-                        continue;
+                        goto next;
                 }
                 if (r < 0)
                         return r;
@@ -2810,6 +2816,12 @@ _public_ int sd_journal_enumerate_data(sd_journal *j, const void **data, size_t 
                 j->current_field++;
 
                 return 1;
+
+        next:
+                /* journal_file_data_payload() may clear or overwrite cached object. */
+                r = journal_file_move_to_object(f, OBJECT_ENTRY, f->current_offset, &o);
+                if (r < 0)
+                        return r;
         }
 
         return 0;
