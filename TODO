@@ -144,7 +144,7 @@ Features:
 * automatically mount one virtiofs during early boot phase to /run/host/,
   similar to how we do that for nspawn, based on some clear tag.
 
-* make elogind-pcrphase accessible via varlink so that clients can measure
+* make elogind-pcrextend accessible via varlink so that clients can measure
   things reasonably freely, and get a proper entry in the TPM event log we
   maintain, correctly synchronized
 
@@ -154,11 +154,10 @@ Features:
 * encode type1 entries in some UKI section to add additional entries to the
   menu.
 
-* when elogind-sysext learns mutable /usr/ (and elogind-confext mutable /etc/)
-
 * extend the various CLI tools we have that output JSON already to also read
   their command to execute from JSON in varlink format, so that you can fork
   them off and talk to them fully via varlink.
+
 * add a "varlinkctl" tool that allows interacting with varlink services from
   the shell. In particular add a "--exec=" switch, which allows specifying a
   binary to invoke to which to talk via stdin/stdout
@@ -172,6 +171,7 @@ Features:
   AllowPeerUser= + AllowPeerGroup= to allow trivially simple access control
   when invoked via socket as IPC services
 
+* when elogind-sysext learns mutable /usr/ (and elogind-confext mutable /etc/)
   then allow them to store the result in a .v/ versioned subdir, for some basic
   snapshot logic
 
