@@ -133,69 +133,6 @@ Deprecations and removals:
 
 Features:
 
-* in sd-boot and sd-stub measure the SMBIOS vendor strings to some PCR (at
-  least some subset of them that look like elogind stuff), because apparently
-  some firmware does not, but elogind honours it. avoid duplicate measurement
-  by sd-boot and sd-stub by adding LoaderFeatures/StubFeatures flag for this,
-  so that sd-stub can avoid it if sd-boot already did it.
-
-* cryptsetup: a mechanism that allows signing a volume key with some key that
-  has to be present in the kernel keyring, or similar, to ensure that confext
-  DDIs can be encrypted against the local SRK but signed with the admin's key
-  and thus can authenticated locally before they are decrypted.
-
-* image policy should be extended to allow dictating *how* a disk is unlocked,
-  i.e. root=encrypted-tpm2+encrypted-fido2 would mean "root fs must be
-  encrypted and unlocked via fido2 or tpm2, but not otherwise"
-
-
-* homed: add small tool that exposes a homed home dir via nvme-over-tcp (just a
-  bunch of sysfs writes). Then, teach homed/pam_elogind_homed with a user name
-  such as lennart%nvmettcp_192.168.100.77_8787_nqn to log in from any linux
-  host with the same home dir. Similar maybe for nbd, iscsi? this should then
-  first ask for the local root pw, to authenticate that logging in like this is
-  ok, and would then be followed by another password prompt asking for the
-  user's own password. Also, do something similar for CIFS: if you log in via
-  lennart%cifs-someserver_someshare, then set up the homed dir for it
-  automatically. The PAM module should update the user name used for login to the
-  short version once it set up the user. Some care should be taken, so that the
-  long version can be still be resolved via NSS afterwards, to deal with PAM
-  clients that do not support PAM sessions where PAM_USER changes half-way.
-
-* redefine /var/lib/extensions/ as the dir one can place all three of sysext,
-  confext as well is multi-modal DDIs that qualify as both. Then introduce
-  /var/lib/sysexts/ which can be used to place only DDIs that shall be used as
-  sysext
-
-* in pid1: move out all cgroup state settings from Unit into a new object
-  CGroupState or so which is allocated when we realize the unit into a cgroup,
-  and then remains referenced by it. The new object should also carry an fd to
-  the realized cgroup, to pin it (and later execute all cgroup operations over,
-  once we drop cgroupv1 compat).
-
-* add new "elogind-ssh-generator", which allows basic ssh config via
-  credentials (host key). It generates sshd.socket for IP, but also
-  sshd-vsock.socket for listening on AF_VSOCK when running in a VM, and
-  sshd-unix.socket on AF_UNIX when running in a container. It also generates a
-  matching sshd.service file with a host key passed in on the cmdline via
-  credentials. Then, add a ssh_config drop-in that matches some suitable
-  hostname pattern and has a ProxyCommand set that allows connecting to any
-  local VM/container that way without any networking configured.
-
-* Varlinkification of the following command line tools, to open them up to
-  other programs via IPC:
-  - bootctl
-  - journalctl (allowing journal read access via IPC)
-  - coredumpcl
-  - elogind-bless-boot
-  - elogind-measure
-  - elogind-dissect
-  - elogind-sysupdate
-  - elogind-sysext
-
-* Varlink: add glue code to allow varlink clients to be authenticated via
-  Polkit by passing client pidfd over.
-
 * in the service manager, pick up ERRNO= + BUSERROR= + VARLINKERROR= error
   identifiers, and store them along with the exit status of a server and report
   via "systemctl status".
@@ -207,24 +144,33 @@ Features:
 * automatically mount one virtiofs during early boot phase to /run/host/,
   similar to how we do that for nspawn, based on some clear tag.
 
+* make elogind-pcrphase accessible via varlink so that clients can measure
+  things reasonably freely, and get a proper entry in the TPM event log we
+  maintain, correctly synchronized
+
 * add some service that makes an atomic snapshot of PCR state and event log up
   to that point available, possibly even with quote by the TPM.
 
 * encode type1 entries in some UKI section to add additional entries to the
   menu.
 
-* Add ACL-based access management to .socket units. i.e. add AllowPeerUser= +
-  AllowPeerGroup= that installs additional user/group ACL entries on AF_UNIX
-  sockets.
-
 * when elogind-sysext learns mutable /usr/ (and elogind-confext mutable /etc/)
-* elogind-tpm2-setup should probably have a factory reset logic, i.e. when some
-  kernel command line option is set we reset the TPM (equivalent of tpm2_clear
-  -c owner?).
 
-* elogind-tpm2-setup should support a mode where we refuse booting if the SRK
-  changed. (Must be opt-in, to not break systems which are supposed to be
-  migratable between PCs)
+* extend the various CLI tools we have that output JSON already to also read
+  their command to execute from JSON in varlink format, so that you can fork
+  them off and talk to them fully via varlink.
+* add a "varlinkctl" tool that allows interacting with varlink services from
+  the shell. In particular add a "--exec=" switch, which allows specifying a
+  binary to invoke to which to talk via stdin/stdout
+
+* make tools that speak varlink over stdin/stdout trivially sockect
+  activatable. i.e. once bootctl, kernel-install, elogind-measure and similar
+  speak varlink make them available via a .socket unit with Accept=yes, so that
+  they can be talked to via IPC out-of-process
+
+* beef up .service units that are socket activated with Accept=yes with options
+  AllowPeerUser= + AllowPeerGroup= to allow trivially simple access control
+  when invoked via socket as IPC services
 
   then allow them to store the result in a .v/ versioned subdir, for some basic
   snapshot logic
@@ -232,23 +178,19 @@ Features:
 * add a new PE binary section ".mokkeys" or so which sd-stub will insert into
   Mok keyring, by overriding/extending whatever shim sets in the EFI
   var. Benefit: we can extend the kernel module keyring at ukify time,
-  i.e. without recompiling the kernel, taking an upstream OS' kernel and adding
+  i.e. without recompiling the kernel, taking an upstrem OS' kernel and adding
   a local key to it.
 
 * PidRef conversion work:
   - pid_is_unwaited() → pidref_is_unwaited()
   - pid_is_alive() → pidref_is_alive()
-  - is_kernel_thread() → pidref_is_kernel_thread()
-  - pid_is_my_child() → pidref_is_my_child()
-  - get_process_uid() → pidref_get_uid()
+  - unit_watch_pid() → unit_watch_pidref()
   - actually wait for POLLIN on pidref's pidfd in service logic
   - exec_spawn()
+  - serialization of control/main pid in service, socket, mount, swap units
   - cg_pid_get_unit()
   - openpt_allocate_in_namespace()
-  - sd_bus_creds
-  - unit_attach_pid_to_cgroup_via_bus()
-  - cg_attach() – requires new kernel feature
-  - varlink_get_peer_pid()
+  - scope dbus PIDs property needs to gain PIDFDs companion
 
 * ddi must be listed as block device fstype
 
@@ -263,13 +205,22 @@ Features:
   2nd key derived from volume key of the user, with which to wrap all
   keys. maintain keys in kernel keyring if possible.
 
-* use sd-event ratelimit feature optionally for journal stream clients that log
-  too much
+* add ConditionSecurity=stub-measured or so that checks if we are booted with
+  elogind-stub and its measurements
 
-* elogind-mount should only consider modern file systems when mounting, similar
+* sd-boot should probably measure its configuration file to PCR 5 at boot, as
+  per TCG PC Client Platform Firmware Profile Spec.
+
+* use sd-event ratelimit feature optionally for .socket units to "pause" overly
+  busy sockets temporarily. (as a less drastic version of the trigger
+  ratelimit)
+
   to elogind-dissect
+* similar, add the same for journal stream clients that log too much
 
 * new "elogind-pcrlock" component for dealing with PCR4. Design idea:
+* elogind-mount sould only consider modern file systems when mounting, similar
+
   1. define /{etc,usr,var/lib}/pcrlock.d/<component>/<version>.pcrlock
   2. these files contain list of hashes that will be measured when component is
      run, per PCR
@@ -368,6 +319,13 @@ Features:
   intended for a different OS. Take inspiration from how confext/sysext are
   matched against OS.
 
+* use different sbat for sd-boot and sd-stub (so that people can revoke one
+  without the other)
+
+* in ukify merge sbat info from kernel (if it has any, upstream kernels so far
+  dont), of sd-stub and data supplied by user. Then measure sbat too in
+  sd-stub, explicitly.
+
 * figure out what to do about credentials sealed to PCRs in kexec + soft-reboot
   scenarios. Maybe insist sealing is done additionally against some keypair in
   the TPM to which access is updated on each boot, for the next, or so?
@@ -431,10 +389,6 @@ Features:
   ENV{SYSTEMD_WANTS} in udev rules, and a bit prettier than using RUN+=
 
 * udevd: extend memory pressure logic: also kill any idle worker processes
-
-* udevadm: to make symlink querying with udevadm nicer:
-  - do not enable the pager for queries like 'udevadm info -q -r symlink'
-  - add mode with newlines instead of spaces (for grep)?
 
 * SIGRTMIN+18 and memory pressure handling should still be added to: hostnamed,
   localed, oomd, timedated.
@@ -526,7 +480,7 @@ Features:
 
 * sd-boot: make boot loader spec type #1 accept http urls in "linux"
   lines. Then, do the uefi http dance to download kernels and boot them. This
-  is then useful for network boot, by embedding a cpio with type #1 snippets
+  is then useful for network boot, by embdedding a cpio with type #1 snippets
   in sd-boot, which reference remote kernels.
 
 * maybe prohibit setuid() to the nobody user, to lock things down, via seccomp.
@@ -646,6 +600,11 @@ Features:
   of the activated configuration and the image that is being activated (in case
   verity is used, hash of the root hash).
 
+* whenever we measure something into a TPM PCR from userspace, write a record in
+  TCG's "Canonical Event Log" format to some file, so that we can reason about
+  how PCR values we manage came to
+  be. https://trustedcomputinggroup.org/resource/canonical-event-log-format/
+
 * bootspec: permit graceful "update" from type #2 to type #1. If both a type #1
   and a type #2 entry exist under otherwise the exact same name, then use the
   type #1 entry, and ignore the type #2 entry. This way, people can "upgrade"
@@ -692,6 +651,9 @@ Features:
   boot, for the next.
 
 * elogind-sysupdate: make transport pluggable, so people can plug casync or
+* figure out a sane way when building UKIs how to extract SBAT data from inner
+  kernel, extend it with component info, and add to outer kernel.
+
   similar behind it, instead of http.
 
 * systemd-tmpfiles: add concept for conditionalizing lines on factory reset
@@ -773,7 +735,7 @@ Features:
 * elogind-measure: allow operating with PEM certificates in addition to PEM
   public keys when signing PCR values. SecureBoot and our Verity signatures
   operate with certificates already, hence I guess we should also just deal for
-  convenience with certificates for the PCR stuff too.
+  convencience with certificates for the PCR stuff too.
 
 * elogind-measure: add --pcrpkey-auto as an alternative to --pcrpkey=, where it
   would just use the same public key specified with --public-key= (or the one
@@ -938,6 +900,8 @@ Features:
   2. elogind-gpt-auto-generator should auto-mount /var if it finds it on disk
   3. mount.x-initrd mount option in fstab should be implied for /var
 
+* implement varlink introspection
+
 * make persistent restarts easier by adding a new setting OpenPersistentFile=
   or so, which allows opening one or more files that is "persistent" across
   service restarts, hot reboot, cold reboots (depending on configuration): the
@@ -1096,6 +1060,8 @@ Features:
   invoke a VM or nspawn container in a way it automatically deploys/runs these
   images as OS payloads. i.e. have a generic OS image you can point to any
   payload you like, which is then downloaded, securely verified and run.
+
+* improve scope units to support creation by pidfd instead of by PID
 
 * deprecate cgroupsv1 further (print log message at boot)
 
@@ -1536,6 +1502,9 @@ Features:
 
 * maybe extend .path units to expose fanotify() per-mount change events
 
+* When reloading configuration PID 1 should reset all its properties to the
+  original defaults before calling parse_config()
+
 * hibernate/s2h: if swap is on weird storage and refuse if so
 
 * cgroups: use inotify to get notified when somebody else modifies cgroups
@@ -1573,6 +1542,8 @@ Features:
   environment. Which we can use for /etc/machine-id and in particular
   /etc/resolv.conf. Should be smart and do something useful on read-only
   images, for example fall back to read-only bind mounting the file instead.
+
+* show invocation ID in elogind-run output
 
 * bypass SIGTERM state in unit files if KillSignal is SIGKILL
 
@@ -1645,6 +1616,9 @@ Features:
 
 * In DynamicUser= mode: before selecting a UID, use disk quota APIs on relevant
   disks to see if the UID is already in use.
+
+* expose IO accounting data on the bus, show it in elogind-run --wait and log
+  about it in the resource log message
 
 * Add AddUser= setting to unit files, similar to DynamicUser=1 which however
   creates a static, persistent user rather than a dynamic, transient user. We
@@ -1827,8 +1801,8 @@ Features:
   - when reloading configuration, apply new cgroup configuration
   - when recursively showing the cgroup hierarchy, optionally also show
     the hierarchies of child processes
-  - add settings for cgroup.max.descendants and cgroup.max.depth,
-    maybe use them for user@.service
+- add settings for cgroup.max.descendants and cgroup.max.depth,
+  maybe use them for user@.service
 
 * transient units:
   - add field to transient units that indicate whether systemd or somebody else saves/restores its settings, for integration with libvirt
@@ -1840,6 +1814,8 @@ Features:
 * be more careful what we export on the bus as (usec_t) 0 and (usec_t) -1
 
 * rfkill,backlight: we probably should run the load tools inside of the udev rules so that the state is properly initialized by the time other software sees it
+
+* After coming back from hibernation reset hibernation swap partition using the /dev/snapshot ioctl APIs
 
 * If we try to find a unit via a dangling symlink, generate a clean
   error. Currently, we just ignore it and read the unit from the search
