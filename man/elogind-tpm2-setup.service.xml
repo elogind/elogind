@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--*-nxml-*-->
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
+<refentry id="elogind-tpm2-setup.service" conditional='ENABLE_BOOTLOADER'
+          xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <refentryinfo>
+    <title>elogind-tpm2-setup.service</title>
+    <productname>elogind</productname>
+  </refentryinfo>
+
+  <refmeta>
+    <refentrytitle>elogind-tpm2-setup.service</refentrytitle>
+    <manvolnum>8</manvolnum>
+  </refmeta>
+
+  <refnamediv>
+    <refname>elogind-tpm2-setup.service</refname>
+    <refname>elogind-tpm2-setup-early.service</refname>
+    <refname>elogind-tpm2-setup</refname>
+    <refpurpose>Set up the TPM2 Storage Root Key (SRK) at boot</refpurpose>
+  </refnamediv>
+
+  <refsynopsisdiv>
+    <para><filename>elogind-tpm2-setup.service</filename></para>
+    <para><filename>/usr/lib/elogind/elogind-tpm2-setup</filename></para>
+  </refsynopsisdiv>
+
+  <refsect1>
+    <title>Description</title>
+
+    <para><filename>elogind-tpm2-setup.service</filename> and
+    <filename>elogind-tpm2-setup-early.service</filename> are services that generate the Storage Root Key
+    (SRK) if it hasn't been generated yet, and stores it in the TPM.</para>
+
+    <para>The services will store the public key of the SRK key pair in a PEM file in
+    <filename>/run/systemd/tpm2-srk-public-key.pem</filename> and
+    <filename>/var/lib/elogind/tpm2-srk-public-key.pem</filename>.</para>
+
+    <para><filename>elogind-tpm2-setup-early.service</filename> runs very early at boot (possibly in the
+    initrd), and writes the SRK public key to <filename>/run/systemd/tpm2-srk-public-key.pem</filename> (as
+    <filename>/var/</filename> is generally not accessible this early yet), while
+    <filename>elogind-tpm2-setup.service</filename> runs during a later boot phase and saves the public key
+    to <filename>/var/lib/elogind/tpm2-srk-public-key.pem</filename>.</para>
+  </refsect1>
+
+  <refsect1>
+    <title>Files</title>
+
+    <variablelist>
+      <varlistentry>
+        <term><filename>/run/systemd/tpm2-srk-public-key.pem</filename></term>
+
+        <listitem><para>The SRK public key in PEM format, written during early boot.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><filename>/var/lib/elogind/tpm2-srk-public-key.pem</filename></term>
+
+        <listitem><para>The SRK public key in PEM format, written during later boot (once
+        <filename>/var/</filename> is available).</para></listitem>
+      </varlistentry>
+    </variablelist>
+  </refsect1>
+
+  <refsect1>
+    <title>See Also</title>
+    <para>
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    </para>
+  </refsect1>
+</refentry>
