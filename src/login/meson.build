@@ -143,7 +143,7 @@ modules += [
                         'HAVE_PAM',
                 ],
                 'sources' : files('pam_elogind.c'),
-                'link_depends' : files('pam_elogind.sym'),
+                'version-script' : meson.current_source_dir() / 'pam_elogind.sym',
         },
 ]
 
