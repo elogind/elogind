@@ -213,9 +213,12 @@ html = custom_target(
 #         run_target(
 #                 'doc-sync',
 #                 depends : man_pages + html_pages,
-#                 command : [sync_docs_py,
-#                            '--version',
-#                            '@0@'.format(meson.project_version()),
+#                 command : [rsync, '-rlv',
+#                            '--delete-excluded',
+#                            '--include=man',
+#                            '--include=*.html',
+#                            '--exclude=*',
+#                            '--omit-dir-times',
 #                            meson.current_build_dir(),
 #                            get_option('www-target')])
 # endif
