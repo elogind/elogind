@@ -37,7 +37,6 @@
 #         'emergency-action.c',
 #         'exec-credential.c',
 #         'execute.c',
-#         'execute-serialize.c',
 #         'generator-setup.c',
 #         'ima-setup.c',
 #         'import-creds.c',
@@ -152,11 +151,6 @@ libcore_sources = files(
 #         'crash-handler.c',
 # )
 #
-# elogind_executor_sources = files(
-#         'executor.c',
-#         'exec-invoke.c',
-# )
-#
 # executables += [
 #         libexec_template + {
 #                 'name' : 'elogind',
@@ -168,22 +162,6 @@ libcore_sources = files(
 #                         libshared,
 #                 ],
 #                 'dependencies' : libseccomp,
-#         },
-#         libexec_template + {
-#                 'name' : 'elogind-executor',
-#                 'public' : true,
-#                 'sources' : elogind_executor_sources,
-#                 'include_directories' : core_includes,
-#                 'link_with' : [
-#                         libcore,
-#                         libshared,
-#                 ],
-#                 'dependencies' : [
-#                         libapparmor,
-#                         libpam,
-#                         libseccomp,
-#                         libselinux,
-#                 ],
 #         },
 #         fuzz_template + {
 #                 'sources' : files('fuzz-unit-file.c'),
