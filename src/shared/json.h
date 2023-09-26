@@ -225,6 +225,7 @@ int json_variant_append_array_nodup(JsonVariant **v, JsonVariant *element);
 
 int json_variant_merge_object(JsonVariant **v, JsonVariant *m);
 int json_variant_merge_objectb(JsonVariant **v, ...);
+int json_variant_merge_pair(JsonVariant **v, const char *name, JsonVariant *w);
 
 #if 0 /// UNNEEDED by elogind
 int json_variant_strv(JsonVariant *v, char ***ret);
