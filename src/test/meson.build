@@ -110,6 +110,7 @@ simple_tests += files(
         'test-extract-word.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-fdset.c',
+#         'test-fiemap.c',
 #         'test-fileio.c',
 #         'test-firewall-util.c',
 #endif // 0
@@ -218,7 +219,7 @@ simple_tests += files(
         'test-signal-util.c',
         'test-siphash24.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-sleep.c',
+#         'test-sleep-config.c',
 #         'test-socket-netlink.c',
 #         'test-socket-util.c',
 #         'test-specifier.c',
