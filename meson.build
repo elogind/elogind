@@ -211,6 +211,7 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # randomseeddir = localstatedir / 'lib/systemd'
 # profiledir = libexecdir / 'portable' / 'profile'
 # ntpservicelistdir = prefixdir / 'lib/elogind/ntp-units.d'
+# repartdefinitionsdir = libexecdir / 'repart/definitions'
 # credstoredir = prefixdir / 'lib/credstore'
 #
 # docdir = get_option('docdir')
@@ -2096,6 +2097,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 ############################################################
 
 #if 0 /// UNUSED by elogind
+# check_version_history_py = find_program('tools/check-version-history.py')
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
