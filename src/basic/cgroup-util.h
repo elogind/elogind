@@ -38,7 +38,7 @@ typedef enum CGroupController {
         CGROUP_CONTROLLER_BPF_SOCKET_BIND,
         CGROUP_CONTROLLER_BPF_RESTRICT_NETWORK_INTERFACES,
         /* The BPF hook implementing RestrictFileSystems= is not defined here.
-         * It's applied as late as possible in exec_invoke() so we don't block
+         * It's applied as late as possible in exec_child() so we don't block
          * our own unit setup code. */
 
         _CGROUP_CONTROLLER_MAX,
@@ -221,6 +221,8 @@ int cg_pidref_get_path(const char *controller, PidRef *pidref, char **path);
 int cg_rmdir(const char *controller, const char *path);
 
 int cg_is_threaded(const char *path);
+
+int cg_is_delegated(const char *path);
 
 typedef enum  {
         CG_KEY_MODE_GRACEFUL = 1 << 0,
