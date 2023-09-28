@@ -2096,7 +2096,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 ############################################################
 
 #if 0 /// UNUSED by elogind
-# elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
@@ -2584,7 +2583,6 @@ subdir('src/login')
 # subdir('src/sysv-generator')
 # subdir('src/timedate')
 # subdir('src/timesync')
-# subdir('src/tpm2-setup')
 # subdir('src/tmpfiles')
 # subdir('src/tty-ask-password-agent')
 # subdir('src/update-done')
