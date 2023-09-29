@@ -73,6 +73,7 @@ int umount_verbose(
                 int flags);
 
 #endif // 0
+int mount_exchange_graceful(int fsmount_fd, const char *dest, bool mount_beneath);
 
 int mount_option_mangle(
                 const char *options,
