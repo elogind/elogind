@@ -144,14 +144,7 @@ static void cgroup_compat_warn(void) {
 void cgroup_context_init(CGroupContext *c) {
         assert(c);
 
-        /* Initialize everything to the kernel defaults. When initializing a bool member to 'true', make
-         * sure to serialize in execute-serialize.c using serialize_bool() instead of
-         * serialize_bool_elide(), as sd-executor will initialize here to 'true', but serialize_bool_elide()
-         * skips serialization if the value is 'false' (as that's the common default), so if the value at
-         * runtime is zero it would be lost after deserialization. Same when initializing uint64_t and other
-         * values, update/add a conditional serialization check. This is to minimize the amount of
-         * serialized data that is sent to the sd-executor, so that there is less work to do on the default
-         * cases. */
+        /* Initialize everything to the kernel defaults. */
 
         *c = (CGroupContext) {
                 .cpu_weight = CGROUP_WEIGHT_INVALID,
@@ -534,7 +527,8 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                 "%sManagedOOMMemoryPressure: %s\n"
                 "%sManagedOOMMemoryPressureLimit: " PERMYRIAD_AS_PERCENT_FORMAT_STR "\n"
                 "%sManagedOOMPreference: %s\n"
-                "%sMemoryPressureWatch: %s\n",
+                "%sMemoryPressureWatch: %s\n"
+                "%sCoredumpReceive: %s\n",
                 prefix, yes_no(c->cpu_accounting),
                 prefix, yes_no(c->io_accounting),
                 prefix, yes_no(c->blockio_accounting),
@@ -577,7 +571,8 @@ void cgroup_context_dump(Unit *u, FILE* f, const char *prefix) {
                 prefix, managed_oom_mode_to_string(c->moom_mem_pressure),
                 prefix, PERMYRIAD_AS_PERCENT_FORMAT_VAL(UINT32_SCALE_TO_PERMYRIAD(c->moom_mem_pressure_limit)),
                 prefix, managed_oom_preference_to_string(c->moom_preference),
-                prefix, cgroup_pressure_watch_to_string(c->memory_pressure_watch));
+                prefix, cgroup_pressure_watch_to_string(c->memory_pressure_watch),
+                prefix, yes_no(c->coredump_receive));
 
         if (c->delegate_subgroup)
                 fprintf(f, "%sDelegateSubgroup: %s\n",
@@ -730,23 +725,6 @@ int cgroup_context_add_device_allow(CGroupContext *c, const char *dev, const cha
         TAKE_PTR(a);
 
         return 0;
-}
-
-int cgroup_context_add_or_update_device_allow(CGroupContext *c, const char *dev, const char *mode) {
-        assert(c);
-        assert(dev);
-        assert(isempty(mode) || in_charset(mode, "rwm"));
-
-        LIST_FOREACH(device_allow, b, c->device_allow)
-                if (path_equal(b->path, dev)) {
-                        b->r = isempty(mode) || strchr(mode, 'r');
-                        b->w = isempty(mode) || strchr(mode, 'w');
-                        b->m = isempty(mode) || strchr(mode, 'm');
-
-                        return 0;
-                }
-
-        return cgroup_context_add_device_allow(c, dev, mode);
 }
 
 int cgroup_context_add_bpf_foreign_program(CGroupContext *c, uint32_t attach_type, const char *bpffs_path) {
@@ -917,6 +895,21 @@ static void cgroup_invocation_id_xattr_apply(Unit *u) {
         }
 }
 
+static void cgroup_coredump_xattr_apply(Unit *u) {
+        CGroupContext *c;
+
+        assert(u);
+
+        c = unit_get_cgroup_context(u);
+        if (!c)
+                return;
+
+        if (unit_cgroup_delegate(u) && c->coredump_receive)
+                unit_set_xattr_graceful(u, "user.coredump_receive", "1", 1);
+        else
+                unit_remove_xattr_graceful(u, "user.coredump_receive");
+}
+
 static void cgroup_delegate_xattr_apply(Unit *u) {
         bool b;
 
@@ -977,6 +970,7 @@ static void cgroup_xattr_apply(Unit *u) {
         /* The 'user.*' xattrs can be set from a user manager. */
         cgroup_oomd_xattr_apply(u);
         cgroup_log_xattr_apply(u);
+        cgroup_coredump_xattr_apply(u);
 
         if (!MANAGER_IS_SYSTEM(u->manager))
                 return;
