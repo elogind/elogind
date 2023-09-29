@@ -228,6 +228,10 @@ struct CGroupContext {
          * triggers, nor triggers for non-memory pressure. We might add that later. */
 
         NFTSetContext nft_set_context;
+
+        /* Forward coredumps for processes that crash within this cgroup.
+         * Requires 'delegate' to also be true. */
+        bool coredump_receive;
 };
 
 /* Used when querying IP accounting data */
@@ -280,7 +284,6 @@ static inline bool cgroup_context_want_memory_pressure(const CGroupContext *c) {
 }
 
 int cgroup_context_add_device_allow(CGroupContext *c, const char *dev, const char *mode);
-int cgroup_context_add_or_update_device_allow(CGroupContext *c, const char *dev, const char *mode);
 int cgroup_context_add_bpf_foreign_program(CGroupContext *c, uint32_t attach_type, const char *path);
 
 void unit_modify_nft_set(Unit *u, bool add);
