@@ -2096,7 +2096,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 ############################################################
 
 #if 0 /// UNUSED by elogind
-# check_version_history_py = find_program('tools/check-version-history.py')
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
@@ -2479,8 +2478,6 @@ module_additional_kwargs = {
 # systemd-analyze requires 'libcore'
 subdir('src/core')
 #if 0 /// UNNEEDED by elogind
-# # elogind-journal-remote requires 'libjournal_core'
-# subdir('src/journal')
 # # systemd-networkd requires 'libsystemd_network'
 # subdir('src/libsystemd-network')
 #endif // 0
@@ -2534,6 +2531,7 @@ subdir('src/busctl')
 # subdir('src/import')
 # subdir('src/initctl')
 # subdir('src/integritysetup')
+# subdir('src/journal')
 # subdir('src/journal-remote')
 # subdir('src/kernel-install')
 # subdir('src/locale')
