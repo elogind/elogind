@@ -113,3 +113,6 @@ static inline void erase_char(char *p) {
         explicit_bzero_safe(p, sizeof(char));
 }
 #endif // 0
+
+/* Makes a copy of the buffer with reversed order of bytes */
+void *memdup_reverse(const void *mem, size_t size);
