@@ -30,6 +30,31 @@
 #define _function_no_sanitize_float_cast_overflow_
 #endif
 
+/* Temporarily disable some warnings */
+#define DISABLE_WARNING_DEPRECATED_DECLARATIONS                         \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+
+#define DISABLE_WARNING_FORMAT_NONLITERAL                               \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wformat-nonliteral\"")
+
+#define DISABLE_WARNING_MISSING_PROTOTYPES                              \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wmissing-prototypes\"")
+
+#define DISABLE_WARNING_NONNULL                                         \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wnonnull\"")
+
+#define DISABLE_WARNING_SHADOW                                          \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wshadow\"")
+
+#define DISABLE_WARNING_INCOMPATIBLE_POINTER_TYPES                      \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wincompatible-pointer-types\"")
+
 #if HAVE_WSTRINGOP_TRUNCATION
 #  define DISABLE_WARNING_STRINGOP_TRUNCATION                           \
         _Pragma("GCC diagnostic push");                                 \
@@ -39,7 +64,18 @@
         _Pragma("GCC diagnostic push")
 #endif
 
-/* test harness */
+#define DISABLE_WARNING_TYPE_LIMITS                                     \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Wtype-limits\"")
+
+#define DISABLE_WARNING_ADDRESS                                         \
+        _Pragma("GCC diagnostic push");                                 \
+        _Pragma("GCC diagnostic ignored \"-Waddress\"")
+
+#define REENABLE_WARNING                                                \
+        _Pragma("GCC diagnostic pop")
+
+/* automake test harness */
 #define EXIT_TEST_SKIP 77
 
 /* builtins */
@@ -273,6 +309,40 @@ static inline int __coverity_check_and_return__(int condition) {
 
 #define FOREACH_ARRAY(i, array, num)                                    \
         _FOREACH_ARRAY(i, array, num, UNIQ_T(m, UNIQ), UNIQ_T(end, UNIQ))
+
+#define DEFINE_TRIVIAL_DESTRUCTOR(name, type, func)             \
+        static inline void name(type *p) {                      \
+                func(p);                                        \
+        }
+
+/* When func() returns the void value (NULL, -1, …) of the appropriate type */
+#define DEFINE_TRIVIAL_CLEANUP_FUNC(type, func)                 \
+        static inline void func##p(type *p) {                   \
+                if (*p)                                         \
+                        *p = func(*p);                          \
+        }
+
+/* When func() doesn't return the appropriate type, set variable to empty afterwards.
+ * The func() may be provided by a dynamically loaded shared library, hence add an assertion. */
+#define DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(type, func, empty)     \
+        static inline void func##p(type *p) {                   \
+                if (*p != (empty)) {                            \
+                        DISABLE_WARNING_ADDRESS;                \
+                        assert(func);                           \
+                        REENABLE_WARNING;                       \
+                        func(*p);                               \
+                        *p = (empty);                           \
+                }                                               \
+        }
+
+/* When func() doesn't return the appropriate type, and is also a macro, set variable to empty afterwards. */
+#define DEFINE_TRIVIAL_CLEANUP_FUNC_FULL_MACRO(type, func, empty)       \
+        static inline void func##p(type *p) {                           \
+                if (*p != (empty)) {                                    \
+                        func(*p);                                       \
+                        *p = (empty);                                   \
+                }                                                       \
+        }
 
 #define _DEFINE_TRIVIAL_REF_FUNC(type, name, scope)             \
         scope type *name##_ref(type *p) {                       \
