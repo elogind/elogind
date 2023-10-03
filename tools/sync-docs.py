@@ -26,6 +26,7 @@ $(document).ready(function() {
         $.each( data, function(_, version) {
             if (version == dirname) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
+                items.push( "<option selected value='" + version + "'>" + "systemd " + version + "</option>");
             } else if (dirname == "latest" && version == data[0]) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
             } else {

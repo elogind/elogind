@@ -2106,6 +2106,7 @@ generate_gperfs = find_program('tools/generate-gperfs.py')
 # make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 #endif // 0
 make_directive_index_py = find_program('tools/make-directive-index.py')
+sync_docs_py = find_program('tools/sync-docs.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
