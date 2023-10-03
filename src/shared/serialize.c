@@ -5,9 +5,7 @@
 #include "alloc-util.h"
 //#include "env-util.h"
 #include "escape.h"
-#include "fd-util.h"
 #include "fileio.h"
-#include "hexdecoct.h"
 #include "memfd-util.h"
 #include "missing_mman.h"
 #include "missing_syscall.h"
@@ -104,7 +102,6 @@ int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd) {
         int copy;
 
         assert(f);
-        assert(fds);
         assert(key);
 
         if (fd < 0)
@@ -153,115 +150,6 @@ int serialize_strv(FILE *f, const char *key, char **l) {
         }
 
         return ret;
-}
-
-int serialize_pidref(FILE *f, FDSet *fds, const char *key, PidRef *pidref) {
-        int copy;
-
-        assert(f);
-        assert(fds);
-
-        if (!pidref_is_set(pidref))
-                return 0;
-
-        /* If we have a pidfd we serialize the fd and encode the fd number prefixed by "@" in the
-         * serialization. Otherwise we serialize the numeric PID as it is. */
-
-        if (pidref->fd < 0)
-                return serialize_item_format(f, key, PID_FMT, pidref->pid);
-
-        copy = fdset_put_dup(fds, pidref->fd);
-        if (copy < 0)
-                return log_error_errno(copy, "Failed to add file descriptor to serialization set: %m");
-
-        return serialize_item_format(f, key, "@%i", copy);
-}
-
-int serialize_item_hexmem(FILE *f, const char *key, const void *p, size_t l) {
-        _cleanup_free_ char *encoded = NULL;
-        int r;
-
-        assert(f);
-        assert(key);
-        assert(p || l == 0);
-
-        if (l == 0)
-                return 0;
-
-        encoded = hexmem(p, l);
-        if (!encoded)
-                return log_oom_debug();
-
-        r = serialize_item(f, key, encoded);
-        if (r < 0)
-                return r;
-
-        return 1;
-}
-
-int serialize_item_base64mem(FILE *f, const char *key, const void *p, size_t l) {
-        _cleanup_free_ char *encoded = NULL;
-        ssize_t len;
-        int r;
-
-        assert(f);
-        assert(key);
-        assert(p || l == 0);
-
-        if (l == 0)
-                return 0;
-
-        len = base64mem(p, l, &encoded);
-        if (len <= 0)
-                return log_oom_debug();
-
-        r = serialize_item(f, key, encoded);
-        if (r < 0)
-                return r;
-
-        return 1;
-}
-
-int serialize_string_set(FILE *f, const char *key, Set *s) {
-        const char *e;
-        int r;
-
-        assert(f);
-        assert(key);
-
-        if (set_isempty(s))
-                return 0;
-
-        /* Serialize as individual items, as each element might contain separators and escapes */
-
-        SET_FOREACH(e, s) {
-                r = serialize_item(f, key, e);
-                if (r < 0)
-                        return r;
-        }
-
-        return 1;
-}
-
-int serialize_image_policy(FILE *f, const char *key, const ImagePolicy *p) {
-        _cleanup_free_ char *policy = NULL;
-        int r;
-
-        assert(f);
-        assert(key);
-
-        if (!p)
-                return 0;
-
-        r = image_policy_to_string(p, /* simplify= */ false, &policy);
-        if (r < 0)
-                return r;
-
-        r = serialize_item(f, key, policy);
-        if (r < 0)
-                return r;
-
-        return 1;
 }
 
 int deserialize_read_line(FILE *f, char **ret) {
@@ -373,41 +261,6 @@ int deserialize_environment(const char *value, char ***list) {
 }
 #endif // 0
 
-int deserialize_pidref(FDSet *fds, const char *value, PidRef *ret) {
-        const char *e;
-        int r;
-
-        assert(value);
-        assert(ret);
-
-        e = startswith(value, "@");
-        if (e) {
-                _cleanup_close_ int our_fd = -EBADF;
-                int parsed_fd;
-
-                parsed_fd = parse_fd(e);
-                if (parsed_fd < 0)
-                        return log_debug_errno(parsed_fd, "Failed to parse file descriptor specification: %s", e);
-
-                our_fd = fdset_remove(fds, parsed_fd); /* Take possession of the fd */
-                if (our_fd < 0)
-                        return log_debug_errno(our_fd, "Failed to acquire pidfd from serialization fds: %m");
-
-                r = pidref_set_pidfd_consume(ret, TAKE_FD(our_fd));
-        } else {
-                pid_t pid;
-
-                r = parse_pid(value, &pid);
-                if (r < 0)
-                        return log_debug_errno(r, "Failed to parse PID: %s", value);
-
-                r = pidref_set_pid(ret, pid);
-        }
-        if (r < 0)
-                return log_debug_errno(r, "Failed to initialize pidref: %m");
-
-        return 0;
-}
 
 int open_serialization_fd(const char *ident) {
         int fd;
@@ -426,23 +279,4 @@ int open_serialization_fd(const char *ident) {
                 log_debug("Serializing %s to memfd.", ident);
 
         return fd;
-}
-
-int open_serialization_file(const char *ident, FILE **ret) {
-        _cleanup_fclose_ FILE *f = NULL;
-        _cleanup_close_ int fd;
-
-        assert(ret);
-
-        fd = open_serialization_fd(ident);
-        if (fd < 0)
-                return fd;
-
-        f = take_fdopen(&fd, "w+");
-        if (!f)
-                return -errno;
-
-        *ret = TAKE_PTR(f);
-
-        return 0;
 }
