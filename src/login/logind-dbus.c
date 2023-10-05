@@ -4267,7 +4267,7 @@ static int strdup_job(sd_bus_message *reply, char **job) {
 int manager_start_scope(
                 Manager *manager,
                 const char *scope,
-                pid_t pid,
+                const PidRef *pidref,
                 const char *slice,
                 const char *description,
                 char **wants,
@@ -4282,7 +4282,7 @@ int manager_start_scope(
 
         assert(manager);
         assert(scope);
-        assert(pid > 1);
+        assert(pidref_is_set(pidref));
         assert(job);
 
         r = bus_message_new_method_call(manager->bus, &m, bus_systemd_mgr, "StartTransientUnit");
@@ -4333,7 +4333,7 @@ int manager_start_scope(
         if (r < 0)
                 return r;
 
-        r = sd_bus_message_append(m, "(sv)", "PIDs", "au", 1, pid);
+        r = bus_append_scope_pidref(m, pidref);
         if (r < 0)
                 return r;
 
