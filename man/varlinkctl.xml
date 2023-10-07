@@ -237,7 +237,6 @@
    Version: 254 (254-1522-g4790521^)
        URL: https://systemd.io/
 Interfaces: io.elogind
-            io.elogind.Resolve
             io.systemd.Resolve
             org.varlink.service
 $ varlinkctl list-interfaces /run/systemd/resolve/io.systemd.Resolve
@@ -280,7 +279,7 @@ type ResolvedAddress(
     <example>
       <title>Investigating a Service Executable</title>
 
-      <para>The following comand inspects the <filename>/usr/lib/elogind/elogind-pcrextend</filename>
+      <para>The following command inspects the <filename>/usr/lib/elogind/elogind-pcrextend</filename>
       executable and the IPC APIs it provides. It then invokes a method on it:</para>
 
       <programlisting># varlinkctl info /usr/lib/elogind/elogind-pcrextend
