@@ -15,6 +15,7 @@
 #include "varlink-io.elogind.UserDatabase.h"
 #include "varlink-io.elogind.oom.h"
 #include "varlink-io.elogind.PCRExtend.h"
+#include "varlink-io.elogind.sysext.h"
 #include "varlink-org.varlink.service.h"
 
 static VARLINK_DEFINE_ENUM_TYPE(
@@ -136,6 +137,8 @@ TEST(parse_format) {
         test_parse_format_one(&vl_interface_io_elogind);
         print_separator();
         test_parse_format_one(&vl_interface_io_elogind_PCRExtend);
+        print_separator();
+        test_parse_format_one(&vl_interface_io_elogind_sysext);
         print_separator();
         test_parse_format_one(&vl_interface_xyz_test);
 }
