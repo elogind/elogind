@@ -25,7 +25,6 @@ $(document).ready(function() {
         var items = [];
         $.each( data, function(_, version) {
             if (version == dirname) {
-                items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
                 items.push( "<option selected value='" + version + "'>" + "systemd " + version + "</option>");
             } else if (dirname == "latest" && version == data[0]) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
@@ -109,7 +108,7 @@ def main(version, directory, www_target, latest):
                 "--exclude=*",
                 "--omit-dir-times",
                 directory + "/",  # copy contents of directory
-                os.path.join(www_target, d),
+                os.path.join(www_target, "man", d),
             ]
         )
 
@@ -119,7 +118,7 @@ def main(version, directory, www_target, latest):
             "-v",
             os.path.join(directory, "index.json"),
             os.path.join(directory, "nav.js"),
-            www_target,
+            os.path.join(www_target, "man"),
         ]
     )
 
