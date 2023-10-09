@@ -176,6 +176,7 @@
 #         'varlink-io.elogind.UserDatabase.c',
 #         'varlink-io.elogind.oom.c',
 #         'varlink-io.elogind.PCRExtend.c',
+#         'varlink-io.elogind.sysext.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
