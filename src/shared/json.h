@@ -279,6 +279,7 @@ enum {
         _JSON_BUILD_LITERAL,
         _JSON_BUILD_STRV,
 #if 0 /// UNNEEDED by elogind
+        _JSON_BUILD_STRV_ENV_PAIR,
         _JSON_BUILD_BASE64,
         _JSON_BUILD_BASE32HEX,
         _JSON_BUILD_HEX,
@@ -329,6 +330,7 @@ enum {
 #define JSON_BUILD_LITERAL(l) _JSON_BUILD_LITERAL, (const char*) { l }
 #define JSON_BUILD_STRV(l) _JSON_BUILD_STRV, (char**) { l }
 #if 0 /// UNNEEDED by elogind
+#define JSON_BUILD_STRV_ENV_PAIR(l) _JSON_BUILD_STRV_ENV_PAIR, (char**) { l }
 #define JSON_BUILD_BASE64(p, n) _JSON_BUILD_BASE64, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_BASE32HEX(p, n) _JSON_BUILD_BASE32HEX, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_HEX(p, n) _JSON_BUILD_HEX, (const void*) { p }, (size_t) { n }
