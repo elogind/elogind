@@ -112,6 +112,7 @@
 #         'loop-util.c',
 #         'loopback-setup.c',
 #         'lsm-util.c',
+#         'machine-credential.c',
 #         'machine-id-setup.c',
 #         'machine-pool.c',
 #         'macvlan-util.c',
@@ -382,7 +383,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   libcrypt,
 #                   libdl,
 #                   libgcrypt,
-#                   libiptc_cflags,
+#                   libiptc,
 #                   libkmod,
 #                   liblz4,
 #                   libmount,
@@ -392,7 +393,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
-#                   libxenctrl_cflags,
+#                   libxenctrl,
 #                   libxz,
 #                   libzstd]
 #else // 0
