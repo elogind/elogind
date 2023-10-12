@@ -190,7 +190,6 @@ Features:
   - elogind-bless-boot
   - elogind-measure
   - elogind-dissect
-  - elogind-sysext
   - elogind-sysupdate
 
 * Varlink: add glue code to allow varlink clients to be authenticated via
