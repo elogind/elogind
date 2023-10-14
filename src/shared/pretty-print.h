@@ -20,7 +20,7 @@ int terminal_urlify_man(const char *page, const char *section, char **ret);
 
 #if 0 /// UNNEEDED by elogind
 typedef enum CatFlags {
-        CAT_FLAGS_MAIN_FILE_OPTIONAL = 1 << 0,
+        CAT_DUMMY_FLAG,  // This flag only exists a as a placeholder because empty enums are not allowed
 } CatFlags;
 
 int cat_files(const char *file, char **dropins, CatFlags flags);
