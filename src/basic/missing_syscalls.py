@@ -10,6 +10,7 @@ SYSCALLS = [
     'close_range',
     'copy_file_range',
     'epoll_pwait2',
+    'fchmodat2',
     'getrandom',
     'memfd_create',
     'mount_setattr',
