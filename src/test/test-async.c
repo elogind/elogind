@@ -14,7 +14,7 @@
 #include "tmpfile-util.h"
 
 #if 0 /// UNNEEDED by elogind
-TEST(test_asynchronous_sync) {
+TEST(asynchronous_sync) {
         assert_se(asynchronous_sync(NULL) >= 0);
 }
 #endif // 0
