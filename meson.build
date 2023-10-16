@@ -917,10 +917,12 @@ endif
 # conf.set('EXTRA_NET_NAMING_MAP', ' '.join(extra_net_naming_map))
 #
 # default_net_naming_scheme = get_option('default-net-naming-scheme')
-# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme)
+# conf.set_quoted('DEFAULT_NET_NAMING_SCHEME', default_net_naming_scheme,
+#                 description : 'Default naming scheme as a string')
 # if default_net_naming_scheme != 'latest'
-#         conf.set('_DEFAULT_NET_NAMING_SCHEME_TEST',
-#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper())
+#         conf.set('_DEFAULT_NET_NAMING_SCHEME',
+#                  'NAMING_' + default_net_naming_scheme.underscorify().to_upper(),
+#                  description : 'Default naming scheme as a constant')
 # endif
 #
 # time_epoch = get_option('time-epoch')
@@ -1058,7 +1060,7 @@ if not meson.is_cross_build()
 endif
 if nobody_user != nobody_group and not (nobody_user == 'nobody' and nobody_group == 'nogroup')
         warning('\n' +
-                'The configured user name "@0@" and group name "@1@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
+                'The configured user name "@0@" and group name "@0@" of the nobody user/group are not equivalent.\n'.format(nobody_user, nobody_group) +
                 'Please re-check that both "nobody-user" and "nobody-group" options are correctly set.')
 endif
 
