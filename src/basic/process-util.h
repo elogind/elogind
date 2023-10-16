@@ -40,8 +40,10 @@ typedef enum ProcessCmdlineFlags {
 } ProcessCmdlineFlags;
 
 int get_process_comm(pid_t pid, char **ret);
-int get_process_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
-int get_process_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret);
+int pid_get_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
+int pidref_get_cmdline(const PidRef *pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
+int pid_get_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret);
+int pidref_get_cmdline_strv(const PidRef *pid, ProcessCmdlineFlags flags, char ***ret);
 int get_process_exe(pid_t pid, char **ret);
 #if 0 /// UNNEEDED by elogind
 int get_process_uid(pid_t pid, uid_t *ret);
@@ -235,3 +237,5 @@ int get_process_threads(pid_t pid);
 
 int is_reaper_process(void);
 int make_reaper_process(bool b);
+
+int posix_spawn_wrapper(const char *path, char *const *argv, char *const *envp, pid_t *ret_pid);
