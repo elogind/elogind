@@ -38,7 +38,7 @@ typedef enum CGroupController {
         CGROUP_CONTROLLER_BPF_SOCKET_BIND,
         CGROUP_CONTROLLER_BPF_RESTRICT_NETWORK_INTERFACES,
         /* The BPF hook implementing RestrictFileSystems= is not defined here.
-         * It's applied as late as possible in exec_child() so we don't block
+         * It's applied as late as possible in exec_invoke() so we don't block
          * our own unit setup code. */
 
         _CGROUP_CONTROLLER_MAX,
@@ -209,14 +209,14 @@ int cg_kill_recursive(const char *path, int sig, CGroupFlags flags, Set *s, cg_k
 
 #if 0 /// UNNEEDED by elogind
 int cg_split_spec(const char *spec, char **ret_controller, char **ret_path);
-int cg_mangle_path(const char *path, char **result);
 #endif // 0
+int cg_mangle_path(const char *path, char **ret);
 
-int cg_get_path(const char *controller, const char *path, const char *suffix, char **fs);
-int cg_get_path_and_check(const char *controller, const char *path, const char *suffix, char **fs);
+int cg_get_path(const char *controller, const char *path, const char *suffix, char **ret);
+int cg_get_path_and_check(const char *controller, const char *path, const char *suffix, char **ret);
 
-int cg_pid_get_path(const char *controller, pid_t pid, char **path);
-int cg_pidref_get_path(const char *controller, PidRef *pidref, char **path);
+int cg_pid_get_path(const char *controller, pid_t pid, char **ret);
+int cg_pidref_get_path(const char *controller, PidRef *pidref, char **ret);
 
 int cg_rmdir(const char *controller, const char *path);
 
@@ -279,32 +279,32 @@ int cg_get_root_path(char **path);
 #if 0 /// UNNEEDED by elogind
 int cg_path_get_cgroupid(const char *path, uint64_t *ret);
 #endif // 0
-int cg_path_get_session(const char *path, char **session);
-int cg_path_get_owner_uid(const char *path, uid_t *uid);
 #if 0 /// UNNEEDED by elogind
-int cg_path_get_unit(const char *path, char **unit);
-int cg_path_get_unit_path(const char *path, char **unit);
-int cg_path_get_user_unit(const char *path, char **unit);
-int cg_path_get_machine_name(const char *path, char **machine);
 #endif // 0
-int cg_path_get_slice(const char *path, char **slice);
-int cg_path_get_user_slice(const char *path, char **slice);
-
-int cg_shift_path(const char *cgroup, const char *cached_root, const char **shifted);
-int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **cgroup);
-
-int cg_pid_get_session(pid_t pid, char **session);
-int cg_pid_get_owner_uid(pid_t pid, uid_t *uid);
 #if 0 /// UNNEEDED by elogind
-int cg_pid_get_unit(pid_t pid, char **unit);
-int cg_pid_get_user_unit(pid_t pid, char **unit);
-int cg_pid_get_machine_name(pid_t pid, char **machine);
 #endif // 0
-int cg_pid_get_slice(pid_t pid, char **slice);
-int cg_pid_get_user_slice(pid_t pid, char **slice);
+int cg_path_get_session(const char *path, char **ret_session);
+int cg_path_get_owner_uid(const char *path, uid_t *ret_uid);
+int cg_path_get_unit(const char *path, char **ret_unit);
+int cg_path_get_unit_path(const char *path, char **ret_unit);
+int cg_path_get_user_unit(const char *path, char **ret_unit);
+int cg_path_get_machine_name(const char *path, char **ret_machine);
+int cg_path_get_slice(const char *path, char **ret_slice);
+int cg_path_get_user_slice(const char *path, char **ret_slice);
+
+int cg_shift_path(const char *cgroup, const char *cached_root, const char **ret_shifted);
+int cg_pid_get_path_shifted(pid_t pid, const char *cached_root, char **ret_cgroup);
+
+int cg_pid_get_session(pid_t pid, char **ret_session);
+int cg_pid_get_owner_uid(pid_t pid, uid_t *ret_uid);
+int cg_pid_get_unit(pid_t pid, char **ret_unit);
+int cg_pid_get_user_unit(pid_t pid, char **ret_unit);
+int cg_pid_get_machine_name(pid_t pid, char **ret_machine);
+int cg_pid_get_slice(pid_t pid, char **ret_slice);
+int cg_pid_get_user_slice(pid_t pid, char **ret_slice);
 
 #if 0 /// UNNEEDED by elogind
-int cg_path_decode_unit(const char *cgroup, char **unit);
+int cg_path_decode_unit(const char *cgroup, char **ret_unit);
 
 #endif // 0
 bool cg_needs_escape(const char *p);
