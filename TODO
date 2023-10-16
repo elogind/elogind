@@ -191,6 +191,7 @@ Features:
   - elogind-measure
   - elogind-dissect
   - elogind-sysupdate
+  - elogind-sysext
 
 * Varlink: add glue code to allow varlink clients to be authenticated via
   Polkit by passing client pidfd over.
@@ -1572,8 +1573,6 @@ Features:
   environment. Which we can use for /etc/machine-id and in particular
   /etc/resolv.conf. Should be smart and do something useful on read-only
   images, for example fall back to read-only bind mounting the file instead.
-
-* show invocation ID in elogind-run output
 
 * bypass SIGTERM state in unit files if KillSignal is SIGKILL
 
