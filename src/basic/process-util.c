@@ -5,6 +5,7 @@
 //#include <limits.h>
 //#include <linux/oom.h>
 #include <pthread.h>
+#include <spawn.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -475,16 +476,14 @@ static int get_process_id(pid_t pid, const char *field, uid_t *ret) {
                 _cleanup_free_ char *line = NULL;
                 char *l;
 
-                r = read_line(f, LONG_LINE_MAX, &line);
+                r = read_stripped_line(f, LONG_LINE_MAX, &line);
                 if (r < 0)
                         return r;
                 if (r == 0)
                         break;
 
-                l = strstrip(line);
-
-                if (startswith(l, field)) {
-                        l += strlen(field);
+                l = startswith(line, field);
+                if (l) {
                         l += strspn(l, WHITESPACE);
 
                         l[strcspn(l, WHITESPACE)] = 0;
@@ -1785,6 +1784,51 @@ int make_reaper_process(bool b) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int posix_spawn_wrapper(const char *path, char *const *argv, char *const *envp, pid_t *ret_pid) {
+        posix_spawnattr_t attr;
+        sigset_t mask;
+        pid_t pid;
+        int r;
+
+        /* Forks and invokes 'path' with 'argv' and 'envp' using CLONE_VM and CLONE_VFORK, which means the
+         * caller will be blocked until the child either exits or exec's. The memory of the child will be
+         * fully shared with the memory of the parent, so that there are no copy-on-write or memory.max
+         * issues. */
+
+        assert(path);
+        assert(argv);
+        assert(ret_pid);
+
+        assert_se(sigfillset(&mask) >= 0);
+
+        r = posix_spawnattr_init(&attr);
+        if (r != 0)
+                return -r; /* These functions return a positive errno on failure */
+        r = posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGMASK);
+        if (r != 0)
+                goto fail;
+        r = posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGDEF); /* Set all signals to SIG_DFL */
+        if (r != 0)
+                goto fail;
+        r = posix_spawnattr_setsigmask(&attr, &mask);
+        if (r != 0)
+                goto fail;
+
+        r = posix_spawn(&pid, path, NULL, &attr, argv, envp);
+        if (r != 0)
+                goto fail;
+
+        *ret_pid = pid;
+
+        posix_spawnattr_destroy(&attr);
+        return 0;
+
+fail:
+        assert(r > 0);
+        posix_spawnattr_destroy(&attr);
+        return -r;
+}
+
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
         [CLD_KILLED] = "killed",
