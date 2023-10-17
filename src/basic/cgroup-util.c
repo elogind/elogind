@@ -320,7 +320,6 @@ static int cg_kill_items(
 
         do {
                 _cleanup_fclose_ FILE *f = NULL;
-                pid_t pid = 0;
                 done = true;
 
                 r = cg_enumerate_items(SYSTEMD_CGROUP_CONTROLLER, path, &f, item);
@@ -368,7 +367,7 @@ static int cg_kill_items(
 
                         done = false;
 
-                        r = set_put(s, PID_TO_PTR(pid));
+                        r = set_put(s, PID_TO_PTR(pidref.pid));
                         if (r < 0) {
                                 if (ret >= 0)
                                         return r;
