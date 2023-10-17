@@ -47,7 +47,8 @@ int pid_get_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret);
 int pidref_get_cmdline_strv(const PidRef *pid, ProcessCmdlineFlags flags, char ***ret);
 int get_process_exe(pid_t pid, char **ret);
 #if 0 /// UNNEEDED by elogind
-int get_process_uid(pid_t pid, uid_t *ret);
+int pid_get_uid(pid_t pid, uid_t *ret);
+int pidref_get_uid(const PidRef *pid, uid_t *ret);
 int get_process_gid(pid_t pid, gid_t *ret);
 int get_process_capeff(pid_t pid, char **ret);
 int get_process_cwd(pid_t pid, char **ret);
