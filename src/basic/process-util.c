@@ -1053,13 +1053,13 @@ bool pid_is_unwaited(pid_t pid) {
         return errno != ESRCH;
 }
 
-bool pid_is_alive(pid_t pid) {
+int pid_is_alive(pid_t pid) {
         int r;
 
         /* Checks whether a PID is still valid and not a zombie */
 
         if (pid < 0)
-                return false;
+                return -ESRCH;
 
         if (pid <= 1) /* If we or PID 1 would be a zombie, this code would not be running */
                 return true;
@@ -1068,10 +1068,31 @@ bool pid_is_alive(pid_t pid) {
                 return true;
 
         r = get_process_state(pid);
-        if (IN_SET(r, -ESRCH, 'Z'))
+        if (r == -ESRCH)
                 return false;
+        if (r < 0)
+                return r;
 
-        return true;
+        return r != 'Z';
+}
+
+int pidref_is_alive(const PidRef *pidref) {
+        int r, result;
+
+        if (!pidref_is_set(pidref))
+                return -ESRCH;
+
+        result = pid_is_alive(pidref->pid);
+        if (result < 0)
+                return result;
+
+        r = pidref_verify(pidref);
+        if (r == -ESRCH)
+                return false;
+        if (r < 0)
+                return r;
+
+        return result;
 }
 
 #if 0 /// UNNEEDED by elogind
