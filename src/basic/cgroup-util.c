@@ -837,7 +837,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int cg_pidref_get_path(const char *controller, PidRef *pidref, char **ret_path) {
+int cg_pidref_get_path(const char *controller, const PidRef *pidref, char **ret_path) {
         _cleanup_free_ char *path = NULL;
         int r;
 
@@ -1583,8 +1583,8 @@ int cg_path_get_owner_uid(const char *path, uid_t *ret_uid) {
                 return -ENXIO;
 
         *end = 0;
-                return -ENXIO;
         if (parse_uid(start, ret_uid) < 0)
+                return -ENXIO;
 #else // 0
         p = strjoin("/run/systemd/sessions/", slice);
 
