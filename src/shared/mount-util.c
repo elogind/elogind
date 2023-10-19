@@ -1075,7 +1075,7 @@ finish:
 }
 
 static int mount_in_namespace(
-                pid_t target,
+                PidRef *target,
                 const char *propagate_path,
                 const char *incoming_path,
                 const char *src,
@@ -1095,23 +1095,28 @@ static int mount_in_namespace(
         pid_t child;
         int r;
 
-        assert(target > 0);
         assert(propagate_path);
         assert(incoming_path);
         assert(src);
         assert(dest);
         assert(!options || is_image);
 
-        r = namespace_open(target, &pidns_fd, &mntns_fd, NULL, NULL, &root_fd);
+        if (!pidref_is_set(target))
+                return -ESRCH;
+
+        r = namespace_open(target->pid, &pidns_fd, &mntns_fd, NULL, NULL, &root_fd);
         if (r < 0)
                 return log_debug_errno(r, "Failed to retrieve FDs of the target process' namespace: %m");
 
-        r = in_same_namespace(target, 0, NAMESPACE_MOUNT);
+        r = in_same_namespace(target->pid, 0, NAMESPACE_MOUNT);
         if (r < 0)
                 return log_debug_errno(r, "Failed to determine if mount namespaces are equal: %m");
         /* We can't add new mounts at runtime if the process wasn't started in a namespace */
         if (r > 0)
                 return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Failed to activate bind mount in target, not running in a mount namespace");
+
+        if (pidref_verify(target) < 0)
+                return log_debug_errno(SYNTHETIC_ERRNO(ESRCH), "Failed to verify target process '" PID_FMT "': %m", target->pid);
 
         r = chase(src, NULL, 0, &chased_src_path, &chased_src_fd);
         if (r < 0)
@@ -1249,7 +1254,7 @@ static int mount_in_namespace(
 }
 
 int bind_mount_in_namespace(
-                pid_t target,
+                PidRef * target,
                 const char *propagate_path,
                 const char *incoming_path,
                 const char *src,
@@ -1261,7 +1266,7 @@ int bind_mount_in_namespace(
 }
 
 int mount_image_in_namespace(
-                pid_t target,
+                PidRef * target,
                 const char *propagate_path,
                 const char *incoming_path,
                 const char *src,
