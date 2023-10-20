@@ -667,6 +667,8 @@ foreach ident : [
         ['gettid',            '''#include <sys/types.h>
                                  #include <unistd.h>'''],
 #if 0 /// Not used in elogind
+#         ['fchmodat2',         '''#include <stdlib.h>
+#                                  #include <fcntl.h>'''],      # no known header declares fchmodat2
 #         ['pivot_root',        '''#include <stdlib.h>
 #                                  #include <unistd.h>'''],     # no known header declares pivot_root
 #endif // 0
