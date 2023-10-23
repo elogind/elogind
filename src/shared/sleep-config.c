@@ -97,11 +97,11 @@ int parse_sleep_config(SleepConfig **ret) {
         };
 
         const ConfigTableItem items[] = {
-
                 { "Sleep", "AllowSuspend",              config_parse_tristate,    0,               &allow_suspend                 },
                 { "Sleep", "AllowHibernation",          config_parse_tristate,    0,               &allow_hibernate               },
                 { "Sleep", "AllowSuspendThenHibernate", config_parse_tristate,    0,               &allow_s2h                     },
                 { "Sleep", "AllowHybridSleep",          config_parse_tristate,    0,               &allow_hybrid_sleep            },
+
                 { "Sleep", "SuspendState",              config_parse_strv,        0,               sc->states + SLEEP_SUSPEND     },
                 { "Sleep", "SuspendMode",               config_parse_warn_compat, DISABLED_LEGACY, NULL                           },
 
@@ -309,15 +309,15 @@ static int sleep_supported_internal(
                 return false;
         }
 
-        r = sleep_mode_supported(sleep_config->modes[operation]);
-        if (r < 0)
-                return r;
-        if (r == 0) {
-                *ret_support = SLEEP_STATE_OR_MODE_NOT_SUPPORTED;
-                return false;
-        }
-
         if (IN_SET(operation, SLEEP_HIBERNATE, SLEEP_HYBRID_SLEEP)) {
+                r = sleep_mode_supported(sleep_config->modes[operation]);
+                if (r < 0)
+                        return r;
+                if (r == 0) {
+                        *ret_support = SLEEP_STATE_OR_MODE_NOT_SUPPORTED;
+                        return false;
+                }
+
                 r = hibernation_is_safe();
                 if (r == -ENOTRECOVERABLE) {
                         *ret_support = SLEEP_RESUME_NOT_SUPPORTED;
@@ -329,7 +329,8 @@ static int sleep_supported_internal(
                 }
                 if (r < 0)
                         return r;
-        }
+        } else
+                assert(!sleep_config->modes[operation]);
 
         *ret_support = SLEEP_SUPPORTED;
         return true;
