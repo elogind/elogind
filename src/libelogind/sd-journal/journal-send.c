@@ -633,7 +633,7 @@ _public_ int sd_journal_send_with_location(const char *file, const char *line, c
 #else // 0
         r = sd_journal_sendv_with_location(file, line, func, iov, n_iov);
 #endif // 0
-        iov[0] = iov[1] = iov[2] = IOVEC_NULL;
+        iov[0] = iov[1] = iov[2] = (struct iovec) {};
 
         return r;
 }
