@@ -53,6 +53,8 @@ const char *(*sym_p11_kit_strerror)(CK_RV rv);
 int (*sym_p11_kit_uri_format)(P11KitUri *uri, P11KitUriType uri_type, char **string);
 void (*sym_p11_kit_uri_free)(P11KitUri *uri);
 CK_ATTRIBUTE_PTR (*sym_p11_kit_uri_get_attributes)(P11KitUri *uri, CK_ULONG *n_attrs);
+CK_ATTRIBUTE_PTR (*sym_p11_kit_uri_get_attribute)(P11KitUri *uri, CK_ATTRIBUTE_TYPE attr_type);
+int (*sym_p11_kit_uri_set_attribute)(P11KitUri *uri, CK_ATTRIBUTE_PTR attr);
 CK_INFO_PTR (*sym_p11_kit_uri_get_module_info)(P11KitUri *uri);
 CK_SLOT_INFO_PTR (*sym_p11_kit_uri_get_slot_info)(P11KitUri *uri);
 CK_TOKEN_INFO_PTR (*sym_p11_kit_uri_get_token_info)(P11KitUri *uri);
@@ -72,6 +74,8 @@ int dlopen_p11kit(void) {
                         DLSYM_ARG(p11_kit_uri_format),
                         DLSYM_ARG(p11_kit_uri_free),
                         DLSYM_ARG(p11_kit_uri_get_attributes),
+                        DLSYM_ARG(p11_kit_uri_get_attribute),
+                        DLSYM_ARG(p11_kit_uri_set_attribute),
                         DLSYM_ARG(p11_kit_uri_get_module_info),
                         DLSYM_ARG(p11_kit_uri_get_slot_info),
                         DLSYM_ARG(p11_kit_uri_get_token_info),
@@ -668,7 +672,7 @@ int pkcs11_token_find_private_key(
                 optional_attributes[1].ulValueLen = sizeof(derive_value);
 
                 rv = m->C_GetAttributeValue(session, candidate, optional_attributes, ELEMENTSOF(optional_attributes));
-                if (!IN_SET(rv, CKR_OK, CKR_ATTRIBUTE_TYPE_INVALID))
+                if (rv != CKR_OK && rv != CKR_ATTRIBUTE_TYPE_INVALID)
                         return log_error_errno(SYNTHETIC_ERRNO(EIO),
                                 "Failed to get attributes of a selected private key: %s", sym_p11_kit_strerror(rv));
 
@@ -740,7 +744,7 @@ int pkcs11_token_find_related_object(
         CK_RV rv;
 
         rv = m->C_GetAttributeValue(session, prototype, attributes, ELEMENTSOF(attributes));
-        if (!IN_SET(rv, CKR_OK, CKR_ATTRIBUTE_TYPE_INVALID))
+        if (rv != CKR_OK && rv != CKR_ATTRIBUTE_TYPE_INVALID)
                 return log_debug_errno(SYNTHETIC_ERRNO(EIO), "Failed to retrieve length of attributes: %s", sym_p11_kit_strerror(rv));
 
         if (attributes[0].ulValueLen != CK_UNAVAILABLE_INFORMATION) {
@@ -815,7 +819,7 @@ static int ecc_convert_to_compressed(
         int r;
 
         rv = m->C_GetAttributeValue(session, object, &ec_params_attr, 1);
-        if (!IN_SET(rv, CKR_OK, CKR_ATTRIBUTE_TYPE_INVALID))
+        if (rv != CKR_OK && rv != CKR_ATTRIBUTE_TYPE_INVALID)
                 return log_error_errno(SYNTHETIC_ERRNO(EIO),
                         "Failed to retrieve length of CKA_EC_PARAMS: %s", sym_p11_kit_strerror(rv));
 
@@ -837,7 +841,7 @@ static int ecc_convert_to_compressed(
 
                 ec_params_attr.ulValueLen = 0;
                 rv = m->C_GetAttributeValue(session, public_key, &ec_params_attr, 1);
-                if (!IN_SET(rv, CKR_OK, CKR_ATTRIBUTE_TYPE_INVALID))
+                if (rv != CKR_OK && rv != CKR_ATTRIBUTE_TYPE_INVALID)
                         return log_error_errno(SYNTHETIC_ERRNO(EIO),
                                 "Failed to retrieve length of CKA_EC_PARAMS: %s", sym_p11_kit_strerror(rv));
 
@@ -951,7 +955,7 @@ static int pkcs11_token_decrypt_data_ecc(
                 if (mechanism_info.flags & CKF_EC_COMPRESS) {
 #if HAVE_OPENSSL
                         log_debug("CKM_ECDH1_DERIVE accepts compressed EC points only, trying to convert.");
-                        size_t compressed_point_size = 0; /* Explicit initialization to appease gcc */
+                        size_t compressed_point_size;
                         r = ecc_convert_to_compressed(m, session, object, encrypted_data, encrypted_data_size, &compressed_point, &compressed_point_size);
                         if (r < 0)
                                 return r;
@@ -1533,7 +1537,7 @@ int pkcs11_list_tokens(void) {
         if (r < 0 && r != -EAGAIN)
                 return r;
 
-        if (table_isempty(t)) {
+        if (table_get_rows(t) <= 1) {
                 log_info("No suitable PKCS#11 tokens found.");
                 return 0;
         }
