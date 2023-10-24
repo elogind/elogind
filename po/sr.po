@@ -352,10 +352,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Постави подешавање системске тастатуре"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Потребно је да се идентификујете да бисте поставили подешавања системске тастатуре."
 
 #: src/login/org.freedesktop.login1.policy:22

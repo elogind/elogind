@@ -368,10 +368,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Визначення загальносистемних параметрів клавіатури"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Для визначення загальносистемних параметрів клавіатури слід пройти розпізнавання."
 
 #: src/login/org.freedesktop.login1.policy:22

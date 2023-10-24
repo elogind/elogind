@@ -362,10 +362,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Ange systeminställningar för tangentbord"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Autentisering krävs för att ställa in systeminställningar för tangentbord."
 
 #: src/login/org.freedesktop.login1.policy:22

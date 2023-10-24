@@ -353,10 +353,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Nastavenie nastavení systémovej klávesnice"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 
 #: src/login/org.freedesktop.login1.policy:22

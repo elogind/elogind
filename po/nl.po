@@ -343,10 +343,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Stel de instellingen in van het systeemtoetsenbord"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Authenticatie is vereist voor het instellen van de configuratie van het systeemtoetsenbord."
 
 #: src/login/org.freedesktop.login1.policy:22

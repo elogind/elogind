@@ -354,10 +354,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Ustaliavać sistemnyja nalady klavijatury"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Nieabchodna aŭtentyfikacyja dlia ŭstaliavannia sistemnych nalad klavijatury."
 
 #: src/login/org.freedesktop.login1.policy:22

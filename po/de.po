@@ -360,10 +360,10 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:33
 # msgid "Set system keyboard settings"
 # msgstr "Tastatureinstellungen des Systems festlegen"
-#
-# #: src/locale/org.freedesktop.locale1.policy:34
-# msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
+
+#: src/locale/org.freedesktop.locale1.policy:34
+msgid "Authentication is required to set the system keyboard settings."
 msgstr "Legitimierung ist zum Festlegen der Tastatureinstellungen des Systems erforderlich."
 
 #: src/login/org.freedesktop.login1.policy:22
