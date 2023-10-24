@@ -178,38 +178,34 @@ libelogind_sources = files(
 
 libsystemd_c_args = ['-fvisibility=default']
 
-#if 0 /// rename to libelogind
-# libsystemd_static = static_library(
-#         'systemd_static',
-#         libsystemd_sources,
-#         include_directories : libsystemd_includes,
-#         c_args : libsystemd_c_args,
-#         link_with : [libbasic,
-#                      libbasic_compress],
-#         dependencies : [threads,
+libelogind_static = static_library(
+        'systemd_static',
+        libelogind_sources,
+        include_directories : libelogind_includes,
+        c_args : libsystemd_c_args,
+        link_with : [libbasic,
+#if 0 /// elogind is a lot simpler in its needs.
+#                      libbasic_compress
+#endif // 0
+                     ],
+        dependencies : [threads,
+#if 0 /// elogind is a lot simpler in its needs.
 #                         librt,
-#                         userspace],
-#         build_by_default : false)
-#
-# libsystemd_dir_path = meson.current_source_dir()
-#
-# libsystemd_sym = files('libsystemd.sym')
-# libsystemd_sym_path = libsystemd_dir_path / 'libsystemd.sym'
-#
-# static_libsystemd = get_option('static-libsystemd')
-# static_libsystemd_pic = static_libsystemd == 'true' or static_libsystemd == 'pic'
-#
-# libsystemd_pc = custom_target(
-#         'libsystemd.pc',
-#         input : 'libsystemd.pc.in',
-#         output : 'libsystemd.pc',
-#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-#         install : pkgconfiglibdir != 'no',
-#         install_tag : 'devel',
-#         install_dir : pkgconfiglibdir)
-#
-# ############################################################
-#
+#endif // 0
+                        userspace],
+        build_by_default : false)
+
+libelogind_dir_path = meson.current_source_dir()
+
+libelogind_sym = files('libelogind.sym')
+libelogind_sym_path = libelogind_dir_path / 'libelogind.sym'
+
+static_libelogind = get_option('static-libelogind')
+static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
+
+############################################################
+
+#if 0 /// UNNEEDED for elogind
 # simple_tests += files(
 #         'sd-journal/test-audit-type.c',
 #         'sd-journal/test-catalog.c',
@@ -310,14 +306,17 @@ libsystemd_c_args = ['-fvisibility=default']
 # if cxx_cmd != ''
 #         simple_tests += files('sd-bus/test-bus-vtable-cc.cc')
 # endif
-#
-# ############################################################
-#
+#endif // 0
+
+############################################################
+
+#if 0 /// UNNEEDED for elogind
 # simple_fuzzers += files(
 #         'sd-bus/fuzz-bus-match.c',
 #         'sd-bus/fuzz-bus-message.c',
 # )
-#else // 0
+#endif // 0
+
 libelogind_static = static_library(
         'elogind_static',
         libelogind_sources,

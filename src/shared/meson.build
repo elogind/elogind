@@ -392,25 +392,25 @@ endif
 #
 # shared_generated_gperf_headers = [target1, target2]
 # shared_sources += shared_generated_gperf_headers
+#
+# fname = 'ethtool-link-mode.h'
+# ethtool_link_mode_h = custom_target(
+#         fname,
+#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+#         output : fname,
+#         command : [python, '@INPUT0@', '--header', cpp, '@INPUT1@'],
+#         capture : true)
+# shared_sources += ethtool_link_mode_h
+#
+# fname = 'ethtool-link-mode.xml'
+# ethtool_link_mode_xml = custom_target(
+#         fname,
+#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
+#         output : fname,
+#         command : [python, '@INPUT0@', '--xml', cpp, '@INPUT1@'],
+#         capture : true)
+# man_page_depends += ethtool_link_mode_xml
 #endif // 0
-
-fname = 'ethtool-link-mode.h'
-ethtool_link_mode_h = custom_target(
-        fname,
-        input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
-        output : fname,
-        command : [python, '@INPUT0@', '--header', cpp, '@INPUT1@'],
-        capture : true)
-shared_sources += ethtool_link_mode_h
-
-fname = 'ethtool-link-mode.xml'
-ethtool_link_mode_xml = custom_target(
-        fname,
-        input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
-        output : fname,
-        command : [python, '@INPUT0@', '--xml', cpp, '@INPUT1@'],
-        capture : true)
-man_page_depends += ethtool_link_mode_xml
 
 libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 
@@ -477,17 +477,19 @@ libshared = shared_library(
         install : true,
         install_dir : rootpkglibdir)
 
-shared_fdisk_sources = files(
-        'fdisk-util.c',
-)
-
-if get_option('fdisk') != 'false'
-        libshared_fdisk = static_library(
-                'shared-fdisk',
-                shared_fdisk_sources,
-                include_directories : includes,
-                dependencies : [libfdisk,
-                                userspace],
-                c_args : ['-fvisibility=default'],
-                build_by_default : false)
-endif
+#if 0 /// UNNEEDED by elogind
+# shared_fdisk_sources = files(
+#         'fdisk-util.c',
+# )
+#
+# if get_option('fdisk') != 'false'
+#         libshared_fdisk = static_library(
+#                 'shared-fdisk',
+#                 shared_fdisk_sources,
+#                 include_directories : includes,
+#                 dependencies : [libfdisk,
+#                                 userspace],
+#                 c_args : ['-fvisibility=default'],
+#                 build_by_default : false)
+# endif
+#endif // 0

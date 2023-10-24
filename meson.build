@@ -13,7 +13,6 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
-/// elogind empty mask removed (elogind does not ship lubudev)
 libelogind_version = '0.37.0'
 libudev_version = '1.7.7'
 
@@ -389,12 +388,12 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
 #
+# conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
+# conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
+# conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
+#
+# conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 #endif // 0
-conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
-conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
-conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
-
-conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
 #####################################################################
 
@@ -832,7 +831,7 @@ meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
 
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
-/// elogind empty mask removed (UNNEEDED by elogind)
+
 mkdir_p_mode = 'mkdir -p $DESTDIR/@0@ -m @1@'
 
 # If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
@@ -2409,27 +2408,29 @@ if efi_arch == 'x64' and cc.links('''
         efi_cpu_family_alt = 'x86'
 endif
 
-have_pyelftools = pymod.find_installation('python3', required : false, modules : ['elftools']).found()
-if get_option('bootloader') == 'true' and not have_pyelftools
-        error('EFI bootloader support requires pyelftools.')
-endif
-
-conf.set10(
-        'ENABLE_BOOTLOADER',
-        get_option('efi') and
-        get_option('bootloader') in ['auto', 'true'] and
-        efi_arch != '' and
-        have_pyelftools,
-)
-
-if get_option('ukify') == 'auto'
-    want_ukify = python_39  and conf.get('ENABLE_BOOTLOADER') == 1
-elif get_option('ukify') == 'true' and (not python_39 or conf.get('ENABLE_BOOTLOADER') != 1)
-    error('ukify requires Python >= 3.9 and -Dbootloader=true')
-else
-    want_ukify = get_option('ukify') == 'true'
-endif
-conf.set10('ENABLE_UKIFY', want_ukify)
+#if 0 /// UNNEEDED by elogind
+# have_pyelftools = pymod.find_installation('python3', required : false, modules : ['elftools']).found()
+# if get_option('bootloader') == 'true' and not have_pyelftools
+#         error('EFI bootloader support requires pyelftools.')
+# endif
+#
+# conf.set10(
+#         'ENABLE_BOOTLOADER',
+#         get_option('efi') and
+#         get_option('bootloader') in ['auto', 'true'] and
+#         efi_arch != '' and
+#         have_pyelftools,
+# )
+#
+# if get_option('ukify') == 'auto'
+#     want_ukify = python_39  and conf.get('ENABLE_BOOTLOADER') == 1
+# elif get_option('ukify') == 'true' and (not python_39 or conf.get('ENABLE_BOOTLOADER') != 1)
+#     error('ukify requires Python >= 3.9 and -Dbootloader=true')
+# else
+#     want_ukify = get_option('ukify') == 'true'
+# endif
+# conf.set10('ENABLE_UKIFY', want_ukify)
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 # ############################################################
@@ -2437,9 +2438,9 @@ conf.set10('ENABLE_UKIFY', want_ukify)
 # elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
 # elf2efi_py = find_program('tools/elf2efi.py')
 # export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
-# generate_gperfs = find_program('tools/generate-gperfs.py')
 # make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
 #endif // 0
+generate_gperfs = find_program('tools/generate-gperfs.py')
 
 make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
@@ -2447,9 +2448,9 @@ meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 #if 0 /// UNNEEDED by elogind
 # update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
+# update_hwdb_sh = find_program('tools/update-hwdb.sh')
 #endif // 0
 
-update_hwdb_sh = find_program('tools/update-hwdb.sh')
 update_man_rules_py = find_program('tools/update-man-rules.py')
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
@@ -2554,8 +2555,8 @@ alias_target('devel', libelogind_pc)
 
 libelogind = shared_library(
         'elogind',
-        version : libsystemd_version,
-        include_directories : libsystemd_includes,
+        version : libelogind_version,
+        include_directories : libelogind_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
@@ -2742,13 +2743,11 @@ subdir('src/update-utmp')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/analyze')
-#endif // 0
-
-subdir('src/boot')
-subdir('src/boot/efi')
-subdir('src/busctl')
-
-#if 0 /// UNNEEDED by elogind
+#
+# subdir('src/boot')
+# subdir('src/boot/efi')
+# subdir('src/busctl')
+#
 # subdir('src/coredump')
 # subdir('src/cryptenroll')
 # subdir('src/cryptsetup')
@@ -2793,10 +2792,10 @@ subdir('src/test')
 subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
 # subdir('test')
+# subdir('src/ukify/test')  # needs to be last for test_env variable
+#
+# alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 #endif // 0
-subdir('src/ukify/test')  # needs to be last for test_env variable
-
-alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 
 ############################################################
 
@@ -4469,19 +4468,17 @@ executable(
 #                         versiondep],
 #         install_rpath : rootpkglibdir,
 #         install : true)
-#endif // 0
-
-public_programs += executable(
-        'busctl',
-        busctl_sources,
-        include_directories : includes,
-        link_with : [libshared],
-        dependencies : [userspace,
-                        versiondep],
-        install_rpath : rootpkglibdir,
-        install : true)
-
-#if 0 /// UNNEEDED by elogind
+#
+# public_programs += executable(
+#         'busctl',
+#         busctl_sources,
+#         include_directories : includes,
+#         link_with : [libshared],
+#         dependencies : [userspace,
+#                         versiondep],
+#         install_rpath : rootpkglibdir,
+#         install : true)
+#
 # if enable_sysusers
 #         exe = executable(
 #                 'systemd-sysusers',
@@ -4944,18 +4941,20 @@ foreach test : tests
                 continue
         endif
 
-        exe = executable(
-                name,
-                sources,
-                include_directories : [base.get('includes', []), test.get('includes', includes)],
-                link_with : [base.get('link_with', []), test.get('link_with', libshared)],
-                dependencies : deps,
-                c_args : [test_cflags, test.get('c_args', [])],
-                build_by_default : want_tests != 'false',
-                install_rpath : rootpkglibdir,
-                install : install_tests,
-                install_dir : unittestsdir / type,
-                link_depends : runtest_env)
+#if 0 /// UNNEEDED by elogind
+#         exe = executable(
+#                 name,
+#                 sources,
+#                 include_directories : [base.get('includes', []), test.get('includes', includes)],
+#                 link_with : [base.get('link_with', []), test.get('link_with', libshared)],
+#                 dependencies : deps,
+#                 c_args : [test_cflags, test.get('c_args', [])],
+#                 build_by_default : want_tests != 'false',
+#                 install_rpath : rootpkglibdir,
+#                 install : install_tests,
+#                 install_dir : unittestsdir / type,
+#                 link_depends : runtest_env)
+#endif // 0
 
         if type == 'manual'
                 message('@0@ is a manual test'.format(name))
@@ -5140,7 +5139,9 @@ endif
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
 # subdir('hwdb.d')
-# subdir('man')
+#endif // 0
+subdir('man')
+#if 0 /// UNNEEDED by elogind
 # subdir('modprobe.d')
 # subdir('network')
 # subdir('presets')
@@ -5294,12 +5295,14 @@ if git.found()
 
                 ############################################
 
-                if want_tests != 'false' and conf.get('BUILD_MODE_DEVELOPER') == 1
-                        test('check-includes',
-                             files('tools/check-includes.py'),
-                             args: all_files,
-                             env : ['PROJECT_SOURCE_ROOT=@0@'.format(project_source_root)])
-                endif
+#if 0 /// UNNEEDED by elogind
+#                 if want_tests != 'false' and conf.get('BUILD_MODE_DEVELOPER') == 1
+#                         test('check-includes',
+#                              files('tools/check-includes.py'),
+#                              args: all_files,
+#                              env : ['PROJECT_SOURCE_ROOT=@0@'.format(project_source_root)])
+#                 endif
+#endif // 0
         endif
 
 #if 0 /// UNNEEDED by elogind
@@ -5388,9 +5391,9 @@ summary({
         'D-Bus session directory' :         dbussessionservicedir,
         'D-Bus system directory' :          dbussystemservicedir,
         'D-Bus interfaces directory' :      dbus_interfaces_dir,
-        'bash completions directory' :      bashcompletiondir,
-        'zsh completions directory' :       zshcompletiondir,
 #if 0 /// UNNEEDED by elogind
+#         'bash completions directory' :      bashcompletiondir,
+#         'zsh completions directory' :       zshcompletiondir,
 #         'private shared lib version tag' :  shared_lib_tag,
 #         'extra start script' :              get_option('rc-local'),
 #         'debug shell' :                     '@0@ @ @1@'.format(get_option('debug-shell'),
