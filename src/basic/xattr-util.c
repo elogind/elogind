@@ -12,9 +12,10 @@
 #include "fd-util.h"
 #include "macro.h"
 #include "missing_syscall.h"
-//#include "sparse-endian.h"
-//#include "stat-util.h"
-//#include "stdio-util.h"
+#include "parse-util.h"
+#include "sparse-endian.h"
+#include "stat-util.h"
+#include "stdio-util.h"
 #include "string-util.h"
 //#include "time-util.h"
 #include "xattr-util.h"
@@ -119,6 +120,20 @@ int getxattr_at_malloc(
 }
 
 #if 0 /// UNNEEDED by elogind
+int getxattr_at_bool(int fd, const char *path, const char *name, int flags) {
+        _cleanup_free_ char *v = NULL;
+        int r;
+
+        r = getxattr_at_malloc(fd, path, name, flags, &v);
+        if (r < 0)
+                return r;
+
+        if (memchr(v, 0, r)) /* Refuse embedded NUL byte */
+                return -EINVAL;
+
+        return parse_boolean(v);
+}
+
 static int parse_crtime(le64_t le, usec_t *usec) {
         uint64_t u;
 

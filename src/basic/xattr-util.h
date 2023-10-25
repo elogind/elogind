@@ -21,6 +21,8 @@ static inline int fgetxattr_malloc(int fd, const char *name, char **ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int getxattr_at_bool(int fd, const char *path, const char *name, int flags);
+
 int fd_setcrtime(int fd, usec_t usec);
 
 int fd_getcrtime_at(int fd, const char *name, int flags, usec_t *ret);
