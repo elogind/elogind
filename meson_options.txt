@@ -266,10 +266,8 @@ option('default-hierarchy', type : 'combo',
 #        description : 'default cgroup hierarchy')
 #else // 0
        description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
-                "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its
-                                  subfolders.
-                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified.
-                                  /sys/fs/cgroup is legacy, then.
+                "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its subfolders.
+                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified. /sys/fs/cgroup is legacy, then.
                 "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
@@ -574,7 +572,7 @@ option('urlify', type : 'boolean', value : true,
 #        description : 'use fexecve() to spawn children')
 #endif // 0
 
-#if 0 /// fuzz regression tests are not supported by elogind, as is kernel-install or systemd-analyze
+#if 0 /// fuzz regression tests are not supported by elogind, as is kernel-install, ukify or systemd-analyze
 # option('oss-fuzz', type : 'boolean', value : false,
 #        description : 'build against oss-fuzz')
 # option('llvm-fuzz', type : 'boolean', value : false,

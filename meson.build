@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
-#if 0 /// elogind does not ship lubudev
-#endif // 0
 libelogind_version = '0.36.0'
+#if 0 /// elogind does not ship lubudev
 libudev_version = '1.7.6'
+#endif // 0
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -2211,20 +2211,21 @@ conf.set10('HAVE_GNU_EFI', false)
 
 ############################################################
 
-pymod = import('python')
-python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
-python_39 = python.language_version().version_compare('>=3.9')
+#if 0 /// UNSUPPORTED by elogind (we do not build boot images)
+# pymod = import('python')
+# python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
+# python_39 = python.language_version().version_compare('>=3.9')
+#
+# if get_option('ukify') == 'auto'
+#     want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
+# elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
+#     error('ukify requires Python >= 3.9 and GNU EFI')
+# else
+#     want_ukify = get_option('ukify') == 'true'
+# endif
+# conf.set10('ENABLE_UKIFY', want_ukify)
+#endif // 0
 
-if get_option('ukify') == 'auto'
-    want_ukify = python_39  and conf.get('HAVE_GNU_EFI') == 1
-elif get_option('ukify') == 'true' and (not python_39 or conf.get('HAVE_GNU_EFI') != 1)
-    error('ukify requires Python >= 3.9 and GNU EFI')
-else
-    want_ukify = get_option('ukify') == 'true'
-endif
-conf.set10('ENABLE_UKIFY', want_ukify)
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 ############################################################
 #
 generate_gperfs = find_program('tools/generate-gperfs.py')
@@ -2564,8 +2565,8 @@ subdir('src/test')
 subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
 # subdir('test')
+# subdir('src/ukify/test')  # needs to be last for test_env variable
 #endif // 0
-subdir('src/ukify/test')  # needs to be last for test_env variable
 
 ############################################################
 
