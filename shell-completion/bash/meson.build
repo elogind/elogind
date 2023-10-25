@@ -32,7 +32,7 @@ endif
 #          ['systemd-path',        ''],
 #          ['systemd-run',         ''],
 #          ['udevadm',             ''],
-#          ['bootctl',             'ENABLE_BOOTLOADER'],
+#          ['bootctl',             ''],
 #          ['coredumpctl',         'ENABLE_COREDUMP'],
 #          ['homectl',             'ENABLE_HOMED'],
 #          ['hostnamectl',         'ENABLE_HOSTNAMED'],
