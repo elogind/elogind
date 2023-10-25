@@ -91,6 +91,11 @@ CFLAGS := -march=native -pipe ${CFLAGS} -Wunused -ftree-vectorize
 # Finalize LDFLAGS
 LDFLAGS := ${envLDFLAGS} ${LDFLAGS} -lpthread
 
+# Ensure a sane default cgroup controller mode is set.
+# if /etc/rc.conf has not set one, "unified" is probably the default.
+ifeq (,$(CGDEFAULT))
+    CGDEFAULT := unified
+endif
 
 all: build
 
