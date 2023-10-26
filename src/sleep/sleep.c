@@ -7,11 +7,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <getopt.h>
-//#include <linux/fiemap.h>
 #include <poll.h>
-#include <sys/stat.h>
-//#include <sys/types.h>
 #include <sys/timerfd.h>
+#include <sys/types.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -22,7 +20,6 @@
 
 #include "battery-capacity.h"
 #include "battery-util.h"
-#include "btrfs-util.h"
 #include "build.h"
 #include "bus-error.h"
 #include "bus-locator.h"
@@ -819,6 +816,7 @@ static int help(void) {
 }
 
 static int parse_argv(int argc, char *argv[]) {
+
         enum {
                 ARG_VERSION = 0x100,
         };
@@ -836,6 +834,7 @@ static int parse_argv(int argc, char *argv[]) {
 
         while ((c = getopt_long(argc, argv, "h", options, NULL)) >= 0)
                 switch (c) {
+
                 case 'h':
                         return help();
 
@@ -847,6 +846,7 @@ static int parse_argv(int argc, char *argv[]) {
 
                 default:
                         assert_not_reached();
+
                 }
 
         if (argc - optind != 1)
@@ -914,6 +914,7 @@ int do_sleep(Manager *sleep_config, SleepOperation operation) {
         default:
                 r = execute(sleep_config, arg_operation, NULL);
                 break;
+
         }
 
         return r;
