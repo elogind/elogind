@@ -249,19 +249,27 @@ static int write_efi_hibernate_location(const HibernationDevice *hibernation_dev
 
 
 #if 0 /// elogind uses a special variant to heed suspension modes
-static int write_mode(char **modes) {
+static int write_state(int fd, char * const *states) {
         int r = 0;
 
-        STRV_FOREACH(mode, modes) {
+
+
+        assert(fd >= 0);
+        assert(states);
+        STRV_FOREACH(state, states) {
+                _cleanup_fclose_ FILE *f = NULL;
                 int k;
+                k = fdopen_independent(fd, "we", &f);
+                if (k < 0)
+                        return RET_GATHER(r, k);
 
-                k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
-                if (k >= 0)
+                k = write_string_stream(f, *state, WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (k >= 0) {
+                        log_debug("Using sleep state '%s'.", *state);
                         return 0;
+                }
 
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode);
-                if (r >= 0)
-                        r = k;
+                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m", *state));
         }
 
         return r;
@@ -305,26 +313,19 @@ static int write_mode(SleepOperation operation, char **modes) {
 }
 #endif // 0
 
-static int write_state(FILE **f, char **states) {
+static int write_mode(char * const *modes) {
         int r = 0;
 
-        assert(f);
-        assert(*f);
-
-        STRV_FOREACH(state, states) {
+        STRV_FOREACH(mode, modes) {
                 int k;
 
-                k = write_string_stream(*f, *state, WRITE_STRING_FILE_DISABLE_BUFFER);
-                if (k >= 0)
+                k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (k >= 0) {
+                        log_debug("Using sleep disk mode '%s'.", *mode);
                         return 0;
-                log_debug_errno(k, "Failed to write '%s' to /sys/power/state: %m", *state);
-                if (r >= 0)
-                        r = k;
+                }
 
-                fclose(*f);
-                *f = fopen("/sys/power/state", "we");
-                if (!*f)
-                        return -errno;
+                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode));
         }
 
         return r;
@@ -438,7 +439,7 @@ static int execute(
 #endif // 1
 
         _cleanup_(hibernation_device_done) HibernationDevice hibernation_device = {};
-        _cleanup_fclose_ FILE *f = NULL;
+        _cleanup_close_ int state_fd = -EBADF;
         char **modes, **states;
         int r;
 
@@ -455,15 +456,12 @@ static int execute(
                                        "No sleep states configured for sleep operation %s, can't sleep.",
                                        sleep_operation_to_string(operation));
 
-        /* This file is opened first, so that if we hit an error,
-         * we can abort before modifying any state. */
-        f = fopen("/sys/power/state", "we");
-        if (!f)
-                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
-
 #ifdef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems
-        setvbuf(f, NULL, _IONBF, 0);
 #endif // __GLIBC__
+        /* This file is opened first, so that if we hit an error, we can abort before modifying any state. */
+        state_fd = open("/sys/power/state", O_WRONLY|O_CLOEXEC);
+        if (state_fd < 0)
+                return -errno;
 
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
@@ -565,7 +563,7 @@ static int execute(
 #endif // 1
 
 #if 0 /// Instead of only writing to /sys/power/state, elogind offers the possibility to call an extra program instead
-        r = write_state(&f, states);
+        r = write_state(state_fd, states);
 #else // 0
         r = execute_external(m, operation);
         if (r < 0)
