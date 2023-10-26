@@ -904,7 +904,7 @@ int do_sleep(Manager *sleep_config, SleepOperation operation) {
                          * asked us to do both: suspend + hibernate, and it's almost certainly the
                          * hibernation that failed, hence still do the other thing, the suspend. */
 
-                        log_notice("Couldn't hybrid sleep, will try to suspend instead.");
+                        log_notice_errno(r, "Couldn't hybrid sleep, will try to suspend instead: %m");
 
                         r = execute(sleep_config, SLEEP_SUSPEND, "suspend-after-failed-hybrid-sleep");
                 }
