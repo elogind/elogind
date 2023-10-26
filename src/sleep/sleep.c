@@ -252,13 +252,13 @@ static int write_efi_hibernate_location(const HibernationDevice *hibernation_dev
 static int write_state(int fd, char * const *states) {
         int r = 0;
 
-
-
         assert(fd >= 0);
         assert(states);
+
         STRV_FOREACH(state, states) {
                 _cleanup_fclose_ FILE *f = NULL;
                 int k;
+
                 k = fdopen_independent(fd, "we", &f);
                 if (k < 0)
                         return RET_GATHER(r, k);
@@ -378,9 +378,9 @@ static int lock_all_homes(void) {
         /* Let's synchronously lock all home directories managed by homed that have been marked for it. This
          * way the key material required to access these volumes is hopefully removed from memory. */
 
-        r = sd_bus_open_system(&bus);
+        r = bus_connect_system_elogind(&bus);
         if (r < 0)
-                return log_warning_errno(r, "Failed to connect to system bus, ignoring: %m");
+                return log_error_errno(r, "Failed to connect to system bus: %m");
 
         r = bus_message_new_method_call(bus, &m, bus_home_mgr, "LockAllHomes");
         if (r < 0)
