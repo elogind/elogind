@@ -256,7 +256,7 @@ TEST(copy_tree) {
 #endif // 0
 
 TEST(copy_bytes) {
-        _cleanup_close_pair_ int pipefd[2] = PIPE_EBADF;
+        _cleanup_close_pair_ int pipefd[2] = EBADF_PAIR;
         _cleanup_close_ int infd = -EBADF;
         int r, r2;
         char buf[1024], buf2[1024];

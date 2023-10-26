@@ -39,11 +39,11 @@ static void exec_fuzz_one(FILE *f, FDSet *fdset) {
         DynamicCreds dynamic_creds = {};
         ExecCommand command = {};
         ExecSharedRuntime shared = {
-                .netns_storage_socket = PIPE_EBADF,
-                .ipcns_storage_socket = PIPE_EBADF,
+                .netns_storage_socket = EBADF_PAIR,
+                .ipcns_storage_socket = EBADF_PAIR,
         };
         ExecRuntime runtime = {
-                .ephemeral_storage_socket = PIPE_EBADF,
+                .ephemeral_storage_socket = EBADF_PAIR,
                 .shared = &shared,
                 .dynamic_creds = &dynamic_creds,
         };
@@ -82,12 +82,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         _cleanup_fclose_ FILE *f = NULL;
         _cleanup_fdset_free_ FDSet *fdset = NULL;
 
-        /* We don't want to fill the logs with messages about parse errors.
-         * Disable most logging if not running standalone. */
-        if (!getenv("SYSTEMD_LOG_LEVEL")) {
-                log_set_max_level(LOG_CRIT);
-                log_set_target(LOG_TARGET_NULL);
-        }
+        fuzz_setup_logging();
 
         assert_se(fdset = fdset_new());
         assert_se(f = data_to_file(data, size));
