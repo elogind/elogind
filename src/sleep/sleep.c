@@ -470,7 +470,7 @@ static int execute(
 
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
-        if (!strv_isempty(modes)) {
+        if (sleep_operation_is_hibernation(operation)) {
 #else // 0
         if (operation != SLEEP_SUSPEND) {
 #endif // 0

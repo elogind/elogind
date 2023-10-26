@@ -93,11 +93,11 @@ int parse_sleep_config(SleepConfig **ret) {
         };
 
         const ConfigTableItem items[] = {
-
                 { "Sleep", "AllowSuspend",              config_parse_tristate,    0,               &allow_suspend               },
                 { "Sleep", "AllowHibernation",          config_parse_tristate,    0,               &allow_hibernate             },
                 { "Sleep", "AllowSuspendThenHibernate", config_parse_tristate,    0,               &allow_s2h                   },
                 { "Sleep", "AllowHybridSleep",          config_parse_tristate,    0,               &allow_hybrid_sleep          },
+
                 { "Sleep", "SuspendState",              config_parse_strv,        0,               sc->states + SLEEP_SUSPEND   },
                 { "Sleep", "SuspendMode",               config_parse_warn_compat, DISABLED_LEGACY, NULL                         },
 
@@ -305,7 +305,7 @@ static int sleep_supported_internal(
                 return false;
         }
 
-        if (IN_SET(operation, SLEEP_HIBERNATE, SLEEP_HYBRID_SLEEP)) {
+        if (sleep_operation_is_hibernation(operation)) {
                 r = sleep_mode_supported(sleep_config->modes[operation]);
                 if (r < 0)
                         return r;
