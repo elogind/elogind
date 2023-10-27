@@ -667,6 +667,8 @@ foreach ident : [
         ['gettid',            '''#include <sys/types.h>
                                  #include <unistd.h>'''],
 #if 0 /// Not used in elogind
+#         ['fchmodat2',         '''#include <stdlib.h>
+#                                  #include <fcntl.h>'''],      # no known header declares fchmodat2
 #         ['pivot_root',        '''#include <stdlib.h>
 #                                  #include <unistd.h>'''],     # no known header declares pivot_root
 #endif // 0
@@ -1819,6 +1821,8 @@ endif
 #         error_message : 'fdisk and openssl required').allowed()
 # conf.set10('ENABLE_SYSUPDATE', have)
 #
+# conf.set10('ENABLE_STORAGETM', get_option('storagetm'))
+#
 # have = get_option('importd').require(
 #         conf.get('HAVE_LIBCURL') == 1 and
 #         conf.get('HAVE_OPENSSL_OR_GCRYPT') == 1 and
@@ -2591,10 +2595,11 @@ subdir('src/login')
 # subdir('src/sysupdate')
 # subdir('src/sysusers')
 # subdir('src/sysv-generator')
+# subdir('src/storagetm')
 # subdir('src/timedate')
 # subdir('src/timesync')
-# subdir('src/tpm2-setup')
 # subdir('src/tmpfiles')
+# subdir('src/tpm2-setup')
 # subdir('src/tty-ask-password-agent')
 # subdir('src/update-done')
 # subdir('src/update-utmp')
@@ -3371,6 +3376,7 @@ foreach tuple : [
 #         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
 #         ['sysupdate'],
 #         ['sysusers'],
+#         ['storagetm'],
 #         ['timedated'],
 #         ['timesyncd'],
 #         ['tmpfiles'],
