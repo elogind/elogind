@@ -454,12 +454,14 @@ shared_fdisk_sources = files(
         'fdisk-util.c',
 )
 
-if get_option('fdisk') != 'false'
-        libshared_fdisk = static_library(
-                'shared-fdisk',
-                shared_fdisk_sources,
-                include_directories : includes,
-                dependencies : [libfdisk],
-                c_args : ['-fvisibility=default'],
-                build_by_default : false)
-endif
+#if 0 /// elogind does not provide libshared_fdisk
+# if get_option('fdisk') != 'false'
+#         libshared_fdisk = static_library(
+#                 'shared-fdisk',
+#                 shared_fdisk_sources,
+#                 include_directories : includes,
+#                 dependencies : [libfdisk],
+#                 c_args : ['-fvisibility=default'],
+#                 build_by_default : false)
+# endif
+#endif // 0

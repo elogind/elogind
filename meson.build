@@ -13,8 +13,8 @@ project('elogind', 'c',
         meson_version : '>= 0.53.2',
        )
 
-libelogind_version = '0.36.0'
-#if 0 /// elogind does not ship lubudev
+libsystemd_version = '0.36.0'
+#if 0 /// elogind does not ship libudev
 libudev_version = '1.7.6'
 #endif // 0
 
@@ -2229,7 +2229,9 @@ conf.set10('HAVE_GNU_EFI', false)
 ############################################################
 #
 generate_gperfs = find_program('tools/generate-gperfs.py')
-make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+#if 0 /// UNUSED by elogind
+# make_autosuspend_rules_py = find_program('tools/make-autosuspend-rules.py')
+#endif // 0
 make_directive_index_py = find_program('tools/make-directive-index.py')
 make_man_index_py = find_program('tools/make-man-index.py')
 meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
@@ -2517,7 +2519,9 @@ subdir('src/update-utmp')
 # subdir('src/analyze')
 #endif // 0
 
-subdir('src/boot')
+#if 0 /// elogind does not provide bootctl (for now)
+# subdir('src/boot')
+#endif // 0
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
