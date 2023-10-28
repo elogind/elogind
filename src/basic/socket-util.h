@@ -48,7 +48,6 @@ union sockaddr_union {
         uint8_t un_buffer[sizeof(struct sockaddr_un) + 1];
 };
 
-#if 0 /// UNNEEDED by elogind
 #define SUN_PATH_LEN (sizeof(((struct sockaddr_un){}).sun_path))
 
 typedef struct SocketAddress {
@@ -65,6 +64,7 @@ typedef struct SocketAddress {
         int protocol;
 } SocketAddress;
 
+#if 0 /// UNNEEDED by elogind
 typedef enum SocketAddressBindIPv6Only {
         SOCKET_ADDRESS_DEFAULT,
         SOCKET_ADDRESS_BOTH,
@@ -193,13 +193,13 @@ int flush_accept(int fd);
 #define CMSG_FOREACH(cmsg, mh)                                          \
         for ((cmsg) = CMSG_FIRSTHDR(mh); (cmsg); (cmsg) = CMSG_NXTHDR((mh), (cmsg)))
 
-#if 0 /// UNNEEDED by elogind
 #define CMSG_TYPED_DATA(cmsg, type)                                     \
         ({                                                              \
                 struct cmsghdr *_cmsg = cmsg;                           \
                 _cmsg ? CAST_ALIGN_PTR(type, CMSG_DATA(_cmsg)) : (type*) NULL; \
         })
 
+#if 0 /// UNNEEDED by elogind
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length);
 
 /* Type-safe, dereferencing version of cmsg_find() */
