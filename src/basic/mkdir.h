@@ -16,13 +16,11 @@ int mkdirat_safe(int dir_fd, const char *path, mode_t mode, uid_t uid, gid_t gid
 static inline int mkdir_safe(const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags) {
         return mkdirat_safe(AT_FDCWD, path, mode, uid, gid, flags);
 }
-#if 0 /// UNNEEDED by elogind
 int mkdirat_parents(int dir_fd, const char *path, mode_t mode);
 static inline int mkdir_parents(const char *path, mode_t mode) {
         return mkdirat_parents(AT_FDCWD, path, mode);
 }
 int mkdir_parents_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
-#endif // 0
 int mkdir_p(const char *path, mode_t mode);
 #if 0 /// UNNEEDED by elogind
 int mkdir_p_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
