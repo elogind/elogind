@@ -71,7 +71,10 @@ conf.set10('LOG_MESSAGE_VERIFICATION', verification)
 # summary({'build mode' : get_option('mode')})
 #
 #else // 0
+fuzzer_build = false
 skip_deps = false
+conf.set10('FUZZ_USE_SIZE_LIMIT', false)
+conf.set10('SD_BOOT', false)
 #endif // 0
 
 #####################################################################
@@ -426,7 +429,6 @@ install_tests = get_option('install-tests')
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
 # endif
 #else // 0
-fuzzer_build = false
 cxx_cmd = ''
 #endif // 0
 
