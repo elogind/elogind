@@ -4711,12 +4711,16 @@ endif
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
 # subdir('hwdb.d')
-# subdir('man')
+#endif // 0
+subdir('man')
+#if 0 /// UNNEEDED by elogind
 # subdir('modprobe.d')
 # subdir('network')
 # subdir('presets')
-# subdir('shell-completion/bash')
-# subdir('shell-completion/zsh')
+#endif // 0
+subdir('shell-completion/bash')
+subdir('shell-completion/zsh')
+#if 0 /// UNNEEDED by elogind
 # subdir('sysctl.d')
 # subdir('sysusers.d')
 # subdir('tmpfiles.d')
