@@ -7,7 +7,7 @@
 #include "efivars.h"
 #include "extract-word.h"
 #include "fileio.h"
-#include "initrd-util.h"
+//#include "initrd-util.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
