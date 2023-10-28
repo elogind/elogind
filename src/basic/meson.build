@@ -303,8 +303,6 @@ basic_sources = files(
         'user-util.h',
         'utf8.c',
         'utf8.h',
-        'util.c',
-        'util.h',
         'virt.c',
         'virt.h',
         'xattr-util.c',
