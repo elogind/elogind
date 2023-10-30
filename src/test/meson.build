@@ -727,4 +727,8 @@ executables += [
 #                 ],
 #         },
 #endif // 0
+        test_template + {
+                'sources' : files('test-aux-scope.c'),
+                'type' : 'manual',
+        },
 ]
