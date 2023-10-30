@@ -43,6 +43,7 @@ int path_split_and_make_absolute(const char *p, char ***ret) {
         *ret = l;
         return r;
 }
+#endif // 0
 
 char *path_make_absolute(const char *p, const char *prefix) {
         assert(p);
@@ -55,7 +56,6 @@ char *path_make_absolute(const char *p, const char *prefix) {
 
         return path_join(prefix, p);
 }
-#endif // 0
 
 int safe_getcwd(char **ret) {
         _cleanup_free_ char *cwd = NULL;

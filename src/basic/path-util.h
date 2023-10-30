@@ -60,8 +60,8 @@ static inline bool path_is_absolute(const char *p) {
 
 #if 0 /// UNNEEDED by elogind
 int path_split_and_make_absolute(const char *p, char ***ret);
-char* path_make_absolute(const char *p, const char *prefix);
 #endif // 0
+char* path_make_absolute(const char *p, const char *prefix);
 int safe_getcwd(char **ret);
 int path_make_absolute_cwd(const char *p, char **ret);
 #if 0 /// UNNEEDED by elogind
