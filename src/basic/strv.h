@@ -263,9 +263,9 @@ char** strv_skip(char **l, size_t n);
 
 int strv_extend_n(char ***l, const char *value, size_t n);
 
-#if 0 /// UNNEEDED by elogind
 int strv_extend_assignment(char ***l, const char *lhs, const char *rhs);
 
+#if 0 /// UNNEEDED by elogind
 int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
 #endif // 0
 

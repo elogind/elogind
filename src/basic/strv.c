@@ -808,7 +808,6 @@ rollback:
         return -ENOMEM;
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_extend_assignment(char ***l, const char *lhs, const char *rhs) {
         char *j;
 
@@ -825,6 +824,7 @@ int strv_extend_assignment(char ***l, const char *lhs, const char *rhs) {
         return strv_consume(l, j);
 }
 
+#if 0 /// UNNEEDED by elogind
 int fputstrv(FILE *f, char * const *l, const char *separator, bool *space) {
         bool b = false;
         int r;
