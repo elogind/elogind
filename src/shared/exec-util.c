@@ -121,8 +121,8 @@ static int do_execute(
 
         STRV_FOREACH(path, paths) {
                 _cleanup_free_ char *t = NULL;
-#if 0 /// No "maybe uninitialized" warning in elogind
                 _cleanup_close_ int fd = -EBADF;
+#if 0 /// No "maybe uninitialized" warning in elogind
                 pid_t pid;
 #else // 0
                 pid_t pid = 0;
