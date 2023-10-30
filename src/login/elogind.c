@@ -286,7 +286,7 @@ int elogind_setup_cgroups_agent( Manager* m ) {
                 (void) unlink( sa.un.sun_path );
 
                 /* Only allow root to connect to this socket */
-                RUN_WITH_UMASK( 0077 )
+                WITH_UMASK( 0077 )
                 r = bind( fd, &sa.sa, SOCKADDR_UN_LEN( sa.un ) );
                 if ( r < 0 )
                         return log_error_errno( errno, "bind(%s) failed: %m", sa.un.sun_path );
