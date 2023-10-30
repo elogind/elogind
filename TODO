@@ -133,7 +133,6 @@ Deprecations and removals:
 
 Features:
 
-* add a new elogind-project@.service that is very similar to user@.service but
 * networkd: controlled by build-time options install some of the
   *.network.example files we install currently as regular files *.network. For
   many cases it's what you want: just configure the damn network. Hopefully
@@ -145,11 +144,7 @@ Features:
   root=nvme:<trtype>:<traddr>:<trsvcid>:<nqn>:<partition> to boot directly from
   nvme-oF
 
-* elogind-network-generator: add ip=link-local or so which configures all
-  network devices, but for ipv4ll/ipv6ll only, i.e. restricted to link-local
-  addressing. usecase: storage target mode (NVMe-TCP), where it makes sense for
-  security reasons to limit access to local links.
-
+* add a new elogind-project@.service that is very similar to user@.service but
   uses DynamicUser=1 and no PAMName= to invoke an unprivileged somewhat
   light-weight service manager. Use HOME=/var/lib/elogind/projects/%i as home
   dir. Similar for $XDG_RUNTIME_DIR. Start project@%i.target. Use LogField= to
