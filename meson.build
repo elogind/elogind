@@ -1490,22 +1490,22 @@ conf.set10('HAVE_AUDIT', have)
 #         libkmod = []
 # endif
 # conf.set10('HAVE_KMOD', have)
-#
-# want_xenctrl = get_option('xenctrl')
-# if want_xenctrl != 'false' and not skip_deps
-#         libxenctrl = dependency('xencontrol',
-#                                 version : '>= 4.9',
-#                                 required : want_xenctrl == 'true')
-#         have = libxenctrl.found()
-# else
-#         have = false
-#         libxenctrl = []
-# endif
-# conf.set10('HAVE_XENCTRL', have)
 #else // 0
 conf.set10('HAVE_BLKID', false)
 conf.set10('HAVE_KMOD', false)
 #endif // 0
+
+want_xenctrl = get_option('xenctrl')
+if want_xenctrl != 'false' and not skip_deps
+        libxenctrl = dependency('xencontrol',
+                                version : '>= 4.9',
+                                required : want_xenctrl == 'true')
+        have = libxenctrl.found()
+else
+        have = false
+        libxenctrl = []
+endif
+conf.set10('HAVE_XENCTRL', have)
 
 want_pam = get_option('pam')
 if want_pam != 'false' and not skip_deps
