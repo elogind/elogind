@@ -2205,6 +2205,7 @@ int device_get_property_bool(sd_device *device, const char *key) {
         return parse_boolean(value);
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_property_int(sd_device *device, const char *key, int *ret) {
         const char *value;
         int r, v;
@@ -2224,6 +2225,7 @@ int device_get_property_int(sd_device *device, const char *key, int *ret) {
                 *ret = v;
         return 0;
 }
+#endif // 0
 
 _public_ int sd_device_get_trigger_uuid(sd_device *device, sd_id128_t *ret) {
         const char *s;
@@ -2389,7 +2391,6 @@ _public_ int sd_device_get_sysattr_value(sd_device *device, const char *sysattr,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_get_sysattr_int(sd_device *device, const char *sysattr, int *ret_value) {
         const char *value;
         int r;
@@ -2408,7 +2409,6 @@ int device_get_sysattr_int(sd_device *device, const char *sysattr, int *ret_valu
         /* We return "true" if the value is positive. */
         return v > 0;
 }
-#endif // 0
 
 int device_get_sysattr_unsigned(sd_device *device, const char *sysattr, unsigned *ret_value) {
         const char *value;
