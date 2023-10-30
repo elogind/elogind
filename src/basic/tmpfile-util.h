@@ -9,17 +9,19 @@ static inline int fopen_temporary(const char *path, FILE **ret_file, char **ret_
         return fopen_temporary_at(AT_FDCWD, path, ret_file, ret_path);
 }
 
+#if 0 /// UNNEEDED by elogind
 int fopen_temporary_child_at(int dir_fd, const char *path, FILE **ret_file, char **ret_path);
 static inline int fopen_temporary_child(const char *path, FILE **ret_file, char **ret_path) {
         return fopen_temporary_child_at(AT_FDCWD, path, ret_file, ret_path);
 }
+#endif // 0
 
 int mkostemp_safe(char *pattern);
 int fmkostemp_safe(char *pattern, const char *mode, FILE**_f);
 
 int tempfn_xxxxxx(const char *p, const char *extra, char **ret);
-#if 0 /// UNNEEDED by elogind
 int tempfn_random(const char *p, const char *extra, char **ret);
+#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret);
 #endif // 0
 
