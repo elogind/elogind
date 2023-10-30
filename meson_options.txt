@@ -229,11 +229,11 @@ option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
 option('dbus-interfaces-dir', type : 'string',
        description : 'export D-Bus introspection XML as standalone files')
+option('default-timeout-sec', type : 'integer', value : 90,
+       description : 'default timeout for system unit start/stop')
+option('default-user-timeout-sec', type : 'integer', value : 90,
+       description : 'default timeout for user unit start/stop')
 #if 0 /// UNNEEDED by elogind
-# option('default-timeout-sec', type : 'integer', value : 90,
-#        description : 'default timeout for system unit start/stop')
-# option('default-user-timeout-sec', type : 'integer', value : 90,
-#        description : 'default timeout for user unit start/stop')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0

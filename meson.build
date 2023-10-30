@@ -389,9 +389,11 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 # conf.set10('MEMORY_ACCOUNTING_DEFAULT',                       memory_accounting_default)
 # conf.set('STATUS_UNIT_FORMAT_DEFAULT',                        'STATUS_UNIT_FORMAT_' + status_unit_format_default.to_upper())
 # conf.set_quoted('STATUS_UNIT_FORMAT_DEFAULT_STR',             status_unit_format_default)
-#
-# conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
-# conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
+#endif // 0
+
+conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
+conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
+#if 0 /// UNNEEDED by elogind
 # conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
 #
 # conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
