@@ -639,3 +639,9 @@ int write_env_file(int dir_fd, const char *fname, char **headers, char **l) {
         return r;
 }
 #endif // 0
+
+int write_vconsole_conf(int dir_fd, const char *fname, char **l) {
+        char **headers = STRV_MAKE(
+
+        return write_env_file(dir_fd, fname, headers, l);
+}
