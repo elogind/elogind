@@ -765,7 +765,6 @@ int blockdev_reread_partition_table(sd_device *dev) {
 
         return 0;
 }
-#endif // 0
 
 int blockdev_get_sector_size(int fd, uint32_t *ret) {
         int ssz = 0;
@@ -781,3 +780,4 @@ int blockdev_get_sector_size(int fd, uint32_t *ret) {
         *ret = ssz;
         return 0;
 }
+#endif // 0
