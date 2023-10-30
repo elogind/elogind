@@ -104,7 +104,9 @@ static const Color colors[] = {
         { "bright-red", ansi_bright_red },
         { "bright-green", ansi_bright_green },
         { "bright-yellow", ansi_bright_yellow },
+#endif // 0
         { "bright-blue", ansi_bright_blue },
+#if 0 /// UNNEEDED by elogind
         { "bright-magenta", ansi_bright_magenta },
         { "bright-cyan", ansi_bright_cyan },
         { "bright-white", ansi_bright_white },

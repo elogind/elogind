@@ -232,7 +232,9 @@ DEFINE_ANSI_FUNC(bright_black,      BRIGHT_BLACK);
 DEFINE_ANSI_FUNC(bright_red,        BRIGHT_RED);
 DEFINE_ANSI_FUNC(bright_green,      BRIGHT_GREEN);
 DEFINE_ANSI_FUNC(bright_yellow,     BRIGHT_YELLOW);
+#endif // 0
 DEFINE_ANSI_FUNC(bright_blue,       BRIGHT_BLUE);
+#if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(bright_magenta,    BRIGHT_MAGENTA);
 DEFINE_ANSI_FUNC(bright_cyan,       BRIGHT_CYAN);
 DEFINE_ANSI_FUNC(bright_white,      BRIGHT_WHITE);
