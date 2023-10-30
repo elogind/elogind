@@ -8,7 +8,7 @@
 #include "fileio.h"
 #include "fs-util.h"
 #include "nulstr-util.h"
-#include "path-lookup.h"
+//#include "path-lookup.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "strv.h"
@@ -395,7 +395,6 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
         case SD_PATH_CATALOG:
                 *ret = "/usr/lib/systemd/catalog";
                 return 0;
-#endif // 0
 
         case SD_PATH_SYSTEMD_SYSTEM_ENVIRONMENT_GENERATOR:
                 *ret = SYSTEM_ENV_GENERATOR_DIR;
@@ -404,6 +403,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
         case SD_PATH_SYSTEMD_USER_ENVIRONMENT_GENERATOR:
                 *ret = USER_ENV_GENERATOR_DIR;
                 return 0;
+#endif // 0
         }
 
         return -EOPNOTSUPP;
