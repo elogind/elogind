@@ -664,8 +664,9 @@ static int freeze_thaw_user_slice(const char **method) {
 #endif // 0
 
 static int execute_s2h(const SleepConfig *sleep_config) {
-/// elogind empty mask removed (elogind does not support systemd scopes and slices)
+#if 0 /// elogind does not support systemd scopes and slices
         _unused_ _cleanup_(freeze_thaw_user_slice) const char *auto_method_thaw = "ThawUnit";
+#endif // 0
         int r;
 
         assert(sleep_config);
