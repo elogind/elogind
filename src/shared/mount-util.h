@@ -11,7 +11,6 @@
 #include "errno-util.h"
 //#include "macro.h"
 
-/* The limit used for various nested tmpfs mounts, in particular for guests started by elogind-nspawn.
 /* The limit used for various nested tmpfs mounts, in particular for guests started by systemd-nspawn.
  * 10% of RAM (using 16GB of RAM as a baseline) translates to 400k inodes (assuming 4k each) and 25%
  * translates to 1M inodes.

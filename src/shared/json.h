@@ -76,9 +76,7 @@ int json_variant_new_array_bytes(JsonVariant **ret, const void *p, size_t n);
 int json_variant_new_array_strv(JsonVariant **ret, char **l);
 int json_variant_new_object(JsonVariant **ret, JsonVariant **array, size_t n);
 int json_variant_new_null(JsonVariant **ret);
-#if 0 /// UNNEEDED by elogind
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id);
-#endif // 0
 int json_variant_new_uuid(JsonVariant **ret, sd_id128_t id);
 
 static inline int json_variant_new_string(JsonVariant **ret, const char *s) {

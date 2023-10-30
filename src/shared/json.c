@@ -472,11 +472,11 @@ int json_variant_new_octescape(JsonVariant **ret, const void *p, size_t n) {
 
         return json_variant_new_string(ret, s);
 }
+#endif // 0
 
 int json_variant_new_id128(JsonVariant **ret, sd_id128_t id) {
         return json_variant_new_string(ret, SD_ID128_TO_STRING(id));
 }
-#endif // 0
 
 int json_variant_new_uuid(JsonVariant **ret, sd_id128_t id) {
         return json_variant_new_string(ret, SD_ID128_TO_UUID_STRING(id));
@@ -827,6 +827,7 @@ static void json_variant_free_inner(JsonVariant *v, bool force_sensitive) {
                 explicit_bzero_safe(v, json_variant_size(v));
 }
 
+#if 0 /// UNNEEDED by elogind
 static unsigned json_variant_n_ref(const JsonVariant *v) {
         /* Return the number of references to v.
          * 0  => NULL or not a regular object or embedded.
@@ -839,6 +840,7 @@ static unsigned json_variant_n_ref(const JsonVariant *v) {
         assert(v->n_ref > 0);
         return v->n_ref;
 }
+#endif // 0
 
 JsonVariant *json_variant_ref(JsonVariant *v) {
         if (!v)
