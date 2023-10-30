@@ -59,11 +59,9 @@ FILE* open_memstream_unlocked(char **ptr, size_t *sizeloc);
 FILE* fmemopen_unlocked(void *buf, size_t size, const char *mode);
 
 int write_string_stream_ts(FILE *f, const char *line, WriteStringFileFlags flags, const struct timespec *ts);
-#if 0 /// UNNEEDED by elogind
 static inline int write_string_stream(FILE *f, const char *line, WriteStringFileFlags flags) {
         return write_string_stream_ts(f, line, flags, NULL);
 }
-#endif // 0
 int write_string_file_ts_at(int dir_fd, const char *fn, const char *line, WriteStringFileFlags flags, const struct timespec *ts);
 static inline int write_string_file_ts(const char *fn, const char *line, WriteStringFileFlags flags, const struct timespec *ts) {
         return write_string_file_ts_at(AT_FDCWD, fn, line, flags, ts);
