@@ -106,6 +106,7 @@ basic_sources = files(
         'alloc-util.c',
         'alloc-util.h',
         'architecture.h',
+        'argv-util.c',
         'async.c',
         'async.h',
         'audit-util.c',
