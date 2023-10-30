@@ -21,9 +21,9 @@ int efi_loader_get_entries(char ***ret);
 int efi_loader_get_features(uint64_t *ret);
 #if 0 /// UNNEEDED by elogind
 int efi_stub_get_features(uint64_t *ret);
-#endif // 0
 
 int efi_stub_measured(int log_level);
+#endif // 0
 
 int efi_loader_get_config_timeout_one_shot(usec_t *ret);
 int efi_loader_update_entry_one_shot_cache(char **cache, struct stat *cache_stat);
@@ -53,12 +53,12 @@ static inline int efi_loader_get_features(uint64_t *ret) {
 static inline int efi_stub_get_features(uint64_t *ret) {
         return -EOPNOTSUPP;
 }
-#endif // 0
 
 static inline int efi_stub_measured(int log_level) {
         return log_full_errno(log_level, SYNTHETIC_ERRNO(EOPNOTSUPP),
                               "Compiled without support for EFI");
 }
+#endif // 0
 
 static inline int efi_loader_get_config_timeout_one_shot(usec_t *ret) {
         return -EOPNOTSUPP;

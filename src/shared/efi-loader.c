@@ -7,7 +7,7 @@
 #include "path-util.h"
 #include "stat-util.h"
 #include "strv.h"
-#include "tpm-pcr.h"
+//#include "tpm-pcr.h"
 #include "utf8.h"
 
 #if ENABLE_EFI
@@ -243,7 +243,6 @@ int efi_stub_get_features(uint64_t *ret) {
         memcpy(ret, v, sizeof(uint64_t));
         return 0;
 }
-#endif // 0
 
 int efi_stub_measured(int log_level) {
         _cleanup_free_ char *pcr_string = NULL;
@@ -285,6 +284,7 @@ int efi_stub_measured(int log_level) {
 
         return 1;
 }
+#endif // 0
 
 int efi_loader_get_config_timeout_one_shot(usec_t *ret) {
         _cleanup_free_ char *v = NULL;
