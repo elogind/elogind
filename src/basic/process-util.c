@@ -52,8 +52,6 @@
 //#include "terminal-util.h"
 //#include "user-util.h"
 //#include "utf8.h"
-/// Additional includes needed by elogind
-#include "util.h"
 
 /* The kernel limits userspace processes to TASK_COMM_LEN (16 bytes), but allows higher values for its own
  * workers, e.g. "kworker/u9:3-kcryptd/253:0". Let's pick a fixed smallish limit that will work for the kernel.
@@ -301,18 +299,6 @@ int container_get_leader(const char *machine, pid_t *pid) {
         return 0;
 }
 
-                log_debug_elogind("Setting program_invocation_name to '%s'", name);
-
-#if 1 /// elogind takes care of situations where the short name points into the long.
-                if ( (program_invocation_short_name >= program_invocation_name)
-                     && (program_invocation_short_name <  program_invocation_name + k) )
-                        program_invocation_short_name = program_invocation_name;
-                else {
-                        k = sizeof(program_invocation_short_name);
-                        memset(program_invocation_short_name, 0, k);
-                        strncpy(program_invocation_short_name, name, k - 1);
-                }
-#endif // 1
 int is_kernel_thread(pid_t pid) {
         _cleanup_free_ char *line = NULL;
         unsigned long long flags;
