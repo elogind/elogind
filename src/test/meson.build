@@ -259,7 +259,6 @@ simple_tests += files(
         'test-utf8.c',
         'test-verbs.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-vpick.c',
 #         'test-web-util.c',
 #endif // 0
         'test-xattr-util.c',
@@ -728,4 +727,8 @@ executables += [
 #                 ],
 #         },
 #endif // 0
+        test_template + {
+                'sources' : files('test-aux-scope.c'),
+                'type' : 'manual',
+        },
 ]
