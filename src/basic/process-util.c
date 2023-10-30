@@ -1478,7 +1478,6 @@ int pidfd_get_pid(int fd, pid_t *ret) {
         return parse_pid(p, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int pidfd_verify_pid(int pidfd, pid_t pid) {
         pid_t current_pid;
         int r;
@@ -1493,6 +1492,7 @@ int pidfd_verify_pid(int pidfd, pid_t pid) {
         return current_pid != pid ? -ESRCH : 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int rlimit_to_nice(rlim_t limit) {
         if (limit <= 1)
                 return PRIO_MAX-1; /* i.e. 19 */
