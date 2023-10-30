@@ -14,7 +14,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "filesystems.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "hash-funcs.h"
 #include "macro.h"
 //#include "missing_fs.h"

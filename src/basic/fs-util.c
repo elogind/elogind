@@ -658,7 +658,6 @@ int unlink_or_warn(const char *filename) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
 int access_fd(int fd, int mode) {
         /* Like access() but operates on an already open fd */
 
@@ -678,7 +677,6 @@ int access_fd(int fd, int mode) {
 
         return 0;
 }
-#endif // 0
 
 void unlink_tempfilep(char (*p)[]) {
         /* If the file is created with mkstemp(), it will (almost always)

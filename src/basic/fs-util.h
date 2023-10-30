@@ -117,9 +117,9 @@ static inline char* unlink_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
+#endif // 0
 
 int access_fd(int fd, int mode);
-#endif // 0
 
 void unlink_tempfilep(char (*p)[]);
 
