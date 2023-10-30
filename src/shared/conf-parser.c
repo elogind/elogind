@@ -13,7 +13,7 @@
 #include "constants.h"
 #include "dns-domain.h"
 #include "escape.h"
-#include "ether-addr-util.h"
+//#include "ether-addr-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
 #include "fileio.h"
