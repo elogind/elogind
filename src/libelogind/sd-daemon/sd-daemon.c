@@ -432,6 +432,9 @@ _public_ int sd_is_mq(int fd, const char *path) {
         }
 
         return 1;
+#else // 0
+        return -ENOSYS;
+#endif // 0
 }
 
 static int vsock_bind_privileged_port(int fd) {
@@ -449,9 +452,6 @@ static int vsock_bind_privileged_port(int fd) {
         while (r == -EADDRINUSE && --sa.vm.svm_port > 0);
 
         return r;
-#else // 0
-        return -ENOSYS;
-#endif // 0
 }
 
 _public_ int sd_pid_notify_with_fds(
