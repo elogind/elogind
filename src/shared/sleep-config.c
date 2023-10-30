@@ -178,8 +178,8 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         dbg_cnt = -1;
         while (sc->states[SLEEP_HYBRID_SLEEP] && sc->states[SLEEP_HYBRID_SLEEP][++dbg_cnt])
                 log_debug_elogind("states[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->states[SLEEP_HYBRID_SLEEP][dbg_cnt]);
-        log_debug_elogind("hibernate_delay_sec: %lu seconds (%lu minutes)",
-                          sc->hibernate_delay_sec / USEC_PER_SEC, sc->hibernate_delay_sec / USEC_PER_MINUTE);
+        log_debug_elogind("hibernate_delay_usec: %lu seconds (%lu minutes)",
+                          sc->hibernate_delay_usec / USEC_PER_SEC, sc->hibernate_delay_usec / USEC_PER_MINUTE);
 #endif // ENABLE_DEBUG_ELOGIND
 
 #if 0 /// UNNEEDED by elogind

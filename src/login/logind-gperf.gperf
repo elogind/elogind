@@ -36,7 +36,8 @@ Sleep.HibernateState,              config_parse_strv,          0, offsetof(Manag
 Sleep.HibernateByUsing,            config_parse_strv,          0, offsetof(Manager, hibernate_by_using)
 Sleep.HybridSleepMode,             config_parse_strv,          0, offsetof(Manager, modes[SLEEP_HYBRID_SLEEP])
 Sleep.HybridSleepState,            config_parse_strv,          0, offsetof(Manager, states[SLEEP_HYBRID_SLEEP])
-Sleep.HibernateDelaySec,           config_parse_sec,           0, offsetof(Manager, hibernate_delay_sec)
+Sleep.HibernateDelaySec,           config_parse_sec,           0, offsetof(Manager, hibernate_delay_usec)
+Sleep.SuspendEstimationSec,        config_parse_sec,           0, offsetof(Manager, suspend_estimation_usec)
 #endif // 1
 #if 0 /// UNNEEDED by elogind
 # Login.NAutoVTs,                     config_parse_n_autovts,             0, offsetof(Manager, n_autovts)

@@ -112,7 +112,8 @@ struct Manager {
         bool allow[_SLEEP_OPERATION_MAX];
         char **modes[_SLEEP_OPERATION_MAX];
         char **states[_SLEEP_OPERATION_MAX];
-        usec_t hibernate_delay_sec; /* HibernateDelaySec */
+        usec_t hibernate_delay_usec;
+        usec_t suspend_estimation_usec;
 
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
            SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff

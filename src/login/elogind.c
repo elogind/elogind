@@ -401,7 +401,7 @@ int elogind_manager_new( Manager* m ) {
         m->allow[SLEEP_HIBERNATE]              = true;
         m->allow[SLEEP_HYBRID_SLEEP]           = true;
         m->allow[SLEEP_SUSPEND_THEN_HIBERNATE] = true;
-        m->hibernate_delay_sec                 = 0;
+        m->hibernate_delay_usec                 = 0;
 
         /* If elogind should be its own controller, mount its cgroup */
         if ( streq( SYSTEMD_CGROUP_CONTROLLER, "_elogind" ) ) {
