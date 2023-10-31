@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Perl5LocalSettings">
+    <option name="externalLibrariesPaths">
+      <list>
+        <option value="/usr/lib64/perl5/5.38" />
+        <option value="/usr/lib64/perl5/5.38/x86_64-linux" />
+        <option value="/usr/lib64/perl5/vendor_perl/5.38" />
+        <option value="/usr/lib64/perl5/vendor_perl/5.38/x86_64-linux" />
+        <option value="/usr/lib64/perl5/vendor_perl/5.36" />
+      </list>
+    </option>
+    <option name="perlInterpreter" value="Local, System: Perl 5.38.0" />
+  </component>
+</project>
