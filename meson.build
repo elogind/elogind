@@ -15,7 +15,7 @@ project('elogind', 'c',
 
 libsystemd_version = '0.36.0'
 #if 0 /// elogind does not ship libudev
-libudev_version = '1.7.6'
+# libudev_version = '1.7.6'
 #endif // 0
 
 conf = configuration_data()

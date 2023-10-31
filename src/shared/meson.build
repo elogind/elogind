@@ -392,11 +392,11 @@ libshared = shared_library(
         install : true,
         install_dir : rootpkglibdir)
 
-shared_fdisk_sources = files(
-        'fdisk-util.c',
-)
-
 #if 0 /// elogind does not provide libshared_fdisk
+# shared_fdisk_sources = files(
+#         'fdisk-util.c',
+# )
+#
 # if get_option('fdisk') != 'false'
 #         libshared_fdisk = static_library(
 #                 'shared-fdisk',
