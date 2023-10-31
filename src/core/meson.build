@@ -76,8 +76,7 @@
 # endif
 #else // 0
 libcore_sources = files(
-        'cgroup.c',
-        'cgroup.h',
+        'cgroup.c'
 )
 #endif // 0
 

@@ -7,9 +7,7 @@
 #else // 0
 elogind_sources = files(
         'elogind.c',
-        'elogind.h',
-        'logind.c',
-        'logind.h')
+        'logind.c')
 #endif // 0
 
 logind_gperf_c = custom_target(
@@ -40,7 +38,6 @@ liblogind_core_sources = files(
 #if 1 /// elogind has some additional files:
 liblogind_core_sources += [files(
         'user-runtime-dir.c',
-        'user-runtime-dir.h',
 ),
         libcore_sources,
         sleep_files,
