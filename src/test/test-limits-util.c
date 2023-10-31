@@ -49,6 +49,7 @@ TEST(physical_memory_scale) {
         assert_se(physical_memory_scale(UINT64_MAX/4, UINT64_MAX) == UINT64_MAX);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(system_tasks_max) {
         uint64_t t;
 
@@ -85,5 +86,6 @@ TEST(system_tasks_max_scale) {
 
         assert_se(system_tasks_max_scale(UINT64_MAX/4, UINT64_MAX) == UINT64_MAX);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);
