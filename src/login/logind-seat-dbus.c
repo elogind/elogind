@@ -7,7 +7,7 @@
 #include "bus-get-properties.h"
 #include "bus-label.h"
 #include "bus-polkit.h"
-#include "bus-util.h"
+//#include "bus-util.h"
 #include "logind-dbus.h"
 #include "logind-polkit.h"
 #include "logind-seat-dbus.h"

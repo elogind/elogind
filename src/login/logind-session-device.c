@@ -3,10 +3,10 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/ioctl.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 
 #include "sd-device.h"
-#include "sd-daemon.h"
+//#include "sd-daemon.h"
 
 #include "alloc-util.h"
 #include "bus-util.h"

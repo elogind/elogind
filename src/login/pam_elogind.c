@@ -12,7 +12,7 @@
 //#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -39,7 +39,7 @@
 #include "process-util.h"
 #include "rlimit-util.h"
 #include "socket-util.h"
-#include "stdio-util.h"
+//#include "stdio-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "user-util.h"

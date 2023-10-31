@@ -2,7 +2,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <unistd.h>
 
 #include "sd-daemon.h"
@@ -39,7 +39,7 @@
 /// Additional includes needed by elogind
 #include "label.h"
 #include "musl_missing.h"
-#include "udev-util.h"
+//#include "udev-util.h"
 #include "user-util.h"
 
 static Manager* manager_unref(Manager *m);
