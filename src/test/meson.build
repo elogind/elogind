@@ -767,7 +767,9 @@ tests += [
 
         [files('test-sha256.c')],
 
-        [files('test-open-file.c')],
+#if 0 /// UNNEEDED by elogind
+#         [files('test-open-file.c')],
+#endif // 0
 ]
 
 ############################################################
