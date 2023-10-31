@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
+//#include <ctype.h>
 #include <errno.h>
-#include <sys/inotify.h>
+//#include <sys/inotify.h>
 #include <unistd.h>
 
 //#include "alloc-util.h"
@@ -12,7 +12,7 @@
 //#include "env-file.h"
 //#include "errno-util.h"
 //#include "escape.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 //#include "id128-util.h"
 #include "log.h"
 #include "macro.h"

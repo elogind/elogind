@@ -4,7 +4,7 @@
 #include <locale.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 
 #include "sd-messages.h"
 

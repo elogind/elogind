@@ -1,20 +1,20 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <sys/utsname.h>
+//#include <sys/utsname.h>
 #include <errno.h>
 #include <stdio.h>
 
 #include "alloc-util.h"
-#include "conf-files.h"
-#include "constants.h"
+//#include "conf-files.h"
+//#include "constants.h"
 #include "env-util.h"
-#include "fd-util.h"
-#include "fileio.h"
+//#include "fd-util.h"
+//#include "fileio.h"
 #include "pager.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "pretty-print.h"
 #include "string-util.h"
-#include "strv.h"
+//#include "strv.h"
 #include "terminal-util.h"
 
 bool urlify_enabled(void) {

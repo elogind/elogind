@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <errno.h>
-#include <stdint.h>
-#include <sys/ioctl.h>
+//#include <stdint.h>
+//#include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
@@ -14,16 +14,16 @@
 #endif
 
 #include "alloc-util.h"
-#include "errno-util.h"
-#include "fd-util.h"
+//#include "errno-util.h"
+//#include "fd-util.h"
 #include "fileio.h"
 #include "log.h"
-#include "proc-cmdline.h"
+//#include "proc-cmdline.h"
 //#include "raw-reboot.h"
 #include "reboot-util.h"
 #include "string-util.h"
 #include "umask-util.h"
-#include "virt.h"
+//#include "virt.h"
 
 int update_reboot_parameter_and_warn(const char *parameter, bool keep) {
         int r;

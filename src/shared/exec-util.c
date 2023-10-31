@@ -3,7 +3,7 @@
 #include <dirent.h>
 #include <errno.h>
 //#include <sys/prctl.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -14,7 +14,7 @@
 //#include "errno-util.h"
 #include "exec-util.h"
 #include "fd-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "hashmap.h"
 #include "macro.h"
 //#include "missing_syscall.h"
@@ -27,7 +27,7 @@
 //#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
-#include "terminal-util.h"
+//#include "terminal-util.h"
 #include "tmpfile-util.h"
 
 /* Put this test here for a lack of better place */

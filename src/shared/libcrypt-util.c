@@ -21,7 +21,7 @@
 //#include "alloc-util.h"
 //#include "errno-util.h"
 #include "libcrypt-util.h"
-#include "log.h"
+//#include "log.h"
 #include "macro.h"
 //#include "memory-util.h"
 //#include "missing_stdlib.h"

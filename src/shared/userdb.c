@@ -6,7 +6,7 @@
 //#include "dirent-util.h"
 //#include "dlfcn-util.h"
 #include "errno-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 //#include "format-util.h"
 //#include "missing_syscall.h"
 //#include "parse-util.h"

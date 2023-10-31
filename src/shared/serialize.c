@@ -3,15 +3,15 @@
 #include <fcntl.h>
 
 #include "alloc-util.h"
-#include "env-util.h"
+//#include "env-util.h"
 #include "escape.h"
 #include "fileio.h"
 #include "missing_mman.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "serialize.h"
-#include "strv.h"
+//#include "strv.h"
 #include "tmpfile-util.h"
 
 int serialize_item(FILE *f, const char *key, const char *value) {
