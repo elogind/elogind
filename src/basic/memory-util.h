@@ -96,7 +96,6 @@ static inline void *mempmem_safe(const void *haystack, size_t haystacklen, const
 }
 #endif // 0
 
-
 static inline void* erase_and_free(void *p) {
         size_t l;
 

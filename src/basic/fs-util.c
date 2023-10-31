@@ -657,7 +657,6 @@ int unlink_or_warn(const char *filename) {
         return 0;
 }
 
-
 int access_fd(int fd, int mode) {
         /* Like access() but operates on an already open fd */
 

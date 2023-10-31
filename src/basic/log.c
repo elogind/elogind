@@ -1266,9 +1266,6 @@ static bool should_parse_proc_cmdline(void) {
 
                 /* We know that elogind sets the variable correctly. Something else must have set it. */
         /* Otherwise, parse the commandline if invoked directly by elogind. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
         return invoked_by_elogind();
 }
 

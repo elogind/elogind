@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "argv-util.h"
+#include "capability-util.h"
 #include "errno-util.h"
 #include "missing_sched.h"
 #include "parse-util.h"
@@ -76,23 +77,23 @@ bool argv_looks_like_help(int argc, char **argv) {
 
 static int update_argv(const char name[], size_t l) {
         static int can_do = -1;
+        int r;
 
         if (can_do == 0)
                 return 0;
         can_do = false; /* We'll set it to true only if the whole process works */
 
-        /* Let's not bother with this if we don't have euid == 0. Strictly speaking we should check for the
-         * CAP_SYS_RESOURCE capability which is independent of the euid. In our own code the capability generally is
-         * present only for euid == 0, hence let's use this as quick bypass check, to avoid calling mmap() if
-         * PR_SET_MM_ARG_{START,END} fails with EPERM later on anyway. After all geteuid() is dead cheap to call, but
-         * mmap() is not. */
-        if (geteuid() != 0)
+        /* Calling prctl() with PR_SET_MM_ARG_{START,END} requires CAP_SYS_RESOURCE so let's use this as quick bypass
+         * check, to avoid calling mmap() should PR_SET_MM_ARG_{START,END} fail with EPERM later on anyway. */
+        r = have_effective_cap(CAP_SYS_RESOURCE);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to check if we have enough privileges: %m");
+        if (r == 0)
                 return log_debug_errno(SYNTHETIC_ERRNO(EPERM),
                                        "Skipping PR_SET_MM, as we don't have privileges.");
 
         static size_t mm_size = 0;
         static char *mm = NULL;
-        int r;
 
         if (mm_size < l+1) {
                 size_t nn_size;
@@ -191,16 +192,9 @@ int rename_process(const char name[]) {
                 if (l > k)
                         truncated = true;
 
-#if 1 /// elogind takes care of situations where the short name points into the long.
-                if ( (program_invocation_short_name >= program_invocation_name)
-                     && (program_invocation_short_name <  program_invocation_name + k) )
-                        program_invocation_short_name = program_invocation_name;
-                else {
-                        k = sizeof(program_invocation_short_name);
-                        memset(program_invocation_short_name, 0, k);
-                        strncpy(program_invocation_short_name, name, k - 1);
-                }
-#endif // 1
+                /* Also update the short name. */
+                char *p = strrchr(program_invocation_name, '/');
+                program_invocation_short_name = p ? p + 1 : program_invocation_name;
         }
 
         /* Third step, completely replace the argv[] array the kernel maintains for us. This requires privileges, but
