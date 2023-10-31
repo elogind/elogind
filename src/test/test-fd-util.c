@@ -351,9 +351,9 @@ TEST(close_all_fds) {
         assert_se(r >= 0);
 
 #if 0 /// seccomptools are not needed by elogind
-#endif // 0
         if (!is_seccomp_available())
                 return (void) log_tests_skipped("Seccomp not available");
+#endif // 0
 
         r = safe_fork("(caf-seccomp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT, NULL);
         if (r == 0) {
