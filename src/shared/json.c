@@ -827,7 +827,6 @@ static void json_variant_free_inner(JsonVariant *v, bool force_sensitive) {
                 explicit_bzero_safe(v, json_variant_size(v));
 }
 
-#if 0 /// UNNEEDED by elogind
 static unsigned json_variant_n_ref(const JsonVariant *v) {
         /* Return the number of references to v.
          * 0  => NULL or not a regular object or embedded.
@@ -840,7 +839,6 @@ static unsigned json_variant_n_ref(const JsonVariant *v) {
         assert(v->n_ref > 0);
         return v->n_ref;
 }
-#endif // 0
 
 JsonVariant *json_variant_ref(JsonVariant *v) {
         if (!v)
@@ -2088,7 +2086,6 @@ int json_variant_merge(JsonVariant **v, JsonVariant *m) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int json_variant_append_array(JsonVariant **v, JsonVariant *element) {
         _cleanup_(json_variant_unrefp) JsonVariant *nv = NULL;
         bool blank;
@@ -2175,6 +2172,7 @@ int json_variant_append_array_nodup(JsonVariant **v, JsonVariant *element) {
         return json_variant_append_array(v, element);
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_variant_strv(JsonVariant *v, char ***ret) {
         char **l = NULL;
         bool sensitive;

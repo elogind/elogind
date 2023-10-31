@@ -214,11 +214,11 @@ int json_variant_set_field_integer(JsonVariant **v, const char *field, int64_t v
 int json_variant_set_field_unsigned(JsonVariant **v, const char *field, uint64_t value);
 int json_variant_set_field_boolean(JsonVariant **v, const char *field, bool b);
 int json_variant_set_field_strv(JsonVariant **v, const char *field, char **l);
+#endif // 0
 
 JsonVariant *json_variant_find(JsonVariant *haystack, JsonVariant *needle);
 
 int json_variant_append_array(JsonVariant **v, JsonVariant *element);
-#endif // 0
 int json_variant_append_array_nodup(JsonVariant **v, JsonVariant *element);
 
 int json_variant_merge(JsonVariant **v, JsonVariant *m);
