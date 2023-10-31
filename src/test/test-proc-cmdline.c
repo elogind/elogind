@@ -3,7 +3,7 @@
 #include "alloc-util.h"
 #include "env-util.h"
 #include "errno-util.h"
-#include "initrd-util.h"
+//#include "initrd-util.h"
 #include "log.h"
 #include "macro.h"
 #include "proc-cmdline.h"
