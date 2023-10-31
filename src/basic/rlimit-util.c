@@ -2,7 +2,7 @@
 
 #include <errno.h>
 
-#include "alloc-util.h"
+//#include "alloc-util.h"
 #include "errno-util.h"
 //#include "extract-word.h"
 #include "fd-util.h"
@@ -11,7 +11,7 @@
 #include "missing_resource.h"
 #include "rlimit-util.h"
 #include "string-table.h"
-#include "time-util.h"
+//#include "time-util.h"
 
 int setrlimit_closest(int resource, const struct rlimit *rlim) {
         struct rlimit highest, fixed;

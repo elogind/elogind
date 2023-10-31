@@ -20,8 +20,10 @@
   along with systemd; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#if HAVE_PRINTF_H == 0
 #include <stddef.h>
 #include <string.h>
+#endif // HAVE_PRINTF_H
 
 #include "parse-printf-format.h"
 

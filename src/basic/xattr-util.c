@@ -14,7 +14,7 @@
 //#include "missing_syscall.h"
 //#include "sparse-endian.h"
 //#include "stat-util.h"
-#include "stdio-util.h"
+//#include "stdio-util.h"
 #include "string-util.h"
 //#include "time-util.h"
 #include "xattr-util.h"

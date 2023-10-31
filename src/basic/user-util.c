@@ -15,7 +15,7 @@
 #include "alloc-util.h"
 #include "chase-symlinks.h"
 #include "errno-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
 #include "macro.h"

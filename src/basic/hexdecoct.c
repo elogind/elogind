@@ -8,7 +8,7 @@
 #include "alloc-util.h"
 #include "hexdecoct.h"
 #include "macro.h"
-#include "memory-util.h"
+//#include "memory-util.h"
 #include "string-util.h"
 
 char octchar(int x) {

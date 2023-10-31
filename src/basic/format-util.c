@@ -3,7 +3,7 @@
 #include "format-util.h"
 //#include "memory-util.h"
 #include "stdio-util.h"
-#include "strxcpyx.h"
+//#include "strxcpyx.h"
 
 assert_cc(STRLEN("%") + DECIMAL_STR_MAX(int) <= IF_NAMESIZE);
 int format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NAMESIZE]) {

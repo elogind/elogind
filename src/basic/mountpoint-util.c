@@ -19,8 +19,8 @@
 #include "path-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
-#include "strv.h"
-#include "user-util.h"
+//#include "strv.h"
+//#include "user-util.h"
 
 /* This is the original MAX_HANDLE_SZ definition from the kernel, when the API was introduced. We use that in place of
  * any more currently defined value to future-proof things: if the size is increased in the API headers, and our code

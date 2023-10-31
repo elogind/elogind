@@ -14,7 +14,7 @@
 #include <stdlib.h>
 
 #include "alloc-util.h"
-#include "hashmap.h"
+//#include "hashmap.h"
 #include "prioq.h"
 
 struct prioq_item {

@@ -7,7 +7,7 @@
 
 #include "alloc-util.h"
 #include "audit-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
 #include "parse-util.h"

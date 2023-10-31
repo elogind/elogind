@@ -5,7 +5,7 @@
 #if WANT_LINUX_FS_H
 #include <linux/fs.h>
 #endif
-#include <linux/magic.h>
+//#include <linux/magic.h>
 #include <sys/ioctl.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
@@ -16,18 +16,18 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
-#include "io-util.h"
+//#include "io-util.h"
 #include "macro.h"
-#include "missing_fcntl.h"
+//#include "missing_fcntl.h"
 #include "missing_fs.h"
-#include "missing_syscall.h"
+//#include "missing_syscall.h"
 #include "parse-util.h"
 #include "path-util.h"
-#include "process-util.h"
+//#include "process-util.h"
 #include "socket-util.h"
 #include "sort-util.h"
 #include "stat-util.h"
-#include "stdio-util.h"
+//#include "stdio-util.h"
 #include "tmpfile-util.h"
 
 /* The maximum number of iterations in the loop to close descriptors in the fallback case

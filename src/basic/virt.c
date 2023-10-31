@@ -15,7 +15,7 @@
 //#include "dirent-util.h"
 //#include "env-util.h"
 //#include "errno-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
 #include "process-util.h"

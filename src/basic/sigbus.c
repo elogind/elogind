@@ -7,8 +7,8 @@
 
 #include "macro.h"
 #include "memory-util.h"
-#include "missing_syscall.h"
-#include "process-util.h"
+//#include "missing_syscall.h"
+//#include "process-util.h"
 #include "sigbus.h"
 #include "signal-util.h"
 

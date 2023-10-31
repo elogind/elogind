@@ -11,7 +11,7 @@
 #include "extract-word.h"
 //#include "fileio.h"
 #include "memory-util.h"
-#include "nulstr-util.h"
+//#include "nulstr-util.h"
 #include "sort-util.h"
 #include "string-util.h"
 #include "strv.h"

@@ -18,8 +18,10 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#if HAVE_PROGRAM_INVOCATION_NAME == 0
 #include <errno.h>
 #include <string.h>
+#endif // libc does not provide program_invocation_[short_]name
 
 #include "alloc-util.h"
 

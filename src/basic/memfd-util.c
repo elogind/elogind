@@ -11,7 +11,7 @@
 
 #include "alloc-util.h"
 #include "errno-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "macro.h"
 #include "memfd-util.h"
 #include "missing_fcntl.h"

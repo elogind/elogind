@@ -20,10 +20,10 @@
 #endif
 
 #include "alloc-util.h"
-#include "architecture.h"
+//#include "architecture.h"
 #include "argv-util.h"
 #include "env-file.h"
-#include "env-util.h"
+//#include "env-util.h"
 #include "errno-util.h"
 #include "escape.h"
 #include "fd-util.h"
@@ -40,7 +40,7 @@
 #include "namespace-util.h"
 #include "nulstr-util.h"
 #include "parse-util.h"
-#include "path-util.h"
+//#include "path-util.h"
 #include "process-util.h"
 #include "raw-clone.h"
 #include "rlimit-util.h"

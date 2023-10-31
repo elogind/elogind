@@ -6,9 +6,9 @@
 #include "alloc-util.h"
 #include "capability-util.h"
 #include "cap-list.h"
-#include "extract-word.h"
+//#include "extract-word.h"
 #include "macro.h"
-#include "parse-util.h"
+//#include "parse-util.h"
 #include "stdio-util.h"
 
 #if 0 /// UNNEEDED by elogind
