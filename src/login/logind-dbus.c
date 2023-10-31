@@ -2839,11 +2839,13 @@ static int method_can_shutdown_or_sleep(
 #else // 0
                 r = can_sleep(m, a->sleep_operation);
 #endif // 0
-                r = sleep_supported(a->sleep_operation);
+                SleepSupport support;
+
+                r = sleep_supported_full(a->sleep_operation, &support);
                 if (r < 0)
                         return r;
                 if (r == 0)
-                        return sd_bus_reply_method_return(message, "s", "na");
+                        return sd_bus_reply_method_return(message, "s", support == SLEEP_DISABLED ? "no" : "na");
         }
 
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_EUID, &creds);
