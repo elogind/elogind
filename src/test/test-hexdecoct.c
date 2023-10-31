@@ -339,7 +339,6 @@ TEST(base64mem_linebreak) {
                         assert_se((encoded[j] == '\n') == (j % (m + 1) == m));
         }
 }
-#endif // 0
 
 static void test_base64_append_one(char **buf, size_t *len, const char *in, const char *expected) {
         ssize_t new_len;
@@ -454,6 +453,7 @@ TEST(base64_append) {
                                "    Zm9vYmFy\n"
                                "    Zm9vYmFy");
 }
+#endif // 0
 
 static void test_unbase64mem_one(const char *input, const char *output, int ret) {
         _cleanup_free_ void *buffer = NULL;
