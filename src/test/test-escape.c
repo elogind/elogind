@@ -223,7 +223,7 @@ TEST(quote_command_line) {
                                     "true \"\\$dollar\"");
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
+#if 0 /// UNNEEDED by elogind
 static void test_octescape_one(const char *s, const char *expected) {
         _cleanup_free_ char *ret;
 
@@ -239,5 +239,6 @@ TEST(octescape) {
         test_octescape_one("\"\\\"", "\\042\\134\\042");
         test_octescape_one("\123\213\222", "\123\\213\\222");
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
