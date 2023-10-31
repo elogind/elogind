@@ -71,9 +71,11 @@
       // 0 -->
       </para></listitem>
 
+      <!-- 0 /// Completely irrelevant for elogind
       <listitem><para>nspawn files, see
         <citerefentry><refentrytitle>elogind.nspawn</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para></listitem>
+      // 0 -->
     </itemizedlist>
     </para>
 
