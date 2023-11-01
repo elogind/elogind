@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#if 0 /// UNNEEDED by elogind (only needed for testing __cpu_mask)
 #include <sched.h>
-#endif // 0
 #include <stdio.h>
 #include <string.h>
 #include <sys/resource.h>
@@ -74,13 +72,11 @@ int main(void) {
         info(unsigned char);
         info(short unsigned);
         info(unsigned);
-#ifdef __GLIBC__
         info(unsigned long);
         info(unsigned long long);
 #ifdef __GLIBC__
         info(__syscall_ulong_t);
         info(__syscall_slong_t);
-#endif // ifdef __GLIBC__
 #endif
         info(intmax_t);
         info(uintmax_t);
@@ -108,10 +104,8 @@ int main(void) {
         info(gid_t);
         info(socklen_t);
 
-#if 0 /// UNNEEDED by elogind (Only needed for *cpu_set* stuff in systemd we don't use)
 #ifdef __GLIBC__
         info(__cpu_mask);
-#endif // 0
 #endif
 
         info(enum Enum);
