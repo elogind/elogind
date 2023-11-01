@@ -35,8 +35,8 @@ int proc_cmdline(char **ret) {
 
         if (detect_container() > 0)
                 return get_process_cmdline(1, SIZE_MAX, 0, ret);
-        else
-                return read_one_line_file("/proc/cmdline", ret);
+
+        return read_virtual_file("/proc/cmdline", SIZE_MAX, ret, NULL);
 }
 
 static int proc_cmdline_extract_first(const char **p, char **ret_word, ProcCmdlineFlags flags) {
