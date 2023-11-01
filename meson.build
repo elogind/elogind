@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '254',
+        version : '255',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu11',
@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
-libsystemd_version = '0.37.0'
 #if 0 /// elogind does not ship libudev
-# libudev_version = '1.7.7'
 #endif // 0
+libelogind_version = '0.38.0'
+libudev_version = '1.7.8'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -667,8 +667,6 @@ foreach ident : [
         ['gettid',            '''#include <sys/types.h>
                                  #include <unistd.h>'''],
 #if 0 /// Not used in elogind
-#         ['fchmodat2',         '''#include <stdlib.h>
-#                                  #include <fcntl.h>'''],      # no known header declares fchmodat2
 #         ['pivot_root',        '''#include <stdlib.h>
 #                                  #include <unistd.h>'''],     # no known header declares pivot_root
 #endif // 0
