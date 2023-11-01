@@ -968,6 +968,6 @@ msgstr "Pro změnu virtuálního terminálu je vyžadováno ověření."
 # msgstr "Pro odstranění souborů nebo adresářů souvisejících s „$(unit)” je vyžadováno ověření."
 #
 # #: src/core/dbus-unit.c:776
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Pro zmrazení nebo rozmrazení procesů jednotky „$(unit)” je vyžadováno ověření."
 #endif // 0
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Pro zmrazení nebo rozmrazení procesů jednotky „$(unit)” je vyžadováno ověření."

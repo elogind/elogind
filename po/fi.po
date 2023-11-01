@@ -959,6 +959,6 @@ msgstr "Todennus vaaditaan virtuaalipäätteen vaihtamiseksi."
 # msgstr "Todennus vaaditaan tiedostojen ja hakemistojen poistamiseen, jotka liittyvät '$(unit)':iin."
 #
 # #: src/core/dbus-unit.c:776
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Todennus vaaditaan '$(unit)'-yksikön prosessien jäädyttämiseksi tai sulattamiseksi."
 #endif // 0
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Todennus vaaditaan '$(unit)'-yksikön prosessien jäädyttämiseksi tai sulattamiseksi."

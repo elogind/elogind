@@ -351,8 +351,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "É necessária autenticação para definir as configurações de teclado do sistema."
 #endif // 0
-msgstr "É necessária autenticação para definir as configurações de teclado do sistema."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -964,6 +964,6 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # msgstr "É necessária autenticação para excluir arquivos e diretórios associados com “$(unit)”."
 #
 # #: src/core/dbus-unit.c:776
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "É necessária autenticação para congelar ou descongelar os processos da unidade “$(unit)”."
 #endif // 0
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "É necessária autenticação para congelar ou descongelar os processos da unidade “$(unit)”."

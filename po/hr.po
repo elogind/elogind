@@ -960,6 +960,6 @@ msgstr "Potrebna je ovjera za promjenu virtualnog terminala."
 # msgstr "Potrebna je ovjera za brisanje datoteka i direktorija pridruženih sa '$(unit)'."
 #
 # #: src/core/dbus-unit.c:776
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Potrebna je ovjera za zamrzavanje ili odmrzavanje procesa '$(unit)' jedinice."
 #endif // 0
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Potrebna je ovjera za zamrzavanje ili odmrzavanje procesa '$(unit)' jedinice."

@@ -352,8 +352,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Norint nustatyti sistemos klaviatūros nustatymus, reikia nustatyti tapatybę."
 #endif // 0
-msgstr "Norint nustatyti sistemos klaviatūros nustatymus, reikia nustatyti tapatybę."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"

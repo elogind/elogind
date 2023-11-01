@@ -345,8 +345,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Requírese autenticación para estabelecer as preferencias do teclado do sistema."
 #endif // 0
-msgstr "Requírese autenticación para estabelecer as preferencias do teclado do sistema."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -961,6 +961,6 @@ msgstr "Requírese autenticación para cambiar o terminal virtual."
 # msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr "Requírese autenticación para conxelar o proceso da unidade '$(unit)'."
 #
+# #~ msgid "Authentication is required to halt the system while an application asked to inhibit it."
+# #~ msgstr "Requírese autenticación para deter o sistema mentres unha aplicación solicitou a súa inhibición."
 #endif // 0
-#~ msgid "Authentication is required to halt the system while an application asked to inhibit it."
-#~ msgstr "Requírese autenticación para deter o sistema mentres unha aplicación solicitou a súa inhibición."

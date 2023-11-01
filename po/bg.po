@@ -961,6 +961,6 @@ msgstr "За смяна на виртуален терминал е необхо
 # msgstr "За изтриването на файловете и директориите на „$(unit)“ е необходима идентификация."
 #
 # #: src/core/dbus-unit.c:776
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "За замразяване/размразяване на процесите на „$(unit)“ е необходима идентификация."
 #endif // 0
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "За замразяване/размразяване на процесите на „$(unit)“ е необходима идентификация."
