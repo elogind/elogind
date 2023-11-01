@@ -143,6 +143,12 @@ const char* const elogind_features =
         " -LIBCRYPTSETUP"
 #endif
 
+#if HAVE_LIBCRYPTSETUP_PLUGINS
+        " +LIBCRYPTSETUP_PLUGINS"
+#else
+        " -LIBCRYPTSETUP_PLUGINS"
+#endif
+
 #if HAVE_LIBFDISK
         " +LIBFDISK"
 #else
