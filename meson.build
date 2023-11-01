@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
+libsystemd_version = '0.37.0'
 #if 0 /// elogind does not ship libudev
+# libudev_version = '1.7.7'
 #endif // 0
-libelogind_version = '0.37.0'
-libudev_version = '1.7.7'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -172,7 +172,7 @@ rootsbindir = rootprefixdir / (split_bin ? 'sbin' : 'bin')
 # rootlibexecdir = rootprefixdir / 'lib/systemd'
 #else // 0
 rootlibexecdir = get_option('rootlibexecdir')
-rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/elogind')
+rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : rootprefixdir / 'lib/elogind'
 #endif // 0
 
 rootlibdir = get_option('rootlibdir')
@@ -251,24 +251,26 @@ polkitpolicydir = datadir / 'polkit-1/actions'
 # endif
 #
 #else // 0
-pkgdatadir = join_paths(datadir, 'elogind')
-pkgsysconfdir = join_paths(sysconfdir, 'elogind')
-pkgincludedir = join_paths(includedir, 'elogind/systemd')
-systemshutdowndir = join_paths(rootlibexecdir, 'system-shutdown')
-systemsleepdir = join_paths(rootlibexecdir, 'system-sleep')
+pkgdatadir = datadir / 'elogind'
+pkgsysconfdir = sysconfdir / 'elogind'
+pkgincludedir = includedir / 'elogind/systemd'
+systemshutdowndir = rootlibexecdir / 'system-shutdown'
+systemsleepdir = rootlibexecdir / 'system-sleep'
 
 # in elogind, udev is external and thus configurable
 udevlibexecdir = get_option('udevbindir')
-udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : join_paths(rootprefixdir, 'lib/udev')
+udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : rootprefixdir / 'lib/udev'
 udevrulesdir = get_option('udevrulesdir')
-udevrulesdir = udevrulesdir != '' ? udevrulesdir : join_paths(udevlibexecdir, 'rules.d')
-factorydir = join_paths(datadir, 'factory')
+udevrulesdir = udevrulesdir != '' ? udevrulesdir : udevlibexecdir / 'rules.d'
+factorydir = datadir / 'factory'
 docdir = get_option('docdir')
 if docdir == ''
         docdir = datadir / 'doc/elogind'
 endif
-testsdir = join_paths(prefixdir, 'lib/elogind/tests')
-randomseeddir = join_paths(localstatedir, 'lib/elogind')
+testsdir = prefixdir / 'lib/elogind/tests'
+unittestsdir = testsdir / 'unit-tests'
+testdata_dir = testsdir / 'testdata'
+randomseeddir = localstatedir / 'lib/elogind'
 #endif // 0
 
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
@@ -837,8 +839,9 @@ meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
 
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
-/// elogind empty mask removed (UNNEEDED by elogind)
-mkdir_p_mode = 'mkdir -p $DESTDIR/@0@ -m @1@'
+#if 0 /// UNNEEDED by elogind
+# mkdir_p_mode = 'mkdir -p $DESTDIR/@0@ -m @1@'
+#endif // 0
 
 # If -Dxxx-path option is found, use that. Otherwise, check in $PATH,
 # /usr/sbin, /sbin, and fall back to the default from middle column.
@@ -1244,6 +1247,8 @@ endif
 threads = dependency('threads')
 #if 0 /// UNNEEDED in elogind
 # librt = cc.find_library('rt')
+#else // 0
+librt = []
 #endif //  0
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
@@ -1534,6 +1539,7 @@ conf.set10('HAVE_AUDIT', have)
 # endif
 # conf.set10('HAVE_KMOD', have)
 #else // 0
+libblkid = []
 conf.set10('HAVE_BLKID', false)
 conf.set10('HAVE_KMOD', false)
 #endif // 0
@@ -1895,6 +1901,8 @@ libqrencode = []
 libgcrypt = []
 libgpg_error = []
 libgnutls = []
+libp11kit_cflags = []
+libp11kit = []
 libdw = []
 libz = []
 libbzip2 = []
@@ -2453,9 +2461,8 @@ meson_render_jinja2 = find_program('tools/meson-render-jinja2.py')
 update_dbus_docs_py = find_program('tools/update-dbus-docs.py')
 #if 0 /// UNNEEDED by elogind
 # update_hwdb_autosuspend_sh = find_program('tools/update-hwdb-autosuspend.sh')
+# update_hwdb_sh = find_program('tools/update-hwdb.sh')
 #endif // 0
-
-update_hwdb_sh = find_program('tools/update-hwdb.sh')
 update_man_rules_py = find_program('tools/update-man-rules.py')
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
@@ -2553,15 +2560,12 @@ subdir('src/shared')
 # subdir('src/udev')
 # subdir('src/libudev')
 # subdir('src/cryptsetup/cryptsetup-tokens')
-#
-#else // 0
-alias_target('devel', libelogind_pc)
 #endif // 0
 
 libelogind = shared_library(
         'elogind',
         version : libsystemd_version,
-        include_directories : libsystemd_includes,
+        include_directories : libelogind_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
@@ -2581,7 +2585,7 @@ libelogind = shared_library(
         link_depends : libelogind_sym,
 #endif // 0
         install : true,
-        install_tag: 'libsystemd',
+        install_tag: 'libelogind',
         install_dir : rootlibdir)
 
 alias_target('libelogind', libelogind)
@@ -2665,7 +2669,7 @@ install_libelogind_static = static_library(
                         libdl,
                         libmount,
                         libselinux],
-        c_args : libsystemd_c_args)
+        c_args : libelogind_c_args)
 #endif // 0
 
 if conf.get('HAVE_LIBCRYPTSETUP_PLUGINS') == 1
@@ -2752,8 +2756,8 @@ subdir('src/update-utmp')
 
 #if 0 /// elogind does not provide bootctl (for now)
 # subdir('src/boot')
+# subdir('src/boot/efi')
 #endif // 0
-subdir('src/boot/efi')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
@@ -2802,9 +2806,10 @@ subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
 # subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
+# alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
+#else // 0
+alias_target('devel', libelogind_pc)
 #endif // 0
-
-alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 
 ############################################################
 
@@ -3262,7 +3267,7 @@ if conf.get('HAVE_PAM') == 1
 #                 install : true,
 #                 install_dir : rootlibexecdir)
 #else // 0
-        version_script_arg = join_paths(project_source_root, pam_elogind_sym)
+        version_script_arg = project_source_root / pam_elogind_sym
         pam_elogind = shared_library(
                 'pam_elogind',
                 pam_elogind_c,

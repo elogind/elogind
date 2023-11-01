@@ -149,7 +149,7 @@ libelogind_sources = files(
 ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
-libsystemd_c_args = ['-fvisibility=default']
+libelogind_c_args = ['-fvisibility=default']
 
 #if 0 /// rename to libelogind
 # libsystemd_static = static_library(
@@ -164,10 +164,10 @@ libsystemd_c_args = ['-fvisibility=default']
 #                         userspace],
 #         build_by_default : false)
 #
-# libelogind_dir_path = meson.current_source_dir()
+# libsystemd_dir_path = meson.current_source_dir()
 #
 # libsystemd_sym = files('libsystemd.sym')
-# libelogind_sym_path = libelogind_dir_path / 'libelogind.sym'
+# libsystemd_sym_path = libsystemd_dir_path / 'libsystemd.sym'
 #
 # static_libsystemd = get_option('static-libsystemd')
 # static_libsystemd_pic = static_libsystemd == 'true' or static_libsystemd == 'pic'
@@ -180,9 +180,36 @@ libsystemd_c_args = ['-fvisibility=default']
 #         install : pkgconfiglibdir != 'no',
 #         install_tag : 'devel',
 #         install_dir : pkgconfiglibdir)
-#
-# ############################################################
-#
+#else // 0
+libelogind_static = static_library(
+        'elogind_static',
+        libelogind_sources,
+        install : false,
+        include_directories : includes,
+        link_with : libbasic,
+        dependencies : [threads],
+        c_args : libelogind_c_args)
+
+libelogind_dir_path = meson.current_source_dir()
+
+libelogind_sym = files('libelogind.sym')
+libelogind_sym_path = libelogind_dir_path / 'libelogind.sym'
+
+static_libelogind = get_option('static-libelogind')
+static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
+
+libelogind_pc = custom_target(
+        'libelogind.pc',
+        input : 'libelogind.pc.in',
+        output : 'libelogind.pc',
+        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+        install : pkgconfiglibdir != 'no',
+        install_tag : 'devel',
+        install_dir : pkgconfiglibdir)
+
+############################################################
+
+#if 0 /// elogind has only a tiny journald stub, none of these tests could do anything useful
 # simple_tests += files(
 #         'sd-journal/test-audit-type.c',
 #         'sd-journal/test-catalog.c',
@@ -199,36 +226,40 @@ libsystemd_c_args = ['-fvisibility=default']
 #                 'timeout' : 360,
 #         },
 # ]
-#
-# ############################################################
-#
-# simple_tests += files(
-#         'sd-bus/test-bus-creds.c',
-#         'sd-bus/test-bus-introspect.c',
-#         'sd-bus/test-bus-match.c',
-#         'sd-bus/test-bus-vtable.c',
-#         'sd-device/test-device-util.c',
-#         'sd-device/test-sd-device-monitor.c',
-#         'sd-device/test-sd-device.c',
-#         'sd-event/test-event.c',
-#         'sd-login/test-login.c',
+#endif // 0
+
+############################################################
+
+simple_tests += files(
+        'sd-bus/test-bus-creds.c',
+        'sd-bus/test-bus-introspect.c',
+        'sd-bus/test-bus-match.c',
+        'sd-bus/test-bus-vtable.c',
+        'sd-device/test-device-util.c',
+        'sd-device/test-sd-device-monitor.c',
+        'sd-device/test-sd-device.c',
+        'sd-event/test-event.c',
+        'sd-login/test-login.c',
+#if 0 /// elogind does not provide the networking stuff
 #         'sd-netlink/test-netlink.c',
-# )
-#
-# tests += [
-#         {
-#                 'sources' : files('sd-bus/test-bus-address.c'),
-#                 'dependencies' : threads
-#         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-benchmark.c'),
-#                 'dependencies' : threads,
-#                 'type' : 'manual',
-#         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-chat.c'),
-#                 'dependencies' : threads,
-#         },
+#endif // 0
+)
+
+tests += [
+        {
+                'sources' : files('sd-bus/test-bus-address.c'),
+                'dependencies' : threads
+        },
+        {
+                'sources' : files('sd-bus/test-bus-benchmark.c'),
+                'dependencies' : threads,
+                'type' : 'manual',
+        },
+        {
+                'sources' : files('sd-bus/test-bus-chat.c'),
+                'dependencies' : threads,
+        },
+#if 0 /// UNNEEDED by elogind
 #         {
 #                 'sources' : files('sd-bus/test-bus-cleanup.c'),
 #                 'dependencies' : [threads, libseccomp],
@@ -244,10 +275,12 @@ libsystemd_c_args = ['-fvisibility=default']
 #                         threads,
 #                 ],
 #         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-objects.c'),
-#                 'dependencies' : threads,
-#         },
+#endif // 0
+        {
+                'sources' : files('sd-bus/test-bus-objects.c'),
+                'dependencies' : threads,
+        },
+#if 0 /// UNNEEDED by elogind
 #         {
 #                 'sources' : files('sd-bus/test-bus-peersockaddr.c'),
 #                 'dependencies' : threads,
@@ -256,61 +289,42 @@ libsystemd_c_args = ['-fvisibility=default']
 #                 'sources' : files('sd-bus/test-bus-queue-ref-cycle.c'),
 #                 'dependencies' : threads,
 #         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-server.c'),
-#                 'dependencies' : threads,
-#         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-signature.c'),
-#                 'dependencies' : threads,
-#         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-track.c'),
-#                 'dependencies' : libseccomp,
-#         },
-#         {
-#                 'sources' : files('sd-bus/test-bus-watch-bind.c'),
-#                 'dependencies' : threads,
-#                 'timeout' : 120,
-#         },
+#endif // 0
+        {
+                'sources' : files('sd-bus/test-bus-server.c'),
+                'dependencies' : threads,
+        },
+        {
+                'sources' : files('sd-bus/test-bus-signature.c'),
+                'dependencies' : threads,
+        },
+        {
+                'sources' : files('sd-bus/test-bus-track.c'),
+                'dependencies' : libseccomp,
+        },
+        {
+                'sources' : files('sd-bus/test-bus-watch-bind.c'),
+                'dependencies' : threads,
+                'timeout' : 120,
+        },
+#if 0 /// UNNEEDED by elogind
 #         {
 #                 'sources' : files('sd-resolve/test-resolve.c'),
 #                 'dependencies' : threads,
 #                 'timeout' : 120,
 #         },
-# ]
-#
-# if cxx_cmd != ''
-#         simple_tests += files('sd-bus/test-bus-vtable-cc.cc')
-# endif
-#
-# ############################################################
-#
+#endif // 0
+]
+
+if cxx_cmd != ''
+        simple_tests += files('sd-bus/test-bus-vtable-cc.cc')
+endif
+
+############################################################
+
+#if 0 /// UNNEEDED by elogind
 # simple_fuzzers += files(
 #         'sd-bus/fuzz-bus-match.c',
 #         'sd-bus/fuzz-bus-message.c',
 # )
-#else // 0
-libelogind_static = static_library(
-        'elogind_static',
-        libelogind_sources,
-        install : false,
-        include_directories : includes,
-        link_with : libbasic,
-        dependencies : [threads],
-        c_args : libsystemd_c_args)
-
-libelogind_sym = files('libelogind.sym')
-libelogind_sym_path = join_paths(meson.current_source_dir(), 'libelogind.sym')
-
-static_libelogind = get_option('static-libelogind')
-static_libelogind_pic = static_libelogind == 'true' or static_libelogind == 'pic'
-
-libelogind_pc = custom_target(
-        'libelogind.pc',
-        input : 'libelogind.pc.in',
-        output : 'libelogind.pc',
-        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-        install : pkgconfiglibdir != 'no',
-        install_dir : pkgconfiglibdir)
 #endif // 0

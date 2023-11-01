@@ -37,6 +37,8 @@ __pycache__/
 # Ignore any mkosi config files with "local" in the name
 /mkosi.conf.d/**/*local*.conf
 /tags
+.dir-locals-2.el
+.vscode/
 
 #if 1 /// elogind specific stuff
 /elogind
@@ -70,6 +72,5 @@ __pycache__/
 # Development files that remain to be local
 cb/elogind.layout
 compile_commands.json
+_Deparsed_XSubs.pm
 #endif // 1
-.dir-locals-2.el
-.vscode/
