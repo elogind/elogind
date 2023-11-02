@@ -392,7 +392,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   librt,
 #                   libseccomp,
 #                   libselinux,
-#                   libxenctrl,
+#                   libxenctrl_cflags,
 #                   libxz,
 #                   libzstd]
 #else // 0
