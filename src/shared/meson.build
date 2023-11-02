@@ -382,7 +382,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   libcrypt,
 #                   libdl,
 #                   libgcrypt,
-#                   libiptc,
+#                   libiptc_cflags,
 #                   libkmod,
 #                   liblz4,
 #                   libmount,
