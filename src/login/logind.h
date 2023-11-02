@@ -140,7 +140,7 @@ struct Manager {
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
-        const HandleActionData *scheduled_shutdown_action;
+        HandleAction scheduled_shutdown_action;
         usec_t scheduled_shutdown_timeout;
         sd_event_source *scheduled_shutdown_timeout_source;
         uid_t scheduled_shutdown_uid;
