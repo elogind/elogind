@@ -379,6 +379,7 @@ libbasic = static_library(
         include_directories : basic_includes,
         dependencies : [libcap,
                         libm,
+                        librt,
                         threads,
                         userspace],
         c_args : ['-fvisibility=default'],
