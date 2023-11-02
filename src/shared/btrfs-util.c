@@ -85,10 +85,10 @@ int btrfs_is_subvol_at(int dir_fd, const char *path) {
                 return 0;
 
 
-#if 0 /// UNNEEDED by elogind
         return is_fs_type_at(dir_fd, path, BTRFS_SUPER_MAGIC);
 }
 
+#if 0 /// UNNEEDED by elogind
 int btrfs_subvol_make_fd(int fd, const char *subvolume) {
         struct btrfs_ioctl_vol_args args = {};
         _cleanup_close_ int real_fd = -EBADF;
