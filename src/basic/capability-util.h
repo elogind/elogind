@@ -88,6 +88,6 @@ static inline bool capability_quintet_is_set(const CapabilityQuintet *q) {
 bool capability_quintet_mangle(CapabilityQuintet *q);
 
 int capability_quintet_enforce(const CapabilityQuintet *q);
-#endif // 0
 
 int capability_get_ambient(uint64_t *ret);
+#endif // 0

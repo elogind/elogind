@@ -245,11 +245,11 @@ tests += [
                             generated_gperf_headers,
                 'dependencies' : libcap,
         },
-        {
-                'sources' : files('test-capability.c'),
-                'dependencies' : libcap,
-        },
 #if 0 /// UNNEEDED by elogind
+#         {
+#                 'sources' : files('test-capability.c'),
+#                 'dependencies' : libcap,
+#         },
 #         {
 #                 'sources' : files('test-chase-manual.c'),
 #                 'type' : 'manual',

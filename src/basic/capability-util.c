@@ -607,7 +607,6 @@ int capability_quintet_enforce(const CapabilityQuintet *q) {
 
         return 0;
 }
-#endif // 0
 
 int capability_get_ambient(uint64_t *ret) {
         uint64_t a = 0;
@@ -633,3 +632,4 @@ int capability_get_ambient(uint64_t *ret) {
         *ret = a;
         return 1;
 }
+#endif // 0
