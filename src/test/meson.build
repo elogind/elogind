@@ -50,65 +50,99 @@ test_dlopen_c = files('test-dlopen.c')
 ############################################################
 
 
-#if 0 /// UNNEEDED in elogind
-# simple_tests += files(
-#         'test-alloc-util.c',
+simple_tests += files(
+        'test-alloc-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-architecture.c',
-#         'test-argv-util.c',
+#endif // 0
+        'test-argv-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-barrier.c',
-#         'test-bitfield.c',
+#endif // 0
+        'test-bitfield.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-bitmap.c',
 #         'test-blockdev-util.c',
-#         'test-bootspec.c',
-#         'test-bus-util.c',
+#endif // 0
+        'test-bootspec.c',
+        'test-bus-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-calendarspec.c',
-#         'test-cgroup-setup.c',
-#         'test-cgroup-util.c',
-#         'test-cgroup.c',
-#         'test-chase.c',
+#endif // 0
+        'test-cgroup-setup.c',
+        'test-cgroup-util.c',
+        'test-cgroup.c',
+        'test-chase.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-clock.c',
-#         'test-compare-operator.c',
+#endif // 0
+        'test-compare-operator.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-condition.c',
-#         'test-conf-files.c',
-#         'test-conf-parser.c',
-#         'test-copy.c',
+#endif // 0
+        'test-conf-files.c',
+        'test-conf-parser.c',
+        'test-copy.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-coredump-util.c',
 #         'test-cpu-set-util.c',
 #         'test-creds.c',
-#         'test-daemon.c',
+#endif // 0
+        'test-daemon.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-data-fd-util.c',
 #         'test-date.c',
-#         'test-dev-setup.c',
+#endif // 0
+        'test-dev-setup.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-device-nodes.c',
-#         'test-devnum-util.c',
+#endif // 0
+        'test-devnum-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-dns-domain.c',
-#         'test-ellipsize.c',
+#endif // 0
+        'test-ellipsize.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-env-file.c',
 #         'test-env-util.c',
 #         'test-errno-util.c',
-#         'test-escape.c',
+#endif // 0
+        'test-escape.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-ether-addr-util.c',
-#         'test-exec-util.c',
+#endif // 0
+        'test-exec-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-execve.c',
 #         'test-exit-status.c',
-#         'test-extract-word.c',
+#endif // 0
+        'test-extract-word.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-fdset.c',
 #         'test-fileio.c',
 #         'test-firewall-util.c',
-#         'test-format-table.c',
-#         'test-format-util.c',
-#         'test-fs-util.c',
+#endif // 0
+        'test-format-table.c',
+        'test-format-util.c',
+        'test-fs-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-fstab-util.c',
 #         'test-glob-util.c',
 #         'test-gpt.c',
-#         'test-gunicode.c',
+#endif // 0
+        'test-gunicode.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-hash-funcs.c',
-#         'test-hexdecoct.c',
-#         'test-hmac.c',
+#endif // 0
+        'test-hexdecoct.c',
+        'test-hmac.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-hostname-setup.c',
-#         'test-hostname-util.c',
-#         'test-id128.c',
-#         'test-image-policy.c',
+#endif // 0
+        'test-hostname-util.c',
+        'test-id128.c',
+        'test-image-policy.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-import-util.c',
 #         'test-in-addr-prefix-util.c',
 #         'test-in-addr-util.c',
@@ -117,84 +151,116 @@ test_dlopen_c = files('test-dlopen.c')
 #         'test-io-util.c',
 #         'test-journal-importer.c',
 #         'test-kbd-util.c',
-#         'test-limits-util.c',
-#         'test-list.c',
+#endif // 0
+        'test-limits-util.c',
+        'test-list.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-local-addresses.c',
-#         'test-locale-util.c',
-#         'test-lock-util.c',
-#         'test-log.c',
-#         'test-logarithm.c',
-#         'test-macro.c',
-#         'test-memfd-util.c',
-#         'test-memory-util.c',
-#         'test-mempool.c',
-#         'test-memstream-util.c',
+#endif // 0
+        'test-locale-util.c',
+        'test-lock-util.c',
+        'test-log.c',
+        'test-logarithm.c',
+        'test-macro.c',
+        'test-memfd-util.c',
+        'test-memory-util.c',
+        'test-mempool.c',
+        'test-memstream-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-mkdir.c',
 #         'test-modhex.c',
-#         'test-mountpoint-util.c',
+#endif // 0
+        'test-mountpoint-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-net-naming-scheme.c',
-#         'test-nulstr-util.c',
+#endif // 0
+        'test-nulstr-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-open-file.c',
-#         'test-ordered-set.c',
+#endif // 0
+        'test-ordered-set.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-os-util.c',
-#         'test-parse-argument.c',
+#endif // 0
+        'test-parse-argument.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-parse-helpers.c',
 #         'test-path-lookup.c',
-#         'test-path-util.c',
-#         'test-percent-util.c',
-#         'test-pretty-print.c',
-#         'test-prioq.c',
-#         'test-proc-cmdline.c',
-#         'test-procfs-util.c',
+#endif // 0
+        'test-path-util.c',
+        'test-percent-util.c',
+        'test-pretty-print.c',
+        'test-prioq.c',
+        'test-proc-cmdline.c',
+        'test-procfs-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-psi-util.c',
-#         'test-ratelimit.c',
-#         'test-raw-clone.c',
-#         'test-recurse-dir.c',
+#endif // 0
+        'test-ratelimit.c',
+        'test-raw-clone.c',
+        'test-recurse-dir.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-replace-var.c',
 #         'test-rlimit-util.c',
-#         'test-rm-rf.c',
-#         'test-sd-hwdb.c',
-#         'test-sd-path.c',
-#         'test-secure-bits.c',
-#         'test-selinux.c',
+#endif // 0
+        'test-rm-rf.c',
+        'test-sd-hwdb.c',
+        'test-sd-path.c',
+        'test-secure-bits.c',
+        'test-selinux.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-serialize.c',
-#         'test-set.c',
-#         'test-sha256.c',
-#         'test-sigbus.c',
-#         'test-signal-util.c',
-#         'test-siphash24.c',
+#endif // 0
+        'test-set.c',
+        'test-sha256.c',
+        'test-sigbus.c',
+        'test-signal-util.c',
+        'test-siphash24.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-sleep.c',
 #         'test-socket-netlink.c',
 #         'test-socket-util.c',
 #         'test-specifier.c',
-#         'test-stat-util.c',
-#         'test-static-destruct.c',
-#         'test-strbuf.c',
-#         'test-string-util.c',
-#         'test-strip-tab-ansi.c',
-#         'test-strv.c',
-#         'test-strxcpyx.c',
-#         'test-sysctl-util.c',
-#         'test-terminal-util.c',
-#         'test-tmpfile-util.c',
-#         'test-tpm2.c',
-#         'test-udev-util.c',
-#         'test-uid-alloc-range.c',
-#         'test-uid-range.c',
-#         'test-umask-util.c',
-#         'test-unaligned.c',
-#         'test-unit-file.c',
-#         'test-user-util.c',
-#         'test-utf8.c',
-#         'test-verbs.c',
-#         'test-web-util.c',
-#         'test-xattr-util.c',
-#         'test-xml.c',
-# )
-#
-# ############################################################
-#
 #endif // 0
+        'test-stat-util.c',
+        'test-static-destruct.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-strbuf.c',
+#endif // 0
+        'test-string-util.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-strip-tab-ansi.c',
+#endif // 0
+        'test-strv.c',
+        'test-strxcpyx.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-sysctl-util.c',
+#endif // 0
+        'test-terminal-util.c',
+        'test-tmpfile-util.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-tpm2.c',
+#endif // 0
+        'test-udev-util.c',
+        'test-uid-alloc-range.c',
+        'test-uid-range.c',
+        'test-umask-util.c',
+        'test-unaligned.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-unit-file.c',
+#endif // 0
+        'test-user-util.c',
+        'test-utf8.c',
+        'test-verbs.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-web-util.c',
+#endif // 0
+        'test-xattr-util.c',
+        'test-xml.c',
+)
+
+############################################################
+
 
 common_test_dependencies = [
         libblkid,
