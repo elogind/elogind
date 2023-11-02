@@ -645,7 +645,7 @@ TEST(safe_fork) {
 
         BLOCK_SIGNALS(SIGCHLD);
 
-        r = safe_fork("(test-child)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_REARRANGE_STDIO|FORK_REOPEN_LOG, &pid);
+        r = safe_fork("(test-child)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_REARRANGE_STDIO|FORK_REOPEN_LOG, &pid);
         assert_se(r >= 0);
 
         if (r == 0) {
@@ -713,7 +713,7 @@ TEST(setpriority_closest) {
         int r;
 
         r = safe_fork("(test-setprio)",
-                      FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_WAIT|FORK_LOG, NULL);
+                      FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_WAIT|FORK_LOG, NULL);
         assert_se(r >= 0);
 
         if (r == 0) {
@@ -868,7 +868,7 @@ TEST(get_process_threads) {
         int r;
 
         /* Run this test in a child, so that we can guarantee there's exactly one thread around in the child */
-        r = safe_fork("(nthreads)", FORK_RESET_SIGNALS|FORK_DEATHSIG|FORK_REOPEN_LOG|FORK_WAIT|FORK_LOG, NULL);
+        r = safe_fork("(nthreads)", FORK_RESET_SIGNALS|FORK_DEATHSIG_SIGTERM|FORK_REOPEN_LOG|FORK_WAIT|FORK_LOG, NULL);
         assert_se(r >= 0);
 
         if (r == 0) {

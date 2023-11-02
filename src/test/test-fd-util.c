@@ -341,7 +341,7 @@ TEST(close_all_fds) {
          * with /proc/ overmounted, and once with the combination of both. This should trigger all fallbacks
          * in the close_range_all() function. */
 
-        r = safe_fork("(caf-plain)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT, NULL);
+        r = safe_fork("(caf-plain)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_LOG|FORK_WAIT, NULL);
         if (r == 0) {
                 test_close_all_fds_inner();
                 _exit(EXIT_SUCCESS);
@@ -351,7 +351,7 @@ TEST(close_all_fds) {
         if (geteuid() != 0)
                 return (void) log_tests_skipped("Lacking privileges for test with close_range() blocked and /proc/ overmounted");
 
-        r = safe_fork("(caf-noproc)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT|FORK_NEW_MOUNTNS|FORK_MOUNTNS_SLAVE, NULL);
+        r = safe_fork("(caf-noproc)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_LOG|FORK_WAIT|FORK_NEW_MOUNTNS|FORK_MOUNTNS_SLAVE, NULL);
         if (r == 0) {
                 r = mount_nofollow_verbose(LOG_WARNING, "tmpfs", "/proc", "tmpfs", 0, NULL);
                 if (r < 0)
@@ -367,7 +367,7 @@ TEST(close_all_fds) {
                 return (void) log_tests_skipped("Seccomp not available");
 #endif // 0
 
-        r = safe_fork("(caf-seccomp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT, NULL);
+        r = safe_fork("(caf-seccomp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_LOG|FORK_WAIT, NULL);
         if (r == 0) {
                 r = seccomp_prohibit_close_range();
                 if (r < 0)
@@ -379,7 +379,7 @@ TEST(close_all_fds) {
         }
         assert_se(r >= 0);
 
-        r = safe_fork("(caf-scnp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG|FORK_LOG|FORK_WAIT|FORK_NEW_MOUNTNS|FORK_MOUNTNS_SLAVE, NULL);
+        r = safe_fork("(caf-scnp)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGTERM|FORK_LOG|FORK_WAIT|FORK_NEW_MOUNTNS|FORK_MOUNTNS_SLAVE, NULL);
         if (r == 0) {
                 r = seccomp_prohibit_close_range();
                 if (r < 0)
