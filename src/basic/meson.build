@@ -143,6 +143,7 @@ basic_sources = files(
         'io-util.c',
         'limits-util.c',
         'locale-util.c',
+        'lock-util.c',
         'log.c',
         'login-util.c',
         'memfd-util.c',
