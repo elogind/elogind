@@ -48,6 +48,8 @@ void manager_reset_config(Manager *m) {
 #if 0 /// elogind does not start a user service manager, the delay is unneeded.
         m->user_stop_delay = 10 * USEC_PER_SEC;
 
+        m->handle_action_sleep_mask = HANDLE_ACTION_SLEEP_MASK_DEFAULT;
+
 #else // 0
         m->user_stop_delay = 0;
 #endif // 0
