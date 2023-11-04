@@ -38,11 +38,11 @@ int open_extension_release_at(int rfd, ImageClass image_class, const char *exten
 int open_os_release(const char *root, char **ret_path, int *ret_fd);
 int open_os_release_at(int rfd, char **ret_path, int *ret_fd);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-/// elogind empty mask removed (UNNEEDED by elogind)
 int parse_extension_release_sentinel(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
+#if 0 /// UNNEEDED in elogind
 #define parse_extension_release(root, image_class, extension, relax_extension_release_check, ...) \
         parse_extension_release_sentinel(root, image_class, relax_extension_release_check, extension, __VA_ARGS__, NULL)
+#endif // 0
 #define parse_os_release(root, ...)                                     \
         parse_extension_release_sentinel(root, _IMAGE_CLASS_INVALID, false, NULL, __VA_ARGS__, NULL)
 

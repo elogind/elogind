@@ -85,8 +85,8 @@ int stat_verify_regular(const struct stat *st);
 int fd_verify_regular(int fd);
 int verify_regular_at(int dir_fd, const char *path, bool follow);
 
-#if 0 /// UNNEEDED by elogind
 int stat_verify_directory(const struct stat *st);
+#if 0 /// UNNEEDED by elogind
 int fd_verify_directory(int fd);
 #endif // 0
 

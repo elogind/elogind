@@ -312,6 +312,7 @@ int verify_regular_at(int dir_fd, const char *path, bool follow) {
 
         return stat_verify_regular(&st);
 }
+#endif // 0
 
 int stat_verify_directory(const struct stat *st) {
         assert(st);
@@ -325,6 +326,7 @@ int stat_verify_directory(const struct stat *st) {
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int fd_verify_directory(int fd) {
         struct stat st;
 

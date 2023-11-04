@@ -628,34 +628,43 @@ TEST(chaseat) {
 
         /* Test chase_and_statat() */
 
+#if 0 /// UNSUPPORTED in elogind
         assert_se(chase_and_statat(tfd, "o/p", 0, &result, &st) >= 0);
         assert_se(stat_verify_directory(&st) >= 0);
         assert_se(streq(result, "o/p"));
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_accessat() */
 
+#if 0 /// UNSUPPORTED in elogind
         assert_se(chase_and_accessat(tfd, "o/p/e", 0, F_OK, &result) >= 0);
         assert_se(streq(result, "o/p/e"));
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_fopenat_unlocked() */
 
+#if 0 /// UNSUPPORTED in elogind
         assert_se(chase_and_fopenat_unlocked(tfd, "o/p/e/n/f/i/l/e", 0, "re", &result, &f) >= 0);
         assert_se(fread(&(char[1]) {}, 1, 1, f) == 0);
         assert_se(feof(f));
         f = safe_fclose(f);
         assert_se(streq(result, "o/p/e/n/f/i/l/e"));
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_unlinkat() */
 
+#if 0 /// UNSUPPORTED in elogind
         assert_se(chase_and_unlinkat(tfd, "o/p/e/n/f/i/l/e", 0, 0, &result) >= 0);
         assert_se(streq(result, "o/p/e/n/f/i/l/e"));
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_open_parent_at() */
 
+#if 0 /// UNSUPPORTED in elogind
         assert_se((fd = chase_and_open_parent_at(tfd, "chase/parent", CHASE_AT_RESOLVE_IN_ROOT|CHASE_NOFOLLOW, &result)) >= 0);
         assert_se(faccessat(fd, result, F_OK, AT_SYMLINK_NOFOLLOW) >= 0);
         assert_se(streq(result, "parent"));
@@ -677,6 +686,7 @@ TEST(chaseat) {
         assert_se(streq(result, "."));
         fd = safe_close(fd);
         result = mfree(result);
+#endif // 0
 }
 
 TEST(chaseat_prefix_root) {

@@ -850,6 +850,7 @@ int chase_and_unlink(const char *path, const char *root, ChaseFlags chase_flags,
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int chase_and_open_parent(const char *path, const char *root, ChaseFlags chase_flags, char **ret_filename) {
         int pfd, r;
 
@@ -861,6 +862,7 @@ int chase_and_open_parent(const char *path, const char *root, ChaseFlags chase_f
 
         return pfd;
 }
+#endif // 0
 
 int chase_and_openat(int dir_fd, const char *path, ChaseFlags chase_flags, int open_flags, char **ret_path) {
         _cleanup_close_ int path_fd = -EBADF;
@@ -934,6 +936,7 @@ int chase_and_opendirat(int dir_fd, const char *path, ChaseFlags chase_flags, ch
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int chase_and_statat(int dir_fd, const char *path, ChaseFlags chase_flags, char **ret_path, struct stat *ret_stat) {
         _cleanup_close_ int path_fd = -EBADF;
         _cleanup_free_ char *p = NULL;
@@ -1063,3 +1066,4 @@ int chase_and_open_parent_at(int dir_fd, const char *path, ChaseFlags chase_flag
 
         return pfd;
 }
+#endif // 0

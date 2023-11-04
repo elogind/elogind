@@ -272,6 +272,7 @@ int open_extension_release_at(
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int open_extension_release(
                 const char *root,
                 ImageClass image_class,
@@ -304,6 +305,7 @@ int open_extension_release(
 
         return 0;
 }
+#endif // 0
 
 static int parse_extension_release_atv(
                 int rfd,
@@ -325,6 +327,7 @@ static int parse_extension_release_atv(
         return parse_env_file_fdv(fd, p, ap);
 }
 
+#if 0 /// UNNEEDED in elogind
 int parse_extension_release_at_sentinel(
                 int rfd,
                 ImageClass image_class,
@@ -337,13 +340,12 @@ int parse_extension_release_at_sentinel(
 
         assert(rfd >= 0 || rfd == AT_FDCWD);
 
-#if 0 /// UNNEEDED by elogind
         va_start(ap, extension);
-#endif // 0
         r = parse_extension_release_atv(rfd, image_class, extension, relax_extension_release_check, ap);
         va_end(ap);
         return r;
 }
+#endif // 0
 
 int parse_extension_release_sentinel(
                 const char *root,
