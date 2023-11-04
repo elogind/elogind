@@ -2653,8 +2653,8 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 #endif // 0
 }
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_journal_get_seqnum(
+#if 0 /// UNSUPPORTED by elogind
                 sd_journal *j,
                 uint64_t *ret_seqnum,
                 sd_id128_t *ret_seqnum_id) {
@@ -2681,6 +2681,7 @@ _public_ int sd_journal_get_seqnum(
                 *ret_seqnum_id = f->header->seqnum_id;
         if (ret_seqnum)
                 *ret_seqnum = le64toh(o->entry.seqnum);
+#endif // 0
 
         return 0;
 }
