@@ -34,7 +34,7 @@
 #include "log.h"
 #include "macro.h"
 #include "path-util.h"
-#include "sleep-config.h"
+#include "sleep-util.h"
 #include "siphash24.h"
 #include "stat-util.h"
 #include "stdio-util.h"

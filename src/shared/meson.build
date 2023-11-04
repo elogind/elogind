@@ -219,7 +219,7 @@ shared_sources = files(
         'selinux-util.c',
         'serialize.c',
         'service-util.c',
-        'sleep-config.c',
+        'sleep-util.c',
         'smack-util.c',
         'spawn-polkit-agent.c',
         'udev-util.c',

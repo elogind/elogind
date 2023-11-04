@@ -406,7 +406,7 @@ static int execute(
                 NULL
         };
 #if 1 /// elogind has to check hooks itself and tries to work around a missing nvidia-suspend script (if needed)
-        Manager* m = (Manager*)sleep_config; // sleep-config.h has created the alias. We use 'm' internally to reduce confusion.
+        Manager* m = (Manager*)sleep_config; // sleep-util.h has created the alias. We use 'm' internally to reduce confusion.
         void* gather_args[] = {
                 [STDOUT_GENERATE] = m,
                 [STDOUT_COLLECT] = m,
