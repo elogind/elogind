@@ -619,7 +619,6 @@ char *cellescape(char *buf, size_t len, const char *s) {
         return buf;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* strshorten(char *s, size_t l) {
         assert(s);
 
@@ -629,6 +628,7 @@ char* strshorten(char *s, size_t l) {
         return s;
 }
 
+#if 0 /// UNNEEDED by elogind
 int strgrowpad0(char **s, size_t l) {
         assert(s);
 
