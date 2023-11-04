@@ -353,7 +353,6 @@ int conf_files_list_with_replacement(
 
         return 0;
 }
-#endif // 0
 
 int conf_files_list_dropins(
                 char ***ret,
@@ -376,3 +375,4 @@ int conf_files_list_dropins(
 
         return conf_files_list_strv(ret, ".conf", root, 0, (const char* const*) dropin_dirs);
 }
+#endif // 0
