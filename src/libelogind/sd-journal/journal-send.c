@@ -85,7 +85,6 @@ int journal_fd_nonblock(bool nonblock) {
 
         return fd_nonblock(r, nonblock);
 }
-#endif /// 0
 
 void close_journal_fd(void) {
 #if HAVE_VALGRIND_VALGRIND_H
@@ -104,6 +103,7 @@ void close_journal_fd(void) {
         fd_plus_one = 0;
 #endif
 }
+#endif // 0
 
 _public_ int sd_journal_print(int priority, const char *format, ...) {
         int r;
@@ -610,7 +610,11 @@ _public_ int sd_journal_send_with_location(const char *file, const char *line, c
         CLEANUP_ARRAY(iov, n_iov, iovec_array_free);
 
         va_start(ap, format);
+#if 0 /// elogind does not need the extras
         r = fill_iovec_sprintf(format, ap, 3, &iov, &n_iov);
+#else // 0
+        r = fill_iovec_sprintf(format, ap, 0, &iov, &n_iov);
+#endif // 0
         va_end(ap);
         if (r < 0)
                 return r;
@@ -626,7 +630,7 @@ _public_ int sd_journal_send_with_location(const char *file, const char *line, c
         r = sd_journal_sendv(iov, n_iov);
 
 #else // 0
-        r = sd_journal_sendv_with_location(file, line, func, &iov[3], i - 3);
+        r = sd_journal_sendv_with_location(file, line, func, iov, n_iov);
 #endif // 0
         iov[0] = iov[1] = iov[2] = IOVEC_NULL;
 
