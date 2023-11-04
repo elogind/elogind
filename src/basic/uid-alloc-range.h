@@ -35,4 +35,6 @@ typedef struct UGIDAllocationRange {
 int read_login_defs(UGIDAllocationRange *ret_defs, const char *path, const char *root);
 const UGIDAllocationRange *acquire_ugid_allocation_range(void);
 
+#if 0 /// UNNEEDED by elogind
 bool uid_for_system_journal(uid_t uid);
+#endif // 0

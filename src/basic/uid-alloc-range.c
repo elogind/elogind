@@ -123,7 +123,6 @@ bool gid_is_system(gid_t gid) {
 
         return gid <= defs->system_gid_max;
 }
-#endif // 0
 
 bool uid_for_system_journal(uid_t uid) {
 
@@ -131,3 +130,4 @@ bool uid_for_system_journal(uid_t uid) {
 
         return uid_is_system(uid) || uid_is_dynamic(uid) || uid == UID_NOBODY || uid_is_container(uid);
 }
+#endif // 0
