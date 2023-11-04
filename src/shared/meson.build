@@ -176,6 +176,7 @@
 #else // 0
 shared_sources = files(
         'acl-util.c',
+        'async.c',
         'blockdev-util.c',
         'bootspec.c',
         'btrfs-util.c',

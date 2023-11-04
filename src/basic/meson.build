@@ -109,7 +109,6 @@ basic_sources = files(
         'af-list.c',
         'alloc-util.c',
         'argv-util.c',
-        'async.c',
         'audit-util.c',
         'build.c',
         'bus-label.c',
