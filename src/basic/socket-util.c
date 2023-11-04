@@ -1173,6 +1173,7 @@ int flush_accept(int fd) {
                 safe_close(cfd);
         }
 }
+#endif // 0
 
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length) {
         struct cmsghdr *cmsg;
@@ -1188,6 +1189,7 @@ struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t leng
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 void* cmsg_find_and_copy_data(struct msghdr *mh, int level, int type, void *buf, size_t buf_len) {
         struct cmsghdr *cmsg;
 

@@ -206,8 +206,8 @@ int flush_accept(int fd);
                 _cmsg ? CAST_ALIGN_PTR(type, CMSG_DATA(_cmsg)) : (type*) NULL; \
         })
 
-#if 0 /// UNNEEDED by elogind
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length);
+#if 0 /// UNNEEDED by elogind
 void* cmsg_find_and_copy_data(struct msghdr *mh, int level, int type, void *buf, size_t buf_len);
 
 /* Type-safe, dereferencing version of cmsg_find() */
