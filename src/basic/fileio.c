@@ -83,7 +83,6 @@ FILE* take_fdopen(int *fd, const char *options) {
         return f;
 }
 
-#if 0 /// UNNEEDED by elogind
 DIR* take_fdopendir(int *dfd) {
         assert(dfd);
 
@@ -95,7 +94,6 @@ DIR* take_fdopendir(int *dfd) {
 
         return d;
 }
-#endif // 0
 
 FILE* open_memstream_unlocked(char **ptr, size_t *sizeloc) {
         FILE *f = open_memstream(ptr, sizeloc);
