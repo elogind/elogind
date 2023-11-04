@@ -141,6 +141,7 @@ basic_sources = files(
         'hostname-util.c',
         'inotify-util.c',
         'io-util.c',
+        'label.c',
         'limits-util.c',
         'locale-util.c',
         'lock-util.c',
