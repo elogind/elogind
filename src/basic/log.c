@@ -253,7 +253,9 @@ fail:
         log_close_journal();
         return r;
 }
+#endif // 0
 
+#if 0 /// elogind does not support systemd-journald, so this would always returns false anyway
 static bool stderr_is_journal(void) {
         _cleanup_free_ char *w = NULL;
         const char *e;
@@ -278,6 +280,7 @@ static bool stderr_is_journal(void) {
                 return false;
 
         return st.st_dev == dev && st.st_ino == ino;
+        return false;
 }
 #endif // 0
 
@@ -1401,8 +1404,13 @@ void log_settle_target(void) {
         if (t != LOG_TARGET_AUTO)
                 return;
 
+#if 0 /// elogind does not support logging to systemd-journald and is not PID 1
         t = getpid_cached() == 1 || stderr_is_journal() ? (prohibit_ipc ? LOG_TARGET_KMSG : LOG_TARGET_JOURNAL_OR_KMSG)
                                                         : LOG_TARGET_CONSOLE;
+#else // 0
+        t = LOG_TARGET_SYSLOG_OR_KMSG;
+#endif // 0
+
         log_set_target(t);
 }
 
