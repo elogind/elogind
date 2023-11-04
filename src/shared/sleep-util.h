@@ -2,6 +2,7 @@
 #pragma once
 
 #include <linux/fiemap.h>
+#include <sys/types.h>
 
 #include "hashmap.h"
 #include "time-util.h"
@@ -35,10 +36,17 @@ SleepConfig* free_sleep_config(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, free_sleep_config);
 #endif // 0
 
+typedef enum SwapType {
+        SWAP_BLOCK,
+        SWAP_FILE,
+        _SWAP_TYPE_MAX,
+        _SWAP_TYPE_INVALID = -EINVAL,
+} SwapType;
+
 /* entry in /proc/swaps */
 typedef struct SwapEntry {
-        char *device;
-        char *type;
+        char *path;
+        SwapType type;
         uint64_t size;
         uint64_t used;
         int priority;
@@ -53,7 +61,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(SwapEntry*, swap_entry_free);
  */
 typedef struct HibernateLocation {
         dev_t devno;
-        uint64_t offset;
+        uint64_t offset; /* in memory pages */
         SwapEntry *swap;
 } HibernateLocation;
 
@@ -63,6 +71,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(HibernateLocation*, hibernate_location_free);
 int read_fiemap(int fd, struct fiemap **ret);
 int parse_sleep_config(SleepConfig **sleep_config);
 int find_hibernate_location(HibernateLocation **ret_hibernate_location);
+int write_resume_config(dev_t devno, uint64_t offset, const char *device);
 
 #if 0 /// elogind has to transport its manager instance
 int can_sleep(SleepOperation operation);
@@ -71,7 +80,6 @@ int can_sleep_state(char **types);
 #else // 0
 int can_sleep(Manager *m, SleepOperation s);
 #endif // 0
-int battery_is_low(void);
 int get_total_suspend_interval(Hashmap *last_capacity, usec_t *ret);
 int fetch_batteries_capacity_by_name(Hashmap **ret_current_capacity);
 int get_capacity_by_name(Hashmap *capacities_by_name, const char *name);

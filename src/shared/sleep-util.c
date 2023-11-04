@@ -18,6 +18,7 @@
 #include "sd-device.h"
 
 #include "alloc-util.h"
+#include "battery-util.h"
 #include "blockdev-util.h"
 //#include "btrfs-util.h"
 #include "conf-parser.h"
@@ -34,8 +35,8 @@
 #include "log.h"
 #include "macro.h"
 #include "path-util.h"
-#include "sleep-util.h"
 #include "siphash24.h"
+#include "sleep-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
@@ -45,10 +46,8 @@
 
 /// Extra includes needed by elogind
 #include <stdlib.h>
-#define BATTERY_LOW_CAPACITY_LEVEL 5
 #define DISCHARGE_RATE_FILEPATH "/var/lib/elogind/sleep/battery_discharge_percentage_rate_per_hour"
 #define BATTERY_DISCHARGE_RATE_HASH_KEY SD_ID128_MAKE(5f,9a,20,18,38,76,46,07,8d,36,58,0b,bb,c4,e0,63)
-#define SYS_ENTRY_RAW_FILE_TYPE1 "/sys/firmware/dmi/entries/1-0/raw"
 
 static void *CAPACITY_TO_PTR(int capacity) {
         assert(capacity >= 0);
@@ -124,14 +123,9 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
                 {}
         };
 
-        (void) config_parse_many_nulstr(
-                        PKGSYSCONFDIR "/sleep.conf",
-                        CONF_PATHS_NULSTR("elogind/sleep.conf.d"),
-                        "Sleep\0",
-                        config_item_table_lookup, items,
-                        CONFIG_PARSE_WARN,
-                        NULL,
-                        NULL);
+        (void) config_parse_config_file("sleep.conf", "Sleep\0",
+                                        config_item_table_lookup, items,
+                                        CONFIG_PARSE_WARN, NULL);
 
         /* use default values unless set */
         sc->allow[SLEEP_SUSPEND] = allow_suspend != 0;
@@ -186,41 +180,7 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         *ret_sleep_config = TAKE_PTR(sc);
 #endif // 0
 
-        return 0;
-}
 
-/* Get the list of batteries */
-static int battery_enumerator_new(sd_device_enumerator **ret) {
-        _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
-        int r;
-
-        assert(ret);
-
-        r = sd_device_enumerator_new(&e);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_subsystem(e, "power_supply", /* match = */ true);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_allow_uninitialized(e);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "type", "Battery", /* match = */ true);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "present", "1", /* match = */ true);
-        if (r < 0)
-                return r;
-
-        r = sd_device_enumerator_add_match_sysattr(e, "scope", "Device", /* match = */ false);
-        if (r < 0)
-                return r;
-
-        *ret = TAKE_PTR(e);
         return 0;
 }
 
@@ -237,48 +197,10 @@ int get_capacity_by_name(Hashmap *capacities_by_name, const char *name) {
         return PTR_TO_CAPACITY(p);
 }
 
-/* Battery percentage capacity fetched from capacity file and if in range 0-100 then returned */
-static int read_battery_capacity_percentage(sd_device *dev) {
-        int battery_capacity, r;
-
-        assert(dev);
-
-        r = device_get_sysattr_int(dev, "capacity", &battery_capacity);
-        if (r < 0)
-                return log_device_debug_errno(dev, r, "Failed to read/parse POWER_SUPPLY_CAPACITY: %m");
-
-        if (battery_capacity < 0 || battery_capacity > 100)
-                return log_device_debug_errno(dev, SYNTHETIC_ERRNO(ERANGE), "Invalid battery capacity");
-
-        return battery_capacity;
-}
-
-/* If battery percentage capacity is <= 5%, return success */
-int battery_is_low(void) {
-        _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
-        sd_device *dev;
-        int r;
-
-         /* We have not used battery capacity_level since value is set to full
-         * or Normal in case ACPI is not working properly. In case of no battery
-         * 0 will be returned and system will be suspended for 1st cycle then hibernated */
-
-        r = battery_enumerator_new(&e);
-        if (r < 0)
-                return log_debug_errno(r, "Failed to initialize battery enumerator: %m");
-
-        FOREACH_DEVICE(e, dev)
-                if (read_battery_capacity_percentage(dev) > BATTERY_LOW_CAPACITY_LEVEL)
-                        return false;
-
-        return true;
-}
-
 /* Store current capacity of each battery before suspension and timestamp */
 int fetch_batteries_capacity_by_name(Hashmap **ret) {
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
-        _cleanup_(hashmap_freep) Hashmap *batteries_capacity_by_name = NULL;
-        sd_device *dev;
+        _cleanup_hashmap_free_ Hashmap *batteries_capacity_by_name = NULL;
         int r;
 
         assert(ret);
@@ -296,7 +218,7 @@ int fetch_batteries_capacity_by_name(Hashmap **ret) {
                 const char *battery_name;
                 int battery_capacity;
 
-                battery_capacity = r = read_battery_capacity_percentage(dev);
+                battery_capacity = r = battery_read_capacity_percentage(dev);
                 if (r < 0)
                         continue;
 
@@ -469,7 +391,6 @@ int estimate_battery_discharge_rate_per_hour(
                 usec_t after_timestamp) {
 
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
-        sd_device *dev;
         bool trunc = true;
         int r;
 
@@ -529,7 +450,6 @@ int estimate_battery_discharge_rate_per_hour(
 int get_total_suspend_interval(Hashmap *last_capacity, usec_t *ret) {
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
         usec_t total_suspend_interval = 0;
-        sd_device *dev;
         int r;
 
         assert(last_capacity);
@@ -585,7 +505,6 @@ int get_total_suspend_interval(Hashmap *last_capacity, usec_t *ret) {
 /* Return true if all batteries have acpi_btp support */
 int battery_trip_point_alarm_exists(void) {
         _cleanup_(sd_device_enumerator_unrefp) sd_device_enumerator *e = NULL;
-        sd_device *dev;
         int r;
 
         r = battery_enumerator_new(&e);
@@ -612,25 +531,25 @@ int battery_trip_point_alarm_exists(void) {
 
 /* Return true if wakeup type is APM timer */
 int check_wakeup_type(void) {
-        _cleanup_free_ char *s = NULL;
+        static const char dmi_object_path[] = "/sys/firmware/dmi/entries/1-0/raw";
         uint8_t wakeup_type_byte, tablesize;
-        size_t readsize;
+        _cleanup_free_ char *buf = NULL;
+        size_t bufsize;
         int r;
 
         /* implementation via dmi/entries */
-        r = read_full_virtual_file(SYS_ENTRY_RAW_FILE_TYPE1, &s, &readsize);
+        r = read_full_virtual_file(dmi_object_path, &buf, &bufsize);
         if (r < 0)
-                return log_debug_errno(r, "Unable to read %s: %m", SYS_ENTRY_RAW_FILE_TYPE1);
-
-        if (readsize < 25)
-                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Only read %zu bytes from %s (expected 25)", readsize, SYS_ENTRY_RAW_FILE_TYPE1);
+                return log_debug_errno(r, "Unable to read %s: %m", dmi_object_path);
+        if (bufsize < 25)
+                return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Only read %zu bytes from %s (expected 25)", bufsize, dmi_object_path);
 
         /* index 1 stores the size of table */
-        tablesize = (uint8_t) s[1];
+        tablesize = (uint8_t) buf[1];
         if (tablesize < 25)
                 return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "Table size lesser than the index[0x18] where waketype byte is available.");
 
-        wakeup_type_byte = (uint8_t) s[24];
+        wakeup_type_byte = (uint8_t) buf[24];
         /* 0 is Reserved and 8 is AC Power Restored. As per table 12 in
          * https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.4.0.pdf */
         if (wakeup_type_byte >= 128)
@@ -647,11 +566,11 @@ int check_wakeup_type(void) {
 #if 1 /// Only available in this file for elogind
 static
 #endif // 1
-int can_sleep_state(char **types) {
+int can_sleep_state(char **requested_types) {
         _cleanup_free_ char *text = NULL;
         int r;
 
-        if (strv_isempty(types))
+        if (strv_isempty(requested_types))
                 return true;
 
         /* If /sys is read-only we cannot sleep */
@@ -667,13 +586,13 @@ int can_sleep_state(char **types) {
         }
 
         const char *found;
-        r = string_contains_word_strv(text, NULL, types, &found);
+        r = string_contains_word_strv(text, NULL, requested_types, &found);
         if (r < 0)
                 return log_debug_errno(r, "Failed to parse /sys/power/state: %m");
         if (r > 0)
                 log_debug("Sleep mode \"%s\" is supported by the kernel.", found);
         else if (DEBUG_LOGGING) {
-                _cleanup_free_ char *t = strv_join(types, "/");
+                _cleanup_free_ char *t = strv_join(requested_types, "/");
                 log_debug("Sleep mode %s not supported by the kernel, sorry.", strnull(t));
         }
         return r;
@@ -786,8 +705,7 @@ SwapEntry* swap_entry_free(SwapEntry *se) {
         if (!se)
                 return NULL;
 
-        free(se->device);
-        free(se->type);
+        free(se->path);
 
         return mfree(se);
 }
@@ -801,19 +719,22 @@ HibernateLocation* hibernate_location_free(HibernateLocation *hl) {
         return mfree(hl);
 }
 
-static int swap_device_to_device_id(const SwapEntry *swap, dev_t *ret_dev) {
+static int swap_device_to_devnum(const SwapEntry *swap, dev_t *ret_dev) {
+        _cleanup_close_ int fd = -EBADF;
         struct stat sb;
         int r;
 
         assert(swap);
-        assert(swap->device);
-        assert(swap->type);
+        assert(swap->path);
 
-        r = stat(swap->device, &sb);
-        if (r < 0)
+        fd = open(swap->path, O_CLOEXEC|O_PATH);
+        if (fd < 0)
                 return -errno;
 
-        if (streq(swap->type, "partition")) {
+        if (fstat(fd, &sb) < 0)
+                return -errno;
+
+        if (swap->type == SWAP_BLOCK) {
                 if (!S_ISBLK(sb.st_mode))
                         return -ENOTBLK;
 
@@ -821,7 +742,11 @@ static int swap_device_to_device_id(const SwapEntry *swap, dev_t *ret_dev) {
                 return 0;
         }
 
-        return get_block_device(swap->device, ret_dev);
+        r = stat_verify_regular(&sb);
+        if (r < 0)
+                return r;
+
+        return get_block_device_fd(fd, ret_dev);
 }
 
 /*
@@ -831,32 +756,33 @@ static int swap_device_to_device_id(const SwapEntry *swap, dev_t *ret_dev) {
 static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offset) {
         _cleanup_close_ int fd = -EBADF;
         _cleanup_free_ struct fiemap *fiemap = NULL;
-        struct stat sb;
         int r;
 
         assert(swap);
-        assert(swap->device);
-        assert(streq(swap->type, "file"));
+        assert(swap->path);
+        assert(swap->type == SWAP_FILE);
+        assert(ret_offset);
 
-        fd = open(swap->device, O_RDONLY|O_CLOEXEC|O_NOCTTY);
+        fd = open(swap->path, O_RDONLY|O_CLOEXEC|O_NOCTTY);
         if (fd < 0)
-                return log_debug_errno(errno, "Failed to open swap file %s to determine on-disk offset: %m", swap->device);
+                return log_debug_errno(errno, "Failed to open swap file %s to determine on-disk offset: %m", swap->path);
 
-        if (fstat(fd, &sb) < 0)
-                return log_debug_errno(errno, "Failed to stat %s: %m", swap->device);
+        r = fd_verify_regular(fd);
+        if (r < 0)
+                return log_debug_errno(r, "Selected swap file is not a regular file.");
 
         r = fd_is_fs_type(fd, BTRFS_SUPER_MAGIC);
         if (r < 0)
-                return log_debug_errno(r, "Error checking %s for Btrfs filesystem: %m", swap->device);
+                return log_debug_errno(r, "Error checking %s for Btrfs filesystem: %m", swap->path);
         if (r > 0) {
-                log_debug("%s: detection of swap file offset on Btrfs is not supported", swap->device);
+                log_debug("%s: detection of swap file offset on Btrfs is not supported", swap->path);
                 *ret_offset = UINT64_MAX;
                 return 0;
         }
 
         r = read_fiemap(fd, &fiemap);
         if (r < 0)
-                return log_debug_errno(r, "Unable to read extent map for '%s': %m", swap->device);
+                return log_debug_errno(r, "Unable to read extent map for '%s': %m", swap->path);
 
         *ret_offset = fiemap->fm_extents[0].fe_physical / page_size();
         return 0;
@@ -864,9 +790,12 @@ static int calculate_swap_file_offset(const SwapEntry *swap, uint64_t *ret_offse
 
 static int read_resume_files(dev_t *ret_resume, uint64_t *ret_resume_offset) {
         _cleanup_free_ char *resume_str = NULL, *resume_offset_str = NULL;
-        uint64_t resume_offset = 0;
+        uint64_t resume_offset;
         dev_t resume;
         int r;
+
+        assert(ret_resume);
+        assert(ret_resume_offset);
 
         r = read_one_line_file("/sys/power/resume", &resume_str);
         if (r < 0)
@@ -877,9 +806,10 @@ static int read_resume_files(dev_t *ret_resume, uint64_t *ret_resume_offset) {
                 return log_debug_errno(r, "Error parsing /sys/power/resume device: %s: %m", resume_str);
 
         r = read_one_line_file("/sys/power/resume_offset", &resume_offset_str);
-        if (r == -ENOENT)
+        if (r == -ENOENT) {
                 log_debug_errno(r, "Kernel does not support resume_offset; swap file offset detection will be skipped.");
-        else if (r < 0)
+                resume_offset = 0;
+        } else if (r < 0)
                 return log_debug_errno(r, "Error reading /sys/power/resume_offset: %m");
         else {
                 r = safe_atou64(resume_offset_str, &resume_offset);
@@ -893,7 +823,6 @@ static int read_resume_files(dev_t *ret_resume, uint64_t *ret_resume_offset) {
 
         *ret_resume = resume;
         *ret_resume_offset = resume_offset;
-
         return 0;
 }
 
@@ -912,6 +841,14 @@ static bool location_is_resume_device(const HibernateLocation *location, dev_t s
 /*
  * Attempt to find the hibernation location by parsing /proc/swaps, /sys/power/resume, and
  * /sys/power/resume_offset.
+ *
+ * Beware:
+ *  Never use a device or file as location that hasn't been somehow specified by a user that would also be
+ *  entrusted with full system memory access (for example via /sys/power/resume) or that isn't an already
+ *  active swap area!
+ *  Otherwise various security attacks might become possible, for example an attacker could silently attach
+ *  such a device and circumvent full disk encryption when it would be automatically used for hibernation.
+ *  Also, having a swap area on top of encryption is not per se enough to protect from all such attacks.
  *
  * Returns:
  *  1 - Values are set in /sys/power/resume and /sys/power/resume_offset.
@@ -944,20 +881,25 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
         (void) fscanf(f, "%*s %*s %*s %*s %*s\n");
         for (unsigned i = 1;; i++) {
                 _cleanup_(swap_entry_freep) SwapEntry *swap = NULL;
+                _cleanup_free_ char *type = NULL;
                 uint64_t swap_offset = 0;
                 int k;
 
-                swap = new0(SwapEntry, 1);
+                swap = new(SwapEntry, 1);
                 if (!swap)
                         return -ENOMEM;
 
+                *swap = (SwapEntry) {
+                        .type = _SWAP_TYPE_INVALID,
+                };
+
                 k = fscanf(f,
-                           "%ms "       /* device/file */
+                           "%ms "       /* device/file path */
                            "%ms "       /* type of swap */
                            "%" PRIu64   /* swap size */
                            "%" PRIu64   /* used */
                            "%i\n",      /* priority */
-                           &swap->device, &swap->type, &swap->size, &swap->used, &swap->priority);
+                           &swap->path, &type, &swap->size, &swap->used, &swap->priority);
                 if (k == EOF)
                         break;
                 if (k != 5) {
@@ -965,50 +907,55 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
                         continue;
                 }
 
-                if (streq(swap->type, "file")) {
-                        if (endswith(swap->device, "\\040(deleted)")) {
-                                log_debug("Ignoring deleted swap file '%s'.", swap->device);
+                if (streq(type, "file")) {
+
+                        if (endswith(swap->path, "\\040(deleted)")) {
+                                log_debug("Ignoring deleted swap file '%s'.", swap->path);
                                 continue;
                         }
+
+                        swap->type = SWAP_FILE;
 
                         r = calculate_swap_file_offset(swap, &swap_offset);
                         if (r < 0)
                                 return r;
 
-                } else if (streq(swap->type, "partition")) {
+                } else if (streq(type, "partition")) {
                         const char *fn;
 
-                        fn = path_startswith(swap->device, "/dev/");
+                        fn = path_startswith(swap->path, "/dev/");
                         if (fn && startswith(fn, "zram")) {
-                                log_debug("%s: ignoring zram swap", swap->device);
+                                log_debug("%s: ignoring zram swap", swap->path);
                                 continue;
                         }
 
+                        swap->type = SWAP_BLOCK;
+
                 } else {
-                        log_debug("%s: swap type %s is unsupported for hibernation, ignoring", swap->device, swap->type);
+                        log_debug("%s: swap type %s is unsupported for hibernation, ignoring", swap->path, type);
                         continue;
                 }
 
                 /* prefer resume device or highest priority swap with most remaining space */
                 if (sys_resume == 0) {
                         if (hibernate_location && swap->priority < hibernate_location->swap->priority) {
-                                log_debug("%s: ignoring device with lower priority", swap->device);
+                                log_debug("%s: ignoring device with lower priority", swap->path);
                                 continue;
                         }
                         if (hibernate_location &&
                             (swap->priority == hibernate_location->swap->priority
                              && swap->size - swap->used < hibernate_location->swap->size - hibernate_location->swap->used)) {
-                                log_debug("%s: ignoring device with lower usable space", swap->device);
+                                log_debug("%s: ignoring device with lower usable space", swap->path);
                                 continue;
                         }
                 }
 
-                dev_t swap_device;
-                r = swap_device_to_device_id(swap, &swap_device);
+                dev_t swap_devno;
+                r = swap_device_to_devnum(swap, &swap_devno);
                 if (r < 0)
-                        return log_debug_errno(r, "%s: failed to query device number: %m", swap->device);
-                if (swap_device == 0)
-                        return log_debug_errno(SYNTHETIC_ERRNO(ENODEV), "%s: not backed by block device.", swap->device);
+                        return log_debug_errno(r, "%s: failed to query device number: %m", swap->path);
+                if (swap_devno == 0)
+                        return log_debug_errno(SYNTHETIC_ERRNO(ENODEV), "%s: not backed by block device.", swap->path);
 
                 hibernate_location = hibernate_location_free(hibernate_location);
                 hibernate_location = new(HibernateLocation, 1);
@@ -1016,19 +963,19 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
                         return -ENOMEM;
 
                 *hibernate_location = (HibernateLocation) {
-                        .devno = swap_device,
+                        .devno = swap_devno,
                         .offset = swap_offset,
                         .swap = TAKE_PTR(swap),
                 };
 
                 /* if the swap is the resume device, stop the loop */
                 if (location_is_resume_device(hibernate_location, sys_resume, sys_offset)) {
-                        log_debug("%s: device matches configured resume settings.", hibernate_location->swap->device);
+                        log_debug("%s: device matches configured resume settings.", hibernate_location->swap->path);
                         resume_match = true;
                         break;
                 }
 
-                log_debug("%s: is a candidate device.", hibernate_location->swap->device);
+                log_debug("%s: is a candidate device.", hibernate_location->swap->path);
         }
 
         /* We found nothing at all */
@@ -1050,11 +997,11 @@ int find_hibernate_location(HibernateLocation **ret_hibernate_location) {
 
         if (resume_match)
                 log_debug("Hibernation will attempt to use swap entry with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
-                          hibernate_location->swap->device, major(hibernate_location->devno), minor(hibernate_location->devno),
+                          hibernate_location->swap->path, major(hibernate_location->devno), minor(hibernate_location->devno),
                           hibernate_location->offset, hibernate_location->swap->priority);
         else
                 log_debug("/sys/power/resume is not configured; attempting to hibernate with path: %s, device: %u:%u, offset: %" PRIu64 ", priority: %i",
-                          hibernate_location->swap->device, major(hibernate_location->devno), minor(hibernate_location->devno),
+                          hibernate_location->swap->path, major(hibernate_location->devno), minor(hibernate_location->devno),
                           hibernate_location->offset, hibernate_location->swap->priority);
 
         *ret_hibernate_location = TAKE_PTR(hibernate_location);
@@ -1188,6 +1135,52 @@ int read_fiemap(int fd, struct fiemap **ret) {
         memcpy(result_fiemap, fiemap, sizeof(struct fiemap));
         result_fiemap->fm_mapped_extents = result_extents;
         *ret = TAKE_PTR(result_fiemap);
+        return 0;
+}
+
+int write_resume_config(dev_t devno, uint64_t offset, const char *device) {
+        char offset_str[DECIMAL_STR_MAX(uint64_t)];
+        _cleanup_free_ char *path = NULL;
+        const char *devno_str;
+        int r;
+
+        devno_str = FORMAT_DEVNUM(devno);
+        xsprintf(offset_str, "%" PRIu64, offset);
+
+        if (!device) {
+                r = device_path_make_canonical(S_IFBLK, devno, &path);
+                if (r < 0)
+                        return log_error_errno(r,
+                                               "Failed to format canonical device path for devno '" DEVNUM_FORMAT_STR "': %m",
+                                               DEVNUM_FORMAT_VAL(devno));
+                device = path;
+        }
+
+        /* We write the offset first since it's safer. Note that this file is only available in 4.17+, so
+         * fail gracefully if it doesn't exist and we're only overwriting it with 0. */
+        r = write_string_file("/sys/power/resume_offset", offset_str, WRITE_STRING_FILE_DISABLE_BUFFER);
+        if (r == -ENOENT) {
+                if (offset != 0)
+                        return log_error_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
+                                               "Can't configure hibernation offset %" PRIu64 ", kernel does not support /sys/power/resume_offset. Refusing.",
+                                               offset);
+
+                log_warning_errno(r, "/sys/power/resume_offset is unavailable, skipping writing swap file offset.");
+        } else if (r < 0)
+                return log_error_errno(r,
+                                       "Failed to write swap file offset %s to /sys/power/resume_offset for device '%s': %m",
+                                       offset_str, device);
+        else
+                log_debug("Wrote resume_offset=%s for device '%s' to /sys/power/resume_offset.",
+                          offset_str, device);
+
+        r = write_string_file("/sys/power/resume", devno_str, WRITE_STRING_FILE_DISABLE_BUFFER);
+        if (r < 0)
+                return log_error_errno(r,
+                                       "Failed to write device '%s' (%s) to /sys/power/resume: %m",
+                                       device, devno_str);
+        log_debug("Wrote resume=%s for device '%s' to /sys/power/resume.", devno_str, device);
+
         return 0;
 }
 

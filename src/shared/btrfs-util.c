@@ -84,7 +84,6 @@ int btrfs_is_subvol_at(int dir_fd, const char *path) {
         if (!btrfs_might_be_subvol(&st))
                 return 0;
 
-
         return is_fs_type_at(dir_fd, path, BTRFS_SUPER_MAGIC);
 }
 
