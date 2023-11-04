@@ -52,13 +52,13 @@ typedef enum SpecialGlyph {
 
 bool emoji_enabled(void);
 
-#if 0 /// UNNEEDED by elogind
 const char *special_glyph_full(SpecialGlyph code, bool force_utf) _const_;
 
 static inline const char *special_glyph(SpecialGlyph code) {
         return special_glyph_full(code, false);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline const char *special_glyph_check_mark(bool b) {
         return b ? special_glyph(SPECIAL_GLYPH_CHECK_MARK) : special_glyph(SPECIAL_GLYPH_CROSS_MARK);
 }
