@@ -187,7 +187,8 @@ libelogind_static = static_library(
         install : false,
         include_directories : includes,
         link_with : libbasic,
-        dependencies : [threads],
+        dependencies : [threads,
+                        userspace],
         c_args : libelogind_c_args)
 
 libelogind_dir_path = meson.current_source_dir()
