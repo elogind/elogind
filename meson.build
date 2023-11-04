@@ -2448,8 +2448,10 @@ conf.set10('HAVE_GNU_EFI', false)
 
 ############################################################
 
-elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
-elf2efi_py = find_program('tools/elf2efi.py')
+#if 0 /// UNUSED by elogind
+# elf2efi_lds = project_source_root / 'tools/elf2efi.lds'
+# elf2efi_py = find_program('tools/elf2efi.py')
+#endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
 generate_gperfs = find_program('tools/generate-gperfs.py')
 #if 0 /// UNUSED by elogind
