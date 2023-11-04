@@ -43,10 +43,12 @@ static inline void cap_free_charpp(char **p) {
                 cap_free(*p);
 }
 #define _cleanup_cap_free_charp_ _cleanup_(cap_free_charpp)
+#endif // 0
 
 static inline uint64_t all_capabilities(void) {
         return UINT64_MAX >> (63 - cap_last_cap());
 }
+#if 0 /// UNNEEDED by elogind
 
 static inline bool cap_test_all(uint64_t caps) {
         return FLAGS_SET(caps, all_capabilities());

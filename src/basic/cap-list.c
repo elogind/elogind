@@ -6,18 +6,16 @@
 #include "alloc-util.h"
 #include "capability-util.h"
 #include "cap-list.h"
-//#include "extract-word.h"
+#include "extract-word.h"
 #include "macro.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 static const struct capability_name* lookup_capability(register const char *str, register GPERF_LEN_TYPE len);
 
 #include "cap-from-name.h"
-#endif // 0
 #include "cap-to-name.h"
 
 const char *capability_to_name(int id) {
@@ -29,7 +27,6 @@ const char *capability_to_name(int id) {
         return capability_names[id];
 }
 
-#if 0 /// UNNEEDED by elogind
 const char *capability_to_string(int id, char buf[static CAPABILITY_TO_STRING_MAX]) {
         const char *p;
 
@@ -77,7 +74,6 @@ int capability_from_name(const char *name) {
 int capability_list_length(void) {
         return MIN((int) ELEMENTSOF(capability_names), CAP_LIMIT + 1);
 }
-#endif // 0
 
 int capability_set_to_string(uint64_t set, char **ret) {
         _cleanup_free_ char *str = NULL;
@@ -107,7 +103,6 @@ int capability_set_to_string(uint64_t set, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int capability_set_to_string_negative(uint64_t set, char **ret) {
         _cleanup_free_ char *a = NULL, *b = NULL;
         int r;
@@ -190,4 +185,3 @@ int capability_set_from_string(const char *s, uint64_t *ret) {
 
         return good;
 }
-#endif // 0
