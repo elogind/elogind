@@ -35,8 +35,8 @@ for fun in session-status show-session activate lock-session unlock-session term
 _loginctl_$fun() {
     local -a _sys_all_sessions{,_descr}
 
-    _sys_all_sessions=( "self" )
-    _sys_all_sessions_descr=( "self:alias for the current session" )
+	_sys_all_sessions=( "self" )
+	_sys_all_sessions_descr=( "self:alias for the current session" )
 
     _loginctl_all_sessions
     for _ignore in $words[2,-1]; do
@@ -84,8 +84,8 @@ done
 _loginctl_seats() {
     local -a _sys_all_seats{,_descr}
 
-    _sys_all_seats=( "self" )
-    _sys_all_seats_descr=( "self:alias for the current seat" )
+	_sys_all_seats=( "self" )
+	_sys_all_seats_descr=( "self:alias for the current seat" )
 
     _loginctl_all_seats
     for _ignore in $words[2,-1]; do
@@ -112,6 +112,9 @@ _loginctl_attach() {
                ':seat:_loginctl_seats' \
                '*:device:_files'
 }
+
+# no loginctl completion for:
+# [STANDALONE]='list-sessions list-users list-seats flush-devices'
 
 (( $+functions[_loginctl_commands] )) ||
 _loginctl_commands() {
@@ -172,9 +175,7 @@ _arguments -s \
     {-h,--help}'[Show help]' \
     '--version[Show package version]' \
     \*{-p+,--property=}'[Show only properties by this name]:unit property' \
-    '*-P+[Equivalent to --value --property=NAME]:unit property' \
     {-a,--all}'[Show all properties, including empty ones]' \
-    '--value[When showing properties, only print the value]' \
     '--kill-whom=[Whom to send signal to]:killwhom:(main control all)' \
     {-s+,--signal=}'[Which signal to send]:signal:_signals' \
     {-H+,--host=}'[Operate on remote host]:userathost:_sd_hosts_or_user_at_host' \
@@ -183,11 +184,6 @@ _arguments -s \
     '--no-pager[Do not pipe output into a pager]' \
     '--no-legend[Do not show the headers and footers]' \
     '--no-ask-password[Do not ask for system passwords]' \
-    "--no-wall[Do not send wall messages]" \
     {-n+,--lines=}'[Number of journal entries to show]' \
     {-o+,--output=}'[Change journal output mode]:output modes:_sd_outputmodes' \
-    '-c[Cancel a pending shutdown or reboot]' \
-    {-i,--ignore-inhibitors}'[When shutting down or sleeping, ignore inhibitors]' \
-    '--dry-run[Only print what would be done]' \
-    '--firmware-setup[Tell the firmware to show the setup menu on next boot]' \
     '*::loginctl command:_loginctl_commands'

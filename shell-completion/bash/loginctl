@@ -42,8 +42,7 @@ _loginctl () {
 
     local -A OPTS=(
         [STANDALONE]='--all -a --help -h --no-pager --version
-                      --no-legend --no-ask-password -l --full --value --no-wall
-                      --dry-run -c -i --ignore-inhibitors --firmware-setup'
+                      --no-legend --no-ask-password -l --full --value'
         [ARG]='--host -H --kill-whom --property -p --signal -s -M --machine
                       -n --lines -o --output -P'
     )
@@ -83,8 +82,7 @@ _loginctl () {
         [SESSIONS]='session-status show-session activate lock-session unlock-session terminate-session kill-session'
         [USERS]='user-status show-user enable-linger disable-linger terminate-user kill-user'
         [SEATS]='seat-status show-seat terminate-seat'
-        [STANDALONE]='list-sessions lock-sessions unlock-sessions list-users list-seats flush-devices
-                      reload poweroff reboot suspend hibernate hybrid-sleep suspend-then-hibernate'
+        [STANDALONE]='list-sessions lock-sessions unlock-sessions list-users list-seats flush-devices'
         [ATTACH]='attach'
     )
 
