@@ -109,7 +109,6 @@ int get_proc_field(const char *filename, const char *pattern, const char *termin
 
 DIR *xopendirat(int dirfd, const char *name, int flags);
 
-#if 0 /// UNNEEDED by elogind
 typedef enum XfopenFlags {
         XFOPEN_UNLOCKED = 1 << 0, /* call __fsetlocking(FSETLOCKING_BYCALLER) after opened */
         XFOPEN_SOCKET   = 1 << 1, /* also try to open unix socket */
@@ -133,6 +132,7 @@ static inline int fopen_unlocked(const char *path, const char *mode, FILE **ret)
         return fopen_unlocked_at(AT_FDCWD, path, mode, 0, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int fdopen_independent(int fd, const char *mode, FILE **ret);
 
 int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **ret, char **ret_path);

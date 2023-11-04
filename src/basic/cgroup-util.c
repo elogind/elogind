@@ -754,7 +754,7 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
 
                 if (unified) {
                         e = startswith(line, "0:");
-#if 0 /// elogind supports other controllers, where hyprid setups have the session in 1: (like openrc does)
+#if 0 /// elogind supports other controllers, where hybrid setups have the session in 1: (like openrc does)
                         if (!e)
                                 continue;
 #else // 0
