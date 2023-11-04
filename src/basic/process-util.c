@@ -46,7 +46,7 @@
 #include "raw-clone.h"
 #include "rlimit-util.h"
 #include "signal-util.h"
-//#include "stat-util.h"
+#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
