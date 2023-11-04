@@ -66,6 +66,7 @@ char* strv_find_startswith(char * const *l, const char *name) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* strv_find_first_field(char * const *needles, char * const *haystack) {
         STRV_FOREACH(k, needles) {
                 char *value = strv_env_pairs_get((char **)haystack, *k);
@@ -75,6 +76,7 @@ char* strv_find_first_field(char * const *needles, char * const *haystack) {
 
         return NULL;
 }
+#endif // 0
 
 char** strv_free(char **l) {
         STRV_FOREACH(k, l)

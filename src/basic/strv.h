@@ -19,9 +19,11 @@ char* strv_find_case(char * const *l, const char *name) _pure_;
 char* strv_find_prefix(char * const *l, const char *name) _pure_;
 #endif // 0
 char* strv_find_startswith(char * const *l, const char *name) _pure_;
+#if 0 /// UNNEEDED by elogind
 /* Given two vectors, the first a list of keys and the second a list of key-value pairs, returns the value
  * of the first key from the first vector that is found in the second vector. */
 char* strv_find_first_field(char * const *needles, char * const *haystack) _pure_;
+#endif // 0
 
 #define strv_contains(l, s) (!!strv_find((l), (s)))
 #define strv_contains_case(l, s) (!!strv_find_case((l), (s)))

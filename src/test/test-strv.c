@@ -1014,6 +1014,7 @@ TEST(strv_copy_n) {
         assert_se(strv_equal(l, STRV_MAKE("a", "b", "c", "d", "e")));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strv_find_first_field) {
         char **haystack = STRV_MAKE("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
 
@@ -1025,5 +1026,6 @@ TEST(strv_find_first_field) {
         assert_se(streq_ptr(strv_find_first_field(STRV_MAKE("k", "l", "m", "d", "c", "a"), haystack), "d"));
         assert_se(streq_ptr(strv_find_first_field(STRV_MAKE("i", "k", "l", "m", "d", "c", "a", "b"), haystack), "j"));
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);
