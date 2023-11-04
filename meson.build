@@ -835,7 +835,7 @@ meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
-meson_symlink_headers = meson.source_root() + '/tools/meson-symlink_headers.sh'
+meson_symlink_headers = project_source_root + '/tools/meson-symlink_headers.sh'
 #endif // 1
 
 mkdir_p = 'mkdir -p $DESTDIR/@0@'
