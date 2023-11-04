@@ -57,12 +57,10 @@
 DEFINE_PRIVATE_ORIGIN_ID_HELPERS(sd_journal, journal);
 
 static void remove_file_real(sd_journal *j, JournalFile *f);
-#endif // 0
 static int journal_file_read_tail_timestamp(sd_journal *j, JournalFile *f);
 static void journal_file_unlink_newest_by_bood_id(sd_journal *j, JournalFile *f);
 
 
-#if 0 /// UNNEEDED by elogind
 static int journal_put_error(sd_journal *j, int r, const char *path) {
         _cleanup_free_ char *copy = NULL;
         int k;
@@ -334,6 +332,7 @@ fail:
 
 _public_ int sd_journal_add_conjunction(sd_journal *j) {
         assert_return(j, -EINVAL);
+#if 0 /// UNSUPPORTED by elogind
         assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (!j->level0)
@@ -347,12 +346,14 @@ _public_ int sd_journal_add_conjunction(sd_journal *j) {
 
         j->level1 = NULL;
         j->level2 = NULL;
+#endif // 0
 
         return 0;
 }
 
 _public_ int sd_journal_add_disjunction(sd_journal *j) {
         assert_return(j, -EINVAL);
+#if 0 /// UNSUPPORTED by elogind
         assert_return(!journal_origin_changed(j), -ECHILD);
 
         if (!j->level0)
@@ -368,6 +369,7 @@ _public_ int sd_journal_add_disjunction(sd_journal *j) {
                 return 0;
 
         j->level2 = NULL;
+#endif // 0
         return 0;
 }
 
@@ -2402,6 +2404,7 @@ _public_ void sd_journal_close(sd_journal *j) {
 #endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 static void journal_file_unlink_newest_by_bood_id(sd_journal *j, JournalFile *f) {
         JournalFile *nf;
         Prioq *p;
@@ -2575,6 +2578,7 @@ static int journal_file_read_tail_timestamp(sd_journal *j, JournalFile *f) {
 
         return 0;
 }
+#endif // 0
 
 _public_ int sd_journal_get_realtime_usec(sd_journal *j, uint64_t *ret) {
 #if 0 /// UNSUPPORTED by elogind
@@ -2654,11 +2658,11 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 }
 
 _public_ int sd_journal_get_seqnum(
-#if 0 /// UNSUPPORTED by elogind
                 sd_journal *j,
                 uint64_t *ret_seqnum,
                 sd_id128_t *ret_seqnum_id) {
 
+#if 0 /// UNSUPPORTED by elogind
         JournalFile *f;
         Object *o;
         int r;
@@ -2686,6 +2690,7 @@ _public_ int sd_journal_get_seqnum(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static bool field_is_valid(const char *field) {
         assert(field);
 
@@ -2848,10 +2853,12 @@ _public_ int sd_journal_enumerate_available_data(sd_journal *j, const void **dat
 }
 
 _public_ void sd_journal_restart_data(sd_journal *j) {
+#if 0 /// UNSUPPORTED by elogind
         if (!j || journal_origin_changed(j))
                 return;
 
         j->current_field = 0;
+#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -3456,12 +3463,14 @@ _public_ int sd_journal_enumerate_available_unique(sd_journal *j, const void **d
 }
 
 _public_ void sd_journal_restart_unique(sd_journal *j) {
+#if 0 /// UNSUPPORTED by elogind
         if (!j || journal_origin_changed(j))
                 return;
 
         j->unique_file = NULL;
         j->unique_offset = 0;
         j->unique_file_lost = false;
+#endif // 0
 }
 
 _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
@@ -3611,6 +3620,7 @@ _public_ int sd_journal_enumerate_fields(sd_journal *j, const char **field) {
 }
 
 _public_ void sd_journal_restart_fields(sd_journal *j) {
+#if 0 /// UNSUPPORTED by elogind
         if (!j || journal_origin_changed(j))
                 return;
 
@@ -3618,11 +3628,14 @@ _public_ void sd_journal_restart_fields(sd_journal *j) {
         j->fields_hash_table_index = 0;
         j->fields_offset = 0;
         j->fields_file_lost = false;
+#endif // 0
 }
 
 _public_ int sd_journal_reliable_fd(sd_journal *j) {
         assert_return(j, -EINVAL);
+#if 0 /// UNSUPPORTED by elogind
         assert_return(!journal_origin_changed(j), -ECHILD);
+#endif // 0
 
         return !j->on_network;
 }
@@ -3699,18 +3712,22 @@ _public_ int sd_journal_get_catalog_for_message_id(sd_id128_t id, char **ret) {
 
 _public_ int sd_journal_set_data_threshold(sd_journal *j, size_t sz) {
         assert_return(j, -EINVAL);
+#if 0 /// UNSUPPORTED by elogind
         assert_return(!journal_origin_changed(j), -ECHILD);
 
         j->data_threshold = sz;
+#endif // 0
         return 0;
 }
 
 _public_ int sd_journal_get_data_threshold(sd_journal *j, size_t *sz) {
         assert_return(j, -EINVAL);
+#if 0 /// UNSUPPORTED by elogind
         assert_return(!journal_origin_changed(j), -ECHILD);
         assert_return(sz, -EINVAL);
 
         *sz = j->data_threshold;
+#endif // 0
         return 0;
 }
 
