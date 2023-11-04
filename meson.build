@@ -2587,7 +2587,11 @@ libelogind = shared_library(
         link_depends : libelogind_sym,
 #endif // 0
         install : true,
+#if 0 /// elogind uses libelogind as tag
+#         install_tag: 'libsystemd',
+#else // 0
         install_tag: 'libelogind',
+#endif // 0
         install_dir : rootlibdir)
 
 alias_target('libelogind', libelogind)
@@ -2808,6 +2812,7 @@ subdir('rules.d')
 #if 0 /// UNNEEDED by elogind
 # subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
+#
 # alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
 #else // 0
 alias_target('devel', libelogind_pc)
