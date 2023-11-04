@@ -21,7 +21,7 @@
 //#include "fs-util.h"
 #include "glyph-util.h"
 #include "hashmap.h"
-#include "initrd-util.h"
+//#include "initrd-util.h"
 #include "label-util.h"
 #include "libmount-util.h"
 #include "missing_mount.h"

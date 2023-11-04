@@ -8,7 +8,7 @@
 #include "extract-word.h"
 #include "fileio.h"
 #include "getopt-defs.h"
-#include "initrd-util.h"
+//#include "initrd-util.h"
 #include "macro.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
@@ -173,26 +173,26 @@ int proc_cmdline_strv(char ***ret) {
 }
 
 static char *mangle_word(const char *word, ProcCmdlineFlags flags) {
+#if 0 /// elogind is never in initrd. Doesn't make any sense.
         char *c;
 
         c = startswith(word, "rd.");
         if (c) {
                 /* Filter out arguments that are intended only for the initrd */
-#if 0 /// elogind is never in initrd. Doesn't make any sense.
 
                 if (!in_initrd())
                         return NULL;
 
                 if (FLAGS_SET(flags, PROC_CMDLINE_STRIP_RD_PREFIX))
                         return c;
-#else // 0
-                        continue;
                 }
-#endif // 0
 
         } else if (FLAGS_SET(flags, PROC_CMDLINE_RD_STRICT) && in_initrd())
                 /* And optionally filter out arguments that are intended only for the host */
                 return NULL;
+#else // 0
+        (void)flags;
+#endif // 0
 
         return (char*) word;
 }
@@ -218,6 +218,7 @@ static int proc_cmdline_parse_strv(char **args, proc_cmdline_parse_t parse_item,
                         *(value++) = '\0';
 
                 r = parse_item(key, value, data);
+
                 if (r < 0)
                         return r;
         }
@@ -234,7 +235,6 @@ int proc_cmdline_parse(proc_cmdline_parse_t parse_item, void *data, ProcCmdlineF
         /* We parse the EFI variable first, because later settings have higher priority. */
 
         if (!FLAGS_SET(flags, PROC_CMDLINE_IGNORE_EFI_OPTIONS)) {
-                r = elogind_efi_options_variable(&line);
                 _cleanup_free_ char *line = NULL;
 
                 r = elogind_efi_options_variable(&line);
