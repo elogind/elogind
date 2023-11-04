@@ -26,7 +26,7 @@ static int method(sd_bus_message *m, void *userdata, sd_bus_error *error) {
   printf("Got called with userdata=%p\n", userdata);
 
   if (sd_bus_message_is_method_call(m,
-                                    "org.freedesktop.systemd1.VtableExample",
+                                    "org.freedesktop.systemd.VtableExample",
                                     "Method4"))
     return 1;
 
@@ -91,13 +91,13 @@ int main(int argc, char **argv) {
   check((object.name = strdup("name")) != NULL);
 
   check(sd_bus_add_object_vtable(bus, NULL,
-                                 "/org/freedesktop/systemd1/VtableExample",
-                                 "org.freedesktop.systemd1.VtableExample",
+                                 "/org/freedesktop/systemd/VtableExample",
+                                 "org.freedesktop.systemd.VtableExample",
                                  vtable,
                                  &object));
 
   check(sd_bus_request_name(bus,
-                            "org.freedesktop.systemd1.VtableExample",
+                            "org.freedesktop.systemd.VtableExample",
                             0));
 
   for (;;) {
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
     check(sd_bus_process(bus, NULL));
   }
 
-  check(sd_bus_release_name(bus, "org.freedesktop.systemd1.VtableExample"));
+  check(sd_bus_release_name(bus, "org.freedesktop.systemd.VtableExample"));
   free(object.name);
 
   return 0;
