@@ -207,7 +207,6 @@ shared_sources = files(
         'mkdir-label.c',
         'mount-setup.c',
         'mount-util.c',
-        'label.c',
         'libcrypt-util.c',
         'nsflags.c',
         'output-mode.c',

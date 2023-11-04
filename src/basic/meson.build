@@ -224,11 +224,7 @@ generate_cap_list = find_program('generate-cap-list.sh')
 cap_list_txt = custom_target(
         'cap-list.txt',
         output : 'cap-list.txt',
-#if 0 /// elogind needs musl_missing.h, so generate_cap_list must know the source root
-#         command : [generate_cap_list, cpp, config_h, missing_capability_h],
-#else // 0
-        command : [generate_cap_list, cpp, meson.source_root(), config_h, missing_capability_h],
-#endif // 0
+        command : [generate_cap_list, cpp, config_h, missing_capability_h],
         capture : true)
 
 generate_errno_list = find_program('generate-errno-list.sh')
