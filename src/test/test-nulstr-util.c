@@ -19,10 +19,6 @@ TEST(strv_split_nulstr) {
         assert_se(streq(l[3], "str3"));
 }
 
-
-
-
-
 #define strv_parse_nulstr_full_one(s, n, e0, e1)                        \
         ({                                                              \
                 _cleanup_strv_free_ char **v0 = NULL, **v1 = NULL;      \
@@ -40,6 +36,7 @@ TEST(strv_parse_nulstr_full) {
         strv_parse_nulstr_full_one(nulstr1, sizeof(nulstr1) - 1,
                                    STRV_MAKE("hoge", "hoge2", "hoge3", "", "hoge5", "", "xxx"),
                                    STRV_MAKE("hoge", "hoge2", "hoge3", "", "hoge5", "", "xxx"));
+
         strv_parse_nulstr_full_one(nulstr2, sizeof(nulstr2) - 1,
                                    STRV_MAKE("hoge", "hoge2", "hoge3", "", "hoge5", "", "xxx", "", ""),
                                    STRV_MAKE("hoge", "hoge2", "hoge3", "", "hoge5", "", "xxx"));
@@ -49,6 +46,7 @@ TEST(strv_parse_nulstr_full) {
 
         strv_parse_nulstr_full_one(((const char[1]) { 0 }), 1,
                                    STRV_MAKE(""), STRV_MAKE_EMPTY);
+
         strv_parse_nulstr_full_one(((const char[1]) { 'x' }), 1,
                                    STRV_MAKE("x"), STRV_MAKE("x"));
 
@@ -63,6 +61,7 @@ TEST(strv_parse_nulstr_full) {
 
         strv_parse_nulstr_full_one(((const char[3]) { 'x', 0, 0 }), 3,
                                    STRV_MAKE("x", ""), STRV_MAKE("x"));
+
         strv_parse_nulstr_full_one(((const char[3]) { 0, 'x', 0 }), 3,
                                    STRV_MAKE("", "x"), STRV_MAKE("", "x"));
 
@@ -77,6 +76,7 @@ TEST(strv_parse_nulstr_full) {
 
         strv_parse_nulstr_full_one(((const char[3]) { 'x', 0, 'x' }), 3,
                                    STRV_MAKE("x", "x"), STRV_MAKE("x", "x"));
+
         strv_parse_nulstr_full_one(((const char[3]) { 'x', 'x', 'x' }), 3,
                                    STRV_MAKE("xxx"), STRV_MAKE("xxx"));
 }

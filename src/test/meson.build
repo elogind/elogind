@@ -49,7 +49,6 @@ test_dlopen_c = files('test-dlopen.c')
 
 ############################################################
 
-
 simple_tests += files(
         'test-alloc-util.c',
 #if 0 /// UNNEEDED by elogind
@@ -141,8 +140,8 @@ simple_tests += files(
 #endif // 0
         'test-hostname-util.c',
         'test-id128.c',
-        'test-image-policy.c',
 #if 0 /// UNNEEDED by elogind
+#         'test-image-policy.c',
 #         'test-import-util.c',
 #         'test-in-addr-prefix-util.c',
 #         'test-in-addr-util.c',
@@ -206,7 +205,9 @@ simple_tests += files(
         'test-rm-rf.c',
         'test-sd-hwdb.c',
         'test-sd-path.c',
-        'test-secure-bits.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-secure-bits.c',
+#endif // 0
         'test-selinux.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-serialize.c',
@@ -260,7 +261,6 @@ simple_tests += files(
 )
 
 ############################################################
-
 
 common_test_dependencies = [
         libblkid,
@@ -540,6 +540,7 @@ tests += [
 #                 'type' : 'unsafe',
 #         },
 #endif // 0
+
 
 #if 0 /// elogind is never PID 1
 #         # Tests that link to libcore, i.e. tests for pid1 code.

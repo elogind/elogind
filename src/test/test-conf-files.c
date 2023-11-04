@@ -42,11 +42,11 @@ TEST(conf_files_list) {
                 assert_se(write_string_file(path, "foobar", WRITE_STRING_FILE_CREATE) >= 0);
         }
 
-
         assert_se(symlinkat("/dev/null", tfd, "dir1/m.conf") >= 0);
 
         FOREACH_STRING(p, "a.conf", "aa.conf", "m.conf") {
                 _cleanup_free_ char *path = NULL;
+
                 assert_se(path = path_join(search2, p));
                 assert_se(write_string_file(path, "hogehoge", WRITE_STRING_FILE_CREATE) >= 0);
         }
