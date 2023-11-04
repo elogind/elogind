@@ -135,9 +135,9 @@ static inline int fopen_unlocked(const char *path, const char *mode, FILE **ret)
         return fopen_unlocked_at(AT_FDCWD, path, mode, 0, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int fdopen_independent(int fd, const char *mode, FILE **ret);
 
+#if 0 /// UNNEEDED by elogind
 int search_and_fopen(const char *path, const char *mode, const char *root, const char **search, FILE **ret, char **ret_path);
 #endif // 0
 int search_and_fopen_nulstr(const char *path, const char *mode, const char *root, const char *search, FILE **ret, char **ret_path);
