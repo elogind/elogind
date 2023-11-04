@@ -110,7 +110,6 @@ static int get_current_runlevel(Context *c) {
                             ++n_attempts < 64) {
 
                                 /* elogind might have dropped off momentarily, let's not make this an error,
-                                /* elogind might have dropped off momentarily, let's not make this an error,
                                  * and wait some random time. Let's pick a random time in the range 0ms…250ms,
                                  * linearly scaled by the number of failed attempts. */
 

@@ -11,7 +11,7 @@
 //#include "cap-list.h"
 #include "fileio.h"
 //#include "log.h"
-#include "logarithm.h"
+//#include "logarithm.h"
 #include "macro.h"
 //#include "missing_prctl.h"
 #include "missing_threads.h"

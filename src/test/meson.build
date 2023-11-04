@@ -539,7 +539,7 @@ tests += [
 #                 'sources' : files('test-watchdog.c'),
 #                 'type' : 'unsafe',
 #         },
-# #endif // 0
+#endif // 0
 
 #if 0 /// elogind is never PID 1
 #         # Tests that link to libcore, i.e. tests for pid1 code.
@@ -670,7 +670,7 @@ tests += [
 #                 'dependencies' : common_test_dependencies,
 #                 'base' : test_core_base,
 #         },
-# #endif // 0
+#endif // 0
 
         # Tests from other directories that have link_with deps that were not defined earlier
         {

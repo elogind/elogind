@@ -206,6 +206,7 @@ libelogind_pc = custom_target(
         install : pkgconfiglibdir != 'no',
         install_tag : 'devel',
         install_dir : pkgconfiglibdir)
+#endif // 0
 
 ############################################################
 
