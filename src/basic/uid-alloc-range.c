@@ -3,6 +3,7 @@
 #include "chase.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "missing_threads.h"
 #include "string-util.h"
 #include "uid-alloc-range.h"
 #include "user-util.h"
@@ -39,7 +40,7 @@ int read_login_defs(UGIDAllocationRange *ret_defs, const char *path, const char 
         if (!path)
                 path = "/etc/login.defs";
 
-        r = chase_symlinks_and_fopen_unlocked(path, root, CHASE_PREFIX_ROOT, "re", NULL, &f);
+        r = chase_and_fopen_unlocked(path, root, CHASE_PREFIX_ROOT, "re", NULL, &f);
         if (r == -ENOENT)
                 goto defaults;
         if (r < 0)
@@ -123,3 +124,10 @@ bool gid_is_system(gid_t gid) {
         return gid <= defs->system_gid_max;
 }
 #endif // 0
+
+bool uid_for_system_journal(uid_t uid) {
+
+        /* Returns true if the specified UID shall get its data stored in the system journal. */
+
+        return uid_is_system(uid) || uid_is_dynamic(uid) || uid == UID_NOBODY || uid_is_container(uid);
+}

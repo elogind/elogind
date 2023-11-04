@@ -19,9 +19,7 @@
     coding style)
 */
 
-#if ENABLE_DEBUG_SIPHASH
 #include <stdio.h>
-  #endif // ENABLE_DEBUG_SIPHASH
 
 #include "macro.h"
 #include "siphash24.h"
