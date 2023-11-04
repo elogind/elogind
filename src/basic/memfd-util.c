@@ -161,7 +161,6 @@ int memfd_new_and_map(const char *name, size_t sz, void **p) {
 
         return TAKE_FD(fd);
 }
-#endif // 0
 
 int memfd_new_and_seal(const char *name, const void *data, size_t sz) {
         _cleanup_close_ int fd = -EBADF;
@@ -193,3 +192,4 @@ int memfd_new_and_seal(const char *name, const void *data, size_t sz) {
 
         return TAKE_FD(fd);
 }
+#endif // 0
