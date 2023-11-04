@@ -223,7 +223,6 @@ shared_sources = files(
         'smack-util.c',
         'spawn-polkit-agent.c',
         'udev-util.c',
-        'uid-alloc-range.c',
         'user-record-nss.c',
         'user-record.c',
         'userdb.c',

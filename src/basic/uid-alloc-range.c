@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include "chase-symlinks.h"
+#include "chase.h"
 #include "fd-util.h"
 #include "fileio.h"
 #include "string-util.h"
