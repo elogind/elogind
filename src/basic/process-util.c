@@ -1719,6 +1719,7 @@ int get_process_threads(pid_t pid) {
 
         return n;
 }
+#endif // 0
 
 int is_reaper_process(void) {
         int b = 0;
@@ -1735,6 +1736,7 @@ int is_reaper_process(void) {
         return b != 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int make_reaper_process(bool b) {
 
         if (getpid_cached() == 1) {
