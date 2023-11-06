@@ -133,18 +133,37 @@ Deprecations and removals:
 
 Features:
 
-* networkd: controlled by build-time options install some of the
-  *.network.example files we install currently as regular files *.network. For
-  many cases it's what you want: just configure the damn network. Hopefully
-  this can be enabled on Fedora even, though into a separate sub-RPM, so that
-  we don't conflict with NM.
+* vmspawn:
+  - enable hyperv extension by default (https://www.qemu.org/docs/master/system/i386/hyperv.html)
+  - register with machined
+  - run in scope unit when invoked from command line, and machined registration is off
+  - support --directory= via virtiofs
+  - sd_notify support
+  - --ephemeral support
+  - --read-only support
+  - automatically suspend/resume the VM if the host suspends. Use logind
+    suspend inhibitor to implement this. request clean suspend by generating
+    suspend key presses.
+  - support for "real" networking via "-n" and --network-bridge=
+  - automatically run service "at the side" for swtpm
+  - translate SIGTERM to clean ACPI shutdown event
+
+* elogind-pcrmachine should probably also measure the SMBIOS system UUID.
+
+* sd-boot: allow synthesizing additional type1 entries via SMBIOS vendor strings
+
+* storagetm:
+  - add USB mass storage device logic, so that all local disks are also exposed
+    as mass storage devices on systems that have a USB controller that can
+    operate in device mode
+  - add NVMe authentication
+  - show login details also via plymouth
 
 * add support for activating nvme-oF devices at boot automatically via kernel
   cmdline, and maybe even support a syntax such as
   root=nvme:<trtype>:<traddr>:<trsvcid>:<nqn>:<partition> to boot directly from
   nvme-oF
 
-* add a new elogind-project@.service that is very similar to user@.service but
 * pcrlock:
   - make signed PCR work together with pcrlock
   - add kernel-install plugin that automatically creates UKI .pcrlock file when
@@ -160,6 +179,7 @@ Features:
     policy from currently booted kernel/event log, to close gap for first boot
     for pre-built images
 
+* add a new elogind-project@.service that is very similar to user@.service but
   uses DynamicUser=1 and no PAMName= to invoke an unprivileged somewhat
   light-weight service manager. Use HOME=/var/lib/elogind/projects/%i as home
   dir. Similar for $XDG_RUNTIME_DIR. Start project@%i.target. Use LogField= to
@@ -440,16 +460,12 @@ Features:
   grow exponentially in size to ensure O(log(n)) time for finding them on
   access.
 
-* split out execute.c into new "elogind-executor" binary. Then make PID 1 fork
-  that off via vfork(), and then let that executor do the hard work. Ultimately
-  the executor then gets replaced by the real binary sooner or later. Reason:
-  currently the intermediary "stub" process is a CoW trap that doubles memory
-  usage of PID 1 on each service start. Also, strictly speaking we are not
-  allowed to do NSS from the stub process yet we do anyway. Next steps would
-  then be maybe use CLONE_INTO_CGROUP for the executor, given that we don't
-  need glibc anymore in the stub process then. Then, switch nspawn to just be a
-  frontend for this too, so that we have to ways into the executor: via unit
-  files/dbus/varlin through PID1 and via cmdline/OCI through nspawn.
+* Use CLONE_INTO_CGROUP to spawn elogind-executor, once glibc supports it in
+  posix_spawn().
+
+* Make nspawn to a frontend for elogind-executor, so that we have to ways into
+  the executor: via unit files/dbus/varlink through PID1 and via cmdline/OCI
+  through nspawn.
 
 * sd-stub: detect if we are running with uefi console output on serial, and if so
   automatically add console= to kernel cmdline matching the same port.
@@ -808,15 +824,6 @@ Features:
 
 * sd-device: maybe pin the sysfs dir with an fd, during the entire runtime of
   an sd_device, then always work based on that.
-
-* add small wrapper around qemu that implements sd_notify/AF_VSOCK + machined and
-  maybe some other stuff and boots it. Should implement command line roughly
-  equivalent to nspawn's. Maybe be called "elogind-vmspawn". Should imply good
-  settings, i.e. RNG + HyperV enlightenments. Should also result in swtpm
-  instance, plus virtiofsd instances. Translate credentials into smbios type
-  11 strings. Correctly translate SIGTERM into ACPI shutdown events.
-  Listen to logind suspend events and turn these into suspend key pressed +
-  ACPI resume events.
 
 * maybe add new flags to gpt partition tables for rootfs and usrfs indicating
   purpose, i.e. whether something is supposed to be bootable in a VM, on
@@ -1340,8 +1347,6 @@ Features:
     - libpam (only when called from PID 1)
     - bzip2, xz, lz4 (always — gzip and zstd should probably stay static deps the way they are,
       since they are so basic and our defaults)
-  o move into separate libelogind-shared-iptables.so .so
-    - iptables-libs (only used by nspawn + networkd)
 
 * seccomp: maybe use seccomp_merge() to merge our filters per-arch if we can.
   Apparently kernel performance is much better with fewer larger seccomp
