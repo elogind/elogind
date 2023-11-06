@@ -22,7 +22,7 @@
 #include "macro.h"
 #include "mkdir-label.h"
 #include "mount-setup.h"
-//#include "mount-util.h"
+#include "mount-util.h"
 #include "mountpoint-util.h"
 //#include "nulstr-util.h"
 //#include "path-util.h"

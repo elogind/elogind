@@ -46,7 +46,6 @@ int mount_verbose_full(
                 const char *options,
                 bool follow_symlink);
 
-#if 0 /// UNNEEDED by elogind
 static inline int mount_follow_verbose(
                 int error_log_level,
                 const char *what,
@@ -56,7 +55,6 @@ static inline int mount_follow_verbose(
                 const char *options) {
         return mount_verbose_full(error_log_level, what, where, type, flags, options, true);
 }
-#endif // 0
 
 static inline int mount_nofollow_verbose(
                 int error_log_level,

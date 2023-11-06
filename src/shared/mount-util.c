@@ -13,7 +13,7 @@
 
 #include "alloc-util.h"
 #include "chase.h"
-#include "dissect-image.h"
+//#include "dissect-image.h"
 #include "exec-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
@@ -23,7 +23,7 @@
 #include "hashmap.h"
 //#include "initrd-util.h"
 #include "label-util.h"
-#include "libmount-util.h"
+//#include "libmount-util.h"
 #include "missing_mount.h"
 #include "missing_syscall.h"
 #include "mkdir-label.h"
