@@ -1157,7 +1157,6 @@
     components of the core OS, please refer to
     <citerefentry><refentrytitle>kernel-command-line</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
   </refsect1>
-  // 0 -->
 
   <refsect1>
     <title>System credentials</title>
@@ -1222,6 +1221,7 @@
       </varlistentry>
     </variablelist>
   </refsect1>
+  // 0 -->
 
   <refsect1>
     <title>Options</title>
