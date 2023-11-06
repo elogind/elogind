@@ -91,9 +91,7 @@ simple_tests += files(
 #if 0 /// UNNEEDED by elogind
 #         'test-data-fd-util.c',
 #         'test-date.c',
-#endif // 0
-        'test-dev-setup.c',
-#if 0 /// UNNEEDED by elogind
+#         'test-dev-setup.c',
 #         'test-device-nodes.c',
 #endif // 0
         'test-devnum-util.c',

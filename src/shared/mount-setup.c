@@ -11,7 +11,7 @@
 #include "cgroup-setup.h"
 //#include "cgroup-util.h"
 //#include "conf-files.h"
-#include "dev-setup.h"
+//#include "dev-setup.h"
 //#include "dirent-util.h"
 #include "efi-loader.h"
 #include "fd-util.h"
@@ -588,6 +588,7 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
         (void) mkdir_label("/run/systemd/system", 0755);
 #endif // 0
 
+#if 0 /// elogind is not PID 1 and therefore not responsible for those directories. Also we do not need and/or use them.
         /* Make sure there's always a place where sandboxed environments can mount root file systems they are
          * about to move into, even when unprivileged, without having to create a temporary one in /tmp/
          * (which they then have to keep track of and clean) */
@@ -608,6 +609,7 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
                 (void) make_inaccessible_nodes("/run/systemd", UID_INVALID, GID_INVALID);
         } else
                 (void) symlink("../host/inaccessible", "/run/systemd/inaccessible");
+#endif // 0
 
         return 0;
 }

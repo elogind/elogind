@@ -193,7 +193,6 @@ shared_sources = files(
         'conf-parser.c',
         'copy.c',
         'daemon-util.c',
-        'dev-setup.c',
         'dns-domain.c',
         'efi-api.c',
         'efi-loader.c',
