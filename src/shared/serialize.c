@@ -133,7 +133,6 @@ int serialize_strv(FILE *f, const char *key, char **l) {
 
         return ret;
 }
-#endif // 0
 
 int deserialize_strv(char ***l, const char *value) {
         ssize_t unescaped_len;
@@ -148,6 +147,7 @@ int deserialize_strv(char ***l, const char *value) {
 
         return strv_consume(l, unescaped);
 }
+#endif // 0
 
 int deserialize_usec(const char *value, usec_t *ret) {
         int r;
