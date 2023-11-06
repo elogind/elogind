@@ -289,9 +289,11 @@ int conf_files_list(char ***ret, const char *suffix, const char *root, unsigned 
         return conf_files_list_strv(ret, suffix, root, flags, STRV_MAKE_CONST(dir));
 }
 
+#if 0 /// UNNEEDED by elogind
 int conf_files_list_at(char ***ret, const char *suffix, int rfd, unsigned flags, const char *dir) {
         return conf_files_list_strv_at(ret, suffix, rfd, flags, STRV_MAKE_CONST(dir));
 }
+#endif // 0
 
 int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, unsigned flags, const char *dirs) {
         _cleanup_strv_free_ char **d = NULL;
