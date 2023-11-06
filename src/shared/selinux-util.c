@@ -285,6 +285,7 @@ static int selinux_fix_fd(
 }
 #endif
 
+#if 0 /// UNNEDED by elogind
 int mac_selinux_fix_full(
                 int atfd,
                 const char *inode_path,
@@ -334,7 +335,6 @@ int mac_selinux_fix_full(
 #endif
 }
 
-#if 0 /// UNNEDED by elogind
 int mac_selinux_apply(const char *path, const char *label) {
 
         assert(path);

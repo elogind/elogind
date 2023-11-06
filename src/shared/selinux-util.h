@@ -7,7 +7,7 @@
 #include <sys/types.h>
 
 #include "macro.h"
-#include "label-util.h"
+//#include "label-util.h"
 
 #if HAVE_SELINUX
 #include <selinux/selinux.h>
@@ -24,9 +24,9 @@ int mac_selinux_init(void);
 void mac_selinux_maybe_reload(void);
 void mac_selinux_finish(void);
 
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_fix_full(int atfd, const char *inode_path, const char *label_path, LabelFixFlags flags);
 
-#if 0 /// UNNEEDED by elogind
 int mac_selinux_apply(const char *path, const char *label);
 int mac_selinux_apply_fd(int fd, const char *path, const char *label);
 
