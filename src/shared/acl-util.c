@@ -493,7 +493,6 @@ int fd_add_uid_acl_permission(
 
         return 0;
 }
-#endif // 0
 
 int fd_acl_make_read_only(int fd) {
         _cleanup_(acl_freep) acl_t acl = NULL;
@@ -617,8 +616,10 @@ int fd_acl_make_writable(int fd) {
 
         return 1;
 }
+#endif // 0
 #endif
 
+#if 0 /// UNNEEDED by elogind
 int fd_acl_make_read_only_fallback(int fd) {
         struct stat st;
 
@@ -652,3 +653,4 @@ int fd_acl_make_writable_fallback(int fd) {
 
         return 1;
 }
+#endif // 0
