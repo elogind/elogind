@@ -34,9 +34,9 @@ int block_get_originating(dev_t d, dev_t *ret);
 #endif // 0
 
 int get_block_device_fd(int fd, dev_t *ret);
+#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *dev);
 
-#if 0 /// UNNEEDED by elogind
 int get_block_device_harder_fd(int fd, dev_t *dev);
 int get_block_device_harder(const char *path, dev_t *dev);
 
@@ -59,6 +59,6 @@ int block_device_has_partitions(sd_device *dev);
 int blockdev_reread_partition_table(sd_device *dev);
 
 int blockdev_get_sector_size(int fd, uint32_t *ret);
-#endif // 0
 
 int blockdev_get_root(int level, dev_t *ret);
+#endif // 0

@@ -52,6 +52,7 @@ static int validate_subvolume_name(const char *name) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int extract_subvolume_name(const char *path, char **ret) {
         _cleanup_free_ char *fn = NULL;
         int r;
@@ -70,6 +71,7 @@ static int extract_subvolume_name(const char *path, char **ret) {
         *ret = TAKE_PTR(fn);
         return 0;
 }
+#endif // 0
 
 int btrfs_is_subvol_at(int dir_fd, const char *path) {
         struct stat st;
@@ -267,9 +269,6 @@ int btrfs_get_block_device_at(int dir_fd, const char *path, dev_t *ret) {
 
         return -ENODEV;
 }
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 int btrfs_subvol_get_id_fd(int fd, uint64_t *ret) {
         struct btrfs_ioctl_ino_lookup_args args = {

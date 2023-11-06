@@ -55,15 +55,18 @@ static inline int btrfs_is_subvol(const char *path) {
         return btrfs_is_subvol_at(AT_FDCWD, path);
 }
 
-#if 0 /// UNNEEDED by elogind
 int btrfs_get_block_device_at(int dir_fd, const char *path, dev_t *ret);
+#if 0 /// UNNEEDED by elogind
 static inline int btrfs_get_block_device(const char *path, dev_t *ret) {
         return btrfs_get_block_device_at(AT_FDCWD, path, ret);
 }
+#endif // 0
+
 static inline int btrfs_get_block_device_fd(int fd, dev_t *ret) {
         return btrfs_get_block_device_at(fd, "", ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int btrfs_defrag_fd(int fd);
 int btrfs_defrag(const char *p);
 
@@ -92,11 +95,11 @@ static inline int btrfs_subvol_remove(const char *path, BtrfsRemoveFlags flags) 
         return btrfs_subvol_remove_at(AT_FDCWD, path, flags);
 }
 
-#if 0 /// UNNEEDED by elogind
 int btrfs_subvol_set_read_only_at(int dir_fd, const char *path, bool b);
 static inline int btrfs_subvol_set_read_only_fd(int fd, bool b) {
         return btrfs_subvol_set_read_only_at(fd, NULL, b);
 }
+#if 0 /// UNNEEDED by elogind
 static inline int btrfs_subvol_set_read_only(const char *path, bool b) {
         return btrfs_subvol_set_read_only_at(AT_FDCWD, path, b);
 }

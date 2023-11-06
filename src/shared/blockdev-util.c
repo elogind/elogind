@@ -284,6 +284,7 @@ int get_block_device_fd(int fd, dev_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_block_device(const char *path, dev_t *ret) {
         _cleanup_close_ int fd = -EBADF;
 
@@ -297,7 +298,6 @@ int get_block_device(const char *path, dev_t *ret) {
         return get_block_device_fd(fd, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int block_get_originating(dev_t dt, dev_t *ret) {
         _cleanup_(sd_device_unrefp) sd_device *dev = NULL, *origin = NULL;
         int r;
@@ -779,7 +779,6 @@ int blockdev_get_sector_size(int fd, uint32_t *ret) {
         *ret = ssz;
         return 0;
 }
-#endif // 0
 
 int blockdev_get_root(int level, dev_t *ret) {
         _cleanup_free_ char *p = NULL;
@@ -830,3 +829,4 @@ int blockdev_get_root(int level, dev_t *ret) {
 
         return 1;
 }
+#endif // 0
