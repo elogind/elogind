@@ -4670,6 +4670,7 @@ int json_dispatch_variant(const char *name, JsonVariant *variant, JsonDispatchFl
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_variant_noref(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         JsonVariant **p = ASSERT_PTR(userdata);
         assert(variant);
@@ -4678,6 +4679,7 @@ int json_dispatch_variant_noref(const char *name, JsonVariant *variant, JsonDisp
         *p = variant;
         return 0;
 }
+#endif // 0
 
 int json_dispatch_uid_gid(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uid_t *uid = userdata;
