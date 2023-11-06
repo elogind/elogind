@@ -18,7 +18,7 @@
 #include "bus-internal.h"
 //#include "bus-label.h"
 #include "bus-util.h"
-#include "data-fd-util.h"
+//#include "data-fd-util.h"
 #include "fd-util.h"
 #include "memstream-util.h"
 #include "path-util.h"
@@ -620,7 +620,6 @@ int bus_reply_pair_array(sd_bus_message *m, char **l) {
 
         return sd_bus_send(NULL, reply, NULL);
 }
-#endif // 0
 
 static int method_dump_memory_state_by_fd(sd_bus_message *message, void *userdata, sd_bus_error *ret_error) {
         _cleanup_(memstream_done) MemStream m = {};
@@ -680,6 +679,7 @@ int bus_register_malloc_status(sd_bus *bus, const char *destination) {
 
         return 0;
 }
+#endif // 0
 
 static void bus_message_unref_wrapper(void *m) {
         sd_bus_message_unref(m);
