@@ -11,7 +11,7 @@
 #include "fd-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "process-util.h"
+#include "process-util.h"
 //#include "signal-util.h"
 
 
@@ -114,6 +114,7 @@ int asynchronous_close(int fd) {
         return -EBADF; /* return an invalidated fd */
 }
 
+#if 0 /// UNNEEDED by elogind
 int asynchronous_rm_rf(const char *p, RemoveFlags flags) {
         int r;
 
@@ -138,3 +139,4 @@ int asynchronous_rm_rf(const char *p, RemoveFlags flags) {
 
         _exit(EXIT_SUCCESS);
 }
+#endif // 0

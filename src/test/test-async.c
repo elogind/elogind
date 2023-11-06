@@ -1,21 +1,23 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <fcntl.h>
-#include <sys/prctl.h>
-#include <sys/wait.h>
+//#include <sys/prctl.h>
+//#include <sys/wait.h>
 #include <unistd.h>
 
 #include "async.h"
-#include "fs-util.h"
-#include "path-util.h"
+//#include "fs-util.h"
+//#include "path-util.h"
 #include "process-util.h"
 #include "signal-util.h"
 #include "tests.h"
 #include "tmpfile-util.h"
 
+#if 0 /// UNNEEDED by elogind
 TEST(test_asynchronous_sync) {
         assert_se(asynchronous_sync(NULL) >= 0);
 }
+#endif // 0
 
 TEST(asynchronous_close) {
         _cleanup_(unlink_tempfilep) char name[] = "/tmp/test-asynchronous_close.XXXXXX";
@@ -51,6 +53,7 @@ TEST(asynchronous_close) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(asynchronous_rm_rf) {
         _cleanup_free_ char *t = NULL, *k = NULL;
         int r;
@@ -95,6 +98,6 @@ TEST(asynchronous_rm_rf) {
                 _exit(EXIT_SUCCESS);
         }
 }
-
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
