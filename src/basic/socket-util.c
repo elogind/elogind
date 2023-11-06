@@ -28,7 +28,7 @@
 #include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
-//#include "string-table.h"
+#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 //#include "sysctl-util.h"
@@ -45,7 +45,6 @@
 #  define IDN_FLAGS 0
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 static const char* const socket_address_type_table[] = {
         [SOCK_STREAM] =    "Stream",
         [SOCK_DGRAM] =     "Datagram",
@@ -57,6 +56,7 @@ static const char* const socket_address_type_table[] = {
 
 DEFINE_STRING_TABLE_LOOKUP(socket_address_type, int);
 
+#if 0 /// UNNEEDED by elogind
 int socket_address_verify(const SocketAddress *a, bool strict) {
         assert(a);
 

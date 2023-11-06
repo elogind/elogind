@@ -74,10 +74,12 @@ typedef enum SocketAddressBindIPv6Only {
 } SocketAddressBindIPv6Only;
 
 #define socket_address_family(a) ((a)->sockaddr.sa.sa_family)
+#endif // 0
 
 const char* socket_address_type_to_string(int t) _const_;
 int socket_address_type_from_string(const char *s) _pure_;
 
+#if 0 /// UNNEEDED by elogind
 int sockaddr_un_unlink(const struct sockaddr_un *sa);
 
 static inline int socket_address_unlink(const SocketAddress *a) {
