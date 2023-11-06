@@ -51,8 +51,8 @@ int mac_smack_apply_fd(int fd, SmackAttr attr, const char *label);
 int mac_smack_apply_pid(pid_t pid, const char *label);
 int mac_smack_copy(const char *dest, const char *src);
 
-#endif // 0
 int renameat_and_apply_smack_floor_label(int fdf, const char *from, int fdt, const char *to);
 static inline int rename_and_apply_smack_floor_label(const char *from, const char *to) {
         return renameat_and_apply_smack_floor_label(AT_FDCWD, from, AT_FDCWD, to);
 }
+#endif // 0
