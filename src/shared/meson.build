@@ -177,6 +177,7 @@
 shared_sources = files(
         'acl-util.c',
         'async.c',
+        'battery-util.c',
         'blockdev-util.c',
         'bootspec.c',
         'btrfs-util.c',
