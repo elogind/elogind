@@ -493,7 +493,6 @@ int path_compare(const char *a, const char *b) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
 int path_compare_filename(const char *a, const char *b) {
         _cleanup_free_ char *fa = NULL, *fb = NULL;
         int r, j, k;
@@ -522,7 +521,6 @@ int path_compare_filename(const char *a, const char *b) {
 
         return strcmp(fa, fb);
 }
-#endif // 0
 
 char* path_extend_internal(char **x, ...) {
         size_t sz, old_sz;
