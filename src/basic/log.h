@@ -184,6 +184,7 @@ int log_struct_iovec_internal(
                 const char *func,
                 const struct iovec *input_iovec,
                 size_t n_input_iovec);
+#endif // 0
 
 /* This modifies the buffer passed! */
 int log_dump_internal(
@@ -193,7 +194,6 @@ int log_dump_internal(
                 int line,
                 const char *func,
                 char *buffer);
-#endif // 0
 
 /* Logging for various assertions */
 _noreturn_ void log_assert_failed(
