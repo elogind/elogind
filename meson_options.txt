@@ -166,6 +166,8 @@ option('utmp', type : 'boolean',
 #        description : 'install the systemd-homed stack')
 # option('networkd', type : 'boolean',
 #        description : 'install the systemd-networkd stack')
+# option('default-network', type : 'boolean', value : true,
+#        description : 'install default .network files')
 # option('timedated', type : 'boolean',
 #        description : 'install the systemd-timedated daemon')
 # option('timesyncd', type : 'boolean',
@@ -190,12 +192,14 @@ option('utmp', type : 'boolean',
 #        description : 'support for restoring backlight state')
 # option('vconsole', type : 'boolean',
 #        description : 'support for vconsole configuration')
-# option('vmspawn', type : 'boolean', value: false,
 #        description : 'install the elogind-vmspawn tool')
+# option('vmspawn', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
 # option('quotacheck', type : 'boolean',
 #        description : 'support for the quotacheck tools')
 # option('sysusers', type : 'boolean',
 #        description : 'support for the sysusers configuration')
+# option('storagetm', type : 'boolean',
+#        description : 'support for Storage Target Mode')
 # option('tmpfiles', type : 'boolean',
 #        description : 'support for tmpfiles.d')
 # option('importd', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },

@@ -40,6 +40,7 @@ conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
 conf.set10('BUILD_MODE_DEVELOPER', get_option('mode') == 'developer',
            description : 'tailor build to development or release builds')
+
 feature = get_option('log-message-verification')
 if feature.auto()
         have = conf.get('BUILD_MODE_DEVELOPER') == 1
@@ -1522,6 +1523,7 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 # libiptc = dependency('libiptc',
 #                      required : get_option('libiptc'))
 # conf.set10('HAVE_LIBIPTC', libiptc.found())
+# libiptc_cflags = libiptc.partial_dependency(includes: true, compile_args: true)
 #
 # libqrencode = dependency('libqrencode',
 #                          version : '>= 3',
@@ -1860,6 +1862,9 @@ conf.set10('ENABLE_HOMED', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
+# feature = get_option('vmspawn').disable_auto_if(conf.get('BUILD_MODE_DEVELOPER') == 0)
+# conf.set10('ENABLE_VMSPAWN', feature.allowed())
+#
 # foreach term : ['analyze',
 #                 'backlight',
 #                 'binfmt',
@@ -2611,6 +2616,7 @@ subdir('src/login')
 # subdir('src/varlinkctl')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
+# subdir('src/vmspawn')
 # subdir('src/volatile-root')
 # subdir('src/xdg-autostart-generator')
 #endif // 0
@@ -3385,6 +3391,7 @@ foreach tuple : [
 #         ['tmpfiles'],
 #         ['userdb'],
 #         ['vconsole'],
+#         ['vmspawn'],
 #         ['xdg-autostart'],
 #
 #         # optional features
