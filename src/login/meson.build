@@ -53,11 +53,12 @@ liblogind_core = static_library(
 #if 0 /// elogind needs audit support for utmp inclusion
 #         dependencies : [libacl,
 #                         userspace],
-#         build_by_default : false)
 #else // 0
         dependencies : [libacl,
-                        libaudit])
+                        libaudit,
+                        userspace],
 #endif // 0
+        build_by_default : false)
 
 loginctl_sources = files(
         'loginctl.c',
