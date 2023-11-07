@@ -4469,7 +4469,6 @@ static const char* const freezer_action_table[_FREEZER_ACTION_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(freezer_action, FreezerAction);
-#endif // 0
 
 static const char* const cgroup_pressure_watch_table[_CGROUP_PRESSURE_WATCH_MAX] = {
         [CGROUP_PRESSURE_WATCH_OFF] = "off",
@@ -4479,3 +4478,4 @@ static const char* const cgroup_pressure_watch_table[_CGROUP_PRESSURE_WATCH_MAX]
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_BOOLEAN(cgroup_pressure_watch, CGroupPressureWatch, CGROUP_PRESSURE_WATCH_ON);
+#endif // 0

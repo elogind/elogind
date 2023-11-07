@@ -381,7 +381,7 @@ int unit_cgroup_freezer_action(Unit *u, FreezerAction action);
 
 const char* freezer_action_to_string(FreezerAction a) _const_;
 FreezerAction freezer_action_from_string(const char *s) _pure_;
-#endif // 0
 
 const char* cgroup_pressure_watch_to_string(CGroupPressureWatch a) _const_;
 CGroupPressureWatch cgroup_pressure_watch_from_string(const char *s) _pure_;
+#endif // 0
