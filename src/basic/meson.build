@@ -171,6 +171,7 @@ basic_sources = files(
         'ratelimit.c',
         'recurse-dir.c',
         'rlimit-util.c',
+        'runtime-scope.c',
         'sigbus.c',
         'signal-util.c',
         'siphash24.c',
