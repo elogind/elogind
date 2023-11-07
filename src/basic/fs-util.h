@@ -108,6 +108,7 @@ static inline char *rmdir_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, rmdir_and_free);
+#endif // 0
 
 static inline char* unlink_and_free(char *p) {
         if (!p)
@@ -117,7 +118,6 @@ static inline char* unlink_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, unlink_and_free);
-#endif // 0
 
 int access_fd(int fd, int mode);
 
