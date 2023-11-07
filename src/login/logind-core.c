@@ -97,13 +97,10 @@ int manager_parse_config_file(Manager *m) {
         if (!logind_conf)
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
 
-        return config_parse_many_nulstr(
-                        logind_conf,
-                        CONF_PATHS_NULSTR("elogind/logind.conf.d"),
-                        "Login\0Sleep\0",
+        return config_parse_config_file(
+                        logind_conf, "Login\0Sleep\0",
                         config_item_perf_lookup, logind_gperf_lookup,
-                        CONFIG_PARSE_WARN, m,
-                        NULL);
+                        CONFIG_PARSE_WARN, m);
 #endif // 0
 }
 
