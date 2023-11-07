@@ -3718,6 +3718,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+#endif // 0
                 case _JSON_BUILD_ID128:
                 case _JSON_BUILD_UUID: {
                         const sd_id128_t *id;
@@ -3749,6 +3750,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
+#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_BYTE_ARRAY: {
                         const void *array;
                         size_t n;

@@ -180,7 +180,6 @@ int parse_sleep_config(SleepConfig **ret_sleep_config) {
         *ret_sleep_config = TAKE_PTR(sc);
 #endif // 0
 
-
         return 0;
 }
 
