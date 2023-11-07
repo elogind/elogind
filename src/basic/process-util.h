@@ -224,12 +224,10 @@ int pidfd_verify_pid(int pidfd, pid_t pid);
 
 #if 0 /// UNNEEDED by elogind
 int setpriority_closest(int priority);
-
 #endif // 0
 
 _noreturn_ void freeze(void);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int get_process_threads(pid_t pid);
 
 int is_reaper_process(void);

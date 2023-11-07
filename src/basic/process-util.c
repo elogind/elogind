@@ -1694,7 +1694,6 @@ _noreturn_ void freeze(void) {
                 pause();
 }
 
-#if 0 /// UNNEEDED by elogind
 int get_process_threads(pid_t pid) {
         _cleanup_free_ char *t = NULL;
         const char *p;
@@ -1719,7 +1718,6 @@ int get_process_threads(pid_t pid) {
 
         return n;
 }
-#endif // 0
 
 int is_reaper_process(void) {
         int b = 0;

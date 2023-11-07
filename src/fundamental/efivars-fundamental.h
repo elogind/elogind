@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
-#ifdef SD_BOOT
+#if SD_BOOT
 #  define EINVAL 22
 #else
 #  include <errno.h>
