@@ -183,7 +183,6 @@ char *truncate_nl_full(char *s, size_t *ret_len) {
         return s;
 }
 
-#if 0 /// UNNEEDED by elogind
 char ascii_tolower(char x) {
 
         if (x >= 'A' && x <= 'Z')
@@ -192,6 +191,7 @@ char ascii_tolower(char x) {
         return x;
 }
 
+#if 0 /// UNNEEDED by elogind
 char ascii_toupper(char x) {
 
         if (x >= 'a' && x <= 'z')
@@ -199,6 +199,7 @@ char ascii_toupper(char x) {
 
         return x;
 }
+#endif // 0
 
 char *ascii_strlower(char *t) {
         assert(t);
@@ -209,6 +210,7 @@ char *ascii_strlower(char *t) {
         return t;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *ascii_strupper(char *t) {
         assert(t);
 
