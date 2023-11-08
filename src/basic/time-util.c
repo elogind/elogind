@@ -66,7 +66,7 @@ nsec_t now_nsec(clockid_t clock_id) {
 }
 #endif // 0
 
-dual_timestamp* dual_timestamp_get(dual_timestamp *ts) {
+dual_timestamp* dual_timestamp_now(dual_timestamp *ts) {
         assert(ts);
 
         ts->realtime = now(CLOCK_REALTIME);
@@ -75,7 +75,7 @@ dual_timestamp* dual_timestamp_get(dual_timestamp *ts) {
         return ts;
 }
 
-triple_timestamp* triple_timestamp_get(triple_timestamp *ts) {
+triple_timestamp* triple_timestamp_now(triple_timestamp *ts) {
         assert(ts);
 
         ts->realtime = now(CLOCK_REALTIME);
