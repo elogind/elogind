@@ -270,11 +270,11 @@ common_test_dependencies = [
 ]
 
 tests += [
-        {
-                'sources' : files('test-acl-util.c'),
-                'condition' : 'HAVE_ACL',
-        },
-#if 0 /// the functions elogind uses are not covered in this test
+#if 0 /// the functions elogind uses are not covered in these tests
+#         {
+#                 'sources' : files('test-acl-util.c'),
+#                 'condition' : 'HAVE_ACL',
+#         },
 #         {
 #                 'sources' : files('test-af-list.c') +
 #                             generated_gperf_headers,
