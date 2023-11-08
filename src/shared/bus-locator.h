@@ -33,8 +33,8 @@ int bus_call_method_async(sd_bus *bus, sd_bus_slot **slot, const BusLocator *loc
 int bus_call_method(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, sd_bus_message **reply, const char *types, ...);
 #if 0 /// UNNEEDED by elogind
 int bus_get_property(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, sd_bus_message **reply, const char *type);
-int bus_get_property_trivial(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char type, void *ptr);
 #endif // 0
+int bus_get_property_trivial(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char type, void *ptr);
 int bus_get_property_string(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char **ret);
 #if 0 /// UNNEEDED by elogind
 int bus_get_property_strv(sd_bus *bus, const BusLocator *locator, const char *member, sd_bus_error *error, char ***ret);

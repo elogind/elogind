@@ -141,6 +141,7 @@ int bus_get_property(
 
         return sd_bus_get_property(bus, locator->destination, locator->path, locator->interface, member, error, reply, type);
 }
+#endif // 0
 
 int bus_get_property_trivial(
                 sd_bus *bus,
@@ -153,7 +154,6 @@ int bus_get_property_trivial(
 
         return sd_bus_get_property_trivial(bus, locator->destination, locator->path, locator->interface, member, error, type, ptr);
 }
-#endif // 0
 
 int bus_get_property_string(
                 sd_bus *bus,
