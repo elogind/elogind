@@ -271,7 +271,6 @@ int execute_strv(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int execute_directories(
                 const char* const* directories,
                 usec_t timeout,
@@ -305,6 +304,7 @@ int execute_directories(
         return execute_strv(name, paths, NULL, timeout, callbacks, callback_args, argv, envp, flags);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int gather_environment_generate(int fd, void *arg) {
         char ***env = ASSERT_PTR(arg);
         _cleanup_fclose_ FILE *f = NULL;
