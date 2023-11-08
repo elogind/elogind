@@ -375,7 +375,7 @@ conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('defaul
 # conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
 #
 #endif // 0
-conf.set10('ENABLE_FIRST_BOOT_FULL_PRESET',                   get_option('first-boot-full-preset'))
+conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
 
 #####################################################################
 
@@ -1463,7 +1463,7 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 # libcryptsetup_plugins = get_option('libcryptsetup-plugins')
 # if libcryptsetup_plugins.enabled()
 #         if libcryptsetup.disabled()
-#                 error('libcryptsetup-plugins can not be requested without libcryptsetup')
+#                 error('libcryptsetup-plugins cannot be requested without libcryptsetup')
 #         endif
 #         libcryptsetup = libcryptsetup_plugins
 # endif
