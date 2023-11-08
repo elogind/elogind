@@ -8,7 +8,7 @@
 
 #include "alloc-util.h"
 #include "capability-util.h"
-//#include "cap-list.h"
+#include "cap-list.h"
 #include "fileio.h"
 //#include "log.h"
 //#include "logarithm.h"
@@ -86,7 +86,6 @@ unsigned cap_last_cap(void) {
         return p;
 }
 
-#if 0 /// UNNEEDED by elogind
 int capability_update_inherited_set(cap_t caps, uint64_t set) {
         /* Add capabilities in the set to the inherited caps, drops capabilities not in the set.
          * Do not apply them yet. */
@@ -265,6 +264,7 @@ finish:
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int drop_from_file(const char *fn, uint64_t keep) {
         _cleanup_free_ char *p = NULL;
         uint64_t current, after;
@@ -385,6 +385,7 @@ int drop_capability(cap_value_t cv) {
 
         return 0;
 }
+#endif // 0
 
 bool ambient_capabilities_supported(void) {
         static int cache = -1;
@@ -401,6 +402,7 @@ bool ambient_capabilities_supported(void) {
         return cache;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool capability_quintet_mangle(CapabilityQuintet *q) {
         uint64_t combined, drop = 0;
         bool ambient_supported;

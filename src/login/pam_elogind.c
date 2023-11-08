@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-//#include <endian.h>
+#include <endian.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <pwd.h>
@@ -8,11 +8,11 @@
 #include <security/pam_ext.h>
 #include <security/pam_misc.h>
 #include <security/pam_modules.h>
-//#include <security/pam_modutil.h>
-//#include <sys/file.h>
+#include <security/pam_modutil.h>
+#include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/sysmacros.h>
-//#include <sys/types.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
@@ -27,7 +27,7 @@
 #include "devnum-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
-//#include "fileio.h"
+#include "fileio.h"
 #include "format-util.h"
 #include "fs-util.h"
 #include "hostname-util.h"
@@ -41,11 +41,14 @@
 #include "process-util.h"
 #include "rlimit-util.h"
 #include "socket-util.h"
-//#include "stdio-util.h"
+#include "stdio-util.h"
 #include "strv.h"
 #include "terminal-util.h"
 #include "user-util.h"
 #include "userdb.h"
+
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 #define LOGIN_SLOW_BUS_CALL_TIMEOUT_USEC (2*USEC_PER_MINUTE)
 

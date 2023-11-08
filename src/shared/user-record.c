@@ -2031,6 +2031,7 @@ uint64_t user_record_rebalance_weight(UserRecord *h) {
 
         return h->rebalance_weight;
 }
+#endif // 0
 
 static uint64_t parse_caps_strv(char **l) {
         uint64_t c = 0;
@@ -2069,6 +2070,7 @@ uint64_t user_record_capability_ambient_set(UserRecord *h) {
         return parse_caps_strv(h->capability_ambient_set) & user_record_capability_bounding_set(h);
 }
 
+#if 0 /// UNNEEDED by elogind
 uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         assert(h);
 

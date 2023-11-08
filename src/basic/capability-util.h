@@ -21,14 +21,16 @@
 
 unsigned cap_last_cap(void);
 int have_effective_cap(int value);
-#if 0 /// UNNEEDED by elogind
 int capability_gain_cap_setpcap(cap_t *return_caps);
 int capability_bounding_set_drop(uint64_t keep, bool right_now);
+#if 0 /// UNNEEDED by elogind
 int capability_bounding_set_drop_usermode(uint64_t keep);
+#endif // 0
 
 int capability_ambient_set_apply(uint64_t set, bool also_inherit);
 int capability_update_inherited_set(cap_t caps, uint64_t ambient_set);
 
+#if 0 /// UNNEEDED by elogind
 int drop_privileges(uid_t uid, gid_t gid, uint64_t keep_capabilities);
 
 int drop_capability(cap_value_t cv);
@@ -48,14 +50,12 @@ static inline void cap_free_charpp(char **p) {
 static inline uint64_t all_capabilities(void) {
         return UINT64_MAX >> (63 - cap_last_cap());
 }
-#if 0 /// UNNEEDED by elogind
 
 static inline bool cap_test_all(uint64_t caps) {
         return FLAGS_SET(caps, all_capabilities());
 }
 
 bool ambient_capabilities_supported(void);
-#endif // 0
 
 /* Identical to linux/capability.h's CAP_TO_MASK(), but uses an unsigned 1U instead of a signed 1 for shifting left, in
  * order to avoid complaints about shifting a signed int left by 31 bits, which would make it negative. */
