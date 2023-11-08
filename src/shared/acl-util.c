@@ -435,6 +435,7 @@ int acls_for_file(const char *path, acl_type_t type, acl_t acl, acl_t *ret) {
 
         return 0;
 }
+#endif // 0
 
 /* POSIX says that ACL_{READ,WRITE,EXECUTE} don't have to be bitmasks. But that is a natural thing to do and
  * all extant implementations do it. Let's make sure that we fail verbosely in the (imho unlikely) scenario
@@ -446,6 +447,7 @@ assert_cc((unsigned) ACL_READ == ACL_READ);
 assert_cc((unsigned) ACL_WRITE == ACL_WRITE);
 assert_cc((unsigned) ACL_EXECUTE == ACL_EXECUTE);
 
+#if 0 /// UNNEEDED by elogind
 int fd_add_uid_acl_permission(
                 int fd,
                 uid_t uid,
