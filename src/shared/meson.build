@@ -191,6 +191,7 @@ shared_sources = files(
         'bus-util.c',
         'cgroup-setup.c',
         'clean-ipc.c',
+        'common-signal.c',
         'conf-parser.c',
         'copy.c',
         'daemon-util.c',
