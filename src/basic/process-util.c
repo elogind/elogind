@@ -1734,7 +1734,6 @@ int is_reaper_process(void) {
         return b != 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int make_reaper_process(bool b) {
 
         if (getpid_cached() == 1) {
@@ -1753,6 +1752,7 @@ int make_reaper_process(bool b) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
         [CLD_KILLED] = "killed",

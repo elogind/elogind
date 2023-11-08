@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 #include "async.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 //#include "path-util.h"
 #include "process-util.h"
 #include "signal-util.h"
