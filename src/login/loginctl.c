@@ -1312,10 +1312,10 @@ static int help(int argc, char *argv[], void *userdata) {
         if (r < 0)
                 return log_oom();
 
-#if 0 /// elogind has "list" as a shorthand for "list-sessions"
         printf("%1$s [OPTIONS...] COMMAND ...\n\n"
                "%5$sSend control commands to or query the login manager.%6$s\n"
                "\n%3$sSession Commands:%4$s\n"
+#if 0 /// elogind has "list" as a shorthand for "list-sessions"
                "  list-sessions            List sessions\n"
 #else // 0
                "  list[-sessions]          List sessions (default command)\n"
@@ -1345,7 +1345,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "  flush-devices            Flush all device associations\n"
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
 #if 1 /// elogind adds some system commands to loginctl
-               "\nSystem Commands:\n"
+               "\n%3$sSystem Commands:%4$s\n"
                "  reload                    Reload the elogind config file\n"
                "  poweroff [TIME] [WALL...] Turn off the machine\n"
                "  reboot   [TIME] [WALL...] Reboot the machine\n"
@@ -1385,6 +1385,7 @@ static int help(int argc, char *argv[], void *userdata) {
                "                             short-iso, short-iso-precise, short-full,\n"
                "                             short-monotonic, short-unix, short-delta,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
+               "                             verbose, export, with-unit)\n"
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
@@ -1396,7 +1397,6 @@ static int help(int argc, char *argv[], void *userdata) {
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
 #endif // 1
-               "                             verbose, export, with-unit)\n"
                "\nSee the %2$s for details.\n",
                program_invocation_short_name,
                link,
