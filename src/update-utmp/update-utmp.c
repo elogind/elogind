@@ -153,12 +153,11 @@ static int on_reboot(int argc, char *argv[], void *userdata) {
 #endif
 
 #if 0 /// systemd hasn't started the system, so elogind always uses NOW()
+        /* If this call fails, then utmp_put_reboot() will fix to the current time. */
+        (void) get_startup_monotonic_time(c, &t);
 #else // 0
         t = now(CLOCK_REALTIME);
 #endif // 0
-
-        /* If this call fails, then utmp_put_reboot() will fix to the current time. */
-        (void) get_startup_monotonic_time(c, &t);
         boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
         /* We query the recorded monotonic time here (instead of the system clock CLOCK_REALTIME), even
          * though we actually want the system clock time. That's because there's a likely chance that the
@@ -286,9 +285,9 @@ void update_utmp(int argc, char* argv[]) {
         return dispatch_verb(argc, argv, verbs, &c);
 #else // 0
         if (streq(argv[1], "reboot"))
-                (void)on_reboot(&c);
+                (void)on_reboot(argc, argv, &c);
         else if (streq(argv[1], "shutdown"))
-                (void)on_shutdown(&c);
+                (void)on_shutdown(argc, argv, &c);
 #endif // 0
 }
 
