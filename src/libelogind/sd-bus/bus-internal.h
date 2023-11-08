@@ -367,9 +367,7 @@ bool object_path_is_valid(const char *p) _pure_;
 
 char *object_path_startswith(const char *a, const char *b) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 bool namespace_complex_pattern(const char *pattern, const char *value) _pure_;
-#endif // 0
 bool path_complex_pattern(const char *pattern, const char *value) _pure_;
 
 bool namespace_simple_pattern(const char *pattern, const char *value) _pure_;

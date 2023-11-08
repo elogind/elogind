@@ -210,11 +210,9 @@ static bool complex_pattern_check(char c, const char *a, const char *b) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 bool namespace_complex_pattern(const char *pattern, const char *value) {
         return complex_pattern_check('.', pattern, value);
 }
-#endif // 0
 
 bool path_complex_pattern(const char *pattern, const char *value) {
         return complex_pattern_check('/', pattern, value);
