@@ -76,8 +76,12 @@ static int elogind_signal_handler(
 
 
 static void remove_pid_file( void ) {
-        if ( access( ELOGIND_PID_FILE, F_OK ) == 0 )
-                unlink_noerrno( ELOGIND_PID_FILE );
+        if ( access( ELOGIND_PID_FILE, F_OK ) == 0 ) {
+                int old_errno = errno;
+                unlink( ELOGIND_PID_FILE );
+                if ( old_errno != errno )
+                        errno = old_errno;
+        }
 }
 
 
@@ -116,7 +120,7 @@ static int elogind_daemonize( void ) {
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker",
-                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_NULL_STDIO|FORK_WAIT,
+                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
                        &child );
 
         if ( r ) {
