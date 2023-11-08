@@ -52,7 +52,6 @@ static int validate_subvolume_name(const char *name) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int extract_subvolume_name(const char *path, char **ret) {
         _cleanup_free_ char *fn = NULL;
         int r;
@@ -71,7 +70,6 @@ static int extract_subvolume_name(const char *path, char **ret) {
         *ret = TAKE_PTR(fn);
         return 0;
 }
-#endif // 0
 
 int btrfs_is_subvol_at(int dir_fd, const char *path) {
         struct stat st;
@@ -89,7 +87,6 @@ int btrfs_is_subvol_at(int dir_fd, const char *path) {
         return is_fs_type_at(dir_fd, path, BTRFS_SUPER_MAGIC);
 }
 
-#if 0 /// UNNEEDED by elogind
 int btrfs_subvol_make_fd(int fd, const char *subvolume) {
         struct btrfs_ioctl_vol_args args = {};
         _cleanup_close_ int real_fd = -EBADF;
@@ -130,6 +127,7 @@ int btrfs_subvol_make(const char *path) {
         return btrfs_subvol_make_fd(fd, subvolume);
 }
 
+#if 0 /// UNNEEDED by elogind
 int btrfs_subvol_make_fallback(const char *path, mode_t mode) {
         mode_t old, combined;
         int r;

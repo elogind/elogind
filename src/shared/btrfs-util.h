@@ -78,10 +78,12 @@ int btrfs_quota_scan_start(int fd);
 int btrfs_quota_scan_wait(int fd);
 #if 0 /// UNNEEDED by elogind
 int btrfs_quota_scan_ongoing(int fd);
+#endif // 0
 
 int btrfs_subvol_make(const char *path);
 int btrfs_subvol_make_fd(int fd, const char *subvolume);
 
+#if 0 /// UNNEEDED by elogind
 int btrfs_subvol_make_fallback(const char *path, mode_t);
 
 int btrfs_subvol_snapshot_at_full(int dir_fdf, const char *from, int dir_fdt, const char *to, BtrfsSnapshotFlags flags, copy_progress_path_t progress_path, copy_progress_bytes_t progress_bytes, void *userdata);

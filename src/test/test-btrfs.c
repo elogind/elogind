@@ -4,20 +4,23 @@
 
 #include "btrfs-util.h"
 #include "fd-util.h"
-#include "fs-util.h"
+//#include "fs-util.h"
 #include "fileio.h"
-#include "format-util.h"
+//#include "format-util.h"
 #include "log.h"
-#include "string-util.h"
+//#include "string-util.h"
 
 int main(int argc, char *argv[]) {
+#if 0 /// elogind does not handle btrfs quotas
         BtrfsQuotaInfo quota;
+#endif // 0
         int r, fd;
 
         fd = open("/", O_RDONLY|O_CLOEXEC|O_DIRECTORY);
         if (fd < 0)
                 log_error_errno(errno, "Failed to open root directory: %m");
         else {
+#if 0 /// elogind does not need subvolume ids and quotas anywhere.
                 BtrfsSubvolInfo info;
 
                 r = btrfs_subvol_get_info_fd(fd, 0, &info);
@@ -43,7 +46,7 @@ int main(int argc, char *argv[]) {
                         log_error_errno(r, "Failed to get read only flag: %m");
                 else
                         log_info("read-only (ioctl): %s", yes_no(r));
-
+#endif // 0
                 safe_close(fd);
         }
 
@@ -54,7 +57,7 @@ int main(int argc, char *argv[]) {
         r = write_string_file("/xxxtest/file", "ljsadhfljasdkfhlkjdsfha", WRITE_STRING_FILE_CREATE);
         if (r < 0)
                 log_error_errno(r, "Failed to write file: %m");
-
+#if 0 /// elogind does not need to create snapshots
         r = btrfs_subvol_snapshot_at(AT_FDCWD, "/xxxtest", AT_FDCWD, "/xxxtest2", 0);
         if (r < 0)
                 log_error_errno(r, "Failed to make snapshot: %m");
@@ -70,11 +73,13 @@ int main(int argc, char *argv[]) {
                 assert_se(xopenat_lock(AT_FDCWD, "/xxxtest4", 0, 0, 0, LOCK_BSD, LOCK_EX|LOCK_NB) == -EAGAIN);
 
         safe_close(r);
+#endif // 0
 
         r = btrfs_subvol_remove("/xxxtest", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
 
+#if 0 /// As elogind does not need snapshots, these have not been created above
         r = btrfs_subvol_remove("/xxxtest2", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
@@ -86,7 +91,9 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/xxxtest4", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
+  #endif // 0
 
+#if 0 /// elogind does not need to create snapshots
         r = btrfs_subvol_snapshot_at(AT_FDCWD, "/etc", AT_FDCWD, "/etc2",
                                      BTRFS_SNAPSHOT_READ_ONLY|BTRFS_SNAPSHOT_FALLBACK_COPY);
         if (r < 0)
@@ -95,6 +102,7 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/etc2", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
+  #endif // 0
 
         r = btrfs_subvol_make("/xxxrectest");
         if (r < 0)
@@ -129,18 +137,23 @@ int main(int argc, char *argv[]) {
         if (mkdir("/xxxrectest/mnt", 0755) < 0)
                 log_error_errno(errno, "Failed to make directory: %m");
 
+#if 0 /// elogind does not need to create snapshots
         r = btrfs_subvol_snapshot_at(AT_FDCWD, "/xxxrectest", AT_FDCWD, "/xxxrectest2", BTRFS_SNAPSHOT_RECURSIVE);
         if (r < 0)
                 log_error_errno(r, "Failed to snapshot subvolume: %m");
+#endif // 0
 
         r = btrfs_subvol_remove("/xxxrectest", BTRFS_REMOVE_QUOTA|BTRFS_REMOVE_RECURSIVE);
         if (r < 0)
                 log_error_errno(r, "Failed to recursively remove subvolume: %m");
 
+#if 0 /// As elogind does not need snapshots, these have not been created above
         r = btrfs_subvol_remove("/xxxrectest2", BTRFS_REMOVE_QUOTA|BTRFS_REMOVE_RECURSIVE);
         if (r < 0)
                 log_error_errno(r, "Failed to recursively remove subvolume: %m");
+#endif // 0
 
+#if 0 /// elogind does not need to handle qgroups and quotas
         r = btrfs_subvol_make("/xxxquotatest");
         if (r < 0)
                 log_error_errno(r, "Failed to make subvolume: %m");
@@ -191,6 +204,7 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/xxxquotatest2", BTRFS_REMOVE_QUOTA|BTRFS_REMOVE_RECURSIVE);
         if (r < 0)
                 log_error_errno(r, "Failed remove subvolume: %m");
+  #endif // 0
 
         return 0;
 }
