@@ -57,9 +57,7 @@ simple_tests += files(
         'test-argv-util.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-barrier.c',
-#endif // 0
-        'test-bitfield.c',
-#if 0 /// UNNEEDED by elogind
+#         'test-bitfield.c',
 #         'test-bitmap.c',
 #         'test-blockdev-util.c',
 #endif // 0
