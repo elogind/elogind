@@ -207,6 +207,7 @@ shared_sources = files(
         'json.c',
         'label-util.c',
         'libcrypt-util.c',
+        'libmount-util.c',
         'mkdir-label.c',
         'mount-setup.c',
         'mount-util.c',
