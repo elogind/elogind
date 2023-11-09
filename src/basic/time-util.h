@@ -165,21 +165,19 @@ static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
         format_timestamp_style((char[FORMAT_TIMESTAMP_MAX]){}, FORMAT_TIMESTAMP_MAX, t, style)
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *ret);
-
 #endif // 0
 int parse_sec(const char *t, usec_t *ret);
 int parse_sec_fix_0(const char *t, usec_t *ret);
+#if 0 /// UNNEEDED by elogind
 int parse_sec_def_infinity(const char *t, usec_t *ret);
+#endif // 0
 int parse_time(const char *t, usec_t *ret, usec_t default_unit);
+#if 0 /// UNNEEDED by elogind
 int parse_nsec(const char *t, nsec_t *ret);
 
 int get_timezones(char ***ret);
+#endif // 0
 int verify_timezone(const char *name, int log_level);
 static inline bool timezone_is_valid(const char *name, int log_level) {
         return verify_timezone(name, log_level) >= 0;
