@@ -259,28 +259,26 @@ if conf.get('ENABLE_UTMP') == 1
         shared_sources += files('utmp-wtmp.c')
 endif
 
+if conf.get('HAVE_SECCOMP') == 1
+        shared_sources += files('seccomp-util.c')
+        shared_sources += syscall_list_h
+endif
+
 #if 0 /// UNNEEDED by elogind
-# if conf.get('HAVE_SECCOMP') == 1
-#         shared_sources += files('seccomp-util.c')
-#         shared_sources += syscall_list_h
-# endif
-#
 # if conf.get('HAVE_LIBIPTC') == 1
 #         shared_sources += files('firewall-util-iptables.c')
 # endif
 #endif // 0
 
-#if 0 /// elogind does not play around with kernel modules. Not its job.
-# if conf.get('HAVE_LIBBPF') == 1
-#         shared_sources += files(
-#                 'bpf-link.c',
-#         )
-# endif
-#
-# if conf.get('HAVE_KMOD') == 1
-#         shared_sources += files('module-util.c')
-# endif
-#endif // 0
+if conf.get('HAVE_LIBBPF') == 1
+        shared_sources += files(
+                'bpf-link.c',
+        )
+endif
+
+if conf.get('HAVE_KMOD') == 1
+        shared_sources += files('module-util.c')
+endif
 
 if conf.get('HAVE_PAM') == 1
         shared_sources += files(
@@ -384,6 +382,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 libshared_deps = [threads,
                   libacl,
                   libcap,
+                  libcrypt,
                   libdl,
                   libmount,
                   libpam,
