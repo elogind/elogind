@@ -468,9 +468,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(OrderedHashmap*, ordered_hashmap_free_free_free);
 #define _cleanup_hashmap_free_free_ _cleanup_(hashmap_free_freep)
 #define _cleanup_hashmap_free_free_free_ _cleanup_(hashmap_free_free_freep)
 #define _cleanup_ordered_hashmap_free_ _cleanup_(ordered_hashmap_freep)
-#if 0 /// UNNEEDED by elogind
 #define _cleanup_ordered_hashmap_free_free_ _cleanup_(ordered_hashmap_free_freep)
-#endif // 0
 #define _cleanup_ordered_hashmap_free_free_free_ _cleanup_(ordered_hashmap_free_free_freep)
 
 #if 0 /// UNNEEDED by elogind
