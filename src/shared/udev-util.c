@@ -20,7 +20,7 @@
 //#include "path-util.h"
 //#include "signal-util.h"
 //#include "socket-util.h"
-//#include "stat-util.h"
+#include "stat-util.h"
 //#include "string-table.h"
 #include "string-util.h"
 //#include "strxcpyx.h"
@@ -575,12 +575,14 @@ bool devpath_conflict(const char *a, const char *b) {
 
         return *a == '/' || *b == '/' || *a == *b;
 }
+#endif // 0
 
 int udev_queue_is_empty(void) {
         return access("/run/udev/queue", F_OK) < 0 ?
                 (errno == ENOENT ? true : -errno) : false;
 }
 
+#if 0 /// UNNEEDED by elogind
 int udev_queue_init(void) {
         _cleanup_close_ int fd = -EBADF;
 
@@ -595,8 +597,6 @@ int udev_queue_init(void) {
 }
 #endif // 0
 
-
-#if 0 /// UNNEEDED by elogind
 bool udev_available(void) {
         static int cache = -1;
 
@@ -610,4 +610,3 @@ bool udev_available(void) {
 
         return (cache = (path_is_read_only_fs("/sys/") <= 0));
 }
-#endif // 0

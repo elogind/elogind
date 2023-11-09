@@ -54,15 +54,17 @@ size_t udev_replace_chars(char *str, const char *allow);
 int udev_resolve_subsys_kernel(const char *string, char *result, size_t maxsize, bool read_value);
 
 bool devpath_conflict(const char *a, const char *b);
+#endif // 0
 
 int udev_queue_is_empty(void);
+#if 0 /// UNNEEDED by elogind
 int udev_queue_init(void);
 #endif // 0
 
 
-#if 0 /// UNNEEDED by elogind
 bool udev_available(void);
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_SYS_SDT_H
 
 /* Each trace point can have different number of additional arguments. Note that when the macro is used only

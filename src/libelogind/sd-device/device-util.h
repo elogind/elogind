@@ -94,11 +94,11 @@
 #define log_device_error_errno(device, error, ...)   log_device_full_errno(device, LOG_ERR, error, __VA_ARGS__)
 
 int devname_from_devnum(mode_t mode, dev_t devnum, char **ret);
-#if 0 /// UNNEEDED by elogind
 static inline int devname_from_stat_rdev(const struct stat *st, char **ret) {
         assert(st);
         return devname_from_devnum(st->st_mode, st->st_rdev, ret);
 }
+#if 0 /// UNNEEDED by elogind
 int device_open_from_devnum(mode_t mode, dev_t devnum, int flags, char **ret);
 #endif // 0
 

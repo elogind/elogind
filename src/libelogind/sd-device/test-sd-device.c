@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include <ctype.h>
+//#include <ctype.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -14,7 +14,7 @@
 #include "nulstr-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
-#include "stat-util.h"
+//#include "stat-util.h"
 #include "string-util.h"
 #include "tests.h"
 #include "time-util.h"
@@ -643,10 +643,12 @@ TEST(devname_from_devnum) {
         test_devname_from_devnum_one("/dev/urandom");
         test_devname_from_devnum_one("/dev/tty");
 
+#if 0 /// elogind does not support (or need) inaccessible nodes
         if (is_device_node("/run/systemd/inaccessible/blk") > 0) {
                 test_devname_from_devnum_one("/run/systemd/inaccessible/chr");
                 test_devname_from_devnum_one("/run/systemd/inaccessible/blk");
         }
+#endif // 0
 }
 
 DEFINE_TEST_MAIN(LOG_INFO);

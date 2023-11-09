@@ -333,10 +333,10 @@ static inline void ordered_hashmap_clear_free_free(OrderedHashmap *h) {
  */
 
 void *_hashmap_first_key_and_value(HashmapBase *h, bool remove, void **ret_key);
-#if 0 /// UNNEEDED by elogind
 static inline void *hashmap_steal_first_key_and_value(Hashmap *h, void **ret) {
         return _hashmap_first_key_and_value(HASHMAP_BASE(h), true, ret);
 }
+#if 0 /// UNNEEDED by elogind
 static inline void *ordered_hashmap_steal_first_key_and_value(OrderedHashmap *h, void **ret) {
         return _hashmap_first_key_and_value(HASHMAP_BASE(h), true, ret);
 }

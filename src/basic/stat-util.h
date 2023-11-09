@@ -43,7 +43,6 @@ static inline int null_or_empty_path(const char *fn) {
 }
 
 int path_is_read_only_fs(const char *path);
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 int inode_same_at(int fda, const char *filea, int fdb, const char *fileb, int flags);
 
