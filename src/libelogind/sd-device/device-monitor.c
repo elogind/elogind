@@ -101,7 +101,6 @@ static int monitor_set_nl_address(sd_device_monitor *m) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_monitor_allow_unicast_sender(sd_device_monitor *m, sd_device_monitor *sender) {
         assert(m);
         assert(sender);
@@ -109,7 +108,6 @@ int device_monitor_allow_unicast_sender(sd_device_monitor *m, sd_device_monitor 
         m->snl_trusted_sender.nl.nl_pid = sender->snl.nl.nl_pid;
         return 0;
 }
-#endif // 0
 
 _public_ int sd_device_monitor_set_receive_buffer_size(sd_device_monitor *m, size_t size) {
         assert_return(m, -EINVAL);
@@ -636,7 +634,6 @@ static uint64_t string_bloom64(const char *str) {
         return bits;
 }
 
-#if 0 /// UNNEEDED by elogind
 int device_monitor_send_device(
                 sd_device_monitor *m,
                 sd_device_monitor *destination,
@@ -719,7 +716,6 @@ int device_monitor_send_device(
         log_device_monitor(device, m, "Passed %zi byte to netlink monitor.", count);
         return count;
 }
-#endif // 0
 
 static void bpf_stmt(struct sock_filter *ins, unsigned *i,
                      unsigned short code, unsigned data) {
