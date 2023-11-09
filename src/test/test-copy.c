@@ -440,6 +440,7 @@ TEST_RET(copy_holes) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(copy_lock) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
         _cleanup_close_ int tfd = -EBADF, fd = -EBADF;
@@ -459,5 +460,6 @@ TEST(copy_lock) {
         assert_se(xopenat_lock(tfd, "poi", 0, 0, 0, LOCK_BSD, LOCK_EX|LOCK_NB) == -EAGAIN);
         fd = safe_close(fd);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
