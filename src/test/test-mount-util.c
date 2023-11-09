@@ -1,25 +1,25 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <sys/mount.h>
-#include <sys/statvfs.h>
+//#include <sys/statvfs.h>
 
 #include "alloc-util.h"
 #include "capability-util.h"
-#include "fd-util.h"
+//#include "fd-util.h"
 #include "fileio.h"
-#include "fs-util.h"
+//#include "fs-util.h"
 #include "libmount-util.h"
-#include "missing_magic.h"
-#include "missing_mount.h"
+//#include "missing_magic.h"
+//#include "missing_mount.h"
 #include "mkdir.h"
 #include "mount-util.h"
-#include "mountpoint-util.h"
-#include "namespace-util.h"
+//#include "mountpoint-util.h"
+//#include "namespace-util.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "random-util.h"
-#include "rm-rf.h"
-#include "stat-util.h"
+//#include "rm-rf.h"
+//#include "stat-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "tests.h"
@@ -79,12 +79,14 @@ TEST(remount_and_move_sub_mounts) {
                         assert_se(access(filename, F_OK) >= 0);
                 }
 
+#if 0 /// UNNEEDED by elogind
                 /* Remount the main fs. */
                 r = remount_and_move_sub_mounts("tmpfs", d, "tmpfs", MS_NOSUID|MS_NODEV, NULL);
                 if (r == -EINVAL || (r < 0 && ERRNO_IS_NOT_SUPPORTED(r))) {
                         log_tests_skipped_errno(r, "The kernel seems too old: %m");
                         _exit(EXIT_SUCCESS);
                 }
+#endif // 0
 
                 /* Check the file in the main fs does not exist. */
                 assert_se(access(fn, F_OK) < 0 && errno == ENOENT);
@@ -111,6 +113,7 @@ TEST(remount_and_move_sub_mounts) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(remount_sysfs) {
         int r;
 
@@ -154,6 +157,7 @@ TEST(remount_sysfs) {
                 _exit(EXIT_SUCCESS);
         }
 }
+#endif // 0
 
 TEST(mount_option_mangle) {
         char *opts = NULL;
@@ -390,7 +394,6 @@ TEST(make_mount_point_inode) {
         assert_se(!(S_IXGRP & st.st_mode));
         assert_se(!(S_IXOTH & st.st_mode));
 }
-#endif // 0
 
 TEST(make_mount_switch_root) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
@@ -640,17 +643,20 @@ TEST(bind_mount_submounts) {
         assert_se(umount_recursive(a, 0) >= 0);
         assert_se(umount_recursive(b, 0) >= 0);
 }
+#endif // 0
 
 static int intro(void) {
-         /* Create a dummy network interface for testing remount_sysfs(). */
+#if 0 /// UNNEEDED by elogind
+        /* Create a dummy network interface for testing remount_sysfs(). */
         (void) system("ip link add dummy-test-mnt type dummy");
-
+#endif // 0
         return 0;
 }
 
 static int outro(void) {
+#if 0 /// UNNEEDED by elogind
         (void) system("ip link del dummy-test-mnt");
-
+#endif // 0
         return 0;
 }
 
