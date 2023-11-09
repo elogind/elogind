@@ -453,7 +453,9 @@ TEST(chaseat) {
         _cleanup_free_ char *result = NULL;
         _cleanup_closedir_ DIR *dir = NULL;
         _cleanup_fclose_ FILE *f = NULL;
+#if 0 /// UNNEEDED by elogind
         struct stat st;
+#endif // 0
         const char *p;
 
         assert_se((tfd = mkdtemp_open(NULL, 0, &t)) >= 0);
@@ -523,7 +525,7 @@ TEST(chaseat) {
         assert_se(chaseat(tfd, "/qed", 0, NULL, NULL) == -ENOENT);
 
         /* Test CHASE_PARENT */
-
+#if 0 /// UNSUPPORTED by elogind
         assert_se((fd = open_mkdir_at(tfd, "chase", O_CLOEXEC, 0755)) >= 0);
         assert_se(symlinkat("/def", fd, "parent") >= 0);
         fd = safe_close(fd);
@@ -557,6 +559,7 @@ TEST(chaseat) {
         assert_se(chaseat(tfd, ".", CHASE_PARENT|CHASE_AT_RESOLVE_IN_ROOT, &result, NULL) >= 0);
         assert_se(streq(result, "."));
         result = mfree(result);
+#endif // 0
 
         /* Test CHASE_MKDIR_0755 */
 
@@ -607,10 +610,12 @@ TEST(chaseat) {
         assert_se(fd_verify_regular(fd) >= 0);
         fd = safe_close(fd);
 
+#if 0 /// UNSUPPORTED by elogind
         fd = chase_and_openat(tfd, "o/p/e/n/d/i/r", CHASE_MKDIR_0755, O_DIRECTORY|O_CREAT|O_EXCL|O_CLOEXEC, NULL);
         assert_se(fd >= 0);
         assert_se(fd_verify_directory(fd) >= 0);
         fd = safe_close(fd);
+#endif // 0
 
         fd = chase_and_openat(tfd, NULL, CHASE_PARENT|CHASE_EXTRACT_FILENAME, O_PATH|O_DIRECTORY|O_CLOEXEC, &result);
         assert_se(fd >= 0);
