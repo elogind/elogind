@@ -134,6 +134,10 @@ Deprecations and removals:
 Features:
 
 * elogind-pcrextend:
+* repart + cryptsetup: support file systems that are encrypted and use verity
+  on top. Usecase: confexts that shall be signed by the admin but also be
+  confidential. Then, add a new --make-ddi=confext-encrypted for this.
+
   - support measuring to nvindex with PCR update semantics ("fake PCRs")
   - add api for "allocating" such an nvindex
   - once we have that start measuring every sysext we apply, every confext,
