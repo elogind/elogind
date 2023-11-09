@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-#include "env-util.h"
-#include "fd-util.h"
-#include "fileio.h"
+//#include "env-util.h"
+//#include "fd-util.h"
+//#include "fileio.h"
 #include "random-util.h"
-#include "serialize.h"
+//#include "serialize.h"
 #include "string-util.h"
 #include "strv.h"
 #include "tests.h"
@@ -89,6 +89,7 @@ TEST(parse_sec_fix_0) {
         assert_se(u == USEC_INFINITY);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(parse_sec_def_infinity) {
         usec_t u;
 
@@ -106,6 +107,7 @@ TEST(parse_sec_def_infinity) {
         assert_se(u == 0);
         assert_se(parse_sec_def_infinity("-5s", &u) < 0);
 }
+#endif // 0
 
 TEST(parse_time) {
         usec_t u;
@@ -132,6 +134,7 @@ TEST(parse_time) {
         assert_se(parse_time("1.1111111111111y", &u, 1) >= 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(parse_nsec) {
         nsec_t u;
 
@@ -193,6 +196,7 @@ TEST(parse_nsec) {
         assert_se(parse_nsec("1111111111111y", &u) == -ERANGE);
         assert_se(parse_nsec("1.111111111111y", &u) >= 0);
 }
+#endif // 0
 
 static void test_format_timespan_one(usec_t x, usec_t accuracy) {
         char l[FORMAT_TIMESPAN_MAX];
@@ -266,6 +270,7 @@ TEST(timezone_is_valid) {
         assert_se(!timezone_is_valid("Europe/Do not exist", LOG_ERR));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(get_timezones) {
         _cleanup_strv_free_ char **zones = NULL;
         int r;
@@ -279,6 +284,7 @@ TEST(get_timezones) {
                 assert_se(r >= 0 || r == -ENOENT);
         }
 }
+#endif // 0
 
 TEST(usec_add) {
         assert_se(usec_add(0, 0) == 0);
@@ -312,6 +318,7 @@ TEST(usec_sub_unsigned) {
         assert_se(usec_sub_unsigned(USEC_INFINITY, USEC_INFINITY) == USEC_INFINITY);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(usec_sub_signed) {
         assert_se(usec_sub_signed(0, 0) == 0);
         assert_se(usec_sub_signed(4, 1) == 3);
@@ -459,6 +466,7 @@ TEST(FORMAT_TIMESTAMP_with_tz) {
         STRV_FOREACH(tz, timezones)
                 test_format_timestamp_with_tz_one(*tz);
 }
+#endif // 0
 
 TEST(format_timestamp_relative_full) {
         char buf[CONST_MAX(FORMAT_TIMESTAMP_MAX, FORMAT_TIMESPAN_MAX)];
@@ -643,6 +651,7 @@ TEST(format_timestamp_range) {
         test_format_timestamp_one(USEC_INFINITY, TIMESTAMP_UTC, NULL);
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_parse_timestamp_one(const char *str, usec_t max_diff, usec_t expected) {
         usec_t usec = USEC_INFINITY;
         int r;
@@ -1011,6 +1020,7 @@ TEST(in_utc_timezone) {
         assert_se(set_unset_env("TZ", tz, true) == 0);
         tzset();
 }
+#endif // 0
 
 TEST(map_clock_usec) {
         usec_t nowr, x, y, z;
@@ -1041,6 +1051,7 @@ TEST(map_clock_usec) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_timezone_offset_change_one(const char *utc, const char *pretty) {
         usec_t x, y, z;
         char *s;
@@ -1105,6 +1116,7 @@ TEST(timezone_offset_change) {
         assert_se(set_unset_env("TZ", tz, true) == 0);
         tzset();
 }
+#endif // 0
 
 static int intro(void) {
         log_info("realtime=" USEC_FMT "\n"
