@@ -123,6 +123,7 @@ TEST(conf_files_list) {
 
         result = strv_free(result);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(conf_files_list_strv_at(&result, ".conf", AT_FDCWD, CONF_FILES_FILTER_MASKED, STRV_MAKE_CONST(search1, search2)) >= 0);
         strv_print(result);
         assert_se(strv_equal(result, STRV_MAKE(search1_a, search2_aa, search1_b)));
@@ -134,6 +135,7 @@ TEST(conf_files_list) {
         assert_se(strv_equal(result, STRV_MAKE("dir1/a.conf", "dir2/aa.conf", "dir1/b.conf")));
 
         result = strv_free(result);
+#endif // 0
 
         /* filename only */
         assert_se(conf_files_list_strv(&result, ".conf", NULL, CONF_FILES_FILTER_MASKED | CONF_FILES_BASENAME, STRV_MAKE_CONST(search1, search2)) >= 0);
@@ -148,6 +150,7 @@ TEST(conf_files_list) {
 
         result = strv_free(result);
 
+#if 0 /// UNNEEDED by elogind
         assert_se(conf_files_list_strv_at(&result, ".conf", AT_FDCWD, CONF_FILES_FILTER_MASKED | CONF_FILES_BASENAME, STRV_MAKE_CONST(search1, search2)) >= 0);
         strv_print(result);
         assert_se(strv_equal(result, STRV_MAKE("a.conf", "aa.conf", "b.conf")));
@@ -157,6 +160,7 @@ TEST(conf_files_list) {
         assert_se(conf_files_list_strv_at(&result, ".conf", tfd, CONF_FILES_FILTER_MASKED | CONF_FILES_BASENAME, STRV_MAKE_CONST("/dir1/", "/dir2/")) >= 0);
         strv_print(result);
         assert_se(strv_equal(result, STRV_MAKE("a.conf", "aa.conf", "b.conf")));
+#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind

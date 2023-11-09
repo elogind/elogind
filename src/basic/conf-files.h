@@ -16,7 +16,9 @@ int conf_files_list(char ***ret, const char *suffix, const char *root, unsigned 
 int conf_files_list_at(char ***ret, const char *suffix, int rfd, unsigned flags, const char *dir);
 #endif // 0
 int conf_files_list_strv(char ***ret, const char *suffix, const char *root, unsigned flags, const char* const* dirs);
+#if 0 /// UNNEEDED by elogind
 int conf_files_list_strv_at(char ***ret, const char *suffix, int rfd, unsigned flags, const char * const *dirs);
+#endif // 0
 int conf_files_list_nulstr(char ***ret, const char *suffix, const char *root, unsigned flags, const char *dirs);
 #if 0 /// UNNEEDED by elogind
 int conf_files_list_nulstr_at(char ***ret, const char *suffix, int rfd, unsigned flags, const char *dirs);
