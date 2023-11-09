@@ -379,6 +379,7 @@ TEST(get_group_creds) {
         test_get_group_creds_one(NOBODY_GROUP_NAME, NOBODY_GROUP_NAME, GID_NOBODY);
         test_get_group_creds_one("65534", NOBODY_GROUP_NAME, GID_NOBODY);
 }
+#endif // 0
 
 TEST(make_salt) {
         _cleanup_free_ char *s, *t;
@@ -392,6 +393,7 @@ TEST(make_salt) {
         assert_se(!streq(s, t));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(in_gid) {
         assert_se(in_gid(getgid()) >= 0);
         assert_se(in_gid(getegid()) >= 0);

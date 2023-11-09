@@ -33,6 +33,7 @@ static void test_make_salt(void) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static int test_hash_password(void) {
         log_info("/* %s */", __func__);
 
@@ -106,6 +107,7 @@ static void test_hash_password_full(void) {
                                                      "") == false);
                 }
 }
+#endif // 0
 
 int main(int argc, char *argv[]) {
         test_setup_logging(LOG_DEBUG);
@@ -117,10 +119,12 @@ int main(int argc, char *argv[]) {
         test_crypt_preferred_method();
         test_make_salt();
 
+#if 0 /// UNNEEDED by elogind
         if (!test_hash_password())
                 return log_tests_skipped("crypt doesn't support yescrypt or sha512crypt");
 
         test_hash_password_full();
+#endif // 0
 
         return 0;
 }

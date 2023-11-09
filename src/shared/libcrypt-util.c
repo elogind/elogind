@@ -29,7 +29,6 @@
 //#include "string-util.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 int make_salt(char **ret) {
 
 #if HAVE_CRYPT_GENSALT_RA
@@ -97,6 +96,7 @@ int make_salt(char **ret) {
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_CRYPT_RA
 #  define CRYPT_RA_NAME "crypt_ra"
 #else
