@@ -1676,7 +1676,6 @@ int cg_pid_get_user_slice(pid_t pid, char **slice) {
         return cg_path_get_user_slice(cgroup, slice);
 }
 
-#if 0 /// UNNEEDED by elogind
 bool cg_needs_escape(const char *p) {
 
         /* Checks if the specified path is a valid cgroup name by our rules, or if it must be escaped. Note
@@ -1736,7 +1735,6 @@ int cg_escape(const char *p, char **ret) {
         *ret = TAKE_PTR(n);
         return 0;
 }
-#endif // 0
 
 char *cg_unescape(const char *p) {
         assert(p);

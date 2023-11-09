@@ -17,6 +17,7 @@
 #include "user-util.h"
 #include "version.h"
 
+#if 0 /// UNNEEDED by elogind
 static void check_p_d_u(const char *path, int code, const char *result) {
         _cleanup_free_ char *unit = NULL;
         int r;
@@ -115,6 +116,7 @@ TEST(path_get_user_unit) {
         check_p_g_u_u("/user.slice/user-1000.slice/user@1000.service/foobar.slice/foobar@pie.service", 0, "foobar@pie.service");
         check_p_g_u_u("/user.slice/user-1000.slice/user@.service/server.service", -ENXIO, NULL);
 }
+#endif // 0
 
 static void check_p_g_s(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
@@ -217,9 +219,11 @@ TEST(proc) {
                 cg_pid_get_path_shifted(pid, NULL, &path_shifted);
                 cg_pid_get_owner_uid(pid, &uid);
                 cg_pid_get_session(pid, &session);
+#if 0 /// Not supported by elogind
                 cg_pid_get_unit(pid, &unit);
                 cg_pid_get_user_unit(pid, &user_unit);
                 cg_pid_get_machine_name(pid, &machine);
+#endif // 0
                 cg_pid_get_slice(pid, &slice);
 
                 printf(PID_FMT"\t%s\t%s\t"UID_FMT"\t%s\t%s\t%s\t%s\t%s\n",
@@ -228,9 +232,15 @@ TEST(proc) {
                        path_shifted,
                        uid,
                        session,
+#if 0 /// Not supported by elogind
                        unit,
                        user_unit,
                        machine,
+#else // 0
+                       "n/a",
+                       "n/a",
+                       "n/a",
+#endif // 0
                        slice);
         }
 }
@@ -277,6 +287,7 @@ TEST(controller_is_valid) {
         assert_se(!cg_controller_is_valid("tatü"));
 }
 
+#if 0 /// UNNEEDED by elogind
 static void test_slice_to_path_one(const char *unit, const char *path, int error) {
         _cleanup_free_ char *ret = NULL;
         int r;
@@ -314,6 +325,7 @@ TEST(slice_to_path) {
         test_slice_to_path_one("foo@@bar.slice", NULL, -EINVAL);
         test_slice_to_path_one("foo.slice/foo@@bar.slice", NULL, -EINVAL);
 }
+#endif // 0
 
 static void test_shift_path_one(const char *raw, const char *root, const char *shifted) {
         const char *s = NULL;
@@ -329,6 +341,7 @@ TEST(shift_path) {
         test_shift_path_one("/foobar/waldo", "/hogehoge", "/foobar/waldo");
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(mask_supported, .sd_booted = true) {
         CGroupMask m;
         CGroupController c;
@@ -338,6 +351,7 @@ TEST(mask_supported, .sd_booted = true) {
         for (c = 0; c < _CGROUP_CONTROLLER_MAX; c++)
                 printf("'%s' is supported: %s\n", cgroup_controller_to_string(c), yes_no(m & CGROUP_CONTROLLER_TO_MASK(c)));
 }
+#endif // 0
 
 TEST(is_cgroup_fs, .sd_booted = true) {
         struct statfs sfs;
@@ -347,6 +361,7 @@ TEST(is_cgroup_fs, .sd_booted = true) {
         assert_se(is_cgroup_fs(&sfs));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(fd_is_cgroup_fs, .sd_booted = true) {
         int fd;
 
@@ -360,6 +375,7 @@ TEST(fd_is_cgroup_fs, .sd_booted = true) {
         assert_se(fd_is_cgroup_fs(fd));
         fd = safe_close(fd);
 }
+#endif // 0
 
 TEST(cg_tests) {
         int all, hybrid, systemd, r;
@@ -392,6 +408,7 @@ TEST(cg_tests) {
                 assert_se(!systemd);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(cg_get_keyed_attribute) {
         _cleanup_free_ char *val = NULL;
         char *vals3[3] = {}, *vals3a[3] = {};
@@ -465,5 +482,6 @@ TEST(bfq_weight_conversion) {
         assert_se(BFQ_WEIGHT(5000) == 545);
         assert_se(BFQ_WEIGHT(10000) == 1000);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
