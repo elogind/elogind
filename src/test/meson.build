@@ -212,7 +212,9 @@ simple_tests += files(
 #endif // 0
         'test-set.c',
         'test-sha256.c',
-        'test-sigbus.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-sigbus.c',
+#endif // 0
         'test-signal-util.c',
         'test-siphash24.c',
 #if 0 /// UNNEEDED by elogind
