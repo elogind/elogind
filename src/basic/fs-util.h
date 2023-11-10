@@ -26,9 +26,9 @@
 
 #if 0 /// UNNEEDED by elogind
 int rmdir_parents(const char *path, const char *stop);
+#endif // 0
 
 int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
-#endif // 0
 
 int readlinkat_malloc(int fd, const char *p, char **ret);
 int readlink_malloc(const char *p, char **r);

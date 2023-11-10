@@ -73,6 +73,7 @@ int rmdir_parents(const char *path, const char *stop) {
                         return -errno;
         }
 }
+#endif // 0
 
 int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath) {
         int r;
@@ -113,7 +114,6 @@ int rename_noreplace(int olddirfd, const char *oldpath, int newdirfd, const char
 
         return RET_NERRNO(renameat(olddirfd, oldpath, newdirfd, newpath));
 }
-#endif // 0
 
 int readlinkat_malloc(int fd, const char *p, char **ret) {
         size_t l = PATH_MAX;

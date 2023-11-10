@@ -27,13 +27,12 @@ int tempfn_random_child(const char *p, const char *extra, char **ret);
 #endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags);
-#if 0 /// UNNEEDED by elogind
 int open_tmpfile_linkable_at(int dir_fd, const char *target, int flags, char **ret_path);
 static inline int open_tmpfile_linkable(const char *target, int flags, char **ret_path) {
         return open_tmpfile_linkable_at(AT_FDCWD, target, flags, ret_path);
 }
+#if 0 /// UNNEEDED by elogind
 int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE **ret_file);
-
 #endif // 0
 
 typedef enum LinkTmpfileFlags {

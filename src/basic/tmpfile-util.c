@@ -293,7 +293,6 @@ int open_tmpfile_unlinkable(const char *directory, int flags) {
         return fd;
 }
 
-#if 0 /// UNNEEDED by elogind
 int open_tmpfile_linkable_at(int dir_fd, const char *target, int flags, char **ret_path) {
         _cleanup_free_ char *tmp = NULL;
         int r, fd;
@@ -329,6 +328,7 @@ int open_tmpfile_linkable_at(int dir_fd, const char *target, int flags, char **r
         return fd;
 }
 
+#if 0 /// UNNEEDED by elogind
 int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE **ret_file) {
         _cleanup_free_ char *path = NULL;
         _cleanup_fclose_ FILE *f = NULL;
@@ -350,6 +350,7 @@ int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE 
         *ret_file = TAKE_PTR(f);
         return 0;
 }
+#endif // 0
 
 static int link_fd(int fd, int newdirfd, const char *newpath) {
         int r;
@@ -428,6 +429,7 @@ int link_tmpfile_at(int fd, int dir_fd, const char *path, const char *target, Li
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int flink_tmpfile(FILE *f, const char *path, const char *target, LinkTmpfileFlags flags) {
         int fd, r;
 
