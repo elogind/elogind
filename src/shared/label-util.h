@@ -28,3 +28,4 @@ int btrfs_subvol_make_label(const char *path);
 #endif // 0
 
 int mac_init(void);
+int mac_init_lazy(void);
