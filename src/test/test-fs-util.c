@@ -28,13 +28,6 @@
 static const char *arg_test_dir = NULL;
 
 
-#if 1 /// elogind supports setups, where the machine-id is in the dbus default path
-        if (r != -ENOTDIR) {
-                result = mfree(result);
-                r = chase_symlinks("/var/lib/dbus/machine-id/foo", NULL, 0, &result, NULL);
-        }
-#endif // 1
-
 #if 0 /// UNNEEDED by elogind
 TEST(readlink_and_make_absolute) {
         const char *tempdir, *name, *name2, *name_alias;

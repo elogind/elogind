@@ -232,6 +232,12 @@ TEST(chase) {
         result = mfree(result);
 
         r = chase("/etc/machine-id/foo", NULL, 0, &result, NULL);
+#if 1 /// elogind supports setups, where the machine-id is in the dbus default path
+        if (!IN_SET(r, -ENOTDIR, -ENOENT)) {
+                result = mfree(result);
+                r = chase("/var/lib/dbus/machine-id/foo", NULL, 0, &result, NULL);
+        }
+#endif // 1
         assert_se(IN_SET(r, -ENOTDIR, -ENOENT));
         result = mfree(result);
 
