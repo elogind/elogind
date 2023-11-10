@@ -376,7 +376,9 @@ conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
 # conf.set_quoted('SYSUSERS_DIR',                               sysusersdir)
 # conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
 # conf.set_quoted('USER_TMPFILES_DIR',                          usertmpfilesdir)
-# conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
+#endif // 0
+conf.set_quoted('UDEVLIBEXECDIR',                             udevlibexecdir)
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('UDEV_HWDB_DIR',                              udevhwdbdir)
 # conf.set_quoted('UDEV_RULES_DIR',                             udevrulesdir)
 # conf.set_quoted('USER_CONFIG_UNIT_DIR',                       pkgsysconfdir / 'user')

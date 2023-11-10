@@ -82,9 +82,15 @@ struct trie_value_entry2_f {
         le16_t padding;
 } _packed_;
 
+#if 0 /// elogind does not ship hwdb.bin, that is UDEVs job
 #define hwdb_bin_paths                          \
         "/etc/elogind/hwdb/hwdb.bin\0"          \
         "/etc/udev/hwdb.bin\0"                  \
         "/usr/lib/elogind/hwdb/hwdb.bin\0"      \
         _CONF_PATHS_SPLIT_USR_NULSTR("elogind/hwdb/hwdb.bin") \
         UDEVLIBEXECDIR "/hwdb.bin\0"
+#else // 0
+#define hwdb_bin_paths                          \
+        "/etc/udev/hwdb.bin\0"                  \
+        UDEVLIBEXECDIR "/hwdb.bin\0"
+#endif // 0
