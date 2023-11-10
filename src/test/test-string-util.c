@@ -1288,6 +1288,7 @@ TEST(version_is_valid) {
         assert_se(version_is_valid("6.2.12-300.fc38.x86_64"));
 }
 
+#if 0 /// UNSUPPORTED by elogind
 TEST(strextendn) {
         _cleanup_free_ char *x = NULL;
 
@@ -1305,5 +1306,6 @@ TEST(strextendn) {
         assert_se(streq_ptr(strextendn(&x, "...", 4), "xxxxxx........."));
         x = mfree(x);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
