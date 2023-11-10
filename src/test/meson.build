@@ -241,8 +241,8 @@ simple_tests += files(
         'test-tmpfile-util.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-tpm2.c',
+#         'test-udev-util.c',
 #endif // 0
-        'test-udev-util.c',
         'test-uid-alloc-range.c',
         'test-uid-range.c',
         'test-umask-util.c',
