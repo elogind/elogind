@@ -126,9 +126,11 @@ static void check_p_g_s(const char *path, int code, const char *result) {
 }
 
 TEST(path_get_session) {
+#if 0 /// elogind does not support systemd scopes and slices
         check_p_g_s("/user.slice/user-1000.slice/session-2.scope/foobar.service", 0, "2");
         check_p_g_s("/session-3.scope", 0, "3");
         check_p_g_s("/session-.scope", -ENXIO, NULL);
+#endif // 0
         check_p_g_s("", -ENXIO, NULL);
 }
 
@@ -140,11 +142,14 @@ static void check_p_g_o_u(const char *path, int code, uid_t result) {
 }
 
 TEST(path_get_owner_uid) {
+#if 0 /// elogind does not support systemd scopes and slices
         check_p_g_o_u("/user.slice/user-1000.slice/session-2.scope/foobar.service", 0, 1000);
         check_p_g_o_u("/user.slice/user-1006.slice", 0, 1006);
+#endif // 0
         check_p_g_o_u("", -ENXIO, 0);
 }
 
+#if 0 /// elogind does not support systemd scopes and slices
 static void check_p_g_slice(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
 
@@ -185,6 +190,7 @@ TEST(path_get_user_slice) {
         check_p_g_u_slice("foo.slice/foo-bar.slice/user@1000.service/piep.slice/foo.service", 0, "piep.slice");
         check_p_g_u_slice("/foo.slice//foo-bar.slice/user@1000.service/piep.slice//piep-pap.slice//foo.service", 0, "piep-pap.slice");
 }
+#endif // 0
 
 TEST(get_paths, .sd_booted = true) {
         _cleanup_free_ char *a = NULL;
