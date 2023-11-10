@@ -126,6 +126,8 @@
 
   <xi:include href="libelogind-pkgconfig.xml" />
 
+  <!-- 0 /// The sample progam can't work, because elogind does not support systemd units.
+  TODO: Come up with an example, that is usable with libelogind.
   <refsect1>
     <title>Examples</title>
 
@@ -138,6 +140,7 @@
       memory management.</para>
     </example>
   </refsect1>
+  // 0 -->
 
   <refsect1>
     <title>See Also</title>

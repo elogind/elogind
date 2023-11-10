@@ -208,7 +208,9 @@
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+    <!-- 0 /// This part is irrellevant for elogind
     <xi:include href="threads-aware.xml" xpointer="getenv"/>
+    // 0 -->
 
     <para>Internally, <function>sd_listen_fds()</function> checks
     whether the <varname>$LISTEN_PID</varname> environment variable

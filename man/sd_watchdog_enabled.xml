@@ -95,7 +95,9 @@
     <title>Notes</title>
 
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+    <!-- 0 /// This part is irrellevant for elogind
     <xi:include href="threads-aware.xml" xpointer="getenv"/>
+    // 0 -->
 
     <para>Internally, this function parses the
     <varname>$WATCHDOG_PID</varname> and

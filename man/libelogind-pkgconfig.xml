@@ -12,5 +12,7 @@
   <constant>libelogind</constant> <citerefentry project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>8</manvolnum></citerefentry>
   file.</para>
 
+  <!-- 0 /// This part is irrellevant for elogind
   <xi:include href="threads-aware.xml" xpointer="getenv"/>
+  // 0 -->
 </refsect1>

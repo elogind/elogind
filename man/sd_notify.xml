@@ -216,12 +216,12 @@
         for it. See
         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for information how to enable this functionality and
+        for the details of how the service can check whether the watchdog is enabled. </para></listitem>
         --><!-- else // 0 -->
         watchdog timestamp. This is the keep-alive ping that services
         need to issue in regular intervals if a watchdog is enabled for them. See
         <!-- // 0 -->
         <citerefentry><refentrytitle>sd_watchdog_enabled</refentrytitle><manvolnum>3</manvolnum></citerefentry>
-        for the details of how the service can check whether the watchdog is enabled. </para></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -265,7 +265,6 @@
       <varlistentry>
         <term>FDSTORE=1</term>
 
-        <!-- 0 /// Tell people that this is depending on the service manager, elogind is only the messenger here.
         <listitem><para>Stores additional file descriptors in the service manager. File descriptors sent this
         way will be maintained per-service by the service manager and will later be handed back using the
         usual file descriptor passing logic at the next invocation of the service (e.g. when it is
@@ -276,24 +275,23 @@
         the restart may be stored this way. Application state can either be serialized to a file in
         <filename>/run/</filename>, or better, stored in a
         <citerefentry><refentrytitle>memfd_create</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+        <!-- 0 /// Tell people that this is depending on the service manager, elogind is only the messenger here.
         memory file descriptor. Note that the service manager will accept messages for a service only if its
         <varname>FileDescriptorStoreMax=</varname> setting is non-zero (defaults to zero, see
         <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>). If
         <varname>FDPOLL=0</varname> is not set and the file descriptors sent are pollable (see
         --><!-- else // 0 -->
-        file descriptor. Note that it depends on the service manager if it will accept messages for a service.
+        memory file descriptor. Note that it depends on the service manager if it will accept messages for a service.
         If file descriptors sent are pollable (see
-        <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then any
-        <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them should result in their
-        <!-- // 0 -->
-        <!-- 0 /// Another wish for the service manager in use not provided by elogind
-        --><!-- else // 0 -->
-        which case the arrays are combined. Note that the service manager should remove duplicate (pointing to the same
         <!-- // 0 -->
         <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then
-        any <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them will result in
+        any <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them should result in
         their automatic removal from the store. Multiple arrays of file descriptors may be sent in separate
+        <!-- 0 /// Another wish for the service manager in use not provided by elogind
         messages, in which case the arrays are combined. Note that the service manager removes duplicate
+        --><!-- else // 0 -->
+        messages, in which case the arrays are combined. Note that the service manager should remove duplicate
+        <!-- // 0 -->
         (pointing to the same object) file descriptors before passing them to the service. When a service is
         stopped, its file descriptor store is discarded and all file descriptors in it are closed. Use
         <function>sd_pid_notify_with_fds()</function> to send messages with <literal>FDSTORE=1</literal>, see
@@ -437,7 +435,9 @@
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
+    <!-- 0 /// This part is irrellevant for elogind
     <xi:include href="threads-aware.xml" xpointer="getenv"/>
+    // 0 -->
 
     <para>These functions send a single datagram with the state string as payload to the socket referenced in
     the <varname>$NOTIFY_SOCKET</varname> environment variable. If the first character of
