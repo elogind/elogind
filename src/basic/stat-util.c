@@ -326,7 +326,6 @@ int stat_verify_directory(const struct stat *st) {
         return 0;
 }
 
-#if 0 /// UNNEEDED in elogind
 int fd_verify_directory(int fd) {
         struct stat st;
 
@@ -337,7 +336,6 @@ int fd_verify_directory(int fd) {
 
         return stat_verify_directory(&st);
 }
-#endif // 0
 
 int proc_mounted(void) {
         int r;
