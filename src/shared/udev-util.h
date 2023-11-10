@@ -29,5 +29,6 @@ int udev_queue_is_empty(void);
 
 bool udev_available(void);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
+int device_get_vendor_string(sd_device *device, const char **ret);
+int device_get_model_string(sd_device *device, const char **ret);
