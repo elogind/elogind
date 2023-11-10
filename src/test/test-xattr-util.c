@@ -54,6 +54,7 @@ TEST(getxattr_at_malloc) {
         assert_se(streq(value, "bar"));
 }
 
+#if 0 /// UNSUPPORTED BY elogind
 TEST(getcrtime) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
         _cleanup_close_ int fd = -EBADF;
@@ -78,6 +79,7 @@ TEST(getcrtime) {
                           usec == 1519126446UL * USEC_PER_SEC);
         }
 }
+#endif // 0
 
 static void verify_xattr(int dfd, const char *expected) {
         _cleanup_free_ char *value = NULL;
