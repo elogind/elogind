@@ -1474,6 +1474,11 @@ int cg_path_get_session(const char *path, char **session) {
 
         assert(path);
         log_debug_elogind("path is \"%s\"", path);
+
+        if (strlen(path) == 0) {
+                return -ENXIO;
+        }
+
         assert(path[0] == '/');
 
         e = path + 1;
@@ -1612,6 +1617,10 @@ int cg_path_get_slice(const char *p, char **slice) {
          * The last part gets extracted (and is now p), which is "/3" in
          * this case. The three is the session id, and that can be mapped.
          */
+        if (strlen(p) == 0) {
+                return -ENXIO;
+        }
+
         e = startswith(p, "/");
 
         if (e)
