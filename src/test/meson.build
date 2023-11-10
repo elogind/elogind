@@ -157,7 +157,9 @@ simple_tests += files(
         'test-log.c',
         'test-logarithm.c',
         'test-macro.c',
-        'test-memfd-util.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-memfd-util.c',
+#endif // 0
         'test-memory-util.c',
         'test-mempool.c',
         'test-memstream-util.c',
