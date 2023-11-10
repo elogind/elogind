@@ -162,7 +162,6 @@ int id128_write_fd(int fd, Id128Flag f, sd_id128_t id) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int id128_write_at(int dir_fd, const char *path, Id128Flag f, sd_id128_t id) {
         _cleanup_close_ int fd = -EBADF;
 
@@ -175,7 +174,6 @@ int id128_write_at(int dir_fd, const char *path, Id128Flag f, sd_id128_t id) {
 
         return id128_write_fd(fd, f, id);
 }
-#endif // 0
 
 void id128_hash_func(const sd_id128_t *p, struct siphash *state) {
         siphash24_compress(p, sizeof(sd_id128_t), state);
