@@ -2,28 +2,28 @@
 
 #include <unistd.h>
 
-#include "alloc-util.h"
-#include "copy.h"
-#include "dirent-util.h"
+//#include "alloc-util.h"
+//#include "copy.h"
+//#include "dirent-util.h"
 #include "fd-util.h"
-#include "fileio.h"
+//#include "fileio.h"
 #include "fs-util.h"
 #include "macro.h"
-#include "mkdir.h"
+//#include "mkdir.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "random-util.h"
 #include "rm-rf.h"
 #include "stat-util.h"
-#include "stdio-util.h"
-#include "string-util.h"
+//#include "stdio-util.h"
+//#include "string-util.h"
 #include "strv.h"
 #include "sync-util.h"
 #include "tests.h"
 #include "tmpfile-util.h"
-#include "umask-util.h"
-#include "user-util.h"
-#include "virt.h"
+//#include "umask-util.h"
+//#include "user-util.h"
+//#include "virt.h"
 
 static const char *arg_test_dir = NULL;
 
