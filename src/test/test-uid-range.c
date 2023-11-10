@@ -15,12 +15,15 @@
 
 TEST(uid_range) {
         _cleanup_(uid_range_freep) UidRange *p = NULL;
+#if 0 /// UNNEEDED by elogind
         uid_t search;
+#endif // 0
 
         assert_se(uid_range_covers(p, 0, 0));
         assert_se(!uid_range_covers(p, 0, 1));
         assert_se(!uid_range_covers(p, 100, UINT32_MAX));
 
+#if 0 /// UNSUPPORTED by elogind
         assert_se(uid_range_add_str(&p, "500-999") >= 0);
         assert_se(p);
         assert_se(p->n_entries == 1);
@@ -90,6 +93,7 @@ TEST(uid_range) {
         assert_se(p->n_entries == 1);
         assert_se(p->entries[0].start == 20);
         assert_se(p->entries[0].nr == 1983);
+#endif // 0
 }
 
 TEST(load_userns) {
@@ -104,7 +108,7 @@ TEST(load_userns) {
 
         assert_se(r >= 0);
         assert_se(uid_range_contains(p, getuid()));
-
+#if 0 /// UNSUPPORTED by elogind
         r = running_in_userns();
         if (r == 0) {
                 assert_se(p->n_entries == 1);
@@ -118,7 +122,7 @@ TEST(load_userns) {
         fputs("0 0 20\n"
               "100 0 20\n", f);
         assert_se(fflush_and_check(f) >= 0);
-
+#endif // 0
         p = uid_range_free(p);
 
         assert_se(uid_range_load_userns(&p, fn) >= 0);

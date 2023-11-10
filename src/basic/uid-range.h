@@ -26,8 +26,8 @@ static inline int uid_range_add(UidRange **range, uid_t start, uid_t nr) {
 int uid_range_add_str(UidRange **range, const char *s);
 
 int uid_range_next_lower(const UidRange *range, uid_t *uid);
-
 #endif // 0
+
 bool uid_range_covers(const UidRange *range, uid_t start, uid_t nr);
 static inline bool uid_range_contains(const UidRange *range, uid_t uid) {
         return uid_range_covers(range, uid, 1);
