@@ -42,8 +42,8 @@ typedef enum TableDataType {
         TABLE_UINT32,
         TABLE_UINT64,
         TABLE_UINT64_HEX,
-#if 0 /// UNNEEDED by elogind
         TABLE_PERCENT,
+#if 0 /// UNNEEDED by elogind
         TABLE_IFINDEX,
         TABLE_IN_ADDR,  /* Takes a union in_addr_union (or a struct in_addr) */
         TABLE_IN6_ADDR, /* Takes a union in_addr_union (or a struct in6_addr) */
@@ -109,9 +109,9 @@ int table_add_cell_stringf_full(Table *t, TableCell **ret_cell, TableDataType ty
 
 int table_fill_empty(Table *t, size_t until_column);
 
-#if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell);
 
+#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width);
 #endif // 0
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width);
@@ -156,9 +156,7 @@ static inline TableCell* TABLE_HEADER_CELL(size_t i) {
 }
 
 size_t table_get_rows(Table *t);
-#if 0 /// UNNEEDED by elogind
 size_t table_get_columns(Table *t);
-#endif // 0
 
 TableCell *table_get_cell(Table *t, size_t row, size_t column);
 

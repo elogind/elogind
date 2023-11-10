@@ -332,8 +332,8 @@ static size_t table_data_size(TableDataType type, const void *data) {
 
         case TABLE_INT:
         case TABLE_UINT:
-#if 0 /// UNNEEDED by elogind
         case TABLE_PERCENT:
+#if 0 /// UNNEEDED by elogind
         case TABLE_IFINDEX:
 #endif // 0
         case TABLE_SIGNAL:
@@ -566,7 +566,6 @@ int table_fill_empty(Table *t, size_t until_column) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_dup_cell(Table *t, TableCell *cell) {
         size_t i;
 
@@ -584,7 +583,6 @@ int table_dup_cell(Table *t, TableCell *cell) {
         t->data[t->n_cells++] = table_data_ref(t->data[i]);
         return 0;
 }
-#endif // 0
 
 static int table_dedup_cell(Table *t, TableCell *cell) {
         _cleanup_free_ char *curl = NULL;
@@ -1011,12 +1009,12 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.uint64;
                         break;
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_PERCENT:
                         buffer.percent = va_arg(ap, int);
                         data = &buffer.percent;
                         break;
 
+#if 0 /// UNNEEDED by elogind
                 case TABLE_IFINDEX:
                         buffer.ifindex = va_arg(ap, int);
                         data = &buffer.ifindex;
@@ -1401,10 +1399,10 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                 case TABLE_UINT64_HEX:
                         return CMP(a->uint64, b->uint64);
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_PERCENT:
                         return CMP(a->percent, b->percent);
 
+#if 0 /// UNNEEDED by elogind
                 case TABLE_IFINDEX:
                         return CMP(a->ifindex, b->ifindex);
 
@@ -1814,7 +1812,6 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 break;
         }
 
-#if 0 /// UNNEEDED by elogind
         case TABLE_PERCENT: {
                 _cleanup_free_ char *p = NULL;
 
@@ -1827,6 +1824,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 break;
         }
 
+#if 0 /// UNNEEDED by elogind
         case TABLE_IFINDEX: {
                 _cleanup_free_ char *p = NULL;
 
@@ -2590,7 +2588,6 @@ size_t table_get_rows(Table *t) {
         return t->n_cells / t->n_columns;
 }
 
-#if 0 /// UNNEEDED by elogind
 size_t table_get_columns(Table *t) {
         if (!t)
                 return 0;
@@ -2599,6 +2596,7 @@ size_t table_get_columns(Table *t) {
         return t->n_columns;
 }
 
+#if 0 /// UNNEEDED by elogind
 int table_set_reverse(Table *t, size_t column, bool b) {
         assert(t);
         assert(column < t->n_columns);
@@ -2735,10 +2733,10 @@ static int table_data_to_json(TableData *d, JsonVariant **ret) {
         case TABLE_UINT64_HEX:
                 return json_variant_new_unsigned(ret, d->uint64);
 
-#if 0 /// UNNEEDED by elogind
         case TABLE_PERCENT:
                 return json_variant_new_integer(ret, d->percent);
 
+#if 0 /// UNNEEDED by elogind
         case TABLE_IFINDEX:
                 if (d->ifindex <= 0)
                         return json_variant_new_null(ret);
