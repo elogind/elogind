@@ -355,6 +355,7 @@ TEST(mount_option_supported) {
         assert_se(r >= 0 || r == -EAGAIN || (r < 0 && ERRNO_IS_PRIVILEGE(r)));
 }
 
+#if 0 /// UNSUPPORTED by elogind
 TEST(fstype_can_discard) {
         assert_se(fstype_can_discard("ext4"));
         assert_se(!fstype_can_discard("squashfs"));
@@ -371,6 +372,7 @@ TEST(fstype_can_umask) {
         assert_se(fstype_can_umask("vfat"));
         assert_se(!fstype_can_umask("tmpfs"));
 }
+#endif // 0
 
 TEST(path_get_mnt_id_at_null) {
         _cleanup_close_ int root_fd = -EBADF, run_fd = -EBADF;
