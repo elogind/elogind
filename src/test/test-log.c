@@ -137,6 +137,7 @@ static void test_log_context(void) {
                 assert_se(log_context_num_fields() == 2);
         }
 
+#if 0 /// elogind nowhere really needs iovw
         {
                 /* Test that everything still works with a mixed strv and iov. */
                 struct iovec iov[] = {
@@ -159,6 +160,7 @@ static void test_log_context(void) {
                 test_long_lines();
                 test_log_syntax();
         }
+#endif // 0
 
         {
                 LOG_CONTEXT_PUSH_KEY_VALUE("ABC=", "QED");
