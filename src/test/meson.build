@@ -151,7 +151,9 @@ simple_tests += files(
 #         'test-local-addresses.c',
 #endif // 0
         'test-locale-util.c',
-        'test-lock-util.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-lock-util.c',
+#endif // 0
         'test-log.c',
         'test-logarithm.c',
         'test-macro.c',
