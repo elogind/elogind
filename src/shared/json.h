@@ -234,8 +234,6 @@ typedef enum JsonParseFlags {
         JSON_PARSE_SENSITIVE = 1 << 0, /* mark variant as "sensitive", i.e. something containing secret key material or such */
 } JsonParseFlags;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int json_parse_with_source(const char *string, const char *source, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 int json_parse_with_source_continue(const char **p, const char *source, JsonParseFlags flags, JsonVariant **ret, unsigned *ret_line, unsigned *ret_column);
 
