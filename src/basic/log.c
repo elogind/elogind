@@ -24,7 +24,7 @@
 #include "io-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 #include "missing_threads.h"
 #include "parse-util.h"
 #include "proc-cmdline.h"
