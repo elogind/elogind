@@ -1317,7 +1317,6 @@ static int run(int argc, char *argv[]) {
         }
 #endif // 0
 
-
         log_debug_elogind("%s", "Creating manager...");
 #if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGRTMIN+18, -1) >= 0);
