@@ -579,9 +579,6 @@ TEST(get_process_cmdline_harder) {
         _exit(EXIT_SUCCESS);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 TEST(getpid_cached) {
         siginfo_t si;
         pid_t a, b, c, d, e, f, child;
