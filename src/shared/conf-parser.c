@@ -22,7 +22,7 @@
 //#include "in-addr-util.h"
 #include "log.h"
 #include "macro.h"
-//#include "missing_network.h"
+#include "missing_network.h"
 #include "nulstr-util.h"
 //#include "parse-helpers.h"
 #include "parse-util.h"
