@@ -8,7 +8,7 @@
 #include "fileio.h"
 #include "memfd-util.h"
 #include "missing_mman.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 #include "parse-util.h"
 #include "process-util.h"
 #include "serialize.h"
