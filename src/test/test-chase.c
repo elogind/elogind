@@ -531,6 +531,7 @@ TEST(chaseat) {
         assert_se(chaseat(tfd, "/qed", 0, NULL, NULL) == -ENOENT);
 
         /* Test CHASE_PARENT */
+
 #if 0 /// UNSUPPORTED by elogind
         assert_se((fd = open_mkdir_at(tfd, "chase", O_CLOEXEC, 0755)) >= 0);
         assert_se(symlinkat("/def", fd, "parent") >= 0);

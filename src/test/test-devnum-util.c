@@ -99,6 +99,7 @@ TEST(device_path_make_canonical) {
         test_device_path_make_canonical_one("/dev/random");
         test_device_path_make_canonical_one("/dev/urandom");
         test_device_path_make_canonical_one("/dev/tty");
+
 #if 0 /// elogind does not support inaccessible nodes
         if (is_device_node("/run/systemd/inaccessible/blk") > 0) {
                 test_device_path_make_canonical_one("/run/systemd/inaccessible/chr");

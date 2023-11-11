@@ -47,6 +47,7 @@ int main(int argc, char *argv[]) {
                 else
                         log_info("read-only (ioctl): %s", yes_no(r));
 #endif // 0
+
                 safe_close(fd);
         }
 
@@ -57,6 +58,7 @@ int main(int argc, char *argv[]) {
         r = write_string_file("/xxxtest/file", "ljsadhfljasdkfhlkjdsfha", WRITE_STRING_FILE_CREATE);
         if (r < 0)
                 log_error_errno(r, "Failed to write file: %m");
+
 #if 0 /// elogind does not need to create snapshots
         r = btrfs_subvol_snapshot_at(AT_FDCWD, "/xxxtest", AT_FDCWD, "/xxxtest2", 0);
         if (r < 0)
@@ -91,7 +93,7 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/xxxtest4", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
-  #endif // 0
+#endif // 0
 
 #if 0 /// elogind does not need to create snapshots
         r = btrfs_subvol_snapshot_at(AT_FDCWD, "/etc", AT_FDCWD, "/etc2",
@@ -102,7 +104,7 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/etc2", BTRFS_REMOVE_QUOTA);
         if (r < 0)
                 log_error_errno(r, "Failed to remove subvolume: %m");
-  #endif // 0
+#endif // 0
 
         r = btrfs_subvol_make("/xxxrectest");
         if (r < 0)
@@ -204,7 +206,7 @@ int main(int argc, char *argv[]) {
         r = btrfs_subvol_remove("/xxxquotatest2", BTRFS_REMOVE_QUOTA|BTRFS_REMOVE_RECURSIVE);
         if (r < 0)
                 log_error_errno(r, "Failed remove subvolume: %m");
-  #endif // 0
+#endif // 0
 
         return 0;
 }

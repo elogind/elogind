@@ -647,9 +647,10 @@ TEST(bind_mount_submounts) {
 
 static int intro(void) {
 #if 0 /// UNNEEDED by elogind
-        /* Create a dummy network interface for testing remount_sysfs(). */
+         /* Create a dummy network interface for testing remount_sysfs(). */
         (void) system("ip link add dummy-test-mnt type dummy");
 #endif // 0
+
         return 0;
 }
 
@@ -657,6 +658,7 @@ static int outro(void) {
 #if 0 /// UNNEEDED by elogind
         (void) system("ip link del dummy-test-mnt");
 #endif // 0
+
         return 0;
 }
 
