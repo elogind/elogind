@@ -147,6 +147,11 @@ TEST(login) {
                 r = sd_session_is_active(session);
                 if (r == -ENXIO)
                         log_notice("sd_session_is_active() failed with ENXIO, it seems logind is not running.");
+#if 1 /// If elogind is tested on a system run by systemd, we will get -EINVAL,
+       // because elogind does not support systemd scopes, services and slices.
+                if (r == -EINVAL)
+                        log_notice("sd_session_is_active() failed with EINVAL, elogind can not handle systemd powered systems.");
+#endif // 1
                 else {
                         /* All those tests will fail with ENXIO, so let's skip them. */
 
