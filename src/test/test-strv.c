@@ -928,9 +928,6 @@ TEST(strv_extend_n) {
         assert_se(v[1] == NULL);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 TEST(foreach_string) {
         const char * const t[] = {
                 "foo",
