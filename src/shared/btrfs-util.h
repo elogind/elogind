@@ -44,9 +44,6 @@ typedef enum BtrfsRemoveFlags {
         BTRFS_REMOVE_QUOTA     = 1 << 1,
 } BtrfsRemoveFlags;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 int btrfs_is_subvol_at(int dir_fd, const char *path);
 static inline int btrfs_is_subvol_fd(int fd) {
         return btrfs_is_subvol_at(fd, NULL);
