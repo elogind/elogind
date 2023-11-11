@@ -416,7 +416,9 @@ meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
 slow_tests = want_tests != 'false' and get_option('slow-tests')
-fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
+#if 0 /// elogind does not utilize fuzzing
+# fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
+#endif // 0
 install_tests = get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
@@ -833,8 +835,8 @@ env = find_program('env')
 #endif // 0
 diff = find_program('diff')
 find = find_program('find')
-meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #if 0 /// UNNEEDED by elogind
+# meson_make_symlink = project_source_root + '/tools/meson-make-symlink.sh'
 #endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
@@ -5606,7 +5608,9 @@ foreach tuple : [
         ['debug siphash'],
         ['trace logging',          conf.get('LOG_TRACE') == 1],
         ['slow tests',             slow_tests],
-        ['fuzz tests',             fuzz_tests],
+#if 0 /// elogind does not utilize fuzzing
+#         ['fuzz tests',             fuzz_tests],
+#endif // 0
         ['install tests',          install_tests],
 #if 0 /// elogind does not ship any of those
 #         ['link-udev-shared',       get_option('link-udev-shared')],
