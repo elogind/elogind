@@ -86,10 +86,10 @@ TEST(remount_and_move_sub_mounts) {
                         log_tests_skipped_errno(r, "The kernel seems too old: %m");
                         _exit(EXIT_SUCCESS);
                 }
-#endif // 0
 
                 /* Check the file in the main fs does not exist. */
                 assert_se(access(fn, F_OK) < 0 && errno == ENOENT);
+#endif // 0
 
                 /* Check the files in sub-mounts are kept. */
                 FOREACH_STRING(p, "sub1", "sub1/hogehoge", "sub1/foofoo", "sub2", "sub2/aaa", "sub2/bbb") {
