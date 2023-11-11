@@ -1006,5 +1006,5 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/core/dbus-unit.c:776
 # #, fuzzy
 # msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
 #endif // 0
