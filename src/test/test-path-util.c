@@ -50,9 +50,6 @@ TEST(path) {
         assert_se(!path_equal_ptr("/a", "/b"));
         assert_se(!path_equal_ptr("/a", NULL));
         assert_se(!path_equal_ptr(NULL, "/a"));
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 }
 
 static void test_path_simplify_one(const char *in, const char *out) {
