@@ -61,7 +61,6 @@ int udev_queue_is_empty(void);
 int udev_queue_init(void);
 #endif // 0
 
-
 bool udev_available(void);
 
 #if 0 /// UNNEEDED by elogind
