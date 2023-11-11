@@ -133,7 +133,6 @@ Deprecations and removals:
 
 Features:
 
-* elogind-pcrextend:
 * repart + cryptsetup: support file systems that are encrypted and use verity
   on top. Usecase: confexts that shall be signed by the admin but also be
   confidential. Then, add a new --make-ddi=confext-encrypted for this.
@@ -152,10 +151,11 @@ Features:
 * maybe: in PID1, when we detect we run in an initrd, make superblock read-only
   early on, but provide opt-out via kernel cmdline.
 
+* elogind-pcrextend:
   - support measuring to nvindex with PCR update semantics ("fake PCRs")
   - add api for "allocating" such an nvindex
   - once we have that start measuring every sysext we apply, every confext,
-    every RootImage= we apply, evey nspawn and so on. All in separate fake
+    every RootImage= we apply, every nspawn and so on. All in separate fake
     PCRs.
 
 * vmspawn:
