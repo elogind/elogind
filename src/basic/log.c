@@ -221,13 +221,13 @@ fail:
 }
 
 static void log_close_journal(void) {
-#if 0 /// elogind does not support journald
-#endif // 0
         /* If the journal FD is bad, safe_close will fail, and will try to log, which will fail, so we'll
          * try to close the journal FD, which is bad, so safe_close will fail... Whether we can close it
          * or not, invalidate it immediately so that we don't get in a recursive loop until we run out of
          * stack. */
+#if 0 /// elogind does not support journald
         (void) safe_close(TAKE_FD(journal_fd));
+#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -1503,11 +1503,11 @@ bool log_on_console(void) {
 static const char *const log_target_table[_LOG_TARGET_MAX] = {
         [LOG_TARGET_CONSOLE]          = "console",
         [LOG_TARGET_CONSOLE_PREFIXED] = "console-prefixed",
-#if 0 /// elogind does not support logging to systemd-journald
-#endif // 0
         [LOG_TARGET_KMSG]             = "kmsg",
+#if 0 /// elogind does not support logging to systemd-journald
         [LOG_TARGET_JOURNAL]          = "journal",
         [LOG_TARGET_JOURNAL_OR_KMSG]  = "journal-or-kmsg",
+#endif // 0
         [LOG_TARGET_SYSLOG]           = "syslog",
         [LOG_TARGET_SYSLOG_OR_KMSG]   = "syslog-or-kmsg",
         [LOG_TARGET_AUTO]             = "auto",
