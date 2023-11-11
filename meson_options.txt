@@ -511,29 +511,29 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'libdbus support (for tests only)')
 
 #if 0 /// UNNEEDED BY elogind
-#endif // 0
-option('bootloader', type : 'combo', choices : ['auto', 'true', 'false'],
-       description : 'sd-boot/stub and userspace tools')
-option('sbat-distro', type : 'string', value : 'auto',
-       description : 'SBAT distribution ID, e.g. fedora, or auto for autodetection')
-option('sbat-distro-generation', type : 'integer', value : 1,
-       description : 'SBAT distribution generation')
-option('sbat-distro-summary', type : 'string',
-       description : 'SBAT distribution summary, e.g. Fedora')
-option('sbat-distro-pkgname', type : 'string',
-       description : 'SBAT distribution package name, e.g. elogind')
-option('sbat-distro-version', type : 'string',
-       description : 'SBAT distribution package version, e.g. 248-7.fc34')
-option('sbat-distro-url', type : 'string',
-       description : 'SBAT distribution URL, e.g. https://src.fedoraproject.org/rpms/elogind')
-option('efi-color-normal', type : 'string', value : 'lightgray,black',
-       description : 'general boot loader color in "foreground,background" form, see constants from eficon.h')
-option('efi-color-entry', type : 'string', value : 'lightgray,black',
-       description : 'boot loader color for entries')
-option('efi-color-highlight', type : 'string', value : 'black,lightgray',
-       description : 'boot loader color for selected entries')
-option('efi-color-edit', type : 'string', value : 'black,lightgray',
-       description : 'boot loader color for option line edit')
+# option('bootloader', type : 'combo', choices : ['auto', 'true', 'false'],
+#        description : 'sd-boot/stub and userspace tools')
+# option('sbat-distro', type : 'string', value : 'auto',
+#        description : 'SBAT distribution ID, e.g. fedora, or auto for autodetection')
+# option('sbat-distro-generation', type : 'integer', value : 1,
+#        description : 'SBAT distribution generation')
+# option('sbat-distro-summary', type : 'string',
+#        description : 'SBAT distribution summary, e.g. Fedora')
+# option('sbat-distro-pkgname', type : 'string',
+#        description : 'SBAT distribution package name, e.g. elogind')
+# option('sbat-distro-version', type : 'string',
+#        description : 'SBAT distribution package version, e.g. 248-7.fc34')
+# option('sbat-distro-url', type : 'string',
+#        description : 'SBAT distribution URL, e.g. https://src.fedoraproject.org/rpms/elogind')
+# option('efi-color-normal', type : 'string', value : 'lightgray,black',
+#        description : 'general boot loader color in "foreground,background" form, see constants from eficon.h')
+# option('efi-color-entry', type : 'string', value : 'lightgray,black',
+#        description : 'boot loader color for entries')
+# option('efi-color-highlight', type : 'string', value : 'black,lightgray',
+#        description : 'boot loader color for selected entries')
+# option('efi-color-edit', type : 'string', value : 'black,lightgray',
+#        description : 'boot loader color for option line edit')
+# #endif // 0
 
 option('bashcompletiondir', type : 'string',
        description : 'directory for bash completion scripts ["no" disables]')
@@ -544,8 +544,10 @@ option('tests', type : 'combo', choices : ['true', 'unsafe', 'false'],
        description : 'enable extra tests with =unsafe')
 option('slow-tests', type : 'boolean', value : false,
        description : 'run the slow tests by default')
-option('fuzz-tests', type : 'boolean', value : false,
-       description : 'run the fuzzer regression tests by default (with sanitizers)')
+#if 0 /// elogind does not utilize fuzzing
+# option('fuzz-tests', type : 'boolean', value : false,
+#        description : 'run the fuzzer regression tests by default (with sanitizers)')
+#endif // 0
 option('install-tests', type : 'boolean', value : false,
        description : 'install test executables')
 option('log-message-verification', type : 'combo', choices : ['auto', 'true', 'false'],
