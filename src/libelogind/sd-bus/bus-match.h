@@ -75,8 +75,6 @@ void bus_match_dump(FILE *out, struct bus_match_node *node, unsigned level);
 const char* bus_match_node_type_to_string(enum bus_match_node_type t, char buf[], size_t l);
 enum bus_match_node_type bus_match_node_type_from_string(const char *k, size_t n);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int bus_match_parse(const char *match, struct bus_match_component **ret_components, size_t *ret_n_components);
 void bus_match_parse_free(struct bus_match_component *components, size_t n_components);
 char *bus_match_to_string(struct bus_match_component *components, size_t n_components);
