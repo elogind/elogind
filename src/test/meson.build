@@ -370,11 +370,11 @@ tests += [
 #                 'sources' : files('test-ip-protocol-list.c') +
 #                             shared_generated_gperf_headers,
 #         },
-#         {
-#                 'sources' : files('test-ipcrm.c'),
-#                 'type' : 'unsafe',
-#         },
 #endif // 0
+        {
+                'sources' : files('test-ipcrm.c'),
+                'type' : 'unsafe',
+        },
         {
                 'sources' : files('test-json.c'),
                 'dependencies' : libm,
@@ -401,12 +401,10 @@ tests += [
                 'sources' : files('test-math-util.c'),
                 'dependencies' : libm,
         },
-#if 0 /// UNNEEDED by elogind
-#         {
-#                 'sources' : files('test-mempress.c'),
-#                 'dependencies' : threads,
-#         },
-#endif // 0
+        {
+                'sources' : files('test-mempress.c'),
+                'dependencies' : threads,
+        },
         {
                 'sources' : files('test-mount-util.c'),
                 'dependencies' : libmount,

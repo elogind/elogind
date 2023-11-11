@@ -9,7 +9,7 @@
 #include <sd-event.h>
 
 #include "bus-locator.h"
-#include "bus-wait-for-jobs.h"
+// #include "bus-wait-for-jobs.h"
 #include "fd-util.h"
 #include "path-util.h"
 #include "process-util.h"
@@ -119,6 +119,7 @@ TEST(fake_pressure) {
         assert_se(pthread_join(th, NULL) == 0);
 }
 
+#if 0 /// UNSUPPORTED by elogind
 struct real_pressure_context {
         sd_event_source *pid;
 };
@@ -300,6 +301,7 @@ TEST(real_pressure) {
         assert_se(sd_event_get_exit_code(e, &ex) >= 0);
         assert_se(ex == 31);
 }
+#endif // 0
 
 static int outro(void) {
         hashmap_trim_pools();

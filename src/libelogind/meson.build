@@ -282,11 +282,11 @@ tests += [
                 'sources' : files('sd-bus/test-bus-objects.c'),
                 'dependencies' : threads,
         },
+        {
+                'sources' : files('sd-bus/test-bus-peersockaddr.c'),
+                'dependencies' : threads,
+        },
 #if 0 /// UNNEEDED by elogind
-#         {
-#                 'sources' : files('sd-bus/test-bus-peersockaddr.c'),
-#                 'dependencies' : threads,
-#         },
 #         {
 #                 'sources' : files('sd-bus/test-bus-queue-ref-cycle.c'),
 #                 'dependencies' : threads,
