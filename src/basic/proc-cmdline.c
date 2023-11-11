@@ -474,10 +474,6 @@ int proc_cmdline_get_key_many_internal(ProcCmdlineFlags flags, ...) {
                 _cleanup_free_ char *line = NULL;
 
                 r = elogind_efi_options_variable(&line);
-                r = elogind_efi_options_variable(&line);
-                r = elogind_efi_options_variable(&line);
-                r = elogind_efi_options_variable(&line);
-                r = elogind_efi_options_variable(&line);
                 if (r < 0 && r != -ENODATA)
                         log_debug_errno(r, "Failed to get SystemdOptions EFI variable, ignoring: %m");
                 if (r >= 0) {

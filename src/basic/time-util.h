@@ -167,6 +167,7 @@ static inline char* format_timestamp(char *buf, size_t l, usec_t t) {
 #if 0 /// UNNEEDED by elogind
 int parse_timestamp(const char *t, usec_t *ret);
 #endif // 0
+
 int parse_sec(const char *t, usec_t *ret);
 int parse_sec_fix_0(const char *t, usec_t *ret);
 #if 0 /// UNNEEDED by elogind

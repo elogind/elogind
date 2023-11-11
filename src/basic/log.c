@@ -280,7 +280,6 @@ static bool stderr_is_journal(void) {
                 return false;
 
         return st.st_dev == dev && st.st_ino == ino;
-        return false;
 }
 #endif // 0
 

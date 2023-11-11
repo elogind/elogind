@@ -492,7 +492,6 @@ int path_compare(const char *a, const char *b) {
         }
 }
 
-
 int path_compare_filename(const char *a, const char *b) {
         _cleanup_free_ char *fa = NULL, *fb = NULL;
         int r, j, k;
