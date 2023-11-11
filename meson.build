@@ -2212,7 +2212,8 @@ conf.set10('ENABLE_HOMED', false)
 #                 'vconsole',
 #                 'xdg-autostart']
 #else // 0
-foreach term : ['smack',
+foreach term : ['efi',
+                'smack',
                 'utmp']
 #endif // 0
         have = get_option(term)
@@ -2267,14 +2268,6 @@ simple_fuzzers = []
 catalogs = []
 
 ############################################################
-
-#if 0 /// UNSUPPORTED by elogind (at the moment)
-#else // 0
-# But we need the EFI configuration that is now determined in src/boot/efi/meson.build
-# TODO : Include EFI support
-conf.set10('ENABLE_EFI', get_option('efi'))
-conf.set10('HAVE_GNU_EFI', false)
-#endif // 0
 
 #if 0 /// UNSUPPORTED by elogind (we do not build boot images)
 # pymod = import('python')
@@ -5535,7 +5528,9 @@ foreach tuple : [
 #         ['bootloader'],
 #         ['bpf-framework',          conf.get('BPF_FRAMEWORK') == 1],
 #         ['coredump'],
-#         ['efi'],
+#endif // 0
+        ['efi'],
+#if 0 /// UNNEEDED by elogind
 #         ['environment.d'],
 #         ['firstboot'],
 #         ['hibernate'],
