@@ -533,7 +533,7 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 #        description : 'boot loader color for selected entries')
 # option('efi-color-edit', type : 'string', value : 'black,lightgray',
 #        description : 'boot loader color for option line edit')
-# #endif // 0
+#endif // 0
 
 option('bashcompletiondir', type : 'string',
        description : 'directory for bash completion scripts ["no" disables]')

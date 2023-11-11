@@ -77,7 +77,6 @@ conf.set10('SD_BOOT', false)
 # More items are added later after they have been detected.
 summary({'build mode' : get_option('mode')})
 
-
 #####################################################################
 #if 0 /// elogind does not need this
 #
