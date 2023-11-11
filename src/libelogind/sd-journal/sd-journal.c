@@ -60,7 +60,6 @@ static void remove_file_real(sd_journal *j, JournalFile *f);
 static int journal_file_read_tail_timestamp(sd_journal *j, JournalFile *f);
 static void journal_file_unlink_newest_by_bood_id(sd_journal *j, JournalFile *f);
 
-
 static int journal_put_error(sd_journal *j, int r, const char *path) {
         _cleanup_free_ char *copy = NULL;
         int k;
