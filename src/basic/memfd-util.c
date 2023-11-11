@@ -16,7 +16,7 @@
 #include "memfd-util.h"
 #include "missing_fcntl.h"
 #include "missing_mman.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 #include "string-util.h"
 #include "utf8.h"
 
