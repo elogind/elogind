@@ -16,7 +16,7 @@
 #include "missing_fs.h"
 #include "missing_mount.h"
 #include "missing_stat.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 //#include "mkdir.h"
 #include "mountpoint-util.h"
 #include "nulstr-util.h"
