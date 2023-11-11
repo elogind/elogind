@@ -45,8 +45,6 @@ int bus_connect_system_systemd(sd_bus **ret_bus);
 int bus_connect_user_systemd(sd_bus **ret_bus);
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int bus_connect_transport(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus);
 int bus_connect_transport_elogind(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus);
 
