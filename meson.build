@@ -1435,7 +1435,11 @@ libmount = dependency('mount',
 # endif
 # conf.set10('HAVE_SECCOMP', have)
 #else // 0
+libfdisk = []
+libpwquality = []
 libseccomp = []
+conf.set10('HAVE_LIBFDISK', false)
+conf.set10('HAVE_PWQUALITY', false)
 conf.set10('HAVE_SECCOMP', false)
 #endif // 0
 
@@ -1464,8 +1468,8 @@ conf.set10('HAVE_SELINUX', have)
 # endif
 #else // 0
 libapparmor = []
+conf.set10('HAVE_APPARMOR', false)
 #endif // 0
-conf.set10('HAVE_APPARMOR', have)
 
 #if 0 /// UNNEEDED by elogind
 # have = get_option('smack') and get_option('smack-run-label') != ''
@@ -1907,6 +1911,7 @@ libgpg_error = []
 libgnutls = []
 libp11kit_cflags = []
 libp11kit = []
+libfido2 = []
 libdw = []
 libz = []
 libbzip2 = []
@@ -1917,13 +1922,20 @@ libxkbcommon = []
 conf.set10('HAVE_LIBCRYPTSETUP', false)
 conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', false)
 conf.set10('HAVE_GCRYPT', false)
+conf.set10('HAVE_LIBCURL', false)
 conf.set10('HAVE_LIBIDN2', false)
 conf.set10('HAVE_LIBIDN', false)
+conf.set10('HAVE_LIBIPTC', false)
+conf.set10('HAVE_GNUTLS', false)
 conf.set10('HAVE_OPENSSL', false)
 conf.set10('HAVE_P11KIT', false)
+conf.set10('HAVE_LIBFIDO2', false)
+conf.set10('HAVE_QRENCODE', false)
 conf.set10('HAVE_TPM2', false)
+conf.set10('HAVE_BZIP2', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
+conf.set10('HAVE_ZLIB', false)
 conf.set10('HAVE_ZSTD', false)
 conf.set10('HAVE_COMPRESSION', false)
 conf.set10('HAVE_XKBCOMMON', false)
@@ -1940,6 +1952,9 @@ conf.set10('HAVE_XKBCOMMON', false)
 #         libpcre2 = []
 # endif
 # conf.set10('HAVE_PCRE2', have)
+#else // 0
+libpcre2 = []
+conf.set10('HAVE_PCRE2', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind

@@ -58,15 +58,15 @@ const char* const elogind_features =
         " -SECCOMP"
 #endif
 
-        /* cryptographic libraries */
+/* cryptographic libraries */
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_GCRYPT
         " +GCRYPT"
 #else
         " -GCRYPT"
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #if HAVE_GNUTLS
         " +GNUTLS"
 #else
@@ -88,13 +88,13 @@ const char* const elogind_features =
         " -ACL"
 #endif
 
+#if 0 /// UNNEEDED by elogind
 #if HAVE_BLKID
         " +BLKID"
 #else
         " -BLKID"
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #if HAVE_LIBCURL
         " +CURL"
 #else
@@ -130,7 +130,6 @@ const char* const elogind_features =
 #else
         " -IPTC"
 #endif
-#endif // 0
 
 #if HAVE_KMOD
         " +KMOD"
@@ -138,7 +137,6 @@ const char* const elogind_features =
         " -KMOD"
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #if HAVE_LIBCRYPTSETUP
         " +LIBCRYPTSETUP"
 #else
