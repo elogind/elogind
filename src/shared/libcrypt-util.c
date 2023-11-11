@@ -24,7 +24,7 @@
 //#include "log.h"
 #include "macro.h"
 //#include "memory-util.h"
-//#include "missing_stdlib.h"
+#include "missing_stdlib.h"
 #include "random-util.h"
 //#include "string-util.h"
 #include "strv.h"
