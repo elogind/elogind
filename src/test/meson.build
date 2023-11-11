@@ -201,7 +201,9 @@ simple_tests += files(
 #         'test-rlimit-util.c',
 #endif // 0
         'test-rm-rf.c',
-        'test-sd-hwdb.c',
+#if 0 /// UNNEEDED by elogind
+#         'test-sd-hwdb.c',
+#endif // 0
         'test-sd-path.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-secure-bits.c',
