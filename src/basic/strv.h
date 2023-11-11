@@ -148,8 +148,6 @@ static inline char *strv_join(char * const *l, const char *separator) {
         return strv_join_full(l, separator, NULL, false);
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
 #if 0 /// UNNEEDED by elogind
 bool strv_overlap(char * const *a, char * const *b) _pure_;
 #endif // 0

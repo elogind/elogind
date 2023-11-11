@@ -84,7 +84,6 @@ static inline bool path_equal_filename(const char *a, const char *b) {
         return path_compare_filename(a, b) == 0;
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 static inline bool path_equal_or_inode_same(const char *a, const char *b, int flags) {
         return path_equal(a, b) || inode_same(a, b, flags) > 0;
 }
