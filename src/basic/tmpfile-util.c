@@ -10,7 +10,7 @@
 #include "macro.h"
 //#include "memfd-util.h"
 #include "missing_fcntl.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 #include "path-util.h"
 //#include "process-util.h"
 #include "random-util.h"
