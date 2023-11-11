@@ -156,9 +156,6 @@ int null_or_empty_path_with_root(const char *fn, const char *root) {
         return null_or_empty(&st);
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 static int fd_is_read_only_fs(int fd) {
         struct statvfs st;
 
