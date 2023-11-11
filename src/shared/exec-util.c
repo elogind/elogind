@@ -17,7 +17,7 @@
 //#include "fileio.h"
 #include "hashmap.h"
 #include "macro.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "serialize.h"
