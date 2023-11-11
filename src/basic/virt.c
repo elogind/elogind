@@ -14,8 +14,8 @@
 #include "cgroup-util.h"
 //#include "dirent-util.h"
 //#include "env-util.h"
-//#include "errno-util.h"
-//#include "fd-util.h"
+#include "errno-util.h"
+#include "fd-util.h"
 #include "fileio.h"
 #include "macro.h"
 #include "missing_threads.h"
@@ -816,6 +816,7 @@ Virtualization detect_virtualization(void) {
 
         return detect_vm();
 }
+#endif // 0
 
 static int userns_has_mapping(const char *name) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -880,7 +881,6 @@ int running_in_userns(void) {
         log_debug("/proc/self/setgroups contains \"%s\", %s user namespace", line, r ? "in" : "not in");
         return r;
 }
-#endif // 0
 
 int running_in_chroot(void) {
         int r;

@@ -108,7 +108,6 @@ TEST(load_userns) {
 
         assert_se(r >= 0);
         assert_se(uid_range_contains(p, getuid()));
-#if 0 /// UNSUPPORTED by elogind
         r = running_in_userns();
         if (r == 0) {
                 assert_se(p->n_entries == 1);
@@ -117,7 +116,7 @@ TEST(load_userns) {
 
                 assert_se(uid_range_covers(p, 0, UINT32_MAX));
         }
-
+#if 0 /// UNSUPPORTED by elogind
         assert_se(fopen_temporary_child(NULL, &f, &fn) >= 0);
         fputs("0 0 20\n"
               "100 0 20\n", f);
@@ -125,6 +124,7 @@ TEST(load_userns) {
 #endif // 0
         p = uid_range_free(p);
 
+#if 0 /// UNSUPPORTED by elogind
         assert_se(uid_range_load_userns(&p, fn) >= 0);
 
         assert_se(uid_range_contains(p, 0));
@@ -135,6 +135,7 @@ TEST(load_userns) {
         assert_se(uid_range_contains(p, 100));
         assert_se(uid_range_contains(p, 119));
         assert_se(!uid_range_contains(p, 120));
+#endif // 0
 }
 
 TEST(uid_range_coalesce) {

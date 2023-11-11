@@ -63,9 +63,9 @@ Virtualization detect_vm(void);
 Virtualization detect_container(void);
 #if 0 /// UNNEEDED by elogind
 Virtualization detect_virtualization(void);
+#endif // 0
 
 int running_in_userns(void);
-#endif // 0
 int running_in_chroot(void);
 
 const char *virtualization_to_string(Virtualization v) _const_;
