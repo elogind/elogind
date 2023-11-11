@@ -1317,13 +1317,13 @@ static int run(int argc, char *argv[]) {
         }
 #endif // 0
 
-#if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
-#else // 0
-        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGQUIT, -1) >= 0);
-#endif // 0
 
         log_debug_elogind("%s", "Creating manager...");
+#if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGRTMIN+18, -1) >= 0);
+#else // 0
+        assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGRTMIN+18, SIGQUIT, -1) >= 0);
+#endif // 0
 
         r = manager_new(&m);
         if (r < 0)
