@@ -585,6 +585,7 @@ TEST(chaseat) {
 
         /* Test CHASE_EXTRACT_FILENAME */
 
+#if 0 /// UNSUPPORTED by elogind
         assert_se(chaseat(tfd, "chase/parent", CHASE_AT_RESOLVE_IN_ROOT|CHASE_PARENT|CHASE_NOFOLLOW|CHASE_EXTRACT_FILENAME, &result, &fd) >= 0);
         assert_se(faccessat(fd, result, F_OK, AT_SYMLINK_NOFOLLOW) >= 0);
         assert_se(streq(result, "parent"));
@@ -608,6 +609,7 @@ TEST(chaseat) {
         assert_se(chaseat(tfd, NULL, CHASE_PARENT|CHASE_AT_RESOLVE_IN_ROOT|CHASE_EXTRACT_FILENAME, &result, NULL) >= 0);
         assert_se(streq(result, "."));
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_openat() */
 
@@ -616,18 +618,18 @@ TEST(chaseat) {
         assert_se(fd_verify_regular(fd) >= 0);
         fd = safe_close(fd);
 
-#if 0 /// UNSUPPORTED by elogind
         fd = chase_and_openat(tfd, "o/p/e/n/d/i/r", CHASE_MKDIR_0755, O_DIRECTORY|O_CREAT|O_EXCL|O_CLOEXEC, NULL);
         assert_se(fd >= 0);
         assert_se(fd_verify_directory(fd) >= 0);
         fd = safe_close(fd);
-#endif // 0
+#if 0 /// UNSUPPORTED by elogind
 
         fd = chase_and_openat(tfd, NULL, CHASE_PARENT|CHASE_EXTRACT_FILENAME, O_PATH|O_DIRECTORY|O_CLOEXEC, &result);
         assert_se(fd >= 0);
         assert_se(streq(result, "."));
         fd = safe_close(fd);
         result = mfree(result);
+#endif // 0
 
         /* Test chase_and_openatdir() */
 
