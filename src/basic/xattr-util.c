@@ -11,7 +11,7 @@
 //#include "errno-util.h"
 #include "fd-util.h"
 #include "macro.h"
-//#include "missing_syscall.h"
+#include "missing_syscall.h"
 //#include "sparse-endian.h"
 //#include "stat-util.h"
 //#include "stdio-util.h"
