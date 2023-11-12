@@ -79,7 +79,9 @@ struct sd_journal {
 
         OrderedHashmap *files;
         IteratedCache *files_cache;
+#if 0 /// UNNEEDED by elogind
         MMapCache *mmap;
+#endif // 0
         Hashmap *newest_by_boot_id; /* key: boot_id, value: prioq, ordered by monotonic timestamp of last update */
 
         Location current_location;
