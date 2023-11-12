@@ -14,7 +14,7 @@
 #include "stat-util.h"
 #include "string-util.h"
 #include "tests.h"
-#include "virt.h"
+// #include "virt.h"
 
 static int monitor_handler(sd_device_monitor *m, sd_device *d, void *userdata) {
         const char *s, *syspath = userdata;
