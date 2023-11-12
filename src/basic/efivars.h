@@ -50,9 +50,9 @@ int efi_set_variable_string(const char *variable, const char *p);
 
 bool is_efi_boot(void);
 bool is_efi_secure_boot(void);
+#if 0 /// UNNEEDED by elogind
 SecureBootMode efi_get_secure_boot_mode(void);
 
-#if 0 /// UNNEEDED by elogind
 int cache_efi_options_variable(void);
 int systemd_efi_options_variable(char **ret);
 int systemd_efi_options_efivarfs_if_newer(char **ret);
@@ -86,11 +86,11 @@ static inline bool is_efi_secure_boot(void) {
         return false;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline SecureBootMode efi_get_secure_boot_mode(void) {
         return SECURE_BOOT_UNKNOWN;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline int cache_efi_options_variable(void) {
         return -EOPNOTSUPP;
 }

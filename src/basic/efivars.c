@@ -325,6 +325,7 @@ bool is_efi_secure_boot(void) {
         return cache > 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 SecureBootMode efi_get_secure_boot_mode(void) {
         static SecureBootMode cache = _SECURE_BOOT_INVALID;
 
@@ -350,7 +351,6 @@ SecureBootMode efi_get_secure_boot_mode(void) {
         return (cache = decode_secure_boot_mode(secure, audit > 0, deployed > 0, setup > 0));
 }
 
-#if 0 /// UNNEEDED by elogind
 static int read_efi_options_variable(char **ret) {
         int r;
 
