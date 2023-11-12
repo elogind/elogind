@@ -2,5 +2,35 @@
 <project version="4">
   <component name="BackendCodeEditorSettings">
     <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Reformat/@EntryValue" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/ShortenQualifiedReferences/@EntryValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Applicability/=Live/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Applicability/=Live/@EntryIndexRemoved" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue" value="InCppFile" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Shortcut/@EntryValue" value="unb" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Description/@EntryValue" value="elgoind start UNNEEED" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=7423B8335765684691F4189DAD96A6BD/Text/@EntryValue" value="#if 0 /// UNNEEDED by elogind" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Reformat/@EntryValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/ShortenQualifiedReferences/@EntryValue" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Applicability/=Live/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Applicability/=Live/@EntryIndexRemoved" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue" value="InCppFile" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Shortcut/@EntryValue" value="une" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Description/@EntryValue" value="elogind UNNEDED else" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=99677485A9EE714E894B76003C3D720D/Text/@EntryValue" value="#else // 0" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Reformat/@EntryValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/ShortenQualifiedReferences/@EntryValue" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Applicability/=Live/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Applicability/=Live/@EntryIndexRemoved" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Scope/=F6696F8185506F41B9C4252540BE9C18/@KeyIndexDefined" value="true" type="bool" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Scope/=F6696F8185506F41B9C4252540BE9C18/Type/@EntryValue" value="InCppFile" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Shortcut/@EntryValue" value="uns" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Description/@EntryValue" value="elogind UNNEDED endif" type="string" />
+    <option name="/Default/PatternsAndTemplates/LiveTemplates/Template/=A643DEDCC5664C49A2B9CB076E8E701D/Text/@EntryValue" value="#endif // 0" type="string" />
   </component>
 </project>
