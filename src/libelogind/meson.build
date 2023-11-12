@@ -11,8 +11,8 @@ sd_journal_sources = files(
 #         'sd-journal/journal-vacuum.c',
 #         'sd-journal/journal-verify.c',
 #         'sd-journal/lookup3.c',
+#         'sd-journal/mmap-cache.c',
 #endif // 0
-        'sd-journal/mmap-cache.c',
         'sd-journal/sd-journal.c',
 )
 
