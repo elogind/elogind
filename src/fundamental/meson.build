@@ -4,7 +4,9 @@ fundamental_include = include_directories('.')
 
 fundamental_sources = files(
         'bootspec-fundamental.c',
-        'efivars-fundamental.c',
+#if 0 /// Nowhere used in elogind
+#         'efivars-fundamental.c',
+#endif // 0
         'sha256.c',
         'string-util-fundamental.c',
 #if 0 /// Nowhere used in elogind
