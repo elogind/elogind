@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include <malloc.h>
 #include <sys/mman.h>
-#include <sys/prctl.h>
+// #include <sys/prctl.h>
 
 #include "alloc-util.h"
 #include "bus-internal.h"
@@ -18,10 +18,10 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "format-util.h"
-#include "memfd-util.h"
+// #include "memfd-util.h"
 #include "parse-util.h"
 #include "stdio-util.h"
-#include "string-util.h"
+// #include "string-util.h"
 #include "strv.h"
 #include "user-util.h"
 #include "memory-util.h"
