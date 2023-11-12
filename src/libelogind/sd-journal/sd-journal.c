@@ -28,9 +28,9 @@
 //#include "inotify-util.h"
 //#include "io-util.h"
 #include "journal-def.h"
-#include "journal-file.h"
+// #include "journal-file.h"
 #include "journal-internal.h"
-#include "list.h"
+// #include "list.h"
 //#include "lookup3.h"
 #include "nulstr-util.h"
 #include "origin-id.h"
@@ -42,8 +42,8 @@
 #include "stdio-util.h"
 //#include "string-util.h"
 //#include "strv.h"
-#include "syslog-util.h"
-#include "uid-alloc-range.h"
+// #include "syslog-util.h"
+// #include "uid-alloc-range.h"
 
 #if 0 /// UNNEEDED by elogind
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)
