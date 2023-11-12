@@ -15,7 +15,7 @@
 #include "locale-util.h"
 #include "macro.h"
 #include "memory-util.h"
-#include "memstream-util.h"
+// #include "memstream-util.h"
 #include "path-util.h"
 #include "string-util.h"
 #include "strv.h"

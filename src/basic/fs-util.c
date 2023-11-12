@@ -13,7 +13,7 @@
 #include "fd-util.h"
 //#include "fileio.h"
 #include "fs-util.h"
-#include "hostname-util.h"
+// #include "hostname-util.h"
 #include "label.h"
 #include "lock-util.h"
 #include "log.h"

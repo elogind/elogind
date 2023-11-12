@@ -9,11 +9,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/mount.h>
-#include <sys/personality.h>
+// #include <sys/personality.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <syslog.h>
+// #include <syslog.h>
 #include <unistd.h>
 #if HAVE_VALGRIND_VALGRIND_H
 #include <valgrind/valgrind.h>
@@ -48,7 +48,7 @@
 #include "signal-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
-#include "string-table.h"
+// #include "string-table.h"
 #include "string-util.h"
 //#include "terminal-util.h"
 //#include "user-util.h"

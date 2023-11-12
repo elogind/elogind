@@ -8,7 +8,7 @@
 //#include <sys/socket.h>
 
 //#include "alloc-util.h"
-#include "errno-list.h"
+// #include "errno-list.h"
 //#include "extract-word.h"
 #include "locale-util.h"
 #include "macro.h"

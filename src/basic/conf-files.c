@@ -7,7 +7,7 @@
 
 #include "chase.h"
 #include "conf-files.h"
-//#include "constants.h"
+#include "constants.h"
 #include "dirent-util.h"
 #include "fd-util.h"
 #include "hashmap.h"
