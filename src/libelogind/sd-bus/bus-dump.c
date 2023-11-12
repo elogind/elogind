@@ -15,7 +15,7 @@
 #include "macro.h"
 #include "pcapng.h"
 #include "string-util.h"
-#include "strv.h"
+// #include "strv.h"
 #include "terminal-util.h"
 
 static char *indent(unsigned level, uint64_t flags) {
