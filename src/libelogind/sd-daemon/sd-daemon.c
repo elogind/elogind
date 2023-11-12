@@ -4,7 +4,7 @@
 #include <limits.h>
 //#include <mqueue.h>
 #include <netinet/in.h>
-#include <poll.h>
+// #include <poll.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -20,7 +20,7 @@
 #include "fs-util.h"
 #include "io-util.h"
 #include "parse-util.h"
-#include "path-util.h"
+// #include "path-util.h"
 #include "process-util.h"
 #include "socket-util.h"
 #include "stat-util.h"
