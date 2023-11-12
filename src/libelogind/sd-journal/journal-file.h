@@ -15,8 +15,8 @@
 //#include "compress.h"
 #include "hashmap.h"
 #include "journal-def.h"
-#include "mmap-cache.h"
-#include "sparse-endian.h"
+// #include "mmap-cache.h"
+// #include "sparse-endian.h"
 #include "time-util.h"
 
 typedef struct JournalMetrics {
@@ -60,7 +60,9 @@ typedef enum OfflineState {
 
 typedef struct JournalFile {
         int fd;
+#if 0 /// UNNEEDED by elogind
         MMapFileDescriptor *cache_fd;
+#endif // 0
 
         mode_t mode;
 
