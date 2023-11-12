@@ -70,12 +70,6 @@ void siphash24_init(struct siphash *state, const uint8_t k[static 16]) {
         };
 }
 
-#if 1 /// let's add a diagnostic push to silence -Wimplicit-fallthrough to elogind
-#  if defined(__GNUC__) && (__GNUC__ > 6)
-#    pragma GCC diagnostic push
-#    pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
-#  endif // __GNUC__
-#endif // 1
 void siphash24_compress(const void *_in, size_t inlen, struct siphash *state) {
 
         const uint8_t *in = ASSERT_PTR(_in);
