@@ -3,6 +3,7 @@
 
 #include "sd-device.h"
 
+#include "hashmap.h"
 #include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
@@ -24,11 +25,16 @@ size_t udev_replace_chars(char *str, const char *allow);
 #endif // 0
 
 int udev_queue_is_empty(void);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
+/// elogind empty mask removed (UNNEEDED by elogind)
 
 bool udev_available(void);
 
 /// elogind empty mask removed (UNNEEDED by elogind)
 int device_get_vendor_string(sd_device *device, const char **ret);
 int device_get_model_string(sd_device *device, const char **ret);
+
+int device_get_property_value_with_fallback(
+                sd_device *device,
+                const char *prop,
+                Hashmap *extra_props,
+                const char **ret);
