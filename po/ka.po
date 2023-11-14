@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-14 10:32+0100\n"
+"POT-Creation-Date: 2023-11-14 21:25+0000\n"
 "PO-Revision-Date: 2023-07-15 00:15+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
@@ -1074,40 +1074,40 @@ msgstr "ვირტუალური ტერმინალის შეც�
 # "shall be enabled."
 # msgstr "დროის ქსელური სინქრონიზაციის ჩართ/გამორთ-თვის საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:364
+# #: src/core/dbus-unit.c:352
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "'$(unit)'-ის გასაშვებად საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:365
+# #: src/core/dbus-unit.c:353
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "'$(unit)'-ის გასაჩერებლად საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:366
+# #: src/core/dbus-unit.c:354
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "'$(unit)'-ის გადასატვირთად საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:367 src/core/dbus-unit.c:368
+# #: src/core/dbus-unit.c:355 src/core/dbus-unit.c:356
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "'$(unit)'-ის გადასატვირთად საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:565
+# #: src/core/dbus-unit.c:553
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr ""
 # "'$(unit)'-ის პროცესებისთვის UNIX სიგნალის გასაგზავნად საჭიროა ავთნტიკაცია."
 #
-# #: src/core/dbus-unit.c:595
+# #: src/core/dbus-unit.c:583
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "'$(unit)'-ის შეცდომით გაშვების მდგომარეობის გასასუფთავებლად საჭიროა "
 # "ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:627
+# #: src/core/dbus-unit.c:615
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "'$(unit)'-ის თვისებების დასაყენებლად საჭიროა ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:728
+# #: src/core/dbus-unit.c:716
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -1115,7 +1115,7 @@ msgstr "ვირტუალური ტერმინალის შეც�
 # "'$(unit)'-თან ასოცირებული ფაილების და საქაღალდეების წასაშლელად საჭიროა "
 # "ავთენტიკაცია."
 #
-# #: src/core/dbus-unit.c:776
+# #: src/core/dbus-unit.c:764
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr "'$(unit)'-ის პროცესების გასაყინად საჭიროა ავთენტიკაცია."
