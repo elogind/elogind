@@ -29,8 +29,10 @@
 
 /* Many different things, but also system unit start/stop */
 #define DEFAULT_TIMEOUT_USEC (DEFAULT_TIMEOUT_SEC*USEC_PER_SEC)
+#if 0 /// UNNEEDED by elogind
 /* User unit start/stop */
 #define DEFAULT_USER_TIMEOUT_USEC (DEFAULT_USER_TIMEOUT_SEC*USEC_PER_SEC)
+#endif // 0
 /* Timeout for user confirmation on the console */
 #define DEFAULT_CONFIRM_USEC (30*USEC_PER_SEC)
 

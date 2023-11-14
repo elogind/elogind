@@ -222,17 +222,21 @@ option('translations', type : 'boolean', value : true,
 #endif // 0
 option('dbuspolicydir', type : 'string',
        description : 'D-Bus policy directory')
-option('dbussessionservicedir', type : 'string',
-       description : 'D-Bus session service directory')
+#if 0 /// UNNEEDED by elogind
+# option('dbussessionservicedir', type : 'string',
+#        description : 'D-Bus session service directory')
+#endif // 0
 option('dbussystemservicedir', type : 'string',
        description : 'D-Bus system service directory')
-option('dbus-interfaces-dir', type : 'string',
-       description : 'export D-Bus introspection XML as standalone files')
+#if 0 /// UNNEEDED by elogind
+# option('dbus-interfaces-dir', type : 'string',
+#        description : 'export D-Bus introspection XML as standalone files')
+#endif // 0
 option('default-timeout-sec', type : 'integer', value : 90,
        description : 'default timeout for system unit start/stop')
-option('default-user-timeout-sec', type : 'integer', value : 90,
-       description : 'default timeout for user unit start/stop')
 #if 0 /// UNNEEDED by elogind
+# option('default-user-timeout-sec', type : 'integer', value : 90,
+#        description : 'default timeout for user unit start/stop')
 # option('pkgconfigdatadir', type : 'string', value : '',
 #        description : 'directory for arch-independent pkg-config files')
 #endif // 0
@@ -243,15 +247,17 @@ option('pkgconfiglibdir', type : 'string', value : '',
 #        description : 'directory for xinitrc files')
 # option('rpmmacrosdir', type : 'string', value : 'lib/rpm/macros.d',
 #        description : 'directory for rpm macros ["no" disables]')
+# option('update-helper-user-timeout-sec', type : 'integer', value : 15,
+#        description : 'timeout for user manager package operations')
 #endif // 0
-option('update-helper-user-timeout-sec', type : 'integer', value : 15,
-       description : 'timeout for user manager package operations')
 option('pamlibdir', type : 'string',
        description : 'directory for PAM modules')
 option('pamconfdir', type : 'string',
        description : 'directory for PAM configuration ["no" disables]')
-option('libcryptsetup-plugins-dir', type : 'string',
-       description : 'directory for libcryptsetup plugins')
+#if 0 /// UNNEEDED by elogind
+# option('libcryptsetup-plugins-dir', type : 'string',
+#        description : 'directory for libcryptsetup plugins')
+#endif // 0
 option('docdir', type : 'string',
        description : 'documentation directory')
 option('install-sysconfdir', type : 'combo', choices : ['true', 'no-samples', 'false'], value : 'true',
@@ -281,9 +287,9 @@ option('cgroup-controller', type : 'string',
 #        description : 'use unit name or description in messages by default')
 # option('time-epoch', type : 'integer', value : 0,
 #        description : 'time epoch for time clients')
+# option('clock-valid-range-usec-max', type : 'integer', value : 473364000000000, # 15 years
+#        description : 'maximum value in microseconds for the difference between RTC and epoch, exceeding which is considered an RTC error ["0" disables]')
 #endif // 0
-option('clock-valid-range-usec-max', type : 'integer', value : 473364000000000, # 15 years
-       description : 'maximum value in microseconds for the difference between RTC and epoch, exceeding which is considered an RTC error ["0" disables]')
 option('default-user-shell', type : 'string', value : '/bin/bash',
        description : 'default interactive shell')
 
@@ -304,11 +310,11 @@ option('system-gid-max', type : 'integer', value : 0,
 #        description : 'minimum container UID base')
 # option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
 #        description : 'maximum container UID base')
+# option('adm-group', type : 'boolean',
+#        description : 'the ACL for adm group should be added')
+# option('wheel-group', type : 'boolean',
+#        description : 'the ACL for wheel group should be added')
 #endif // 0
-option('adm-group', type : 'boolean',
-       description : 'the ACL for adm group should be added')
-option('wheel-group', type : 'boolean',
-       description : 'the ACL for wheel group should be added')
 option('nobody-user', type : 'string',
        description : 'The name of the nobody user (the one with UID 65534)',
        value : 'nobody')
@@ -425,13 +431,15 @@ option('smack', type : 'boolean',
 #if 0 /// UNNEEDED by elogind
 # option('smack-run-label', type : 'string',
 #        description : 'run systemd --system itself with a specific SMACK label')
+# option('smack-default-process-label', type : 'string',
+#        description : 'default SMACK label for executed processes')
 #endif // 0
-option('smack-default-process-label', type : 'string',
-       description : 'default SMACK label for executed processes')
 option('polkit', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'polkit support')
-option('ima', type : 'boolean',
-       description : 'IMA support')
+#if 0 /// UNNEEDED by elogind
+# option('ima', type : 'boolean',
+#        description : 'IMA support')
+#endif // 0
 
 option('acl', type : 'combo', choices : ['auto', 'true', 'false'],
        description : 'libacl support')

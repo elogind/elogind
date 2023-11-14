@@ -20,8 +20,8 @@
 <!ENTITY DEFAULT_DNS_OVER_TLS_MODE "{{DEFAULT_DNS_OVER_TLS_MODE_STR}}">
 #} // 0 -->
 <!ENTITY DEFAULT_TIMEOUT "{{DEFAULT_TIMEOUT_SEC}} s">
+<!-- 0 /// elogind does not have or need this {#
 <!ENTITY DEFAULT_USER_TIMEOUT "{{DEFAULT_USER_TIMEOUT_SEC}} s">
-<!-- 0 /// elogind does not have this {#
 <!ENTITY DEFAULT_KEYMAP "{{SYSTEMD_DEFAULT_KEYMAP}}">
 #} // 0 -->
 <!ENTITY fedora_latest_version "37">

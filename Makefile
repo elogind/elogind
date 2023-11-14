@@ -146,17 +146,21 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 		$(MESON) setup $(BUILDDIR) $(BASIC_OPT) \
 			--prefix $(PREFIX) \
 			--wrap-mode nodownload  \
-			-Drootprefix=$(ROOTPREFIX) \
-			-Dsysconfdir=$(SYSCONFDIR) \
 			-Dacl=true \
 			-Dcgroup-controller=$(CGCONTROL) \
+			-Ddbus=true \
 			-Ddefault-hierarchy=$(CGDEFAULT) \
 			-Defi=true \
 			-Dhtml=auto \
 			-Dman=auto \
 			-Dpam=true \
+			-Drootprefix=$(ROOTPREFIX) \
 			-Dselinux=false \
+			-Dskip-deps=false \
 			-Dsmack=true \
+			-Dsysconfdir=$(SYSCONFDIR) \
+			-Dutmp=true \
+			-Dxenctrl=auto \
 			-Dmode=$(BUILDMODE) \
 	)
 

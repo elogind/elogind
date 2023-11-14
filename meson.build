@@ -68,7 +68,7 @@ conf.set10('LOG_MESSAGE_VERIFICATION', verification)
 #
 #else // 0
 fuzzer_build = false
-skip_deps = false
+skip_deps = get_option('skip-deps')
 conf.set10('FUZZ_USE_SIZE_LIMIT', false)
 conf.set10('SD_BOOT', false)
 #endif // 0
@@ -186,7 +186,9 @@ if not rootlibdir.startswith('/')
 endif
 rootpkglibdir = rootlibdir / 'elogind'
 
-install_sysconfdir = get_option('install-sysconfdir') != 'false'
+#if 0 /// UNNEEDED by elogind
+# install_sysconfdir = get_option('install-sysconfdir') != 'false'
+#endif // 0
 install_sysconfdir_samples = get_option('install-sysconfdir') == 'true'
 # Dirs of external packages
 #if 0 /// UNNEEDED by elogind
@@ -399,8 +401,8 @@ conf.set10('ENABLE_URLIFY',                                   get_option('urlify
 #endif // 0
 
 conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('default-timeout-sec'))
-conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
 #if 0 /// UNNEEDED by elogind
+# conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
 # conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
 #
 # conf.set10('FIRST_BOOT_FULL_PRESET',                          get_option('first-boot-full-preset'))
@@ -1163,10 +1165,10 @@ conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
 #                 static_ugids += '@0@:@1@'.format(option, val)
 #         endif
 # endforeach
+#
+# conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
+# conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 #endif // 0
-
-conf.set10('ENABLE_ADM_GROUP', get_option('adm-group'))
-conf.set10('ENABLE_WHEEL_GROUP', get_option('wheel-group'))
 
 dev_kvm_mode = get_option('dev-kvm-mode')
 conf.set_quoted('DEV_KVM_MODE', dev_kvm_mode) # FIXME: convert to 0o… notation
@@ -2004,13 +2006,15 @@ if dbuspolicydir == ''
         dbuspolicydir = dbusdatadir / 'system.d'
 endif
 
-dbussessionservicedir = get_option('dbussessionservicedir')
-if dbussessionservicedir == ''
-        dbussessionservicedir = dbusdatadir / 'services'
-        if conf.get('HAVE_DBUS') == 1
-                dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
-        endif
-endif
+#if 0 /// UNNEEDED by elogind
+# dbussessionservicedir = get_option('dbussessionservicedir')
+# if dbussessionservicedir == ''
+#         dbussessionservicedir = dbusdatadir / 'services'
+#         if conf.get('HAVE_DBUS') == 1
+#                 dbussessionservicedir = libdbus.get_variable(pkgconfig: 'session_bus_services_dir', default_value: dbussessionservicedir)
+#         endif
+# endif
+#endif // 0
 
 dbussystemservicedir = get_option('dbussystemservicedir')
 if dbussystemservicedir == ''
@@ -2020,20 +2024,20 @@ if dbussystemservicedir == ''
         endif
 endif
 
-dbus_interfaces_dir = get_option('dbus-interfaces-dir')
-if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
-        if meson.is_cross_build() and dbus_interfaces_dir != 'yes'
-                dbus_interfaces_dir = 'no'
-                warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
-        else
-                dbus_interfaces_dir = dbusdatadir / 'interfaces'
-                if conf.get('HAVE_DBUS') == 1
-                        dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
-                endif
-        endif
-endif
-
 #if 0 /// UNNEEDED by elogind
+# dbus_interfaces_dir = get_option('dbus-interfaces-dir')
+# if dbus_interfaces_dir == '' or dbus_interfaces_dir == 'yes'
+#         if meson.is_cross_build() and dbus_interfaces_dir != 'yes'
+#                 dbus_interfaces_dir = 'no'
+#                 warning('Exporting D-Bus interface XML files is disabled during cross build. Pass path or "yes" to force enable.')
+#         else
+#                 dbus_interfaces_dir = dbusdatadir / 'interfaces'
+#                 if conf.get('HAVE_DBUS') == 1
+#                         dbus_interfaces_dir = libdbus.get_variable(pkgconfig: 'interfaces_dir', default_value: dbus_interfaces_dir)
+#                 endif
+#         endif
+# endif
+#
 # # We support one or the other. If gcrypt is available, we assume it's there to
 # # be used, and use it in preference.
 # opt = get_option('cryptolib')
@@ -5432,9 +5436,13 @@ summary({
 #         'modprobe.d directory' :            modprobedir,
 #endif // 0
         'D-Bus policy directory' :          dbuspolicydir,
-        'D-Bus session directory' :         dbussessionservicedir,
+#if 0 /// UNNEEDED by elogind
+#         'D-Bus session directory' :         dbussessionservicedir,
+#endif // 0
         'D-Bus system directory' :          dbussystemservicedir,
-        'D-Bus interfaces directory' :      dbus_interfaces_dir,
+#if 0 /// UNNEEDED by elogind
+#         'D-Bus interfaces directory' :      dbus_interfaces_dir,
+#endif // 0
         'bash completions directory' :      bashcompletiondir,
         'zsh completions directory' :       zshcompletiondir,
 #if 0 /// UNNEEDED by elogind
