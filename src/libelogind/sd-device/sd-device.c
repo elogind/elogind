@@ -148,7 +148,7 @@ int device_set_syspath(sd_device *device, const char *_syspath, bool verify) {
                 _cleanup_close_ int fd = -EBADF;
 
                 /* The input path maybe a symlink located outside of /sys. Let's try to chase the symlink at first.
-                 * The primary usecase is that e.g. /proc/device-tree is a symlink to /sys/firmware/devicetree/base.
+                 * The primary use case is that e.g. /proc/device-tree is a symlink to /sys/firmware/devicetree/base.
                  * By chasing symlinks in the path at first, we can call sd_device_new_from_path() with such path. */
                 r = chase(_syspath, NULL, 0, &syspath, &fd);
                 if (r == -ENOENT)
@@ -426,8 +426,13 @@ _public_ int sd_device_new_from_subsystem_sysname(
         int r;
 
         assert_return(ret, -EINVAL);
-        assert_return(path_is_normalized(subsystem), -EINVAL);
-        assert_return(path_is_normalized(sysname), -EINVAL);
+        assert_return(subsystem, -EINVAL);
+        assert_return(sysname, -EINVAL);
+
+        if (!path_is_normalized(subsystem))
+                return -EINVAL;
+        if (!path_is_normalized(sysname))
+                return -EINVAL;
 
         /* translate sysname back to sysfs filename */
         name = strdupa_safe(sysname);
