@@ -281,6 +281,11 @@ if pamconfdir == ''
 endif
 
 #if 0 /// UNNEEDED by elogind
+# sshdconfdir = get_option('sshdconfdir')
+# if sshdconfdir == ''
+#         sshdconfdir = sysconfdir / 'ssh/sshd_config.d'
+# endif
+#
 # libcryptsetup_plugins_dir = get_option('libcryptsetup-plugins-dir')
 # if libcryptsetup_plugins_dir == ''
 #         libcryptsetup_plugins_dir = libdir / 'cryptsetup'
@@ -322,6 +327,7 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('RC_LOCAL_PATH',                              get_option('rc-local'))
 #endif // 0
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('SSHDCONFDIR',                                sshdconfdir)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      bindir / 'systemctl')
@@ -3153,6 +3159,7 @@ summary({
 #         'SysV rc?.d directories' :          sysvrcnd_path,
 #         'PAM modules directory' :           pamlibdir,
 #         'PAM configuration directory' :     pamconfdir,
+#         'ssh configuration directory' :     sshdconfdir,
 #         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
 #         'RPM macros directory' :            rpmmacrosdir,
 #         'modprobe.d directory' :            modprobedir,
