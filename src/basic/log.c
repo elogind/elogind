@@ -75,7 +75,7 @@ static bool open_when_needed = false;
 #if 0 /// UNNEEDED by elogind
 static bool prohibit_ipc = false;
 #endif // 0
-static bool assert_return_is_critical = false;
+static bool assert_return_is_critical = BUILD_MODE_DEVELOPER;
 
 /* Akin to glibc's __abort_msg; which is private and we hence cannot
  * use here. */
