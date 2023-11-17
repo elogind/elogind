@@ -10,12 +10,15 @@
 //#include "format-util.h"
 #include "log.h"
 //#include "string-util.h"
+#include "tests.h"
 
 int main(int argc, char *argv[]) {
 #if 0 /// elogind does not handle btrfs quotas
         BtrfsQuotaInfo quota;
 #endif // 0
         int r, fd;
+
+        test_setup_logging(LOG_DEBUG);
 
         fd = open("/", O_RDONLY|O_CLOEXEC|O_DIRECTORY);
         if (fd < 0)

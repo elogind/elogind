@@ -18,8 +18,7 @@ int main(int argc, char *argv[]) {
 #endif // 0
         int r;
 
-        log_parse_environment();
-        log_open();
+        test_setup_logging(LOG_DEBUG);
 
 #if 0 /// UNSUPPORTED by elogind (we aren't init)
         assert_se(procfs_cpu_get_usage(&nsec) >= 0);
