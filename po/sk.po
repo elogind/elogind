@@ -9,8 +9,7 @@ msgstr ""
 "POT-Creation-Date: 2023-11-14 21:25+0000\n"
 "PO-Revision-Date: 2021-02-22 20:21+0000\n"
 "Last-Translator: Frantisek Sumsal <frantisek@sumsal.cz>\n"
-"Language-Team: Slovak <https://translate.fedoraproject.org/projects/elogind/"
-"master/sk/>\n"
+"Language-Team: Slovak <https://translate.fedoraproject.org/projects/elogind/master/sk/>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,10 +23,8 @@ msgstr ""
 # msgstr "Odoslanie hesla späť do systému"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:23
-# msgid ""
-# "Authentication is required to send the entered passphrase back to the system."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na odoslanie zadaného hesla späť do systému."
+# msgid "Authentication is required to send the entered passphrase back to the system."
+# msgstr "Vyžaduje sa overenie totožnosti na odoslanie zadaného hesla späť do systému."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
@@ -35,9 +32,7 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
 # msgid "Authentication is required to manage system services or other units."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na správu systémových služieb alebo iných "
-# "jednotiek."
+# msgstr "Vyžaduje sa overenie totožnosti na správu systémových služieb alebo iných jednotiek."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
@@ -45,23 +40,15 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
 # msgid "Authentication is required to manage system service or unit files."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na správu systémovej služby alebo súborov "
-# "jednotky."
+# msgstr "Vyžaduje sa overenie totožnosti na správu systémovej služby alebo súborov jednotky."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:54
 # msgid "Set or unset system and service manager environment variables"
-# msgstr ""
-# "Nastavenie alebo zrušenie nastavenia premenných prostredia systému a správcu "
-# "služieb"
+# msgstr "Nastavenie alebo zrušenie nastavenia premenných prostredia systému a správcu služieb"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:55
-# msgid ""
-# "Authentication is required to set or unset system and service manager "
-# "environment variables."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie alebo zrušenie nastavenia "
-# "premenných prostredia systému a správcu služieb."
+# msgid "Authentication is required to set or unset system and service manager environment variables."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie alebo zrušenie nastavenia premenných prostredia systému a správcu služieb."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
 # msgid "Reload the systemd state"
@@ -69,8 +56,7 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:74
 # msgid "Dump the systemd state without rate limits"
@@ -78,10 +64,8 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
 # #, fuzzy
-# msgid ""
-# "Authentication is required to dump the elogind state without rate limits."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgid "Authentication is required to dump the elogind state without rate limits."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
@@ -90,8 +74,7 @@ msgstr ""
 # #: src/home/org.freedesktop.home1.policy:14
 # #, fuzzy
 # msgid "Authentication is required to create a user's home area."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/home/org.freedesktop.home1.policy:23
 # msgid "Remove a home area"
@@ -100,8 +83,7 @@ msgstr ""
 # #: src/home/org.freedesktop.home1.policy:24
 # #, fuzzy
 # msgid "Authentication is required to remove a user's home area."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/home/org.freedesktop.home1.policy:33
 # msgid "Check credentials of a home area"
@@ -109,8 +91,7 @@ msgstr ""
 #
 # #: src/home/org.freedesktop.home1.policy:34
 # #, fuzzy
-# msgid ""
-# "Authentication is required to check credentials against a user's home area."
+# msgid "Authentication is required to check credentials against a user's home area."
 # msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/home/org.freedesktop.home1.policy:43
@@ -137,15 +118,12 @@ msgstr ""
 #
 # #: src/home/org.freedesktop.home1.policy:64
 # #, fuzzy
-# msgid ""
-# "Authentication is required to change the password of a user's home area."
+# msgid "Authentication is required to change the password of a user's home area."
 # msgstr "Vyžaduje sa overenie totožnosti na nastavenie miestnych nastavení."
 #
 # #: src/home/pam_systemd_home.c:287
 # #, c-format
-# msgid ""
-# "Home of user %s is currently absent, please plug in the necessary storage "
-# "device or backing file system."
+# msgid "Home of user %s is currently absent, please plug in the necessary storage device or backing file system."
 # msgstr ""
 #
 # #: src/home/pam_systemd_home.c:292
@@ -172,9 +150,7 @@ msgstr ""
 #
 # #: src/home/pam_systemd_home.c:331
 # #, c-format
-# msgid ""
-# "Password/recovery key incorrect or not sufficient for authentication of user "
-# "%s."
+# msgid "Password/recovery key incorrect or not sufficient for authentication of user %s."
 # msgstr ""
 #
 # #: src/home/pam_systemd_home.c:332
@@ -192,9 +168,7 @@ msgstr ""
 #
 # #: src/home/pam_systemd_home.c:355
 # #, c-format
-# msgid ""
-# "Password incorrect or not sufficient, and configured security token of user "
-# "%s not inserted."
+# msgid "Password incorrect or not sufficient, and configured security token of user %s not inserted."
 # msgstr ""
 #
 # #: src/home/pam_systemd_home.c:376
@@ -217,9 +191,7 @@ msgstr ""
 # msgstr ""
 #
 # #: src/home/pam_systemd_home.c:424
-# msgid ""
-# "Security token PIN is locked, please unlock it first. (Hint: Removal and re-"
-# "insertion might suffice.)"
+# msgid "Security token PIN is locked, please unlock it first. (Hint: Removal and re-insertion might suffice.)"
 # msgstr ""
 #
 # #: src/home/pam_systemd_home.c:432
@@ -307,12 +279,8 @@ msgstr ""
 # msgstr "Nastavenie nemenného názvu hostiteľa"
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:31
-# msgid ""
-# "Authentication is required to set the statically configured local hostname, "
-# "as well as the pretty hostname."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie pevne určeného názvu miestneho "
-# "hostiteľa, známeho ako zrozumiteľný názov hostiteľa."
+# msgid "Authentication is required to set the statically configured local hostname, as well as the pretty hostname."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie pevne určeného názvu miestneho hostiteľa, známeho ako zrozumiteľný názov hostiteľa."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:41
 # msgid "Set machine information"
@@ -320,8 +288,7 @@ msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:42
 # msgid "Authentication is required to set local machine information."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie informácií o miestnom počítači."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie informácií o miestnom počítači."
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:51
 # msgid "Get product UUID"
@@ -390,17 +357,14 @@ msgstr ""
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
 #endif // 0
-msgstr ""
-"Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
-"klávesnice."
+msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:23
-msgid ""
-"Authentication is required for an application to inhibit system shutdown."
+msgid "Authentication is required for an application to inhibit system shutdown."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:33
@@ -417,8 +381,7 @@ msgstr "Umožnenie aplikáciám odložiť spánok systému"
 
 #: src/login/org.freedesktop.login1.policy:45
 msgid "Authentication is required for an application to inhibit system sleep."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
+msgstr "Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
 
 #: src/login/org.freedesktop.login1.policy:55
 msgid "Allow applications to delay system sleep"
@@ -426,17 +389,14 @@ msgstr "Umožnenie aplikáciám odložiť spánok systému"
 
 #: src/login/org.freedesktop.login1.policy:56
 msgid "Authentication is required for an application to delay system sleep."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
+msgstr "Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
 
 #: src/login/org.freedesktop.login1.policy:65
 msgid "Allow applications to inhibit automatic system suspend"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:66
-msgid ""
-"Authentication is required for an application to inhibit automatic system "
-"suspend."
+msgid "Authentication is required for an application to inhibit automatic system suspend."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:75
@@ -444,9 +404,7 @@ msgid "Allow applications to inhibit system handling of the power key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:76
-msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the power key."
+msgid "Authentication is required for an application to inhibit system handling of the power key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:86
@@ -454,9 +412,7 @@ msgid "Allow applications to inhibit system handling of the suspend key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:87
-msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the suspend key."
+msgid "Authentication is required for an application to inhibit system handling of the suspend key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:97
@@ -464,9 +420,7 @@ msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:98
-msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the hibernate key."
+msgid "Authentication is required for an application to inhibit system handling of the hibernate key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:107
@@ -474,9 +428,7 @@ msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:108
-msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the lid switch."
+msgid "Authentication is required for an application to inhibit system handling of the lid switch."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:117
@@ -486,11 +438,8 @@ msgstr "Umožnenie aplikáciám odložiť spánok systému"
 
 #: src/login/org.freedesktop.login1.policy:118
 #, fuzzy
-msgid ""
-"Authentication is required for an application to inhibit system handling of "
-"the reboot key."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
+msgid "Authentication is required for an application to inhibit system handling of the reboot key."
+msgstr "Vyžaduje sa overenie totožnosti na odloženie spánku systému aplikáciou."
 
 #: src/login/org.freedesktop.login1.policy:128
 msgid "Allow non-logged-in user to run programs"
@@ -498,9 +447,7 @@ msgstr "Umožnenie neprihlásenému používateľovi spúšťanie programov"
 
 #: src/login/org.freedesktop.login1.policy:129
 msgid "Explicit request is required to run programs as a non-logged-in user."
-msgstr ""
-"Vyžaduje sa explicitná požiadavka na spúšťanie programov ako neprihlásený "
-"používateľ."
+msgstr "Vyžaduje sa explicitná požiadavka na spúšťanie programov ako neprihlásený používateľ."
 
 #: src/login/org.freedesktop.login1.policy:138
 msgid "Allow non-logged-in users to run programs"
@@ -508,9 +455,7 @@ msgstr "Umožnenie neprihláseným používateľom spúšťanie programov"
 
 #: src/login/org.freedesktop.login1.policy:139
 msgid "Authentication is required to run programs as a non-logged-in user."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na spúšťanie programov ako neprihlásený "
-"používateľ."
+msgstr "Vyžaduje sa overenie totožnosti na spúšťanie programov ako neprihlásený používateľ."
 
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
@@ -541,21 +486,15 @@ msgid "Power off the system while other users are logged in"
 msgstr "Vypnutie systému, pokiaľ sú prihlásení iní používatelia"
 
 #: src/login/org.freedesktop.login1.policy:181
-msgid ""
-"Authentication is required to power off the system while other users are "
-"logged in."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na vypnutie systému, pokiaľ sú prihlásení "
-"iní používatelia."
+msgid "Authentication is required to power off the system while other users are logged in."
+msgstr "Vyžaduje sa overenie totožnosti na vypnutie systému, pokiaľ sú prihlásení iní používatelia."
 
 #: src/login/org.freedesktop.login1.policy:191
 msgid "Power off the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:192
-msgid ""
-"Authentication is required to power off the system while an application is "
-"inhibiting this."
+msgid "Authentication is required to power off the system while an application is inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:202
@@ -571,21 +510,15 @@ msgid "Reboot the system while other users are logged in"
 msgstr "Reštart systému, pokiaľ sú prihlásení iní používatelia"
 
 #: src/login/org.freedesktop.login1.policy:214
-msgid ""
-"Authentication is required to reboot the system while other users are logged "
-"in."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na reštartovanie systému, pokiaľ sú "
-"prihlásení iní používatelia."
+msgid "Authentication is required to reboot the system while other users are logged in."
+msgstr "Vyžaduje sa overenie totožnosti na reštartovanie systému, pokiaľ sú prihlásení iní používatelia."
 
 #: src/login/org.freedesktop.login1.policy:224
 msgid "Reboot the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:225
-msgid ""
-"Authentication is required to reboot the system while an application is "
-"inhibiting this."
+msgid "Authentication is required to reboot the system while an application is inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:235
@@ -605,12 +538,8 @@ msgstr "Reštart systému, pokiaľ sú prihlásení iní používatelia"
 
 #: src/login/org.freedesktop.login1.policy:247
 #, fuzzy
-msgid ""
-"Authentication is required to halt the system while other users are logged "
-"in."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na reštartovanie systému, pokiaľ sú "
-"prihlásení iní používatelia."
+msgid "Authentication is required to halt the system while other users are logged in."
+msgstr "Vyžaduje sa overenie totožnosti na reštartovanie systému, pokiaľ sú prihlásení iní používatelia."
 
 #: src/login/org.freedesktop.login1.policy:257
 msgid "Halt the system while an application is inhibiting this"
@@ -618,12 +547,8 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:258
 #, fuzzy
-msgid ""
-"Authentication is required to halt the system while an application is "
-"inhibiting this."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
-"klávesnice."
+msgid "Authentication is required to halt the system while an application is inhibiting this."
+msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 
 #: src/login/org.freedesktop.login1.policy:268
 msgid "Suspend the system"
@@ -638,21 +563,15 @@ msgid "Suspend the system while other users are logged in"
 msgstr "Uspanie systému, pokiaľ sú prihlásení iní používatelia"
 
 #: src/login/org.freedesktop.login1.policy:279
-msgid ""
-"Authentication is required to suspend the system while other users are "
-"logged in."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na uspanie systému, pokiaľ sú prihlásení iní "
-"používatelia."
+msgid "Authentication is required to suspend the system while other users are logged in."
+msgstr "Vyžaduje sa overenie totožnosti na uspanie systému, pokiaľ sú prihlásení iní používatelia."
 
 #: src/login/org.freedesktop.login1.policy:289
 msgid "Suspend the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:290
-msgid ""
-"Authentication is required to suspend the system while an application is "
-"inhibiting this."
+msgid "Authentication is required to suspend the system while an application is inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:300
@@ -668,9 +587,7 @@ msgid "Hibernate the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:311
-msgid ""
-"Authentication is required to hibernate the system while other users are "
-"logged in."
+msgid "Authentication is required to hibernate the system while other users are logged in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:321
@@ -678,9 +595,7 @@ msgid "Hibernate the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:322
-msgid ""
-"Authentication is required to hibernate the system while an application is "
-"inhibiting this."
+msgid "Authentication is required to hibernate the system while an application is inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:332
@@ -697,9 +612,7 @@ msgstr "Zamknutie alebo odomknutie aktívnych relácií"
 
 #: src/login/org.freedesktop.login1.policy:343
 msgid "Authentication is required to lock or unlock active sessions."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na uzamknutie alebo odomknutie aktívnych "
-"relácií."
+msgstr "Vyžaduje sa overenie totožnosti na uzamknutie alebo odomknutie aktívnych relácií."
 
 #: src/login/org.freedesktop.login1.policy:352
 msgid "Set the reboot \"reason\" in the kernel"
@@ -716,12 +629,8 @@ msgid "Indicate to the firmware to boot to setup interface"
 msgstr "Umožnenie indikácie spustenia inštalačného rozhrania pre firmvér"
 
 #: src/login/org.freedesktop.login1.policy:364
-msgid ""
-"Authentication is required to indicate to the firmware to boot to setup "
-"interface."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného "
-"rozhrania pre firmvér."
+msgid "Authentication is required to indicate to the firmware to boot to setup interface."
+msgstr "Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného rozhrania pre firmvér."
 
 #: src/login/org.freedesktop.login1.policy:374
 msgid "Indicate to the boot loader to boot to the boot loader menu"
@@ -729,12 +638,8 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:375
 #, fuzzy
-msgid ""
-"Authentication is required to indicate to the boot loader to boot to the "
-"boot loader menu."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného "
-"rozhrania pre firmvér."
+msgid "Authentication is required to indicate to the boot loader to boot to the boot loader menu."
+msgstr "Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného rozhrania pre firmvér."
 
 #: src/login/org.freedesktop.login1.policy:385
 msgid "Indicate to the boot loader to boot a specific entry"
@@ -742,12 +647,8 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:386
 #, fuzzy
-msgid ""
-"Authentication is required to indicate to the boot loader to boot into a "
-"specific boot loader entry."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného "
-"rozhrania pre firmvér."
+msgid "Authentication is required to indicate to the boot loader to boot into a specific boot loader entry."
+msgstr "Vyžaduje sa overenie totožnosti na indikáciu spustenia inštalačného rozhrania pre firmvér."
 
 #: src/login/org.freedesktop.login1.policy:396
 msgid "Set a wall message"
@@ -773,8 +674,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/machine/org.freedesktop.machine1.policy:23
 # msgid "Authentication is required to log into a local container."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na prihlásenie do miestneho kontajneru."
+# msgstr "Vyžaduje sa overenie totožnosti na prihlásenie do miestneho kontajneru."
 #
 # #: src/machine/org.freedesktop.machine1.policy:32
 # msgid "Log into the local host"
@@ -805,8 +705,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:65
-# msgid ""
-# "Authentication is required to acquire a pseudo TTY in a local container."
+# msgid "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:74
@@ -822,8 +721,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:85
-# msgid ""
-# "Authentication is required to manage local virtual machines and containers."
+# msgid "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:95
@@ -831,9 +729,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:96
-# msgid ""
-# "Authentication is required to manage local virtual machine and container "
-# "images."
+# msgid "Authentication is required to manage local virtual machine and container images."
 # msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:22
@@ -940,9 +836,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/network/org.freedesktop.network1.policy:122
 # #, fuzzy
 # msgid "Authentication is required to reset NTP settings."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
-# "klávesnice."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 #
 # #: src/network/org.freedesktop.network1.policy:132
 # msgid "Revert DNS settings"
@@ -951,9 +845,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/network/org.freedesktop.network1.policy:133
 # #, fuzzy
 # msgid "Authentication is required to reset DNS settings."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
-# "klávesnice."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 #
 # #: src/network/org.freedesktop.network1.policy:143
 # msgid "DHCP server sends force renew message"
@@ -980,8 +872,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/network/org.freedesktop.network1.policy:166
 # #, fuzzy
 # msgid "Authentication is required to reload network settings."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/network/org.freedesktop.network1.policy:176
 # msgid "Reconfigure network interface"
@@ -1007,8 +898,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/portable/org.freedesktop.portable1.policy:24
 # #, fuzzy
-# msgid ""
-# "Authentication is required to attach or detach a portable service image."
+# msgid "Authentication is required to attach or detach a portable service image."
 # msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/portable/org.freedesktop.portable1.policy:34
@@ -1017,8 +907,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/portable/org.freedesktop.portable1.policy:35
 # #, fuzzy
-# msgid ""
-# "Authentication is required to delete or modify a portable service image."
+# msgid "Authentication is required to delete or modify a portable service image."
 # msgstr "Vyžaduje sa overenie totožnosti na vypnutie systému."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:22
@@ -1046,9 +935,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/resolve/org.freedesktop.resolve1.policy:133
 # #, fuzzy
 # msgid "Authentication is required to reset name resolution settings."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej "
-# "klávesnice."
+# msgstr "Vyžaduje sa overenie totožnosti na nastavenie nastavení systémovej klávesnice."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
@@ -1071,9 +958,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # msgstr ""
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:44
-# msgid ""
-# "Authentication is required to control whether the RTC stores the local or "
-# "UTC time."
+# msgid "Authentication is required to control whether the RTC stores the local or UTC time."
 # msgstr ""
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:53
@@ -1081,12 +966,8 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # msgstr "Zapnutie alebo vypnutie sieťovej synchronizácie času"
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:54
-# msgid ""
-# "Authentication is required to control whether network time synchronization "
-# "shall be enabled."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na ovládanie, či má byť povolená "
-# "synchronizácia času cez sieť."
+# msgid "Authentication is required to control whether network time synchronization shall be enabled."
+# msgstr "Vyžaduje sa overenie totožnosti na ovládanie, či má byť povolená synchronizácia času cez sieť."
 #
 # #: src/core/dbus-unit.c:352
 # msgid "Authentication is required to start '$(unit)'."
@@ -1106,9 +987,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/core/dbus-unit.c:553
 # #, fuzzy
-# msgid ""
-# "Authentication is required to send a UNIX signal to the processes of "
-# "'$(unit)'."
+# msgid "Authentication is required to send a UNIX signal to the processes of '$(unit)'."
 # msgstr "Vyžaduje sa overenie totožnosti na uspanie systému."
 #
 # #: src/core/dbus-unit.c:583
@@ -1121,16 +1000,11 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 #
 # #: src/core/dbus-unit.c:716
 # #, fuzzy
-# msgid ""
-# "Authentication is required to delete files and directories associated with "
-# "'$(unit)'."
-# msgstr ""
-# "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
 #
 # #: src/core/dbus-unit.c:764
 # #, fuzzy
 #endif // 0
-msgid ""
-"Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr ""
-"Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
