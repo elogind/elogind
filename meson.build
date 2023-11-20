@@ -220,6 +220,7 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # ntpservicelistdir = prefixdir / 'lib/systemd/ntp-units.d'
 # credstoredir = prefixdir / 'lib/credstore'
 # pcrlockdir = prefixdir / 'lib/pcrlock.d'
+# mimepackagesdir = prefixdir / 'share/mime/packages'
 #
 # configfiledir = get_option('configfiledir')
 # if configfiledir == ''
@@ -2667,6 +2668,8 @@ subdir('src/test')
 # subdir('src/fuzz')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 # subdir('test/fuzz')
+#
+# subdir('mime')
 #
 # alias_target('devel', libsystemd_pc, libudev_pc, systemd_pc, udev_pc)
 #else // 0
