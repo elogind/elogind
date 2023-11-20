@@ -183,6 +183,8 @@
 #         'varlink-io.elogind.PCRExtend.c',
 #         'varlink-io.elogind.sysext.c',
 #         'varlink-io.elogind.service.c',
+#         'varlink-io.elogind.Credentials.c',
+#         'varlink-io.elogind.Network.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
