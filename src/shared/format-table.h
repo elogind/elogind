@@ -73,6 +73,9 @@ typedef enum TableDataType {
 #if 0 /// UNNEEDED by elogind
         TABLE_SET_RGAP_COLOR,
         TABLE_SET_BOTH_COLORS,
+        TABLE_SET_UNDERLINE,
+        TABLE_SET_RGAP_UNDERLINE,
+        TABLE_SET_BOTH_UNDERLINES,
         TABLE_SET_URL,
 #endif // 0
         TABLE_SET_UPPERCASE,
@@ -122,6 +125,8 @@ int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent);
 int table_set_color(Table *t, TableCell *cell, const char *color);
 #if 0 /// UNNEEDED by elogind
 int table_set_rgap_color(Table *t, TableCell *cell, const char *color);
+int table_set_underline(Table *t, TableCell *cell, bool b);
+int table_set_rgap_underline(Table *t, TableCell *cell, bool b);
 int table_set_url(Table *t, TableCell *cell, const char *url);
 #endif // 0
 int table_set_uppercase(Table *t, TableCell *cell, bool b);
