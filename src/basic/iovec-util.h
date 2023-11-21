@@ -30,6 +30,12 @@ static inline struct iovec* iovec_make_string(struct iovec *iovec, const char *s
         *iovec_make_string(&(struct iovec) {}, s)
 
 #if 0 /// UNNEEDED by elogind
+#define CONST_IOVEC_MAKE_STRING(s)              \
+        (const struct iovec) {                  \
+                .iov_base = (char*) s,          \
+                .iov_len = STRLEN(s),           \
+        }
+
 static inline void iovec_done(struct iovec *iovec) {
         /* A _cleanup_() helper that frees the iov_base in the iovec */
         assert(iovec);
