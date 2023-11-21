@@ -285,6 +285,7 @@ enum {
         _JSON_BUILD_IOVEC_BASE64,
         _JSON_BUILD_BASE32HEX,
         _JSON_BUILD_HEX,
+        _JSON_BUILD_IOVEC_HEX,
         _JSON_BUILD_OCTESCAPE,
 #endif // 0
         _JSON_BUILD_ID128,
@@ -341,6 +342,7 @@ typedef int (*JsonBuildCallback)(JsonVariant **ret, const char *name, void *user
 #define JSON_BUILD_IOVEC_BASE64(iov) _JSON_BUILD_IOVEC_BASE64, (const struct iovec*) { iov }
 #define JSON_BUILD_BASE32HEX(p, n) _JSON_BUILD_BASE32HEX, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_HEX(p, n) _JSON_BUILD_HEX, (const void*) { p }, (size_t) { n }
+#define JSON_BUILD_IOVEC_HEX(iov) _JSON_BUILD_IOVEC_HEX, (const struct iovec*) { iov }
 #define JSON_BUILD_OCTESCAPE(p, n) _JSON_BUILD_OCTESCAPE, (const void*) { p }, (size_t) { n }
 #define JSON_BUILD_ID128(id) _JSON_BUILD_ID128, (const sd_id128_t*) { &(id) }
 #endif // 0
@@ -377,6 +379,7 @@ typedef int (*JsonBuildCallback)(JsonVariant **ret, const char *name, void *user
 #define JSON_BUILD_PAIR_BASE64(name, p, n) JSON_BUILD_PAIR(name, JSON_BUILD_BASE64(p, n))
 #define JSON_BUILD_PAIR_IOVEC_BASE64(name, iov) JSON_BUILD_PAIR(name, JSON_BUILD_IOVEC_BASE64(iov))
 #define JSON_BUILD_PAIR_HEX(name, p, n) JSON_BUILD_PAIR(name, JSON_BUILD_HEX(p, n))
+#define JSON_BUILD_PAIR_IOVEC_HEX(name, iov) JSON_BUILD_PAIR(name, JSON_BUILD_IOVEC_HEX(iov))
 #define JSON_BUILD_PAIR_ID128(name, id) JSON_BUILD_PAIR(name, JSON_BUILD_ID128(id))
 #endif // 0
 #define JSON_BUILD_PAIR_UUID(name, id) JSON_BUILD_PAIR(name, JSON_BUILD_UUID(id))
@@ -466,28 +469,6 @@ assert_cc(sizeof(uint32_t) == sizeof(unsigned));
 assert_cc(sizeof(int32_t) == sizeof(int));
 #define json_dispatch_int json_dispatch_int32
 
-#define JSON_DISPATCH_ENUM_DEFINE(name, type, func)                     \
-        int name(const char *n, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) { \
-                type *c = ASSERT_PTR(userdata);                         \
-                                                                        \
-                assert(variant);                                        \
-                                                                        \
-                if (json_variant_is_null(variant)) {                    \
-                        *c = (type) -EINVAL;                            \
-                        return 0;                                       \
-                }                                                       \
-                                                                        \
-                if (!json_variant_is_string(variant))                   \
-                        return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not a string.", strna(n)); \
-                                                                        \
-                type cc = func(json_variant_string(variant));           \
-                if (cc < 0)                                             \
-                        return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "Value of JSON field '%s' not recognized.", strna(n)); \
-                                                                        \
-                *c = cc;                                                \
-                return 0;                                               \
-        }
-
 static inline int json_dispatch_level(JsonDispatchFlags flags) {
 
         /* Did the user request no logging? If so, then never log higher than LOG_DEBUG. Also, if this is marked as
@@ -532,6 +513,14 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size);
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size);
 #endif // 0
+
+static inline int json_variant_unbase64_iovec(JsonVariant *v, struct iovec *ret) {
+        return json_variant_unbase64(v, ret ? &ret->iov_base : NULL, ret ? &ret->iov_len : NULL);
+}
+
+static inline int json_variant_unhex_iovec(JsonVariant *v, struct iovec *ret) {
+        return json_variant_unhex(v, ret ? &ret->iov_base : NULL, ret ? &ret->iov_len : NULL);
+}
 
 const char *json_variant_type_to_string(JsonVariantType t);
 JsonVariantType json_variant_type_from_string(const char *s);
