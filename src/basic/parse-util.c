@@ -111,8 +111,7 @@ int parse_ifindex(const char *s) {
 
 #if 0 /// UNNEEDED by elogind
 int parse_mtu(int family, const char *s, uint32_t *ret) {
-        uint64_t u;
-        size_t m;
+        uint64_t u, m;
         int r;
 
         r = parse_size(s, 1024, &u);
@@ -122,10 +121,16 @@ int parse_mtu(int family, const char *s, uint32_t *ret) {
         if (u > UINT32_MAX)
                 return -ERANGE;
 
-        if (family == AF_INET6)
+        switch (family) {
+        case AF_INET:
+                m = IPV4_MIN_MTU; /* This is 68 */
+                break;
+        case AF_INET6:
                 m = IPV6_MIN_MTU; /* This is 1280 */
-        else
-                m = IPV4_MIN_MTU; /* For all other protocols, including 'unspecified' we assume the IPv4 minimal MTU */
+                break;
+        default:
+                m = 0;
+        }
 
         if (u < m)
                 return -ERANGE;
