@@ -284,10 +284,6 @@ int locale_is_installed(const char *name) {
 }
 
 #if 0 /// UNNEEDED by elogind
-void init_gettext(void) {
-        setlocale(LC_ALL, "");
-        textdomain(GETTEXT_PACKAGE);
-}
 #endif // 0
 
 bool is_locale_utf8(void) {
