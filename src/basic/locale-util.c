@@ -17,6 +17,7 @@
 //#include "fileio.h"
 //#include "hashmap.h"
 #include "locale-util.h"
+#include "missing_syscall.h"
 #include "path-util.h"
 //#include "set.h"
 //#include "string-table.h"
@@ -298,6 +299,12 @@ bool is_locale_utf8(void) {
 
         if (cached_answer >= 0)
                 goto out;
+
+        /* This function may be called from libelogind, and setlocale() is not thread safe. Assuming yes. */
+        if (gettid() != raw_getpid()) {
+                cached_answer = true;
+                goto out;
+        }
 
         if (!setlocale(LC_ALL, "")) {
                 cached_answer = true;
