@@ -38,7 +38,6 @@ int locale_is_installed(const char *name);
 #define _(String) dgettext(GETTEXT_PACKAGE, String)
 #define N_(String) String
 #if 0 /// UNNEEDED by elogind
-void init_gettext(void);
 #endif // 0
 
 bool is_locale_utf8(void);
