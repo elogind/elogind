@@ -168,6 +168,7 @@ bool address_label_valid(const char *p);
 int getpeercred(int fd, struct ucred *ucred);
 int getpeersec(int fd, char **ret);
 int getpeergroups(int fd, gid_t **ret);
+int getpeerpidfd(int fd);
 
 #if 0 /// UNNEEDED by elogind
 ssize_t send_many_fds_iov_sa(
