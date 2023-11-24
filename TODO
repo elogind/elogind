@@ -1281,8 +1281,6 @@ Features:
   - make gatwayd/remote read key via creds logic
   - add sd_notify() command for flushing out creds not needed anymore
   - make user manager instances create and use a user-specific key (the one in
-* add tpm.target or so which is delayed until TPM2 device showed up in case
-  firmware indicates there is one.
 
 * TPM2: auto-reenroll in cryptsetup, as fallback for hosed firmware upgrades
   and such
