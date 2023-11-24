@@ -294,6 +294,7 @@ Features:
   - elogind-measure
   - elogind-dissect
   - elogind-sysupdate
+  - kernel-install
 
 * Varlink: add glue code to allow varlink clients to be authenticated via
   Polkit by passing client pidfd over.
