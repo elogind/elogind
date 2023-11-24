@@ -143,6 +143,10 @@ Features:
 * use udev rule networkd ownership property to take ownership of network
   interfaces nspawn creates
 
+* support encrypted credentials in user context too. This is complicated by the
+  fact that the user does not have access to the TPM nor the system
+  the encryption key.
+
 * add a kernel cmdline switch (and cred?) for marking a system to be
   "headless", in which case we never open /dev/console for reading, only for
 
@@ -296,10 +300,8 @@ Features:
   - elogind-measure
   - elogind-dissect
   - elogind-sysupdate
+  - elogind-cryptenroll (to allow UIs to enroll FIDO2 keys and such)
   - kernel-install
-
-* Varlink: add glue code to allow varlink clients to be authenticated via
-  Polkit by passing client pidfd over.
 
 * in the service manager, pick up ERRNO= + BUSERROR= + VARLINKERROR= error
   identifiers, and store them along with the exit status of a server and report
@@ -351,7 +353,6 @@ Features:
   - sd_bus_creds
   - unit_attach_pid_to_cgroup_via_bus()
   - cg_attach() – requires new kernel feature
-  - varlink_get_peer_pid()
 
 * ddi must be listed as block device fstype
 
