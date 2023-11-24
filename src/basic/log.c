@@ -50,6 +50,7 @@ static int log_max_level = LOG_INFO;
 static int log_facility = LOG_DAEMON;
 
 static int console_fd = STDERR_FILENO;
+static int console_fd_is_tty = -1; /* tri-state: -1 means don't know */
 static int syslog_fd = -1;
 static int kmsg_fd = -1;
 static int journal_fd = -1;
@@ -91,12 +92,14 @@ bool _log_message_dummy = false; /* Always false */
 static void log_close_console(void) {
         /* See comment in log_close_journal() */
         (void) safe_close_above_stdio(TAKE_FD(console_fd));
+        console_fd_is_tty = -1;
 }
 
 static int log_open_console(void) {
 
         if (!always_reopen_console) {
                 console_fd = STDERR_FILENO;
+                console_fd_is_tty = -1;
                 return 0;
         }
 
@@ -108,6 +111,7 @@ static int log_open_console(void) {
                         return fd;
 
                 console_fd = fd_move_above_stdio(fd);
+                console_fd_is_tty = true;
         }
 
         return 0;
@@ -398,6 +402,7 @@ void log_forget_fds(void) {
         /* Do not call from library code. */
 
         console_fd = kmsg_fd = syslog_fd = journal_fd = -1;
+        console_fd_is_tty = -1;
 }
 #endif // 0
 
@@ -409,6 +414,16 @@ void log_set_max_level(int level) {
 
 void log_set_facility(int facility) {
         log_facility = facility;
+}
+
+static bool check_console_fd_is_tty(void) {
+        if (console_fd < 0)
+                return false;
+
+        if (console_fd_is_tty < 0)
+                console_fd_is_tty = isatty(console_fd) > 0;
+
+        return console_fd_is_tty;
 }
 
 static int write_to_console(
@@ -465,7 +480,12 @@ static int write_to_console(
         iovec[n++] = IOVEC_MAKE_STRING(buffer);
         if (off)
                 iovec[n++] = IOVEC_MAKE_STRING(off);
-        iovec[n++] = IOVEC_MAKE_STRING("\n");
+
+        /* When writing to a TTY we output an extra '\r' (i.e. CR) first, to generate CRNL rather than just
+         * NL. This is a robustness thing in case the TTY is currently in raw mode (specifically: has the
+         * ONLCR flag off). We want that subsequent output definitely starts at the beginning of the line
+         * again, after all. If the TTY is not in raw mode the extra CR should not hurt. */
+        iovec[n++] = IOVEC_MAKE_STRING((check_console_fd_is_tty() ? "\r\n" : "\n"));
 
         if (writev(console_fd, iovec, n) < 0) {
 
