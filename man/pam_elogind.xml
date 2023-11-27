@@ -128,6 +128,9 @@
                 <entry>Similar to <literal>user</literal> but sessions of this class are not ordered after <filename>elogind-user-sessions.service</filename>, i.e. may be started before regular sessions are allowed to be established. This session class is the default for sessions of the root user that would otherwise qualify for the <constant>user</constant> class, see above. (Added in v256.)</entry>
               </row>
               <row>
+                <entry><constant>user-incomplete</constant></entry>
+              </row>
+              <row>
                 <entry><constant>greeter</constant></entry>
                 <entry>Similar to <literal>user</literal> but for sessions that are spawned by a display manager ephemerally and which prompt the user for login credentials.</entry>
               </row>
