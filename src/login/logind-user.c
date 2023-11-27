@@ -358,7 +358,17 @@ int user_load(User *u) {
 }
 
 #if 0 /// elogind neither spawns systemd --user nor supports systemd units and services.
-static void user_start_service(User *u) {
+static bool user_wants_service_manager(User *u) {
+        assert(u);
+
+        LIST_FOREACH(sessions_by_user, s, u->sessions)
+                if (SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class))
+                        return true;
+
+        return false;
+}
+
+void user_start_service_manager(User *u) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
@@ -367,6 +377,12 @@ static void user_start_service(User *u) {
         /* Start the service containing the "systemd --user" instance (user@.service). Note that we don't explicitly
          * start the per-user slice or the systemd-runtime-dir@.service instance, as those are pulled in both by
          * user@.service and the session scopes as dependencies. */
+
+        if (u->stopping) /* Don't try to start this if the user is going down */
+                return;
+
+        if (!user_wants_service_manager(u)) /* Only start user service manager if there's at least one session which wants it */
+                return;
 
         u->service_job = mfree(u->service_job);
 
@@ -473,7 +489,7 @@ int user_start(User *u) {
         u->stopping = false;
 
         if (!u->started)
-                log_debug("Starting services for new user %s.", u->user_record->user_name);
+                log_debug("Tracking new user %s.", u->user_record->user_name);
 
 #if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
         int r;
@@ -492,8 +508,8 @@ int user_start(User *u) {
 
 #if 0 /// elogind does not spawn user instances of systemd
         /* Start user@UID.service */
-        user_start_service(u);
 #endif // 0
+        user_start_service_manager(u);
 
         if (!u->started) {
                 if (!dual_timestamp_is_set(&u->timestamp))
@@ -705,6 +721,19 @@ static usec_t user_get_stop_delay(User *u) {
         return u->manager->user_stop_delay;
 }
 
+static bool user_pinned_by_sessions(User *u) {
+        assert(u);
+
+        /* Returns true if at least one session exists that shall keep the user tracking alive. That
+         * generally means one session that isn't the service manager still exists. */
+
+        LIST_FOREACH(sessions_by_user, i, u->sessions)
+                if (SESSION_CLASS_PIN_USER(i->class))
+                        return true;
+
+        return false;
+}
+
 bool user_may_gc(User *u, bool drop_not_started) {
 #if 0 /// elogind neither supports service nor slice jobs
         int r;
@@ -720,7 +749,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
         if (drop_not_started && !u->started)
                 return true;
 
-        if (u->sessions)
+        if (user_pinned_by_sessions(u))
                 return false;
 
         if (u->last_session_timestamp != USEC_INFINITY) {
@@ -792,23 +821,27 @@ UserState user_get_state(User *u) {
 #endif // 0
                 return USER_OPENING;
 
-        if (u->sessions) {
-                bool all_closing = true;
+        bool any = false, all_closing = true;
+        LIST_FOREACH(sessions_by_user, i, u->sessions) {
+                SessionState state;
 
-                LIST_FOREACH(sessions_by_user, i, u->sessions) {
-                        SessionState state;
+                /* Ignore sessions that don't pin the user, i.e. are not supposed to have an effect on user state */
+                if (!SESSION_CLASS_PIN_USER(i->class))
+                        continue;
 
-                        state = session_get_state(i);
-                        if (state == SESSION_ACTIVE)
-                                return USER_ACTIVE;
-                        if (state != SESSION_CLOSING)
-                                all_closing = false;
-                }
+                state = session_get_state(i);
+                if (state == SESSION_ACTIVE)
+                        return USER_ACTIVE;
+                if (state != SESSION_CLOSING)
+                        all_closing = false;
 
-                return all_closing ? USER_CLOSING : USER_ONLINE;
+                any = true;
         }
 
 #if 0 /// elogind does not support systemd units
+        if (any)
+                return all_closing ? USER_CLOSING : USER_ONLINE;
+
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
 #else // 0
         if (user_check_linger_file(u) > 0)
@@ -920,7 +953,7 @@ void user_update_last_session_timer(User *u) {
 
         assert(u);
 
-        if (u->sessions) {
+        if (user_pinned_by_sessions(u)) {
                 /* There are sessions, turn off the timer */
                 u->last_session_timestamp = USEC_INFINITY;
                 u->timer_event_source = sd_event_source_unref(u->timer_event_source);
