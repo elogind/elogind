@@ -776,7 +776,7 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
                  * of STRV_IGNORE with strv_new() to skip these order constraints when needed. */
                 after = strv_new("systemd-logind.service",
                                  s->user->runtime_dir_service,
-                                 !uid_is_system(s->user->user_record->uid) ? "systemd-user-sessions.service" : STRV_IGNORE,
+                                 SESSION_CLASS_IS_EARLY(s->class) ? STRV_IGNORE : "elogind-user-sessions.service",
                                  s->user->service);
                 if (!after)
                         return log_oom();
@@ -1398,7 +1398,11 @@ static void session_remove_fifo(Session *s) {
 #if 1 /// end elogind extra if
                 }
 #endif // 1
-        s->fifo_path = unlink_and_free(s->fifo_path);
+
+        if (s->fifo_path) {
+                (void) unlink(s->fifo_path);
+                s->fifo_path = mfree(s->fifo_path);
+        }
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
@@ -1779,6 +1783,7 @@ DEFINE_STRING_TABLE_LOOKUP(session_type, SessionType);
 
 static const char* const session_class_table[_SESSION_CLASS_MAX] = {
         [SESSION_USER]        = "user",
+        [SESSION_USER_EARLY]  = "user-early",
         [SESSION_GREETER]     = "greeter",
         [SESSION_LOCK_SCREEN] = "lock-screen",
         [SESSION_BACKGROUND]  = "background",
