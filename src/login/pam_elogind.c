@@ -953,19 +953,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * leave. */
 
 #if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
-        if (streq_ptr(service, "systemd-user")) {
-                char rt[STRLEN("/run/user/") + DECIMAL_STR_MAX(uid_t)];
-
-                xsprintf(rt, "/run/user/"UID_FMT, ur->uid);
-                r = configure_runtime_directory(handle, ur, rt);
-                if (r != PAM_SUCCESS)
-                        return r;
-
-                goto success;
-        }
 #endif // 0
-
-        /* Otherwise, we ask logind to create a session for us */
 
         seat = getenv_harder(handle, "XDG_SEAT", NULL);
         cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
@@ -973,7 +961,15 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         class = getenv_harder(handle, "XDG_SESSION_CLASS", class_pam);
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
 
-        if (tty && strchr(tty, ':')) {
+        if (streq_ptr(service, "elogind-user")) {
+                /* If we detect that we are running in the "elogind-user" PAM stack, then let's patch the class to
+                 * 'manager' if not set, simply for robustness reasons. */
+                type = "unspecified";
+                class = IN_SET(user_record_disposition(ur), USER_INTRINSIC, USER_SYSTEM, USER_DYNAMIC) ?
+                        "manager-early" : "manager";
+                tty = NULL;
+
+        } else if (tty && strchr(tty, ':')) {
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */
                 if (isempty(display))
