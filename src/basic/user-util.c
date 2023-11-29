@@ -669,17 +669,26 @@ int get_shell(char **ret) {
 }
 #endif // 0
 
-int reset_uid_gid(void) {
+int fully_set_uid_gid(uid_t uid, gid_t gid, const gid_t supplementary_gids[], size_t n_supplementary_gids) {
         int r;
 
-        r = maybe_setgroups(0, NULL);
+        assert(supplementary_gids || n_supplementary_gids == 0);
+
+        /* Sets all UIDs and all GIDs to the specified ones. Drops all auxiliary GIDs */
+
+        r = maybe_setgroups(n_supplementary_gids, supplementary_gids);
         if (r < 0)
                 return r;
 
-        if (setresgid(0, 0, 0) < 0)
-                return -errno;
+        if (gid_is_valid(gid))
+                if (setresgid(gid, gid, gid) < 0)
+                        return -errno;
 
-        return RET_NERRNO(setresuid(0, 0, 0));
+        if (uid_is_valid(uid))
+                if (setresuid(uid, uid, uid) < 0)
+                        return -errno;
+
+        return 0;
 }
 
 #if 0 /// UNNEEDED by elogind
