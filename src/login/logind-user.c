@@ -65,6 +65,7 @@ int user_new(User **ret,
                 .manager = m,
                 .user_record = user_record_ref(ur),
                 .last_session_timestamp = USEC_INFINITY,
+                .gc_mode = USER_GC_BY_ANY,
         };
 
         if (asprintf(&u->state_file, "/run/systemd/users/" UID_FMT, ur->uid) < 0)
@@ -175,10 +176,12 @@ static int user_save_internal(User *u) {
                 "# This is private data. Do not parse.\n"
                 "NAME=%s\n"
                 "STATE=%s\n"         /* friendly user-facing state */
-                "STOPPING=%s\n",     /* low-level state */
+                "STOPPING=%s\n"      /* low-level state */
+                "GC_MODE=%s\n",
                 u->user_record->user_name,
                 user_state_to_string(user_get_state(u)),
-                yes_no(u->stopping));
+                yes_no(u->stopping),
+                user_gc_mode_to_string(u->gc_mode));
 
         /* LEGACY: no-one reads RUNTIME= anymore, drop it at some point */
         if (u->runtime_path)
@@ -317,7 +320,7 @@ int user_save(User *u) {
 }
 
 int user_load(User *u) {
-        _cleanup_free_ char *realtime = NULL, *monotonic = NULL, *stopping = NULL, *last_session_timestamp = NULL;
+        _cleanup_free_ char *realtime = NULL, *monotonic = NULL, *stopping = NULL, *last_session_timestamp = NULL, *gc_mode = NULL;
         int r;
 
         assert(u);
@@ -329,7 +332,8 @@ int user_load(User *u) {
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
                            "MONOTONIC",              &monotonic,
-                           "LAST_SESSION_TIMESTAMP", &last_session_timestamp);
+                           "LAST_SESSION_TIMESTAMP", &last_session_timestamp,
+                           "GC_MODE",                &gc_mode);
         if (r == -ENOENT)
                 return 0;
         if (r < 0)
@@ -354,6 +358,10 @@ int user_load(User *u) {
         log_debug_elogind(" --> User realtime    : %" PRIu64, u->timestamp.realtime);
         log_debug_elogind(" --> User monotonic   : %" PRIu64, u->timestamp.monotonic);
         log_debug_elogind(" --> User last session: %" PRIu64, u->last_session_timestamp);
+        u->gc_mode = user_gc_mode_from_string(gc_mode);
+        if (u->gc_mode < 0)
+                u->gc_mode = USER_GC_BY_PIN;
+
         return 0;
 }
 
@@ -730,11 +738,21 @@ static bool user_pinned_by_sessions(User *u) {
         /* Returns true if at least one session exists that shall keep the user tracking alive. That
          * generally means one session that isn't the service manager still exists. */
 
-        LIST_FOREACH(sessions_by_user, i, u->sessions)
-                if (SESSION_CLASS_PIN_USER(i->class))
-                        return true;
+        switch (u->gc_mode) {
 
-        return false;
+        case USER_GC_BY_ANY:
+                return u->sessions;
+
+        case USER_GC_BY_PIN:
+                LIST_FOREACH(sessions_by_user, i, u->sessions)
+                        if (SESSION_CLASS_PIN_USER(i->class))
+                                return true;
+
+                return false;
+
+        default:
+                assert_not_reached();
+        }
 }
 
 bool user_may_gc(User *u, bool drop_not_started) {
@@ -1003,6 +1021,13 @@ static const char* const user_state_table[_USER_STATE_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(user_state, UserState);
+
+static const char* const user_gc_mode_table[_USER_GC_MODE_MAX] = {
+        [USER_GC_BY_PIN] = "pin",
+        [USER_GC_BY_ANY] = "any",
+};
+
+DEFINE_STRING_TABLE_LOOKUP(user_gc_mode, UserGCMode);
 
 int config_parse_tmpfs_size(
                 const char* unit,
