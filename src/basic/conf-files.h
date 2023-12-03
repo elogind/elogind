@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
+#include <stdbool.h>
+
 #include "macro.h"
 
 enum {
@@ -35,3 +37,19 @@ int conf_files_list_dropins(
                 const char *root,
                 const char * const *dirs);
 #endif // 0
+
+typedef int parse_line_t(
+                const char *fname,
+                unsigned line,
+                const char *buffer,
+                bool *invalid_config,
+                void *userdata);
+
+int conf_file_read(
+                const char *root,
+                const char **config_dirs,
+                const char *fn,
+                parse_line_t parse_line,
+                void *userdata,
+                bool ignore_enoent,
+                bool *invalid_config);
