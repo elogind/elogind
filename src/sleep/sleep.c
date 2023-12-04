@@ -54,7 +54,6 @@
 #include "sd-login.h"
 #include "sleep.h"
 #include "terminal-util.h"
-//#include "utmp-wtmp.h"
 #include "wall.h"
 
 #define DEFAULT_HIBERNATE_DELAY_USEC_NO_BATTERY (2 * USEC_PER_HOUR)
@@ -416,7 +415,6 @@ static int execute(
         log_debug_elogind("Called for '%s' (Manager is %s)", sleep_operation_to_string(operation), m ? "Set" : "NULL");
 #endif // 1
 
-        _cleanup_(hibernation_device_done) HibernationDevice hibernation_device = {};
         _cleanup_close_ int state_fd = -EBADF;
 #if 1 /// If nvidia suspend is to be used, elogind has to write to its drivers proc place
         _cleanup_close_ int driver_fd = -EBADF;
@@ -449,6 +447,7 @@ static int execute(
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
         if (sleep_operation_is_hibernation(operation)) {
+                _cleanup_(hibernation_device_done) HibernationDevice hibernation_device = {};
 #else // 0
         if (operation != SLEEP_SUSPEND) {
 #endif // 0
