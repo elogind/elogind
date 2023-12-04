@@ -128,6 +128,17 @@ Deprecations and removals:
 
 Features:
 
+* Add an alias to elogind-run maybe called "uid0" or so, which tries to mimic
+  the sudo/su command lines to some level, but is backed by transient services,
+  and proper security isolate/tty forwarding. This would then allow us to run
+  systems with NNP turned on reasonably nicely. To make this extra nice and
+  pretty, in ptyfwd rewrite every NL we pass through so that it resets the bg
+  color to some reddish tone, and erase the whole coming line first, so that
+  the background color indicates when operating with privileges and when not.
+
+* use udev rule networkd ownership property to take ownership of network
+  interfaces nspawn creates
+
 * add a kernel cmdline switch (and cred?) for marking a system to be
   "headless", in which case we never open /dev/console for reading, only for
 
@@ -943,9 +954,6 @@ Features:
   container managers find it. the ~/.identity file is also a candidate for a
   file to move there, since it is managed by privileged code (i.e. homed) and
   not unprivileged code.
-
-* given that /etc/ssh/ssh_config.d/ is a thing now, ship a drop-in for that
-  that hooks up userdbctl ssh-key stuff.
 
 * maybe add support for binding and connecting AF_UNIX sockets in the file
   system outside of the 108ch limit. When connecting, open O_PATH fd to socket
