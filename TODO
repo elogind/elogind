@@ -256,6 +256,16 @@ Features:
 * use udev rule networkd ownership property to take ownership of network
   interfaces nspawn creates
 
+* mountfsd/nsresourced
+  - userdb: maybe allow callers to map one uid to their own uid
+  - bpflsm: allow writes if resulting UID on disk would be userns' owner UID
+  - make encrypted DDIs work (password…)
+  - add API for creating a new file system from scratch (together with some
+  - add api to make an existing file "trusted" via dm-integry/HMAC key
+  - port: portabled
+  - port: tmpfiles, sysusers and similar
+  - lets see if we can make runtime bind mounts into unpriv nspawn work
+
 * add a kernel cmdline switch (and cred?) for marking a system to be
   "headless", in which case we never open /dev/console for reading, only for
 
