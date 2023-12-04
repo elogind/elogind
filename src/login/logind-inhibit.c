@@ -293,7 +293,7 @@ int inhibitor_load(Inhibitor *i) {
                         i->fifo_path = mfree(i->fifo_path);
                 }
 #endif // 1
-                /* Let's re-open the FIFO on both sides, and close the writing side right away */
+                /* Let's reopen the FIFO on both sides, and close the writing side right away */
                 fd = inhibitor_create_fifo(i);
                 if (fd < 0)
                         return log_error_errno(fd, "Failed to reopen FIFO: %m");
