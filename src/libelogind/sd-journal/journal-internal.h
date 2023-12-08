@@ -63,6 +63,7 @@ struct Location {
 
 #if 0 /// UNNEEDED by elogind
 struct Directory {
+        sd_journal *journal;
         char *path;
         int wd;
         bool is_root;
