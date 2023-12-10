@@ -43,4 +43,4 @@ char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *f
 char* set_iovec_string_field_free(struct iovec *iovec, size_t *n_iovec, const char *field, char *value);
 #endif // 0
 
-void iovec_array_free(struct iovec *iovec, size_t n);
+void iovec_array_free(struct iovec *iovec, size_t n_iovec);
