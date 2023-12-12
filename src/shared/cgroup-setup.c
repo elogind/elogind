@@ -434,6 +434,8 @@ int cg_set_access(
                 { "cgroup.procs",           true  },
                 { "cgroup.subtree_control", true  },
                 { "cgroup.threads",         false },
+                { "memory.oom.group",       false },
+                { "memory.reclaim",         false },
                 {},
         };
 
