@@ -436,11 +436,12 @@
         <term><varname>StopIdleSessionSec=</varname></term>
 
         <listitem><para>Specifies a timeout in seconds, or a time span value after which
-        <filename>elogind</filename> checks the idle state of all sessions. Every session that is idle for
-        longer then the timeout will be stopped. Defaults to <literal>infinity</literal>
-        (<filename>elogind</filename> is not checking the idle state of sessions). For details about the syntax
-        of time spans, see
         <citerefentry><refentrytitle>elogind.time</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
+        <filename>elogind</filename> checks the idle state of all sessions. Every session that is idle
+        for longer than the timeout will be stopped. Note that this option doesn't apply to
+        <literal>greeter</literal> or <literal>lock-screen</literal> sessions. Defaults to
+        <literal>infinity</literal> (<filename>elogind</filename> is not checking the idle state
+        of sessions). For details about the syntax of time spans, see
         </para>
 
         <xi:include href="version-info.xml" xpointer="v252"/></listitem>
