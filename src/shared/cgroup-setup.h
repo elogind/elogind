@@ -24,6 +24,7 @@ int cg_trim(const char *controller, const char *path, bool delete_root);
 int cg_create(const char *controller, const char *path);
 int cg_attach(const char *controller, const char *path, pid_t pid);
 #if 0 /// UNNEEDED by elogind
+int cg_fd_attach(int fd, pid_t pid);
 int cg_attach_fallback(const char *controller, const char *path, pid_t pid);
 #endif // 0
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid);
