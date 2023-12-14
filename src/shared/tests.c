@@ -21,7 +21,6 @@
 #include "fd-util.h"
 //#include "fs-util.h"
 #include "log.h"
-#include "mountpoint-util.h"
 #include "namespace-util.h"
 //#include "path-util.h"
 //#include "process-util.h"
@@ -255,7 +254,7 @@ static int allocate_scope(void) {
         if (r < 0)
                 return bus_log_parse_error(r);
 
-        r = bus_wait_for_jobs_one(w, object, false, NULL);
+        r = bus_wait_for_jobs_one(w, object, BUS_WAIT_JOBS_LOG_ERROR, NULL);
         if (r < 0)
                 return r;
 
@@ -272,7 +271,7 @@ static int enter_cgroup(char **ret_cgroup, bool enter_subroot) {
                 log_warning_errno(r, "Couldn't allocate a scope unit for this test, proceeding without.");
 
         r = cg_pid_get_path(NULL, 0, &cgroup_root);
-        if (IN_SET(r, -ENOMEDIUM, -ENOENT))
+        if (r == -ENOMEDIUM)
                 return log_warning_errno(r, "cg_pid_get_path(NULL, 0, ...) failed: %m");
         assert(r >= 0);
 
