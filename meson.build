@@ -856,7 +856,7 @@ endforeach
 # endif
 #endif // 0
 
-############################################################
+#####################################################################
 
 gperf = find_program('gperf')
 
@@ -882,7 +882,7 @@ message('gperf len type is @0@'.format(gperf_len_type))
 conf.set('GPERF_LEN_TYPE', gperf_len_type,
          description : 'The type of gperf "len" parameter')
 
-############################################################
+#####################################################################
 
 if not cc.has_header('sys/capability.h')
         error('POSIX caps headers not found')
@@ -905,7 +905,7 @@ foreach header : ['crypt.h',
                    cc.has_header(header))
 endforeach
 
-############################################################
+#####################################################################
 
 fallback_hostname = get_option('fallback-hostname')
 if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0] == '-'
@@ -1984,15 +1984,14 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
-############################################################
-
+#####################################################################
 
 #if 0 /// UNSUPPORTED by elogind (we do not build boot images)
 # pymod = import('python')
 # python = pymod.find_installation('python3', required : true, modules : ['jinja2'])
 # python_39 = python.language_version().version_compare('>=3.9')
 #
-# ############################################################
+# #####################################################################
 #
 # if conf.get('BPF_FRAMEWORK') == 1
 #         bpf_clang_flags = [
@@ -2142,7 +2141,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 # conf.set10('ENABLE_UKIFY', want_ukify)
 #endif // 0
 
-############################################################
+#####################################################################
 
 check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
@@ -2178,6 +2177,7 @@ conf.set_quoted('USER_GENERATOR_PATH',              '/dev/null')
 conf.set_quoted('DEBUGTTY',                         '/dev/null')
 ############################################################
 #endif // 1
+#####################################################################
 
 version_tag = get_option('version-tag')
 version_h = vcs_tag(
@@ -2194,13 +2194,13 @@ if shared_lib_tag == ''
         shared_lib_tag = meson.project_version()
 endif
 
-############################################################
+#####################################################################
 
 if get_option('b_coverage')
         userspace_c_args += ['-include', 'src/basic/coverage.h']
 endif
 
-############################################################
+#####################################################################
 
 config_h = configure_file(
         output : 'config.h',
@@ -2218,7 +2218,7 @@ userspace = declare_dependency(
 
 man_page_depends = []
 
-############################################################
+#####################################################################
 
 simple_tests = []
 libelogind_tests = []
@@ -2406,7 +2406,7 @@ install_libelogind_static = static_library(
 libudev = dependency('libudev', required : true)
 #endif // 1
 
-############################################################
+#####################################################################
 
 runtest_env = custom_target(
         'elogind-runtest.env',
@@ -2427,7 +2427,7 @@ if '-O2' in c_args and '-flto=auto' in c_args
         test_cflags += cc.first_supported_argument('-Wno-maybe-uninitialized')
 endif
 
-############################################################
+#####################################################################
 
 executable_template = {
         'include_directories' : includes,
@@ -2527,7 +2527,7 @@ module_additional_kwargs = {
         'dependencies' : userspace,
 }
 
-############################################################
+#####################################################################
 
 # systemd-analyze requires 'libcore'
 subdir('src/core')
@@ -2676,7 +2676,7 @@ subdir('src/test')
 alias_target('devel', libelogind_pc)
 #endif // 0
 
-############################################################
+#####################################################################
 
 foreach test : simple_tests
         executables += test_template + { 'sources' : [test] }
@@ -2819,7 +2819,7 @@ endforeach
 # alias_target('fuzzers', fuzzer_exes)
 #endif // 0
 
-############################################################
+#####################################################################
 
 test_dlopen = executables_by_name.get('test-dlopen')
 
@@ -2883,7 +2883,7 @@ foreach dict : modules
         endif
 endforeach
 
-############################################################
+#####################################################################
 
 #if 0 /// UNNEEDED by elogind
 # ukify = custom_target(
@@ -2904,7 +2904,7 @@ endforeach
 # endif
 #endif // 0
 
-############################################################
+#####################################################################
 
 subdir('rules.d')
 #if 0 /// elogind does not need anything in the upstream top test directory
@@ -2912,7 +2912,7 @@ subdir('rules.d')
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-# ############################################################
+# #####################################################################
 #
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
@@ -2969,7 +2969,7 @@ install_data('LICENSE.GPL2',
 #endif // 0
 install_emptydir(elogindstatedir)
 
-############################################################
+#####################################################################
 
 # Ensure that changes to the docs/ directory do not break the
 # basic Github pages build. But only run it in developer mode,
@@ -2985,7 +2985,7 @@ if get_option('mode') == 'developer' and want_tests != 'false' and jekyll.found(
                      '--destination', project_build_root / '_site'])
 endif
 
-############################################################
+#####################################################################
 
 check_help = find_program('tools/check-help.sh')
 check_version = find_program('tools/check-version.sh')
@@ -3057,7 +3057,7 @@ endforeach
 # endforeach
 #endif // 0
 
-############################################################
+#####################################################################
 
 if git.found()
         all_files = run_command(
@@ -3116,7 +3116,7 @@ if git.found()
                            'HEAD'])
 endif
 
-############################################################
+#####################################################################
 
 check_api_docs_sh = find_program('tools/check-api-docs.sh')
 run_target(
@@ -3142,7 +3142,7 @@ alias_target('update-man-rules', update_man_rules)
 #                 command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 # endif
 #
-# ############################################################
+# #####################################################################
 #
 # alt_time_epoch = run_command('date', '-Is', '-u', '-d', '@@0@'.format(time_epoch),
 #                              check : true).stdout().strip()
