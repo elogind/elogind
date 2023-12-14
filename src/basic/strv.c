@@ -257,11 +257,9 @@ int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix) {
                 if (!v)
                         return -ENOMEM;
 
-                r = strv_push(a, v);
-                if (r < 0) {
-                        free(v);
+                r = strv_consume(a, v);
+                if (r < 0)
                         return r;
-                }
         }
 
         return 0;
@@ -365,7 +363,7 @@ int strv_split_colon_pairs(char ***t, const char *s) {
 
                 const char *p = tuple;
                 r = extract_many_words(&p, ":", EXTRACT_CUNESCAPE|EXTRACT_UNESCAPE_SEPARATORS,
-                                       &first, &second);
+                                       &first, &second, NULL);
                 if (r < 0)
                         return r;
                 if (r == 0)
