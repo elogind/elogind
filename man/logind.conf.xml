@@ -26,10 +26,12 @@
 
   <refsynopsisdiv>
     <!-- 0 /// not supported by elogind, this is a little different here
-    <para><filename>/etc/systemd/logind.conf</filename></para>
-    <para><filename>/etc/systemd/logind.conf.d/*.conf</filename></para>
-    <para><filename>/run/systemd/logind.conf.d/*.conf</filename></para>
-    <para><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></para>
+    <para><simplelist>
+      <member><filename>/etc/elogind/logind.conf</filename></member>
+      <member><filename>/etc/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/run/systemd/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/lib/elogind/logind.conf.d/*.conf</filename></member>
+    </simplelist></para>
     --><!-- else // 0 -->
     <para><filename>/etc/elogind/logind.conf</filename></para>
     <para><filename>/etc/elogind/logind.conf.d/*.conf</filename></para>
