@@ -47,11 +47,11 @@ TEST(cg_create) {
 
         r = cg_unified_cached(false);
 #if 0 /// If elogind is built in a minimal container, cg_unified_cached() might return -ENOENT.
-        if (r == -ENOMEDIUM) {
 #else // 0
         if (r == -ENOMEDIUM || r == -ENOENT) {
 #endif // 0
-                log_tests_skipped("cgroup not mounted");
+        if (IN_SET(r, -ENOMEDIUM, -ENOENT)) {
+                log_tests_skipped("cgroupfs is not mounted");
                 return;
         }
         assert_se(r >= 0);

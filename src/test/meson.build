@@ -703,13 +703,19 @@ executables += [
         },
         test_template + {
                 'sources' : files('../libelogind/sd-device/test-sd-device-thread.c'),
-                'link_with' : libelogind,
+                'link_with' : [
+                        libbasic,
+                        libelogind,
+                ],
                 'dependencies' : threads,
         },
 #if 0 /// UNNEEDED by elogind
 #         test_template + {
 #                 'sources' : files('../libudev/test-udev-device-thread.c'),
-#                 'link_with' : libudev,
+#                 'link_with' : [
+#                         libbasic,
+#                         libudev,
+#                 ],
 #                 'dependencies' : threads,
 #         },
 #         test_template + {
