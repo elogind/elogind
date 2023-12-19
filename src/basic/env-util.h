@@ -55,6 +55,7 @@ int strv_env_replace_strdup(char ***l, const char *assignment);
 #if 0 /// UNNEEDED by elogind
 int strv_env_replace_strdup_passthrough(char ***l, const char *assignment);
 int strv_env_assign(char ***l, const char *key, const char *value);
+int strv_env_assignf(char ***l, const char *key, const char *valuef, ...) _printf_(3, 4);
 int _strv_env_assign_many(char ***l, ...) _sentinel_;
 #define strv_env_assign_many(l, ...) _strv_env_assign_many(l, __VA_ARGS__, NULL)
 
