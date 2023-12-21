@@ -104,3 +104,6 @@ int device_open_from_devnum(mode_t mode, dev_t devnum, int flags, char **ret);
 #endif // 0
 
 char** device_make_log_fields(sd_device *device);
+
+bool device_in_subsystem(sd_device *device, const char *subsystem);
+bool device_is_devtype(sd_device *device, const char *devtype);
