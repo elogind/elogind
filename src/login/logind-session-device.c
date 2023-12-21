@@ -11,6 +11,7 @@
 #include "alloc-util.h"
 #include "bus-util.h"
 #include "daemon-util.h"
+#include "device-util.h"
 #include "fd-util.h"
 #include "logind-session-dbus.h"
 #include "logind-session-device.h"
@@ -114,8 +115,7 @@ static int sd_drmdropmaster(int fd) {
 }
 
 static int session_device_open(SessionDevice *sd, bool active) {
-        _cleanup_close_ int fd = -EBADF;
-        int r;
+        int fd, r;
 
         assert(sd);
         assert(sd->type != DEVICE_TYPE_UNKNOWN);
@@ -133,8 +133,10 @@ static int session_device_open(SessionDevice *sd, bool active) {
                         /* Weird legacy DRM semantics might return an error even though we're master. No way to detect
                          * that so fail at all times and let caller retry in inactive state. */
                         r = sd_drmsetmaster(fd);
-                        if (r < 0)
+                        if (r < 0) {
+                                (void) close_nointr(fd);
                                 return r;
+                        }
                 } else
                         /* DRM-Master is granted to the first user who opens a device automatically (ughh,
                          * racy!). Hence, we just drop DRM-Master in case we were the first. */
@@ -152,7 +154,7 @@ static int session_device_open(SessionDevice *sd, bool active) {
                 break;
         }
 
-        return TAKE_FD(fd);
+        return fd;
 }
 
 static int session_device_start(SessionDevice *sd) {
@@ -238,22 +240,21 @@ static void session_device_stop(SessionDevice *sd) {
 }
 
 static DeviceType detect_device_type(sd_device *dev) {
-        const char *sysname, *subsystem;
-        DeviceType type = DEVICE_TYPE_UNKNOWN;
+        const char *sysname;
 
-        if (sd_device_get_sysname(dev, &sysname) < 0 ||
-            sd_device_get_subsystem(dev, &subsystem) < 0)
-                return type;
+        if (sd_device_get_sysname(dev, &sysname) < 0)
+                return DEVICE_TYPE_UNKNOWN;
 
-        if (streq(subsystem, "drm")) {
+        if (device_in_subsystem(dev, "drm")) {
                 if (startswith(sysname, "card"))
-                        type = DEVICE_TYPE_DRM;
-        } else if (streq(subsystem, "input")) {
+                        return DEVICE_TYPE_DRM;
+
+        } else if (device_in_subsystem(dev, "input")) {
                 if (startswith(sysname, "event"))
-                        type = DEVICE_TYPE_EVDEV;
+                        return DEVICE_TYPE_EVDEV;
         }
 
-        return type;
+        return DEVICE_TYPE_UNKNOWN;
 }
 
 static int session_device_verify(SessionDevice *sd) {
