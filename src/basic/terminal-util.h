@@ -87,6 +87,8 @@
 #define ANSI_HOME_CLEAR "\x1B[H\x1B[2J"
 
 #if 0 /// UNNEEDED by elogind
+bool isatty_safe(int fd);
+
 int reset_terminal_fd(int fd, bool switch_to_text);
 int reset_terminal(const char *name);
 int set_terminal_cursor_position(int fd, unsigned int row, unsigned int column);
