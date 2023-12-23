@@ -2137,7 +2137,9 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #         efi_cpu_family_alt = 'x86'
 # endif
 #
-# want_ukify = get_option('ukify').require(python_39, error_message : 'Python >= 3.9 required').allowed()
+# pefile = pymod.find_installation('python3', required: false, modules : ['pefile'])
+#
+# want_ukify = get_option('ukify').require(python_39 and (want_tests != 'true' or pefile.found()), error_message : 'Python >= 3.9 and pefile required').allowed()
 # conf.set10('ENABLE_UKIFY', want_ukify)
 #endif // 0
 
