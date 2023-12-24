@@ -179,7 +179,6 @@
           </para>
         </listitem>
       </varlistentry>
-      // 0 -->
 
       <varlistentry>
         <term><varname>DOCUMENTATION=</varname></term>
@@ -205,13 +204,14 @@
           <para>The name of a unit. Used by the system and user managers when logging about specific
           units.</para>
 
-          <para>When <option>--unit=<replaceable>name</replaceable></option> or
-          <option>--user-unit=<replaceable>name</replaceable></option> are used with
+          <para>When <option>&dash;-unit=<replaceable>name</replaceable></option> or
+          <option>&dash;-user-unit=<replaceable>name</replaceable></option> are used with
           <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>, a
           match pattern that includes <literal>UNIT=<replaceable>name</replaceable>.service</literal> or
           <literal>USER_UNIT=<replaceable>name</replaceable>.service</literal> will be generated.</para>
         </listitem>
       </varlistentry>
+      // 0 -->
     </variablelist>
   </refsect1>
 
