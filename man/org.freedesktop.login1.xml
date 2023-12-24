@@ -1124,12 +1124,14 @@ node /org/freedesktop/login1/user/_1000 {
         XDG Basedir Specification
       </ulink>.</para>
 
+      <!-- 0 /// elogind does not support systemd services and slices
       <para><varname>Service</varname> contains the unit name of the user systemd service of this
       user. Each logged in user is assigned a user service that runs a user systemd instance. This is
       usually an instance of <filename>user@.service</filename>.</para>
 
       <para><varname>Slice</varname> contains the unit name of the user systemd slice of this user. Each
       logged in user gets a private slice.</para>
+      // 0 -->
 
       <para><varname>Display</varname> encodes which graphical session should be used as the primary UI display
       for the user. It is a structure encoding the session ID and the object path of the session to use.</para>
@@ -1158,90 +1160,6 @@ node /org/freedesktop/login1/user/_1000 {
     <programlisting executable="systemd-logind" node="/org/freedesktop/login1/session/1" interface="org.freedesktop.login1.Session">
     --><!-- else // 0 -->
     <programlisting executable="elogind" node="/org/freedesktop/login1/session/1" interface="org.freedesktop.login1.Session">
-node /org/freedesktop/login1/session/1 {
-  interface org.freedesktop.login1.Session {
-    methods:
-      Terminate();
-      Activate();
-      Lock();
-      Unlock();
-      SetIdleHint(in  b idle);
-      SetLockedHint(in  b locked);
-      Kill(in  s who,
-           in  i signal_number);
-      TakeControl(in  b force);
-      ReleaseControl();
-      SetType(in  s type);
-      SetDisplay(in  s display);
-      TakeDevice(in  u major,
-                 in  u minor,
-                 out h fd,
-                 out b inactive);
-      ReleaseDevice(in  u major,
-                    in  u minor);
-      PauseDeviceComplete(in  u major,
-                          in  u minor);
-      SetBrightness(in  s subsystem,
-                    in  s name,
-                    in  u brightness);
-    signals:
-      PauseDevice(u major,
-                  u minor,
-                  s type);
-      ResumeDevice(u major,
-                   u minor,
-                   h fd);
-      Lock();
-      Unlock();
-    properties:
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Id = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly (uo) User = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Name = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly t Timestamp = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly t TimestampMonotonic = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly u VTNr = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly (so) Seat = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s TTY = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Display = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly b Remote = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s RemoteHost = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s RemoteUser = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Service = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Desktop = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Scope = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly u Leader = ...;
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly u Audit = ...;
-      readonly s Type = '...';
-      @org.freedesktop.DBus.Property.EmitsChangedSignal("const")
-      readonly s Class = '...';
-      readonly b Active = ...;
-      readonly s State = '...';
-      readonly b IdleHint = ...;
-      readonly t IdleSinceHint = ...;
-      readonly t IdleSinceHintMonotonic = ...;
-      readonly b LockedHint = ...;
-  };
-  interface org.freedesktop.DBus.Peer { ... };
-  interface org.freedesktop.DBus.Introspectable { ... };
-  interface org.freedesktop.DBus.Properties { ... };
-};
     <!-- // 0 -->
 node /org/freedesktop/login1/session/1 {
   interface org.freedesktop.login1.Session {
