@@ -561,7 +561,7 @@ static int _json_variant_array_put_element(JsonVariant *array, JsonVariant *elem
                 return -ELNRNG;
         if (d >= array->depth)
                 array->depth = d + 1;
-        array->n_elements ++;
+        array->n_elements++;
 
         *w = (JsonVariant) {
                 .is_embedded = true,
@@ -2318,7 +2318,7 @@ static int json_variant_copy(JsonVariant **nv, JsonVariant *v) {
                 source = json_variant_string(v);
                 k = strnlen(source, INLINE_STRING_MAX + 1);
                 if (k <= INLINE_STRING_MAX) {
-                        k ++;
+                        k++;
                         break;
                 }
 
@@ -2602,7 +2602,7 @@ static int json_parse_string(const char **p, char **ret) {
                                 return -ENOMEM;
 
                         s[n++] = ch;
-                        c ++;
+                        c++;
                         continue;
                 }
 
@@ -4592,7 +4592,7 @@ int json_dispatch_full(
                                 }
                         }
 
-                        done ++;
+                        done++;
 
                 } else { /* Didn't find a matching entry! ☹️ */
 
@@ -4607,7 +4607,7 @@ int json_dispatch_full(
 
                                         return r;
                                 } else
-                                        done ++;
+                                        done++;
 
                         } else  {
                                 json_log(value, flags, 0, "Unexpected object field '%s'.", json_variant_string(key));
