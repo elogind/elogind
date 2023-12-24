@@ -423,7 +423,7 @@ static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, co
                 return PAM_SUCCESS;
         }
 
-        pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.memory_max, ignoring: %s", limit);
+        pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.memory_max, ignoring: %s", limit);
         return PAM_SUCCESS;
 }
 
@@ -941,12 +941,12 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         remote = !isempty(remote_host) && !is_localhost(remote_host);
 
-        r = pam_get_data(handle, "elogind.memory_max", (const void **)&memory_max);
+        r = pam_get_data(handle, "systemd.memory_max", (const void **)&memory_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
-                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.memory_max data: @PAMERR@");
-        r = pam_get_data(handle, "elogind.tasks_max",  (const void **)&tasks_max);
+                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.memory_max data: @PAMERR@");
+        r = pam_get_data(handle, "systemd.tasks_max",  (const void **)&tasks_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
-                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.tasks_max data: @PAMERR@");
+                return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.tasks_max data: @PAMERR@");
 #if 0 /// elogind neither handles io_weight nor cpu_weight
         r = pam_get_data(handle, "systemd.cpu_weight", (const void **)&cpu_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))

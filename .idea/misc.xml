@@ -29,4 +29,7 @@
   <component name="MakefileWorkspace" PROJECT_DIR="$PROJECT_DIR$">
     <contentRoot DIR="$PROJECT_DIR$/build" />
   </component>
+  <component name="ProjectResources">
+    <resource url="http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" location="$PROJECT_DIR$/.idea/docbookx.dtd" />
+  </component>
 </project>
