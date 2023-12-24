@@ -227,7 +227,7 @@ int cg_is_delegated_fd(int fd);
 
 int cg_has_coredump_receive(const char *path);
 
-typedef enum  {
+typedef enum {
         CG_KEY_MODE_GRACEFUL = 1 << 0,
 } CGroupKeyMode;
 
