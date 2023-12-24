@@ -6,7 +6,6 @@
 manpages = [
 ['busctl', '1', [], ''],
  ['elogind-inhibit', '1', [], ''],
- ['elogind-soft-reboot.service', '8', [], ''],
  ['elogind', '8', [], ''],
  ['elogind.journal-fields', '7', [], ''],
  ['elogind.syntax', '7', [], ''],
