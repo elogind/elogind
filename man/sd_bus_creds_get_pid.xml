@@ -401,7 +401,7 @@
     <!-- 0 /// Let's look at elogind instead...
     <citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     --><!-- else // 0 -->
-    <citerefentry><refentrytitle>elogind-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     <!-- // 0 -->
     For processes that are not part of a user unit or session, returns
     -ENXIO.
