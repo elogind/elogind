@@ -111,9 +111,13 @@
 
     <para><function>sd_bus_default()</function> acquires a bus
     connection object to the user bus when invoked from within a user
+    <!-- 0 // No slices in elogind
     slice (any session under <literal>user-*.slice</literal>, e.g.:
     <literal>user@1000.service</literal>), or to the system bus
     otherwise. The connection object is associated with the calling
+    --><!-- else // 0 -->
+    session. The connection object is associated with the calling
+    <!-- // 0 -->
     thread. Each time the function is invoked from the same thread,
     the same object is returned, but its reference count is increased
     by one, as long as at least one reference is kept. When the last
