@@ -45,8 +45,12 @@
 
     <para><function>sd_machine_get_class()</function> may be used to
     determine the class of a locally running virtual machine or
+    <!-- 0 /// elogind does not ship, provicde or support systemd-machined
     container that is registered with
     <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    --><!-- else // 0 -->
+    container.
+    <!-- // 0 -->
     The string returned is either <literal>vm</literal> or
     <literal>container</literal>. The returned string needs to be
     freed with the libc <citerefentry
@@ -55,8 +59,12 @@
 
     <para><function>sd_machine_get_ifindices()</function> may be used to determine the numeric indices of the
     network interfaces on the host that are pointing towards the specified locally running virtual machine or
+    <!-- 0 /// elogind does not ship, provicde or support systemd-machined
     container. The vm or container must be registered with
     <citerefentry><refentrytitle>elogind-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    --><!-- else // 0 -->
+    container.
+    <!-- // 0 -->
     The output parameter <parameter>ret_ifindices</parameter> may be passed as <constant>NULL</constant> when
     the output value is not needed. The returned array needs to be freed with the libc <citerefentry
     project='man-pages'><refentrytitle>free</refentrytitle><manvolnum>3</manvolnum></citerefentry> call after
