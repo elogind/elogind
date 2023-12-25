@@ -26,7 +26,7 @@
       <command>elogind-inhibit</command> <arg choice="opt" rep="repeat">OPTIONS</arg> <arg>COMMAND</arg> <arg choice="opt" rep="repeat">ARGUMENTS</arg>
     </cmdsynopsis>
     <cmdsynopsis>
-      <command>elogind-inhibit</command> <arg choice="opt" rep="repeat">OPTIONS</arg> --list
+      <command>elogind-inhibit</command> <arg choice="opt" rep="repeat">OPTIONS</arg> <arg>--list</arg>
     </cmdsynopsis>
   </refsynopsisdiv>
 
