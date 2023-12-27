@@ -56,9 +56,9 @@
     <citerefentry><refentrytitle>sd_notify</refentrytitle><manvolnum>3</manvolnum></citerefentry>. See
     the <varname>WatchdogSec=</varname> setting in
     <!-- 0 /// elogind is not a systemd service and resides in section 8
-    <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     --><!-- else // 0 -->
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     <!-- // 0 -->
     for details on how to enable watchdog support for a service and
     the protocol used. The wake-up interval is chosen as half the
