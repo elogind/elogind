@@ -413,7 +413,7 @@ static int user_update_slice(User *u) {
             u->user_record->io_weight == UINT64_MAX)
                 return 0;
 
-        r = bus_message_new_method_call(u->manager->bus, &m, bus_elogind_mgr, "SetUnitProperties");
+        r = bus_message_new_method_call(u->manager->bus, &m, bus_systemd_mgr, "SetUnitProperties");
         if (r < 0)
                 return bus_log_create_error(r);
 
