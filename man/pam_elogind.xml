@@ -43,7 +43,7 @@
     one is defined.</para>
 
     <!-- 0 /// elogind has no elogind.service
-    <para>On login, this module — in conjunction with <filename>elogind.service</filename> — ensures the
+    <para>On login, this module — in conjunction with <filename>systemd-logind.service</filename> — ensures the
     following:</para>
     --><!-- else // 0 -->
     <para>On login, this module ensures the following:</para>
@@ -60,7 +60,7 @@
       independent session counter is used.</para></listitem>
 
       <!-- 0 /// elogind does not support (or need) systemd service, unit, scope and/or slice files.
-      <listitem><para>A new elogind scope unit is created for the session. If this is the first concurrent session of
+      <listitem><para>A new systemd scope unit is created for the session. If this is the first concurrent session of
       the user, an implicit per-user slice unit below <filename>user.slice</filename> is automatically created and the
       scope placed into it. An instance of the system service <filename>user@.service</filename>, which runs the
       systemd user manager instance, is started.</para></listitem>
@@ -276,7 +276,7 @@
     and maps directly to the respective unit resource control directives. Note that these limits apply to individual sessions of the user,
     <!-- 0 /// elogind does not run individual user instances. Also we do not ship systemd.resource-control
     they do not apply to all user processes as a combined whole. In particular, the per-user <command>user@.service</command> unit instance,
-    which runs the <command>systemd-logind &#x2D;&#x2D;user</command> manager process and its children, and is tracked outside of any session, being shared
+    which runs the <command>systemd &#x2D;&#x2D;user</command> manager process and its children, and is tracked outside of any session, being shared
     by all the user's sessions, is not covered by these limits.
     </para>
 
@@ -352,23 +352,23 @@ pam_set_data(handle, "systemd.runtime_max_sec", (void *)"3600", cleanup);
 
     <programlisting>#%PAM-1.0
 auth      sufficient pam_unix.so
--auth     sufficient pam_elogind_home.so
+-auth     sufficient pam_systemd_home.so
 auth      required   pam_deny.so
 
 account   required   pam_nologin.so
--account  sufficient pam_elogind_home.so
+-account  sufficient pam_systemd_home.so
 account   sufficient pam_unix.so
 account   required   pam_permit.so
 
--password sufficient pam_elogind_home.so
+-password sufficient pam_systemd_home.so
 password  sufficient pam_unix.so sha512 shadow try_first_pass use_authtok
 
 password  required   pam_deny.so
 
 -session  optional   pam_keyinit.so revoke
 -session  optional   pam_loginuid.so
--session  optional   pam_elogind_home.so
-<command>-session  optional   pam_elogind.so</command>
+-session  optional   pam_systemd_home.so
+<command>-session  optional   pam_systemd.so</command>
 session   required   pam_unix.so</programlisting>
     --><!-- else // 0 -->
     <filename>elogind</filename>:</para>
