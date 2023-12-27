@@ -119,9 +119,9 @@ static const MountPoint mount_table[] = {
         { "cgroup2",     "/sys/fs/cgroup/unified",    "cgroup2",    NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_hybrid_wanted, MNT_IN_CONTAINER|MNT_CHECK_WRITABLE },
 #if 0 /// UNNEEDED by elogind
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind,xattr",                  MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd,xattr",                  MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_IN_CONTAINER     },
-        { "cgroup",      "/sys/fs/cgroup/elogind",    "cgroup",     "none,name=elogind",                        MS_NOSUID|MS_NOEXEC|MS_NODEV,
+        { "cgroup",      "/sys/fs/cgroup/systemd",    "cgroup",     "none,name=systemd",                        MS_NOSUID|MS_NOEXEC|MS_NODEV,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
 #if ENABLE_PSTORE
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
