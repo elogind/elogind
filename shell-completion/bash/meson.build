@@ -45,9 +45,9 @@ endif
 #          ['portablectl',         'ENABLE_PORTABLED'],
 #          ['resolvectl',          'ENABLE_RESOLVE'],
 #          ['systemd-cryptenroll', 'HAVE_LIBCRYPTSETUP'],
-#          ['elogind-dissect',     'HAVE_BLKID'],
+#          ['systemd-dissect',     'HAVE_BLKID'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],
-#          ['elogind-sysext',      'ENABLE_SYSEXT'],
+#          ['systemd-sysext',      'ENABLE_SYSEXT'],
 #          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0
 items = [['busctl',              ''],
