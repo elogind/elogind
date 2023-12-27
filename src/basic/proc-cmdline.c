@@ -185,7 +185,6 @@ static char *mangle_word(const char *word, ProcCmdlineFlags flags) {
 
                 if (FLAGS_SET(flags, PROC_CMDLINE_STRIP_RD_PREFIX))
                         return c;
-                }
 
         } else if (FLAGS_SET(flags, PROC_CMDLINE_RD_STRICT) && in_initrd())
                 /* And optionally filter out arguments that are intended only for the host */
@@ -218,7 +217,6 @@ static int proc_cmdline_parse_strv(char **args, proc_cmdline_parse_t parse_item,
                         *(value++) = '\0';
 
                 r = parse_item(key, value, data);
-
                 if (r < 0)
                         return r;
         }
@@ -470,10 +468,9 @@ int proc_cmdline_get_key_many_internal(ProcCmdlineFlags flags, ...) {
         /* This call may clobber arguments on failure! */
 
         if (!FLAGS_SET(flags, PROC_CMDLINE_IGNORE_EFI_OPTIONS)) {
-                r = elogind_efi_options_variable(&line);
                 _cleanup_free_ char *line = NULL;
 
-                r = elogind_efi_options_variable(&line);
+                r = systemd_efi_options_variable(&line);
                 if (r < 0 && r != -ENODATA)
                         log_debug_errno(r, "Failed to get SystemdOptions EFI variable, ignoring: %m");
                 if (r >= 0) {
