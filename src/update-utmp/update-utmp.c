@@ -60,7 +60,7 @@ static int get_startup_monotonic_time(Context *c, usec_t *ret) {
 
         r = bus_get_property_trivial(
                         c->bus,
-                        bus_elogind_mgr,
+                        bus_systemd_mgr,
                         "UserspaceTimestampMonotonic",
                         &error,
                         't', ret);
@@ -109,7 +109,7 @@ static int get_current_runlevel(Context *c) {
                                                     SD_BUS_ERROR_DISCONNECTED)) &&
                             ++n_attempts < 64) {
 
-                                /* elogind might have dropped off momentarily, let's not make this an error,
+                                /* systemd might have dropped off momentarily, let's not make this an error,
                                  * and wait some random time. Let's pick a random time in the range 0ms…250ms,
                                  * linearly scaled by the number of failed attempts. */
 
@@ -131,7 +131,7 @@ static int get_current_runlevel(Context *c) {
 
 reconnect:
                 c->bus = sd_bus_flush_close_unref(c->bus);
-                r = bus_connect_system_elogind(&c->bus);
+                r = bus_connect_system_systemd(&c->bus);
                 if (r < 0)
                         return log_error_errno(r, "Failed to reconnect to system bus: %m");
         }
