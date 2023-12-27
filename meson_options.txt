@@ -19,6 +19,7 @@ option('rootprefix', type : 'string',
        description : '''override the root prefix [default '/' if split-usr and '/usr' otherwise]''')
 #if 0 /// UNNEEDED by elogind
 # option('link-udev-shared', type : 'boolean',
+#        description : 'link systemd-udevd and its helpers to libsystemd-shared.so')
 # option('link-systemctl-shared', type: 'boolean',
 #        description : 'link systemctl against libsystemd-shared.so')
 # option('link-networkd-shared', type: 'boolean',
@@ -30,7 +31,7 @@ option('rootprefix', type : 'string',
 # option('link-boot-shared', type: 'boolean',
 #        description : 'link bootctl and systemd-bless-boot against libsystemd-shared.so')
 # option('link-portabled-shared', type: 'boolean',
-#        description : 'link elogind-portabled and its helpers to libelogind-shared.so')
+#        description : 'link systemd-portabled and its helpers to libsystemd-shared.so')
 # option('first-boot-full-preset', type: 'boolean', value: false,
 #        description : 'during first boot, do full preset-all (default will be changed to true later)')
 #endif // 0
@@ -528,11 +529,11 @@ option('dbus', type : 'combo', choices : ['auto', 'true', 'false'],
 # option('sbat-distro-summary', type : 'string',
 #        description : 'SBAT distribution summary, e.g. Fedora')
 # option('sbat-distro-pkgname', type : 'string',
-#        description : 'SBAT distribution package name, e.g. elogind')
+#        description : 'SBAT distribution package name, e.g. systemd')
 # option('sbat-distro-version', type : 'string',
 #        description : 'SBAT distribution package version, e.g. 248-7.fc34')
 # option('sbat-distro-url', type : 'string',
-#        description : 'SBAT distribution URL, e.g. https://src.fedoraproject.org/rpms/elogind')
+#        description : 'SBAT distribution URL, e.g. https://src.fedoraproject.org/rpms/systemd')
 # option('efi-color-normal', type : 'string', value : 'lightgray,black',
 #        description : 'general boot loader color in "foreground,background" form, see constants from eficon.h')
 # option('efi-color-entry', type : 'string', value : 'lightgray,black',
