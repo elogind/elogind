@@ -204,8 +204,8 @@
           <para>The name of a unit. Used by the system and user managers when logging about specific
           units.</para>
 
-          <para>When <option>-&#x2D-unit=<replaceable>name</replaceable></option> or
-          <option>-&#x2Duser-unit=<replaceable>name</replaceable></option> are used with
+          <para>When <option>&#x2D;&#x2D;unit=<replaceable>name</replaceable></option> or
+          <option>&#x2D;&#x2D;user-unit=<replaceable>name</replaceable></option> are used with
           <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>, a
           match pattern that includes <literal>UNIT=<replaceable>name</replaceable>.service</literal> or
           <literal>USER_UNIT=<replaceable>name</replaceable>.service</literal> will be generated.</para>
