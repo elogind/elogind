@@ -1470,6 +1470,7 @@ conf.set10('HAVE_SELINUX', have)
 #         have = false
 #         libapparmor = []
 # endif
+# conf.set10('HAVE_APPARMOR', have)
 #else // 0
 libapparmor = []
 conf.set10('HAVE_APPARMOR', false)
