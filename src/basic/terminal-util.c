@@ -914,11 +914,11 @@ int proc_cmdline_tty_size(const char *tty, unsigned *ret_rows, unsigned *ret_col
         if (!in_charset(tty, ALPHANUMERICAL))
                 return log_debug_errno(SYNTHETIC_ERRNO(EINVAL), "%s contains non-alphanumeric characters", tty);
 
-        rowskey = strjoin("elogind.tty.rows.", tty);
+        rowskey = strjoin("systemd.tty.rows.", tty);
         if (!rowskey)
                 return -ENOMEM;
 
-        colskey = strjoin("elogind.tty.columns.", tty);
+        colskey = strjoin("systemd.tty.columns.", tty);
         if (!colskey)
                 return -ENOMEM;
 
