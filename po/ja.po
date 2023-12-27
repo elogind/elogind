@@ -65,13 +65,13 @@ msgstr ""
 # msgstr "systemdの状態を再読込するには認証が必要です。"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:74
-# msgid "Dump the elogind state without rate limits"
-# msgstr "elogindの状態をレート制限に関係なく出力する"
+# msgid "Dump the systemd state without rate limits"
+# msgstr "systemdの状態をレート制限に関係なく出力する"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
 # msgid ""
-# "Authentication is required to dump the elogind state without rate limits."
-# msgstr "elogindの状態をレート制限に関係なく出力するには認証が必要です。"
+# "Authentication is required to dump the systemd state without rate limits."
+# msgstr "systemdの状態をレート制限に関係なく出力するには認証が必要です。"
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
@@ -123,7 +123,7 @@ msgstr ""
 # "Authentication is required to change the password of a user's home area."
 # msgstr "ユーザのホーム領域のパスワードを変更するには認証が必要です。"
 #
-# #: src/home/pam_elogind_home.c:287
+# #: src/home/pam_systemd_home.c:287
 # #, c-format
 # msgid ""
 # "Home of user %s is currently absent, please plug in the necessary storage "
@@ -132,49 +132,49 @@ msgstr ""
 # "ユーザ%sのホーム領域が存在しません。必要なストレージデバイスもしくは基盤ファ"
 # "イルシステムを接続して下さい。"
 #
-# #: src/home/pam_elogind_home.c:292
+# #: src/home/pam_systemd_home.c:292
 # #, c-format
 # msgid "Too frequent login attempts for user %s, try again later."
 # msgstr "ユーザ%sのログイン試行が頻繁すぎます。後ほどやり直して下さい。"
 #
-# #: src/home/pam_elogind_home.c:304
+# #: src/home/pam_systemd_home.c:304
 # msgid "Password: "
 # msgstr "パスワード: "
 #
-# #: src/home/pam_elogind_home.c:306
+# #: src/home/pam_systemd_home.c:306
 # #, c-format
 # msgid "Password incorrect or not sufficient for authentication of user %s."
 # msgstr "ユーザ%sの認証のためのパスワードが無効です。"
 #
-# #: src/home/pam_elogind_home.c:307
+# #: src/home/pam_systemd_home.c:307
 # msgid "Sorry, try again: "
 # msgstr "すみません、パスワードを再入力して下さい: "
 #
-# #: src/home/pam_elogind_home.c:329
+# #: src/home/pam_systemd_home.c:329
 # msgid "Recovery key: "
 # msgstr "復旧キー: "
 #
-# #: src/home/pam_elogind_home.c:331
+# #: src/home/pam_systemd_home.c:331
 # #, c-format
 # msgid ""
 # "Password/recovery key incorrect or not sufficient for authentication of user "
 # "%s."
 # msgstr "ユーザ%sの認証のためのパスワードもしくは復旧キーが無効です。"
 #
-# #: src/home/pam_elogind_home.c:332
+# #: src/home/pam_systemd_home.c:332
 # msgid "Sorry, reenter recovery key: "
 # msgstr "すみません、復旧キーを再入力して下さい: "
 #
-# #: src/home/pam_elogind_home.c:352
+# #: src/home/pam_systemd_home.c:352
 # #, c-format
 # msgid "Security token of user %s not inserted."
 # msgstr "ユーザ$sのセキュリティトークンが挿入されていません。"
 #
-# #: src/home/pam_elogind_home.c:353 src/home/pam_elogind_home.c:356
+# #: src/home/pam_systemd_home.c:353 src/home/pam_systemd_home.c:356
 # msgid "Try again with password: "
 # msgstr "パスワードを入力して再試行して下さい: "
 #
-# #: src/home/pam_elogind_home.c:355
+# #: src/home/pam_systemd_home.c:355
 # #, c-format
 # msgid ""
 # "Password incorrect or not sufficient, and configured security token of user "
@@ -183,26 +183,26 @@ msgstr ""
 # "ユーザ%sのパスワードが無効、もしくはセキュリティトークンが挿入されていませ"
 # "ん。"
 #
-# #: src/home/pam_elogind_home.c:376
+# #: src/home/pam_systemd_home.c:376
 # msgid "Security token PIN: "
 # msgstr "セキュリティトークンPIN: "
 #
-# #: src/home/pam_elogind_home.c:393
+# #: src/home/pam_systemd_home.c:393
 # #, c-format
 # msgid "Please authenticate physically on security token of user %s."
 # msgstr "ユーザ%sのセキュリティトークン上で物理的な認証を行って下さい。"
 #
-# #: src/home/pam_elogind_home.c:404
+# #: src/home/pam_systemd_home.c:404
 # #, c-format
 # msgid "Please confirm presence on security token of user %s."
 # msgstr "ユーザ%sのセキュリティトークンが存在していることを確認して下さい。"
 #
-# #: src/home/pam_elogind_home.c:415
+# #: src/home/pam_systemd_home.c:415
 # #, c-format
 # msgid "Please verify user on security token of user %s."
 # msgstr "ユーザ%sのセキュリティトークン上のユーザを確認して下さい。"
 #
-# #: src/home/pam_elogind_home.c:424
+# #: src/home/pam_systemd_home.c:424
 # msgid ""
 # "Security token PIN is locked, please unlock it first. (Hint: Removal and re-"
 # "insertion might suffice.)"
@@ -210,85 +210,85 @@ msgstr ""
 # "セキュリティトークンPINがロックされています。アンロックして下さい。(ヒント: "
 # "一旦トークンを外して再挿入してみて下さい。)"
 #
-# #: src/home/pam_elogind_home.c:432
+# #: src/home/pam_systemd_home.c:432
 # #, c-format
 # msgid "Security token PIN incorrect for user %s."
 # msgstr "ユーザ%sのセキュリティトークンPINが正しくありません。"
 #
-# #: src/home/pam_elogind_home.c:433 src/home/pam_elogind_home.c:452
-# #: src/home/pam_elogind_home.c:471
+# #: src/home/pam_systemd_home.c:433 src/home/pam_systemd_home.c:452
+# #: src/home/pam_systemd_home.c:471
 # msgid "Sorry, retry security token PIN: "
 # msgstr "すみません、セキュリティトークンPINを再入力して下さい: "
 #
-# #: src/home/pam_elogind_home.c:451
+# #: src/home/pam_systemd_home.c:451
 # #, c-format
 # msgid "Security token PIN of user %s incorrect (only a few tries left!)"
 # msgstr ""
 # "ユーザ%sのセキュリティトークンPINが正しくありません (残り試行可能回数が少なく"
 # "なっています!)"
 #
-# #: src/home/pam_elogind_home.c:470
+# #: src/home/pam_systemd_home.c:470
 # #, c-format
 # msgid "Security token PIN of user %s incorrect (only one try left!)"
 # msgstr ""
 # "ユーザ%sのセキュリティトークンPINが正しくありません (残り試行可能回数が1回で"
 # "す!)"
 #
-# #: src/home/pam_elogind_home.c:616
+# #: src/home/pam_systemd_home.c:616
 # #, c-format
 # msgid "Home of user %s is currently not active, please log in locally first."
 # msgstr ""
 # "ユーザ%sのホーム領域がアクティブでありません。ローカル環境にログインして下さ"
 # "い。"
 #
-# #: src/home/pam_elogind_home.c:618
+# #: src/home/pam_systemd_home.c:618
 # #, c-format
 # msgid "Home of user %s is currently locked, please unlock locally first."
 # msgstr ""
 # "ユーザ%sのホーム領域がロックされています。ローカル環境にてアンロックして下さ"
 # "い。"
 #
-# #: src/home/pam_elogind_home.c:645
+# #: src/home/pam_systemd_home.c:645
 # #, c-format
 # msgid "Too many unsuccessful login attempts for user %s, refusing."
 # msgstr "ユーザ$sのログイン試行の失敗回数が多すぎたため、拒否されました。"
 #
-# #: src/home/pam_elogind_home.c:868
+# #: src/home/pam_systemd_home.c:868
 # msgid "User record is blocked, prohibiting access."
 # msgstr "ユーザレコードがブロックされたため、アクセスが禁止されています。"
 #
-# #: src/home/pam_elogind_home.c:872
+# #: src/home/pam_systemd_home.c:872
 # msgid "User record is not valid yet, prohibiting access."
 # msgstr "ユーザレコードがまだ有効でないため、アクセスが禁止されています。"
 #
-# #: src/home/pam_elogind_home.c:876
+# #: src/home/pam_systemd_home.c:876
 # msgid "User record is not valid anymore, prohibiting access."
 # msgstr "ユーザレコードがもはや有効でないため、アクセスが禁止されています。"
 #
-# #: src/home/pam_elogind_home.c:881 src/home/pam_elogind_home.c:932
+# #: src/home/pam_systemd_home.c:881 src/home/pam_systemd_home.c:932
 # msgid "User record not valid, prohibiting access."
 # msgstr "ユーザレコードが有効でないため、アクセスが禁止されています。"
 #
-# #: src/home/pam_elogind_home.c:893
+# #: src/home/pam_systemd_home.c:893
 # #, c-format
 # msgid "Too many logins, try again in %s."
 # msgstr "ログイン回数が多すぎます。%s後に試して下さい。"
 #
-# #: src/home/pam_elogind_home.c:904
+# #: src/home/pam_systemd_home.c:904
 # msgid "Password change required."
 # msgstr "パスワードの更新が必要です。"
 #
-# #: src/home/pam_elogind_home.c:908
+# #: src/home/pam_systemd_home.c:908
 # msgid "Password expired, change required."
 # msgstr "パスワードの有効期限が切れたため、パスワードの更新が必要です。"
 #
-# #: src/home/pam_elogind_home.c:914
+# #: src/home/pam_systemd_home.c:914
 # msgid "Password is expired, but can't change, refusing login."
 # msgstr ""
 # "パスワードの有効期限が切れましたが、パスワードの更新できませんでした。ログイ"
 # "ンを拒否します。"
 #
-# #: src/home/pam_elogind_home.c:918
+# #: src/home/pam_systemd_home.c:918
 # msgid "Password will expire soon, please change."
 # msgstr "パスワードの有効期限がまもなく切れます。パスワードを更新して下さい。"
 #
