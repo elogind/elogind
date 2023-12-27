@@ -2835,7 +2835,7 @@ subdir('rules.d')
 # subdir('test')
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 #
-# alias_target('devel', libelogind_pc, libudev_pc, elogind_pc, udev_pc)
+# alias_target('devel', libsystemd_pc, libudev_pc, systemd_pc, udev_pc)
 #else // 0
 alias_target('devel', libelogind_pc)
 #endif // 0
@@ -3124,7 +3124,7 @@ test_dlopen = executable(
 #                 install : true)
 #
 #         meson.add_install_script(meson_make_symlink,
-#                                  bindir / 'elogind-dissect',
+#                                  bindir / 'systemd-dissect',
 #                                  rootsbindir / 'mount.ddi')
 # endif
 #
@@ -3136,7 +3136,7 @@ test_dlopen = executable(
 #                 link_with : [libshared,
 #                              libbasic_gcrypt,
 #                              libsystemd_resolve_core],
-#                 dependencies : [elogind_resolved_dependencies,
+#                 dependencies : [systemd_resolved_dependencies,
 #                                 userspace],
 #                 install_rpath : rootpkglibdir,
 #                 install : true,
@@ -3452,7 +3452,7 @@ endif
 #         if get_option('link-portabled-shared')
 #                 portabled_link_with = [libshared]
 #         else
-#                 portabled_link_with = [libelogind_static,
+#                 portabled_link_with = [libsystemd_static,
 #                                        libshared_static]
 #         endif
 #
@@ -4238,7 +4238,7 @@ endif
 #         install_dir : rootlibexecdir)
 #
 # executable(
-#         'elogind-growfs',
+#         'systemd-growfs',
 #         'src/partition/growfs.c',
 #         include_directories : includes,
 #         link_with : [libshared],
@@ -4354,7 +4354,7 @@ endif
 #         install_dir : rootbindir)
 #
 # public_programs += executable(
-#         'elogind-battery-check',
+#         'systemd-battery-check',
 #         'src/battery-check/battery-check.c',
 #         include_directories : includes,
 #         link_with : [libshared],
@@ -4553,13 +4553,14 @@ public_programs += executable(
 #         endif
 #
 #         exe = executable(
+#                 'systemd-sysusers.standalone',
 #                 'src/sysusers/sysusers.c',
 #                 include_directories : includes,
 #                 c_args : '-DSTANDALONE',
 #                 link_with : [libshared_static,
 #                              libbasic,
 #                              libbasic_gcrypt,
-#                              libelogind_static],
+#                              libsystemd_static],
 #                 dependencies : [userspace,
 #                                 versiondep],
 #                 build_by_default: have_standalone_binaries,
@@ -4599,13 +4600,14 @@ public_programs += executable(
 #         endif
 #
 #         exe = executable(
-#                 elogind_tmpfiles_sources,
+#                 'systemd-tmpfiles.standalone',
+#                 systemd_tmpfiles_sources,
 #                 include_directories : includes,
 #                 c_args : '-DSTANDALONE',
 #                 link_with : [libshared_static,
 #                              libbasic,
 #                              libbasic_gcrypt,
-#                              libelogind_static],
+#                              libsystemd_static],
 #                 dependencies : [libacl,
 #                                 userspace,
 #                                 versiondep],
@@ -4713,13 +4715,14 @@ public_programs += executable(
 #         public_programs += exe
 #
 #         exe = executable(
-#                 elogind_repart_sources,
+#                 'systemd-repart.standalone',
+#                 systemd_repart_sources,
 #                 include_directories : includes,
 #                 c_args : '-DSTANDALONE',
 #                 link_with : [libshared_static,
 #                              libbasic,
 #                              libbasic_gcrypt,
-#                              libelogind_static,
+#                              libsystemd_static,
 #                              libshared_fdisk],
 #                 dependencies : [libblkid,
 #                                 libfdisk,
@@ -4749,13 +4752,13 @@ public_programs += executable(
 #         install_dir : rootlibexecdir)
 #
 # executable(
-#         'elogind-shutdown.standalone',
-#         elogind_shutdown_sources,
+#         'systemd-shutdown.standalone',
+#         systemd_shutdown_sources,
 #         include_directories : includes,
 #         c_args : '-DSTANDALONE',
 #         link_with : [libshared_static,
 #                      libbasic,
-#                      libelogind_static],
+#                      libsystemd_static],
 #         dependencies : [libmount,
 #                         userspace,
 #                         versiondep],
@@ -5045,10 +5048,10 @@ endforeach
 #                 threads,
 #                 userspace,
 #         ],
-#         build_by_default : want_tests != 'false' and static_libelogind != 'false',
-#         install : install_tests and static_libelogind != 'false',
+#         build_by_default : want_tests != 'false' and static_libsystemd != 'false',
+#         install : install_tests and static_libsystemd != 'false',
 #         install_dir : unittestsdir)
-# if want_tests != 'false' and static_libelogind != 'false'
+# if want_tests != 'false' and static_libsystemd != 'false'
 #         test('test-libsystemd-static-sym', exe)
 # endif
 #
