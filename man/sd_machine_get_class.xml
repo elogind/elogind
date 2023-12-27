@@ -61,7 +61,7 @@
     network interfaces on the host that are pointing towards the specified locally running virtual machine or
     <!-- 0 /// elogind does not ship, provicde or support systemd-machined
     container. The vm or container must be registered with
-    <citerefentry><refentrytitle>elogind-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+    <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
     --><!-- else // 0 -->
     container.
     <!-- // 0 -->
