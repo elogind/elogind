@@ -351,7 +351,7 @@ int bus_connect_transport(
 }
 
 #if 0 /// elogind is never used with systemd.
-int bus_connect_transport_elogind(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus) {
+int bus_connect_transport_systemd(BusTransport transport, const char *host, RuntimeScope runtime_scope, sd_bus **bus) {
         assert(transport >= 0);
         assert(transport < _BUS_TRANSPORT_MAX);
         assert(bus);
@@ -371,8 +371,8 @@ int bus_connect_transport_elogind(BusTransport transport, const char *host, Runt
                         if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
-                                                       "System has not been booted with elogind as init system (PID 1). Can't operate.");
-                        return bus_connect_system_elogind(bus);
+                                                       "System has not been booted with systemd as init system (PID 1). Can't operate.");
+                        return bus_connect_system_systemd(bus);
 
                 default:
                         assert_not_reached();
