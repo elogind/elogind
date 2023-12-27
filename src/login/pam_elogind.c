@@ -475,7 +475,7 @@ static int append_session_cpu_weight(pam_handle_t *handle, sd_bus_message *m, co
 
         r = cg_cpu_weight_parse(limit, &val);
         if (r < 0)
-                pam_syslog(handle, LOG_WARNING, "Failed to parse elogind.cpu_weight, ignoring: %s", limit);
+                pam_syslog(handle, LOG_WARNING, "Failed to parse systemd.cpu_weight, ignoring: %s", limit);
         else {
                 r = sd_bus_message_append(m, "(sv)", "CPUWeight", "t", val);
                 if (r < 0)
