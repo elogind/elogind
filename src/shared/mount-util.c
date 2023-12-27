@@ -585,7 +585,7 @@ int mode_to_inaccessible_node(
         if (!node)
                 return -EINVAL;
 
-        d = path_join(runtime_dir, "elogind/inaccessible", node);
+        d = path_join(runtime_dir, "systemd/inaccessible", node);
         if (!d)
                 return -ENOMEM;
 
