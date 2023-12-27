@@ -37,10 +37,9 @@
 #include "signal-util.h"
 #include "strv.h"
 #include "terminal-util.h"
-/// Additional includes needed by elogind
-// #include "label.h"
-#include "musl_missing.h"
 //#include "udev-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 #include "user-util.h"
 
 static Manager* manager_free(Manager *m);
