@@ -342,7 +342,7 @@
 
     <para>For more information about the concepts and
     ideas behind systemd, please refer to the
-    <ulink url="https://0pointer.de/blog/projects/elogind.html">Original Design Document</ulink>.</para>
+    <ulink url="https://0pointer.de/blog/projects/systemd.html">Original Design Document</ulink>.</para>
 
     <para>Note that some but not all interfaces provided by systemd are covered by the
     <ulink url="https://systemd.io/PORTABILITY_AND_STABILITY/">Interface Portability and Stability Promise</ulink>.</para>
@@ -992,16 +992,16 @@
         <term><varname>systemd.log_target=</varname></term>
         <term><varname>systemd.log_time</varname></term>
         <term><varname>systemd.log_tid</varname></term>
-        <term><varname>elogind.log_ratelimit_kmsg</varname></term>
+        <term><varname>systemd.log_ratelimit_kmsg</varname></term>
 
         <listitem><para>Controls log output, with the same effect as the
         <varname>$SYSTEMD_LOG_COLOR</varname>, <varname>$SYSTEMD_LOG_LEVEL</varname>,
         <varname>$SYSTEMD_LOG_LOCATION</varname>, <varname>$SYSTEMD_LOG_TARGET</varname>,
         <varname>$SYSTEMD_LOG_TIME</varname>, <varname>$SYSTEMD_LOG_TID</varname> and
         <varname>$SYSTEMD_LOG_RATELIMIT_KMSG</varname> environment variables described above.
-        <varname>elogind.log_color</varname>, <varname>elogind.log_location</varname>,
-        <varname>elogind.log_time</varname>, <varname>elogind.log_tid</varname> and
-        <varname>elogind.log_ratelimit_kmsg</varname> can be specified without
+        <varname>systemd.log_color</varname>, <varname>systemd.log_location</varname>,
+        <varname>systemd.log_time</varname>, <varname>systemd.log_tid</varname> and
+        <varname>systemd.log_ratelimit_kmsg</varname> can be specified without
         an argument, with the same effect as a positive boolean.</para></listitem>
       </varlistentry>
 
@@ -1039,14 +1039,14 @@
 
       <varlistentry>
         <term><varname>systemd.set_credential=</varname></term>
-        <term><varname>elogind.set_credential_binary=</varname></term>
+        <term><varname>systemd.set_credential_binary=</varname></term>
 
         <listitem><para>Sets a system credential, which can then be propagated to system services using the
         <varname>ImportCredential=</varname> or <varname>LoadCredential=</varname> setting, see
         <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
         details. Takes a pair of credential name and value, separated by a colon. The
-        <varname>elogind.set_credential=</varname> parameter expects the credential value in literal text
-        form, the <varname>elogind.set_credential_binary=</varname> parameter takes binary data encoded in
+        <varname>systemd.set_credential=</varname> parameter expects the credential value in literal text
+        form, the <varname>systemd.set_credential_binary=</varname> parameter takes binary data encoded in
         Base64. Note that the kernel command line is typically accessible by unprivileged programs in
         <filename>/proc/cmdline</filename>. Thus, this mechanism is not suitable for transferring sensitive
         data. Use it only for data that is not sensitive (e.g. public keys/certificates, rather than private
@@ -1168,25 +1168,28 @@
     <itemizedlist>
       <listitem><para>When the service manager first initializes it will read system credentials from SMBIOS
       Type 11 vendor strings
-      <varname>io.elogind.credential:<replaceable>name</replaceable>=<replaceable>value</replaceable></varname>,
+      <varname>io.systemd.credential:<replaceable>name</replaceable>=<replaceable>value</replaceable></varname>,
       and
-      <varname>io.elogind.credential.binary:<replaceable>name</replaceable>=<replaceable>value</replaceable></varname>.</para></listitem>
+      <varname>io.systemd.credential.binary:<replaceable>name</replaceable>=<replaceable>value</replaceable></varname>.</para></listitem>
 
       <listitem><para>At the same time it will import credentials from QEMU <literal>fw_cfg</literal>. (Note
       that the SMBIOS mechanism is generally preferred, because it is faster and generic.)</para></listitem>
 
       <listitem><para>Credentials may be passed via the kernel command line, using the
-      <varname>elogind.set-credential=</varname> parameter, see above.</para></listitem>
+      <varname>systemd.set-credential=</varname> parameter, see above.</para></listitem>
 
       <listitem><para>Credentials may be passed from the UEFI environment via
-      <citerefentry><refentrytitle>elogind-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para></listitem>
+      <citerefentry><refentrytitle>systemd-stub</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para></listitem>
 
       <listitem><para>When the service manager is invoked during the initrd → host transition it will import
       all files in <filename>/run/credentials/@initrd/</filename> as system credentials.</para></listitem>
     </itemizedlist>
 
     <para>Invoke
+    <citerefentry><refentrytitle>systemd-creds</refentrytitle><manvolnum>1</manvolnum></citerefentry> as
     follows to see the list of credentials passed into the system:</para>
+
+    <programlisting># systemd-creds &#x2D;&#x2D;system list</programlisting>
 
     <para>For further information see <ulink url="https://systemd.io/CREDENTIALS">System and Service
     Credentials</ulink> documentation.</para>
