@@ -167,10 +167,10 @@ libcore_sources = files(
 #                 install_dir : dir)
 # endforeach
 #
-# elogind_pc = custom_target(
-#         'elogind.pc',
-#         input : 'elogind.pc.in',
-#         output : 'elogind.pc',
+# systemd_pc = custom_target(
+#         'systemd.pc',
+#         input : 'systemd.pc.in',
+#         output : 'systemd.pc',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : pkgconfigdatadir != 'no',
 #         install_tag : 'devel',
@@ -195,7 +195,7 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 # if install_sysconfdir
 #         meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'system'))
 #         meson.add_install_script('sh', '-c', mkdir_p.format(pkgsysconfdir / 'user'))
-#         meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/elogind'))
+#         meson.add_install_script('sh', '-c', mkdir_p.format(sysconfdir / 'xdg/systemd'))
 # endif
 #endif // 0
 
