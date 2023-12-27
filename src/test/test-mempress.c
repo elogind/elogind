@@ -204,7 +204,7 @@ TEST(real_pressure) {
 
         assert_se(bus_wait_for_jobs_new(bus, &w) >= 0);
 
-        assert_se(bus_message_new_method_call(bus, &m, bus_elogind_mgr, "StartTransientUnit") >= 0);
+        assert_se(bus_message_new_method_call(bus, &m, bus_systemd_mgr, "StartTransientUnit") >= 0);
         assert_se(asprintf(&scope, "test-%" PRIu64 ".scope", random_u64()) >= 0);
         assert_se(sd_bus_message_append(m, "ss", scope, "fail") >= 0);
         assert_se(sd_bus_message_open_container(m, 'a', "(sv)") >= 0);
@@ -275,7 +275,7 @@ TEST(real_pressure) {
 
         m = sd_bus_message_unref(m);
 
-        assert_se(bus_message_new_method_call(bus, &m, bus_elogind_mgr, "SetUnitProperties") >= 0);
+        assert_se(bus_message_new_method_call(bus, &m, bus_systemd_mgr, "SetUnitProperties") >= 0);
         assert_se(sd_bus_message_append(m, "sb", scope, true) >= 0);
         assert_se(sd_bus_message_open_container(m, 'a', "(sv)") >= 0);
         assert_se(sd_bus_message_append(m, "(sv)", "MemoryHigh", "t", mcurrent + (15 * 1024 * 1024)) >= 0);
