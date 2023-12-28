@@ -175,7 +175,9 @@ _arguments -s \
     {-h,--help}'[Show help]' \
     '--version[Show package version]' \
     \*{-p+,--property=}'[Show only properties by this name]:unit property' \
+    '*-P+[Equivalent to --value --property=NAME]:unit property' \
     {-a,--all}'[Show all properties, including empty ones]' \
+    '--value[When showing properties, only print the value]' \
     '--kill-whom=[Whom to send signal to]:killwhom:(main control all)' \
     {-s+,--signal=}'[Which signal to send]:signal:_signals' \
     {-H+,--host=}'[Operate on remote host]:userathost:_sd_hosts_or_user_at_host' \
@@ -184,6 +186,11 @@ _arguments -s \
     '--no-pager[Do not pipe output into a pager]' \
     '--no-legend[Do not show the headers and footers]' \
     '--no-ask-password[Do not ask for system passwords]' \
+    "--no-wall[Do not send wall messages]" \
     {-n+,--lines=}'[Number of journal entries to show]' \
     {-o+,--output=}'[Change journal output mode]:output modes:_sd_outputmodes' \
+    '-c[Cancel a pending shutdown or reboot]' \
+    {-i,--ignore-inhibitors}'[When shutting down or sleeping, ignore inhibitors]' \
+    '--dry-run[Only print what would be done]' \
+    '--firmware-setup[Tell the firmware to show the setup menu on next boot]' \
     '*::loginctl command:_loginctl_commands'
