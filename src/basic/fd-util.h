@@ -32,10 +32,10 @@ static inline int safe_close_above_stdio(int fd) {
         return safe_close(fd);
 }
 
-void close_many(const int fds[], size_t n_fd);
 #if 0 /// UNNEEDED by elogind
-void close_many_unset(int fds[], size_t n_fd);
 #endif // 0
+void close_many(const int fds[], size_t n_fds);
+void close_many_unset(int fds[], size_t n_fds);
 void close_many_and_free(int *fds, size_t n_fds);
 
 int fclose_nointr(FILE *f);
