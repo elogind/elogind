@@ -258,10 +258,10 @@ meson.add_install_script('sh', '-c', 'touch $DESTDIR@0@/.keep_dir'.format(system
 #         meson.add_install_script(sh, '-c', ln_s.format(pkgsysconfdir / 'user',
 #                                                        sysconfdir / 'xdg/elogind/user'))
 # endif
+#
+# install_emptydir(sbindir)
+# meson.add_install_script(sh, '-c', ln_s.format(libexecdir / 'systemd', sbindir / 'init'))
 #endif // 0
-
-install_emptydir(sbindir)
-meson.add_install_script(sh, '-c', ln_s.format(libexecdir / 'elogind', sbindir / 'init'))
 
 ############################################################
 
