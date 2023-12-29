@@ -235,6 +235,7 @@ shared_sources = files(
         'output-mode.c',
         'pager.c',
         'parse-argument.c',
+        'pe-binary.c',
         'pkcs11-util.c',
         'pretty-print.c',
         'reboot-util.c',
