@@ -72,7 +72,9 @@
         enter and exit. This corresponds to
         suspend, standby, or freeze states as
         understood by the kernel.
-        </para></listitem>
+        </para>
+
+        <xi:include href="version-info.xml" xpointer="v203"/></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -85,7 +87,9 @@
         be slow to enter and exit. This
         corresponds to the hibernation as
         understood by the kernel.
-        </para></listitem>
+        </para>
+
+        <xi:include href="version-info.xml" xpointer="v203"/></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -98,17 +102,26 @@
         lost data but might be slower to exit
         in that case. This mode is called
         suspend-to-both by the kernel.
-        </para></listitem>
+        </para>
+
+        <xi:include href="version-info.xml" xpointer="v203"/></listitem>
       </varlistentry>
 
       <varlistentry>
         <term>suspend-then-hibernate</term>
 
-        <listitem><para>A low power state where the system is initially suspended
-        (the state is stored in RAM). If not interrupted within the delay specified by
-        <command>HibernateDelaySec=</command>, the system will be woken using an RTC
-        alarm and hibernated (the state is then stored on disk).
-        </para></listitem>
+        <listitem>
+          <para>A low power state where the system is initially suspended (the state is stored in
+          RAM). If the system supports low-battery alarms (ACPI _BTP), then the system will be woken up by
+          the ACPI low-battery signal and hibernated (the state is then stored on disk). Also, if not
+          interrupted within the timespan specified by <varname>HibernateDelaySec=</varname> or the estimated
+          timespan until the system battery charge level goes down to 5%, then the system will be woken up by the
+          RTC alarm and hibernated. The estimated timespan is calculated from the change of the battery
+          capacity level after the time specified by <varname>SuspendEstimationSec=</varname> or when
+          the system is woken up from the suspend.</para>
+
+          <xi:include href="version-info.xml" xpointer="v239"/>
+        </listitem>
       </varlistentry>
 
     </variablelist>
@@ -147,8 +160,8 @@
       <varlistentry>
         <term><varname>AllowSuspend=</varname></term>
         <term><varname>AllowHibernation=</varname></term>
-        <term><varname>AllowSuspendThenHibernate=</varname></term>
         <term><varname>AllowHybridSleep=</varname></term>
+        <term><varname>AllowSuspendThenHibernate=</varname></term>
 
         <listitem><para>By default any power-saving mode is advertised if possible (i.e.
         the kernel supports that mode, the necessary resources are available). Those
@@ -159,7 +172,9 @@
         <varname>AllowHybridSleep=no</varname>, since those methods use both suspend and hibernation
         internally. <varname>AllowSuspendThenHibernate=yes</varname> and
         <varname>AllowHybridSleep=yes</varname> can be used to override and enable those specific
-        modes.</para></listitem>
+        modes.</para>
+
+        <xi:include href="version-info.xml" xpointer="v240"/></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -167,30 +182,30 @@
         <term><varname>HibernateMode=</varname></term>
         <term><varname>HybridSleepMode=</varname></term>
 
-        <listitem><para>The string to be written to
-<!-- /// 0 elogind is structured a bit differently
-        <filename>/sys/power/disk</filename> by,
-        respectively,
-        <citerefentry><refentrytitle>systemd-suspend.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-        <citerefentry><refentrytitle>systemd-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>, or
-        <citerefentry><refentrytitle>systemd-hybrid-sleep.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
---><!-- else // 0 -->
-        <filename>/sys/power/disk</filename> by
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-<!-- // 0 -->
-        More than one value can be specified by separating
-        multiple values with whitespace. They will be tried
-        in turn, until one is written without error. If
-        neither succeeds, the operation will be aborted.
-        </para>
-
+        <listitem><para>The string to be written to <filename>/sys/power/disk</filename> by <citerefentry>
 <!-- /// 0 elogind has no service files
-        <para><citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+        <refentrytitle>systemd-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 --><!-- else // 0 -->
-        <para>suspend-then-hibernate
+        <refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 <!-- // 0 -->
-        uses the value of <varname>SuspendMode=</varname> when suspending and the value of <varname>HibernateMode=</varname> when hibernating.
-        </para></listitem>
+        More than one value can be specified by separating multiple values with whitespace. They will be
+        tried in turn, until one is written without error. If none of the writes succeed, the operation will
+        be aborted.</para>
+
+        <para>The allowed set of values is determined by the kernel and is shown in the file itself (use
+        <command>cat /sys/power/disk</command> to display). See the kernel documentation page
+        <ulink url="https://www.kernel.org/doc/html/latest/admin-guide/pm/sleep-states.html#basic-sysfs-interfaces-for-system-suspend-and-hibernation">
+          Basic sysfs Interfaces for System Suspend and Hibernation</ulink> for more details.</para>
+
+        <para>
+<!-- /// 0 elogind has no service files
+        <citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+--><!-- else // 0 -->
+        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+<!-- // 0 -->
+        uses the value of <varname>HibernateMode=</varname> when hibernating.</para>
+
+        <xi:include href="version-info.xml" xpointer="v203"/></listitem>
       </varlistentry>
 
       <varlistentry>
@@ -198,43 +213,67 @@
         <term><varname>HibernateState=</varname></term>
         <term><varname>HybridSleepState=</varname></term>
 
-        <listitem><para>The string to be written to
-<!-- /// 0 elogind is structured a bit differently
-        <filename>/sys/power/state</filename> by,
-        respectively,
-        <citerefentry><refentrytitle>systemd-suspend.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-        <citerefentry><refentrytitle>systemd-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>, or
-        <citerefentry><refentrytitle>systemd-hybrid-sleep.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
---><!-- else // 0 -->
-        <filename>/sys/power/state</filename> by
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
-<!-- // 0 -->
-        More than one value can be specified by separating
-        multiple values with whitespace. They will be tried
-        in turn, until one is written without error. If
-        neither succeeds, the operation will be aborted.
-        </para>
-
+        <listitem><para>The string to be written to <filename>/sys/power/state</filename> by <citerefentry>
 <!-- /// 0 elogind has no service files
-        <para><citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+        <refentrytitle>systemd-suspend.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 --><!-- else // 0 -->
-        <para>suspend-then-hibernate
+        <refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 <!-- // 0 -->
-        uses the value of <varname>SuspendState=</varname> when suspending and the value of <varname>HibernateState=</varname> when hibernating.
-        </para></listitem>
+        More than one value can be specified by separating multiple values with whitespace. They will be
+        tried in turn, until one is written without error. If none of the writes succeed, the operation will
+        be aborted.</para>
+
+        <para>The allowed set of values is determined by the kernel and is shown in the file itself (use
+        <command>cat /sys/power/state</command> to display). See <ulink
+        url="https://www.kernel.org/doc/html/latest/admin-guide/pm/sleep-states.html#basic-sysfs-interfaces-for-system-suspend-and-hibernation">
+          Basic sysfs Interfaces for System Suspend and Hibernation</ulink> for more details.</para>
+
+        <para>
+<!-- /// 0 elogind has no service files
+        <citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+--><!-- else // 0 -->
+        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+<!-- // 0 -->
+        uses this value when suspending.</para>
+
+        <xi:include href="version-info.xml" xpointer="v203"/></listitem>
       </varlistentry>
+
       <varlistentry>
         <term><varname>HibernateDelaySec=</varname></term>
 
-        <listitem><para>The amount of time the system spends in suspend mode before the system is
-        automatically put into hibernate mode, when using
+        <listitem>
+          <para>The amount of time the system spends in suspend mode before the system is
+          automatically put into hibernate mode. Only used by
 <!-- /// 0 elogind is structured a bit differently
-        <citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>. Defaults
+          <citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 --><!-- else // 0 -->
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>. Defaults
+          <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
 <!-- // 0 -->
-        to 2h.</para></listitem>
+          If the system has a battery, then defaults to the estimated timespan until the system battery charge level goes down to 5%.
+          If the system has no battery, then defaults to 2h.</para>
+
+          <xi:include href="version-info.xml" xpointer="v239"/>
+        </listitem>
       </varlistentry>
+
+       <varlistentry>
+        <term><varname>SuspendEstimationSec=</varname></term>
+
+        <listitem>
+          <para>The RTC alarm will wake the system after the specified timespan to measure the system battery
+          capacity level and estimate battery discharging rate, which is used for estimating timespan until the system battery charge
+          level goes down to 5%. Only used by
+<!-- /// 0 elogind is structured a bit differently
+          <citerefentry><refentrytitle>systemd-suspend-then-hibernate.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+--><!-- else // 0 -->
+          <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry> with suspend-then-hibernate.
+<!-- // 0 -->
+          Defaults to 1h.</para>
+
+          <xi:include href="version-info.xml" xpointer="v253"/></listitem>
+       </varlistentry>
+
 <!-- /// 1 elogind has two extra values -->
       <varlistentry>
         <term><varname>SuspendByUsing=</varname></term>
