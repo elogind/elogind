@@ -26,11 +26,6 @@
 #include "tmpfile-util.h"
 
 
-/// elogind empty mask removed (UNNEEDED by elogind)
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 TEST(mount_option_mangle) {
         char *opts = NULL;
         unsigned long f;
@@ -513,10 +508,5 @@ TEST(bind_mount_submounts) {
         assert_se(umount_recursive(b, 0) >= 0);
 }
 #endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 DEFINE_TEST_MAIN(LOG_DEBUG);

@@ -497,7 +497,6 @@ common_test_dependencies = [
                 'sources' : files('test-sizeof.c'),
                 'link_with' : libbasic,
         },
-/// elogind empty mask removed (UNNEEDED by elogind)
         test_template + {
                 'sources' : files('test-time-util.c'),
                 'timeout' : 120,

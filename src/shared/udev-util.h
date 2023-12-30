@@ -25,11 +25,9 @@ size_t udev_replace_chars(char *str, const char *allow);
 #endif // 0
 
 int udev_queue_is_empty(void);
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 bool udev_available(void);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int device_get_vendor_string(sd_device *device, const char **ret);
 int device_get_model_string(sd_device *device, const char **ret);
 

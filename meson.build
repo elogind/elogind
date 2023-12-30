@@ -2776,7 +2776,6 @@ alias_target('fuzzers', fuzzer_exes)
 
 ############################################################
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 test_dlopen = executables_by_name.get('test-dlopen')
 
 foreach dict : modules
