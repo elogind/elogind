@@ -7,18 +7,11 @@
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
 
-<!-- 0 /// elogind does not have to enable itself in configure
 <refentry id="logind.conf" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
   <refentryinfo>
     <title>logind.conf</title>
-    <productname>systemd</productname>
---><!-- else // 0 -->
-<refentry id="logind.conf" xmlns:xi="http://www.w3.org/2001/XInclude">
-  <refentryinfo>
-    <title>logind.conf</title>
     <productname>elogind</productname>
-<!-- // 0 -->
   </refentryinfo>
 
   <refmeta>

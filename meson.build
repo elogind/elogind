@@ -1675,12 +1675,6 @@ conf.set10('HAVE_XKBCOMMON', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
-#else // 0
-libpcre2 = []
-conf.set10('HAVE_PCRE2', false)
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 # libxkbcommon = dependency('xkbcommon',
 #                           version : '>= 0.3.0',
 #                           required : get_option('xkbcommon'))
@@ -1700,6 +1694,8 @@ conf.set10('HAVE_PCRE2', false)
 #                         required : get_option('glib'))
 # conf.set10('HAVE_GLIB', libglib.found() and libgobject.found() and libgio.found())
 #else // 0
+libpcre2 = []
+conf.set10('HAVE_PCRE2', false)
 conf.set10('HAVE_GLIB', false)
 #endif // 0
 
@@ -1916,6 +1912,10 @@ foreach term : ['efi',
         name = 'ENABLE_' + term.underscorify().to_upper()
         conf.set10(name, have)
 endforeach
+
+#if 1 /// elogind is always enabled
+conf.set10('ENABLE_LOGIND', true)
+#endif // 1
 
 #if 1 /// elogind always looks at uid boundaries in /etc/login.defs
 conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)

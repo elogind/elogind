@@ -152,11 +152,7 @@ modules += [
         },
 ]
 
-#if 0 /// elogind builds itself unconditionally
-# enable_logind = conf.get('ENABLE_LOGIND') == 1
-#else // 0
-enable_logind = true
-#endif // 0
+enable_logind = conf.get('ENABLE_LOGIND') == 1
 
 custom_target(
         'logind.conf',

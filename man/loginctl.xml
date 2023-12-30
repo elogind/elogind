@@ -3,12 +3,8 @@
   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<!-- 0 /// elogind does not need to activate loginctl in configure
 <refentry id="loginctl" conditional='ENABLE_LOGIND'
     xmlns:xi="http://www.w3.org/2001/XInclude">
---><!-- else // 0 -->
-<refentry id="loginctl" xmlns:xi="http://www.w3.org/2001/XInclude">
-<!-- // 0 -->
 
   <refentryinfo>
     <title>loginctl</title>
