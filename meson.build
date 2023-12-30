@@ -68,7 +68,6 @@ conf.set10('LOG_MESSAGE_VERIFICATION', have)
 #
 #else // 0
 fuzzer_build = false
-skip_deps = get_option('skip-deps')
 conf.set10('FUZZ_USE_SIZE_LIMIT', false)
 conf.set10('SD_BOOT', false)
 #endif // 0
@@ -149,7 +148,7 @@ localstatedir = '/' / get_option('localstatedir')
 # pkglibdir = libdir / 'elogind'
 #else // 0
 rootlibexecdir = get_option('rootlibexecdir')
-rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : rootprefixdir / 'lib/elogind'
+rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : prefixdir / 'lib/elogind'
 #endif // 0
 
 
@@ -235,7 +234,7 @@ systemsleepdir = rootlibexecdir / 'system-sleep'
 
 # in elogind, udev is external and thus configurable
 udevlibexecdir = get_option('udevbindir')
-udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : rootprefixdir / 'lib/udev'
+udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : prefixdir / 'lib/udev'
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : udevlibexecdir / 'rules.d'
 factorydir = datadir / 'factory'
@@ -373,9 +372,8 @@ conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('defaul
 #if 0 /// UNNEEDED by elogind
 # conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
 # conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
-#
+# conf.set10('ENABLE_FIRST_BOOT_FULL_PRESET',                   get_option('first-boot-full-preset'))
 #endif // 0
-conf.set10('ENABLE_FIRST_BOOT_FULL_PRESET',                   get_option('first-boot-full-preset'))
 
 #####################################################################
 
@@ -1238,7 +1236,6 @@ foreach ident : [
         conf.set10('HAVE_' + ident[0].to_upper(), have)
 endforeach
 
-
 #if 0 /// BPF is nowhere used or usable within elogind
 # bpf_framework = get_option('bpf-framework')
 # bpf_compiler = get_option('bpf-compiler')
@@ -1247,86 +1244,88 @@ endforeach
 #                     version : bpf_compiler == 'gcc' ? '>= 1.0.0' : '>= 0.1.0')
 # conf.set10('HAVE_LIBBPF', libbpf.found())
 #
-#else // 0
-want_bpf_framework = 'false'
+#
+# if not libbpf.found()
+#         conf.set10('BPF_FRAMEWORK', false)
+# else
+#         clang_found = false
+#         clang_supports_bpf = false
+#         bpf_gcc_found = false
+#         bpftool_strip = false
+#         deps_found = false
+#
+#         if bpf_compiler == 'clang'
+#                 # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
+#                 # (like clang-10/llvm-strip-10)
+#                 if meson.is_cross_build() or cc.get_id() != 'clang' or cc.cmd_array()[0].contains('afl-clang') or cc.cmd_array()[0].contains('hfuzz-clang')
+#                         r = find_program('clang',
+#                                          required : bpf_framework,
+#                                          version : '>= 10.0.0')
+#                         clang_found = r.found()
+#                         if clang_found
+#                                 clang = r.full_path()
+#                         endif
+#                 else
+#                         clang_found = true
+#                         clang = cc.cmd_array()
+#                 endif
+#
+#                 if clang_found
+#                         # Check if 'clang -target bpf' is supported.
+#                         clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
+#                 endif
+#         elif bpf_compiler == 'gcc'
+#                 bpf_gcc = find_program('bpf-gcc',
+#                                        'bpf-none-gcc',
+#                                        required : true,
+#                                        version : '>= 13.1.0')
+#                 bpf_gcc_found = bpf_gcc.found()
+#         endif
+#
+#         if clang_supports_bpf or bpf_gcc_found
+#                 # Debian installs this in /usr/sbin/ which is not in $PATH.
+#                 # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
+#                 # We use 'bpftool gen object' subcommand for bpftool strip, it was added by d80b2fcbe0a023619e0fc73112f2a02c2662f6ab (v5.13).
+#                 bpftool = find_program('bpftool',
+#                                        '/usr/sbin/bpftool',
+#                                        required : bpf_framework.enabled() and bpf_compiler == 'gcc',
+#                                        version : bpf_compiler == 'gcc' ? '>= 7.0.0' : '>= 5.13.0')
+#
+#                 if bpftool.found()
+#                         bpftool_strip = true
+#                         deps_found = true
+#                 elif bpf_compiler == 'clang'
+#                         # We require the 'bpftool gen skeleton' subcommand, it was added by 985ead416df39d6fe8e89580cc1db6aa273e0175 (v5.6).
+#                         bpftool = find_program('bpftool',
+#                                                '/usr/sbin/bpftool',
+#                                                required : bpf_framework,
+#                                                version : '>= 5.6.0')
+#                 endif
+#
+#                 # We use `llvm-strip` as a fallback if `bpftool gen object` strip support is not available.
+#                 if not bpftool_strip and bpftool.found() and clang_supports_bpf
+#                         if not meson.is_cross_build()
+#                                 llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
+#                                                              check : true).stdout().strip()
+#                         else
+#                                 llvm_strip_bin = 'llvm-strip'
+#                         endif
+#                         llvm_strip = find_program(llvm_strip_bin,
+#                                                   required : bpf_framework,
+#                                                   version : '>= 10.0.0')
+#                         deps_found = llvm_strip.found()
+#                 endif
+#         endif
+#
+#         # Can build BPF program from source code in restricted C
+#         conf.set10('BPF_FRAMEWORK', deps_found)
+# endif
+# #else // 0
+bpf_framework = 'disabled'
+bpf_compiler  = 'none'
 conf.set10('HAVE_LIBBPF', false)
+conf.set10('BPF_FRAMEWORK', false)
 #endif // 0
-
-if not libbpf.found()
-        conf.set10('BPF_FRAMEWORK', false)
-else
-        clang_found = false
-        clang_supports_bpf = false
-        bpf_gcc_found = false
-        bpftool_strip = false
-        deps_found = false
-
-        if bpf_compiler == 'clang'
-                # Support 'versioned' clang/llvm-strip binaries, as seen on Debian/Ubuntu
-                # (like clang-10/llvm-strip-10)
-                if meson.is_cross_build() or cc.get_id() != 'clang' or cc.cmd_array()[0].contains('afl-clang') or cc.cmd_array()[0].contains('hfuzz-clang')
-                        r = find_program('clang',
-                                         required : bpf_framework,
-                                         version : '>= 10.0.0')
-                        clang_found = r.found()
-                        if clang_found
-                                clang = r.full_path()
-                        endif
-                else
-                        clang_found = true
-                        clang = cc.cmd_array()
-                endif
-
-                if clang_found
-                        # Check if 'clang -target bpf' is supported.
-                        clang_supports_bpf = run_command(clang, '-target', 'bpf', '--print-supported-cpus', check : false).returncode() == 0
-                endif
-        elif bpf_compiler == 'gcc'
-                bpf_gcc = find_program('bpf-gcc',
-                                       'bpf-none-gcc',
-                                       required : true,
-                                       version : '>= 13.1.0')
-                bpf_gcc_found = bpf_gcc.found()
-        endif
-
-        if clang_supports_bpf or bpf_gcc_found
-                # Debian installs this in /usr/sbin/ which is not in $PATH.
-                # We check for 'bpftool' first, honouring $PATH, and in /usr/sbin/ for Debian.
-                # We use 'bpftool gen object' subcommand for bpftool strip, it was added by d80b2fcbe0a023619e0fc73112f2a02c2662f6ab (v5.13).
-                bpftool = find_program('bpftool',
-                                       '/usr/sbin/bpftool',
-                                       required : bpf_framework.enabled() and bpf_compiler == 'gcc',
-                                       version : bpf_compiler == 'gcc' ? '>= 7.0.0' : '>= 5.13.0')
-
-                if bpftool.found()
-                        bpftool_strip = true
-                        deps_found = true
-                elif bpf_compiler == 'clang'
-                        # We require the 'bpftool gen skeleton' subcommand, it was added by 985ead416df39d6fe8e89580cc1db6aa273e0175 (v5.6).
-                        bpftool = find_program('bpftool',
-                                               '/usr/sbin/bpftool',
-                                               required : bpf_framework,
-                                               version : '>= 5.6.0')
-                endif
-
-                # We use `llvm-strip` as a fallback if `bpftool gen object` strip support is not available.
-                if not bpftool_strip and bpftool.found() and clang_supports_bpf
-                        if not meson.is_cross_build()
-                                llvm_strip_bin = run_command(clang, '--print-prog-name', 'llvm-strip',
-                                                             check : true).stdout().strip()
-                        else
-                                llvm_strip_bin = 'llvm-strip'
-                        endif
-                        llvm_strip = find_program(llvm_strip_bin,
-                                                  required : bpf_framework,
-                                                  version : '>= 10.0.0')
-                        deps_found = llvm_strip.found()
-                endif
-        endif
-
-        # Can build BPF program from source code in restricted C
-        conf.set10('BPF_FRAMEWORK', deps_found)
-endif
 
 libmount = dependency('mount',
                       version : fuzzer_build ? '>= 0' : '>= 2.30')
@@ -1407,13 +1406,6 @@ endif
 conf.set10('ENABLE_POLKIT', install_polkit)
 
 
-#if 0 /// UNNEEDED by elogind
-#else // 0
-libblkid = []
-conf.set10('HAVE_BLKID', false)
-conf.set10('HAVE_KMOD', false)
-#endif // 0
-
 libacl = dependency('libacl',
                     required : get_option('acl'))
 conf.set10('HAVE_ACL', libacl.found())
@@ -1422,16 +1414,24 @@ libaudit = dependency('audit',
                       required : get_option('audit'))
 conf.set10('HAVE_AUDIT', libaudit.found())
 
-libblkid = dependency('blkid',
-                      required : get_option('blkid'))
-conf.set10('HAVE_BLKID', libblkid.found())
-conf.set10('HAVE_BLKID_PROBE_SET_HINT',
-           libblkid.found() and cc.has_function('blkid_probe_set_hint', dependencies : libblkid))
-
-libkmod = dependency('libkmod',
-                     version : '>= 15',
-                     required : get_option('kmod'))
-conf.set10('HAVE_KMOD', libkmod.found())
+#if 0 /// UNNEEDED by elogind
+# libblkid = dependency('blkid',
+#                       required : get_option('blkid'))
+# conf.set10('HAVE_BLKID', libblkid.found())
+# conf.set10('HAVE_BLKID_PROBE_SET_HINT',
+#            libblkid.found() and cc.has_function('blkid_probe_set_hint', dependencies : libblkid))
+#
+# libkmod = dependency('libkmod',
+#                      version : '>= 15',
+#                      required : get_option('kmod'))
+# conf.set10('HAVE_KMOD', libkmod.found())
+#else // 0
+libblkid = []
+conf.set10('HAVE_BLKID', false)
+conf.set10('HAVE_BLKID_PROBE_SET_HINT', false)
+libkmod = []
+conf.set10('HAVE_KMOD', false)
+#endif // 0
 
 libxenctrl = dependency('xencontrol',
                         version : '>= 4.9',

@@ -146,17 +146,16 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 		$(MESON) setup $(BUILDDIR) $(BASIC_OPT) \
 			--prefix $(PREFIX) \
 			--wrap-mode nodownload  \
-			-Dacl=true \
+			-Dacl=enabled \
 			-Dcgroup-controller=$(CGCONTROL) \
-			-Ddbus=true \
+			-Ddbus=enabled \
 			-Ddefault-hierarchy=$(CGDEFAULT) \
 			-Defi=true \
 			-Dhtml=auto \
 			-Dman=auto \
-			-Dpam=true \
-			-Drootprefix=$(ROOTPREFIX) \
-			-Dselinux=false \
-			-Dskip-deps=false \
+			-Dpam=enabled \
+			-Drootlibexecdir=$(PREFIX)/lib64/elogind \
+			-Dselinux=disabled \
 			-Dsmack=true \
 			-Dsysconfdir=$(SYSCONFDIR) \
 			-Dutmp=true \
