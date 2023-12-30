@@ -308,4 +308,3 @@ ssize_t sparse_write(int fd, const void *p, size_t sz, size_t run_length) {
         return q - (const uint8_t*) p;
 }
 #endif // 0
-
