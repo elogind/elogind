@@ -36,12 +36,12 @@ liblogind_core_sources = files(
 )
 
 #if 1 /// elogind has some additional files:
-liblogind_core_sources += [files(
+liblogind_core_sources += files(
         'user-runtime-dir.c',
-),
         libcore_sources,
         sleep_files,
-        update_utmp_files]
+        update_utmp_files
+)
 #endif // 1
 
 liblogind_core_sources += [logind_gperf_c]
@@ -71,9 +71,6 @@ loginctl_sources += files(
         'eloginctl.h',
 )
 #endif // 1
-
-#if 0 /// elogind calls the functions directly and does not need an extra executable.
-#endif // 0
 
 executables += [
         libexec_template + {

@@ -7,20 +7,20 @@
 
 #include "alloc-util.h"
 #include "audit-util.h"
-//#include "bus-common-errors.h"
-//#include "bus-error.h"
-//#include "bus-util.h"
+#include "bus-common-errors.h"
+#include "bus-error.h"
+#include "bus-util.h"
 #include "event-util.h"
-//#include "format-util.h"
+#include "format-util.h"
 #include "logind.h"
 #include "path-util.h"
-//#include "special.h"
-// #include "strv.h"
-//#include "unit-name.h"
+#include "special.h"
+#include "strv.h"
+#include "unit-name.h"
 #include "user-util.h"
-#include "utmp-wtmp.h"
+#include "wall.h"
 
-_const_ static usec_t when_wall(usec_t n, usec_t elapse) {
+static usec_t when_wall(usec_t n, usec_t elapse) {
         static const int wall_timers[] = {
                 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                 25, 40, 55, 70, 100, 130, 150, 180,
@@ -52,12 +52,7 @@ bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata) {
          * can assume that if the system enters sleep or hibernation, this will be visible in an obvious way
          * for any local user. And once the systems exits sleep or hibernation, the notification would be
          * just noise, in particular for auto-suspend. */
-        if (is_local &&
-            IN_SET(m->scheduled_shutdown_action->handle,
-                   HANDLE_SUSPEND,
-                   HANDLE_HIBERNATE,
-                   HANDLE_HYBRID_SLEEP,
-                   HANDLE_SUSPEND_THEN_HIBERNATE))
+        if (is_local && HANDLE_ACTION_IS_SLEEP(m->scheduled_shutdown_action->handle))
                 return false;
 
         return !streq_ptr(p, m->scheduled_shutdown_tty);
@@ -94,7 +89,7 @@ static int warn_wall(Manager *m, usec_t n) {
                    username ? "OPERATOR=%s" : NULL, username);
 
         if (m->enable_wall_messages)
-                utmp_wall(l, username, m->scheduled_shutdown_tty, logind_wall_tty_filter, m);
+                (void) wall(l, username, m->scheduled_shutdown_tty, logind_wall_tty_filter, m);
 
         return 1;
 }
@@ -130,18 +125,10 @@ static int wall_message_timeout_handler(
 }
 
 int manager_setup_wall_message_timer(Manager *m) {
-#if 1 /// let's fix double wall messages in elogind - they suck.
-        usec_t left;
-#endif // 1
         int r;
 
         assert(m);
 
-#if 1 /// Make elogind more aware of the possibility to disable wall messages
-        /* Do not do anything if wall messages aren't enabled */
-        if (!m->enable_wall_messages)
-                return 0;
-#endif // 1
         usec_t n = now(CLOCK_REALTIME);
         usec_t elapse = m->scheduled_shutdown_timeout;
 
@@ -153,7 +140,6 @@ int manager_setup_wall_message_timer(Manager *m) {
         if (elapse > 0 && elapse < n)
                 return 0;
 
-#if 0 /// let's fix double wall messages in elogind - they suck.
         /* Warn immediately if less than 15 minutes are left */
         if (elapse == 0 || elapse - n < 15 * USEC_PER_MINUTE) {
                 r = warn_wall(m, n);
@@ -164,23 +150,6 @@ int manager_setup_wall_message_timer(Manager *m) {
         elapse = when_wall(n, elapse);
         if (elapse == 0)
                 return 0;
-#else // 0
-        left = elapse - n;
-        elapse = when_wall(n, elapse);
-
-        /* Warn immediately if less than 15 minutes are left, but not if
-         * there aren't more than three seconds to the next timeout. */
-        if ( (left   < 15 * USEC_PER_MINUTE)
-          && (elapse >  3 * USEC_PER_SEC) ) {
-                r = warn_wall(m, n);
-                if (r == 0)
-                        return 0;
-        }
-
-        /* If the next timeout is within on second, delay it by 3 seconds */
-        if (USEC_PER_SEC > elapse)
-                elapse = 3 * USEC_PER_SEC;
-#endif // 0
 
         r = event_reset_time(m->event, &m->wall_message_timeout_source,
                              CLOCK_REALTIME,
