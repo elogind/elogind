@@ -346,8 +346,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Authenticatie is vereist voor het opgeven van de indeling van het toetsenbord."
 #endif // 0
-msgstr "Authenticatie is vereist voor het opgeven van de indeling van het toetsenbord."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -958,7 +958,7 @@ msgstr "Authenticatie is vereist voor het wijzigen van de virtuele terminal."
 # msgid "Authentication is required to delete files and directories associated with '$(unit)'."
 # msgstr "Authenticatie is vereist voor het verwijderen van bestanden en mappen die gerelateerd zijn aan '$(unit)'."
 #
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Authenticatie is vereist voor het bevriezen of ontdooien van de processen die behoren tot '$(unit)'."
 #endif // 0
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Authenticatie is vereist voor het bevriezen of ontdooien van de processen die behoren tot '$(unit)'."

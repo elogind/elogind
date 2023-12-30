@@ -954,11 +954,11 @@ msgstr "Pro změnu virtuálního terminálu je vyžadováno ověření."
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Pro nastavení vlastností na „$(unit)” je vyžadováno ověření."
 #
+# #: src/core/dbus-unit.c:716
+# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# msgstr "Pro odstranění souborů nebo adresářů souvisejících s „$(unit)” je vyžadováno ověření."
+#
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Pro zmrazení nebo rozmrazení procesů jednotky „$(unit)” je vyžadováno ověření."
 #endif // 0
-#: src/core/dbus-unit.c:716
-msgid "Authentication is required to delete files and directories associated with '$(unit)'."
-msgstr "Pro odstranění souborů nebo adresářů souvisejících s „$(unit)” je vyžadováno ověření."
-
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Pro zmrazení nebo rozmrazení procesů jednotky „$(unit)” je vyžadováno ověření."

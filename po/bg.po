@@ -956,11 +956,11 @@ msgstr "За смяна на виртуален терминал е необхо
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "За задаване на свойствата на „$(unit)“ е необходима идентификация."
 #
+# #: src/core/dbus-unit.c:716
+# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# msgstr "За изтриването на файловете и директориите на „$(unit)“ е необходима идентификация."
+#
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "За замразяване/размразяване на процесите на „$(unit)“ е необходима идентификация."
 #endif // 0
-#: src/core/dbus-unit.c:716
-msgid "Authentication is required to delete files and directories associated with '$(unit)'."
-msgstr "За изтриването на файловете и директориите на „$(unit)“ е необходима идентификация."
-
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "За замразяване/размразяване на процесите на „$(unit)“ е необходима идентификация."

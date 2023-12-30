@@ -352,8 +352,8 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "Der kræves godkendelse for at indstille tastaturindstillinger for systemet."
 #endif // 0
-msgstr "Der kræves godkendelse for at indstille tastaturindstillinger for systemet."
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
@@ -451,17 +451,17 @@ msgstr "Tillad brugere der ikke er logget ind, at køre programmer"
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr "Der kræves godkendelse for at brugere, som ikke er logget ind, kan køre programmer."
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
 msgstr "Tillad at montere af enheder til arbejdsstationer"
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
 msgstr "Der kræves godkendelse for at montere en enhed til en arbejdsstation."
 
-# https://www.freedesktop.org/software/systemd/man/sd-login.html
+# https://www.freedesktop.org/software/elogind/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
 msgstr "Nulstil enhed monteret til en arbejdsstation"

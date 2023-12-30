@@ -953,11 +953,11 @@ msgstr "Todennus vaaditaan virtuaalipäätteen vaihtamiseksi."
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Todennus vaaditaan, jotta ominaisuudet asetetaan arvoon '$(unit)'."
 #
+# #: src/core/dbus-unit.c:716
+# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# msgstr "Todennus vaaditaan tiedostojen ja hakemistojen poistamiseen, jotka liittyvät '$(unit)':iin."
+#
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Todennus vaaditaan '$(unit)'-yksikön prosessien jäädyttämiseksi tai sulattamiseksi."
 #endif // 0
-#: src/core/dbus-unit.c:716
-msgid "Authentication is required to delete files and directories associated with '$(unit)'."
-msgstr "Todennus vaaditaan tiedostojen ja hakemistojen poistamiseen, jotka liittyvät '$(unit)':iin."
-
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Todennus vaaditaan '$(unit)'-yksikön prosessien jäädyttämiseksi tai sulattamiseksi."

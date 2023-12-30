@@ -955,11 +955,11 @@ msgstr "Potrebna je ovjera za promjenu virtualnog terminala."
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Potrebna je ovjera za postavljanje svojstava na '$(unit)'."
 #
+# #: src/core/dbus-unit.c:716
+# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# msgstr "Potrebna je ovjera za brisanje datoteka i direktorija pridruženih sa '$(unit)'."
+#
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Potrebna je ovjera za zamrzavanje ili odmrzavanje procesa '$(unit)' jedinice."
 #endif // 0
-#: src/core/dbus-unit.c:716
-msgid "Authentication is required to delete files and directories associated with '$(unit)'."
-msgstr "Potrebna je ovjera za brisanje datoteka i direktorija pridruženih sa '$(unit)'."
-
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Potrebna je ovjera za zamrzavanje ili odmrzavanje procesa '$(unit)' jedinice."

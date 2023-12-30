@@ -958,7 +958,7 @@ msgstr "Autenticazione richiesta per cambiare il terminale virtuale."
 # msgid "Authentication is required to delete files and directories associated with '$(unit)'."
 # msgstr "Autenticazione richiesta per eliminare i file e le directory associate a '$(unit)'."
 #
+# #: src/core/dbus-unit.c:764
+# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# msgstr "Autenticazione richiesta per bloccare/sbloccare il processo dell'unità '$(unit)'."
 #endif // 0
-#: src/core/dbus-unit.c:764
-msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
-msgstr "Autenticazione richiesta per bloccare/sbloccare il processo dell'unità '$(unit)'."
