@@ -249,20 +249,26 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #ifndef __IGNORE_fchmodat2
 #  if defined(__aarch64__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__alpha__)
 #    define elogind_NR_fchmodat2 562
 #  elif defined(__arc__) || defined(__tilegx__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__arm__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__i386__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__ia64__)
 #    define elogind_NR_fchmodat2 1476
 #  elif defined(__loongarch_lp64)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__m68k__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(_MIPS_SIM)
 #    if _MIPS_SIM == _MIPS_SIM_ABI32
 #      define elogind_NR_fchmodat2 4452
@@ -275,20 +281,26 @@ assert_cc(__NR_copy_file_range == systemd_NR_copy_file_range);
 #    endif
 #  elif defined(__hppa__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__powerpc__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
 #      define elogind_NR_fchmodat2 452
+#      define systemd_NR_fchmodat2 452
 #    elif __riscv_xlen == 64
 #      define elogind_NR_fchmodat2 452
+#      define systemd_NR_fchmodat2 452
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
 #  elif defined(__s390__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__sparc__)
 #    define elogind_NR_fchmodat2 452
+#    define systemd_NR_fchmodat2 452
 #  elif defined(__x86_64__)
 #    if defined(__ILP32__)
 #      define elogind_NR_fchmodat2 (452 | /* __X32_SYSCALL_BIT */ 0x40000000)
