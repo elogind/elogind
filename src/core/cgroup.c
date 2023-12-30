@@ -4156,10 +4156,10 @@ int unit_get_memory_accounting(Unit *u, CGroupMemoryAccountingMetric metric, uin
                 return r;
         updated = r >= 0;
 
-
 finish:
         if (metric <= _CGROUP_MEMORY_ACCOUNTING_METRIC_CACHED_LAST) {
                 uint64_t *last = &u->memory_accounting_last[metric];
+
                 if (updated)
                         *last = bytes;
                 else if (*last != UINT64_MAX)
