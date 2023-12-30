@@ -175,9 +175,7 @@ _arguments -s \
     {-h,--help}'[Show help]' \
     '--version[Show package version]' \
     \*{-p+,--property=}'[Show only properties by this name]:unit property' \
-    '*-P+[Equivalent to --value --property=NAME]:unit property' \
     {-a,--all}'[Show all properties, including empty ones]' \
-    '--value[When showing properties, only print the value]' \
     '--kill-whom=[Whom to send signal to]:killwhom:(main control all)' \
     {-s+,--signal=}'[Which signal to send]:signal:_signals' \
     {-H+,--host=}'[Operate on remote host]:userathost:_sd_hosts_or_user_at_host' \
