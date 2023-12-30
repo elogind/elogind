@@ -894,7 +894,6 @@ int running_in_chroot(void) {
                 return 0;
 #endif // 0
 
-
         r = inode_same("/proc/1/root", "/", 0);
         if (r == -ENOENT) {
                 r = proc_mounted();
