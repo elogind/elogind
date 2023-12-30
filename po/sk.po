@@ -1001,7 +1001,7 @@ msgstr "Vyžaduje sa overenie totožnosti na nastavenie názvu hostiteľa."
 # #: src/core/dbus-unit.c:716
 # #, fuzzy
 # msgid "Authentication is required to delete files and directories associated with '$(unit)'."
-# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému elogind."
+# msgstr "Vyžaduje sa overenie totožnosti na znovu načítanie stavu systému systemd."
 #
 # #: src/core/dbus-unit.c:764
 # #, fuzzy
