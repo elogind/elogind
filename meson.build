@@ -2779,11 +2779,11 @@ subdir('src/test')
 #                 endif
 #         endif
 # endforeach
+#
+# alias_target('fuzzers', fuzzer_exes)
 #else // 0
 alias_target('devel', libelogind_pc)
 #endif // 0
-
-alias_target('fuzzers', fuzzer_exes)
 
 ############################################################
 
