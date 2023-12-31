@@ -10,6 +10,6 @@ fundamental_sources = files(
         'sha256.c',
         'string-util-fundamental.c',
 #if 0 /// Nowhere used in elogind
+#         'uki.c',
 #endif // 0
-        'uki.c',
 )
