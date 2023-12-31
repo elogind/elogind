@@ -2519,10 +2519,10 @@ subdir('src/core')
 subdir('src/sleep')
 subdir('src/update-utmp')
 #endif // 1
-# hwdb requires 'udev_link_with' and 'udev_rpath'
-subdir('src/udev')
 
+# hwdb requires 'udev_link_with' and 'udev_rpath'
 #if 0 /// UNNEEDED by elogind
+# subdir('src/udev')
 # subdir('src/ac-power')
 # subdir('src/analyze')
 #endif // 0

@@ -37,11 +37,12 @@ liblogind_core_sources = files(
 
 #if 1 /// elogind has some additional files:
 liblogind_core_sources += files(
-        'user-runtime-dir.c',
+        'user-runtime-dir.c'
+) + [
         libcore_sources,
         sleep_files,
         update_utmp_files
-)
+]
 #endif // 1
 
 liblogind_core_sources += [logind_gperf_c]
@@ -77,7 +78,7 @@ executables += [
                 'name' : 'elogind',
                 'dbus' : true,
                 'conditions' : ['ENABLE_LOGIND'],
-                'sources' : elogind_logind_sources,
+                'sources' : elogind_sources,
                 'link_with' : [
                         liblogind_core,
                         libshared,
