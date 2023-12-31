@@ -2410,9 +2410,11 @@ executable_template = {
         'install' : true,
 }
 
-generator_template = executable_template + {
-        'install_dir' : systemgeneratordir,
-}
+#if 0 /// UNNEEDED by elogind
+# generator_template = executable_template + {
+#         'install_dir' : systemgeneratordir,
+# }
+#endif // 0
 
 libexec_template = executable_template + {
         'install_dir' : libexecdir,
