@@ -2440,23 +2440,25 @@ fuzz_template = executable_template + {
         'install' : false,
 }
 
-if want_ossfuzz or (want_libfuzzer and fuzzing_engine.found())
-        fuzz_additional_kwargs = {
-                'dependencies' : fuzzing_engine,
-        }
-elif want_libfuzzer and not fuzzing_engine.found()
-        fuzz_additional_kwargs = {
-                'link_args' : ['-fsanitize=fuzzer'],
-        }
-else
-        fuzz_additional_kwargs = {
-                'sources' : files('src/fuzz/fuzz-main.c'),
-        }
-endif
-fuzz_additional_kwargs += {
-        'include_directories' : include_directories('src/fuzz'),
-        'c_args' : test_cflags,
-}
+#if 0 /// elogind does not fuzz
+# if want_ossfuzz or (want_libfuzzer and fuzzing_engine.found())
+#         fuzz_additional_kwargs = {
+#                 'dependencies' : fuzzing_engine,
+#         }
+# elif want_libfuzzer and not fuzzing_engine.found()
+#         fuzz_additional_kwargs = {
+#                 'link_args' : ['-fsanitize=fuzzer'],
+#         }
+# else
+#         fuzz_additional_kwargs = {
+#                 'sources' : files('src/fuzz/fuzz-main.c'),
+#         }
+# endif
+# fuzz_additional_kwargs += {
+#         'include_directories' : include_directories('src/fuzz'),
+#         'c_args' : test_cflags,
+# }
+#endif // 0
 
 nss_template = {
         'version' : '2',
