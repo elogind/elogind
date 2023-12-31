@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
+libsystemd_version = '0.38.0'
 #if 0 /// elogind does not ship libudev
-#endif // 0
-libelogind_version = '0.38.0'
 libudev_version = '1.7.8'
+#endif // 0
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
@@ -2949,35 +2949,6 @@ subdir('rules.d')
 subdir('test')
 
 
-#if 0 /// UNNEEDED by elogind
-# ############################################################
-#
-#else // 0
-exe = executable(
-        'test-libelogind-sym',
-        test_libelogind_sym_c,
-        include_directories : includes,
-        link_with : [libelogind],
-        build_by_default : want_tests != 'false',
-        install : install_tests,
-        install_dir : testsdir)
-if want_tests != 'false'
-        test('test-libelogind-sym', exe)
-endif
-
-exe = executable(
-        'test-libelogind-static-sym',
-        test_libelogind_sym_c,
-        include_directories : includes,
-        link_with : [install_libelogind_static],
-        dependencies : [threads],
-        build_by_default : want_tests != 'false' and static_libelogind_pic,
-        install : install_tests and static_libelogind_pic,
-        install_dir : testsdir)
-if want_tests != 'false' and static_libelogind_pic
-        test('test-libelogind-static-sym', exe)
-endif
-#endif // 0
 #if 0 /// UNNEEDED by elogind
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')

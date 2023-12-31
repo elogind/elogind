@@ -145,6 +145,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 	) || ( \
 		$(MESON) setup $(BUILDDIR) $(BASIC_OPT) \
 			--prefix $(PREFIX) \
+			--libexecdir $(PREFIX)/lib64/elogind \
 			--wrap-mode nodownload  \
 			-Dacl=enabled \
 			-Dcgroup-controller=$(CGCONTROL) \
@@ -154,7 +155,6 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dhtml=auto \
 			-Dman=auto \
 			-Dpam=enabled \
-			-Dlibexecdir=$(PREFIX)/lib64/elogind \
 			-Dselinux=disabled \
 			-Dsmack=true \
 			-Dsysconfdir=$(SYSCONFDIR) \
