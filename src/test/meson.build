@@ -452,12 +452,12 @@ executables += [
 #                 'dependencies' : libdl,
 #                 'conditions' : ['ENABLE_NSS'],
 #         },
+#         test_template + {
+#                 'sources' : files('test-openssl.c'),
+#                 'dependencies' : libopenssl,
+#                 'conditions' : ['HAVE_OPENSSL'],
+#         },
 #endif // 0
-        test_template + {
-                'sources' : files('test-openssl.c'),
-                'dependencies' : libopenssl,
-                'conditions' : ['HAVE_OPENSSL'],
-        },
         test_template + {
                 'sources' : files('test-parse-util.c'),
                 'dependencies' : libm,
@@ -501,11 +501,13 @@ executables += [
                 'sources' : files('test-time-util.c'),
                 'timeout' : 120,
         },
-        test_template + {
-                'sources' : files('test-tpm2.c'),
-                'dependencies' : libopenssl,
-                'timeout' : 120,
-        },
+#if 0 /// UNNEEDED by elogind
+#         test_template + {
+#                 'sources' : files('test-tpm2.c'),
+#                 'dependencies' : libopenssl,
+#                 'timeout' : 120,
+#         },
+#endif // 0
         test_template + {
                 'sources' : files('test-utmp.c'),
                 'conditions' : ['ENABLE_UTMP'],
@@ -569,7 +571,7 @@ executables += [
         test_template + {
                 'name' : 'test-libelogind-static-sym',
                 'sources' : test_libelogind_sym_c,
-                'link_with' : install_libelogindd_static,
+                'link_with' : install_libelogind_static,
                 'build_by_default' : want_tests != 'false' and static_libelogind != 'false',
                 'install' : install_tests and static_libelogind != 'false',
                 'suite' : 'libelogind',
@@ -701,12 +703,12 @@ executables += [
 #                 'link_with' : libudev,
 #                 'dependencies' : threads,
 #         },
+#         test_template + {
+#                 'sources' : files('../libudev/test-libudev.c'),
+#                 'link_with' : [
+#                         libshared,
+#                         libudev_basic,
+#                 ],
+#         },
 #endif // 0
-        test_template + {
-                'sources' : files('../libudev/test-libudev.c'),
-                'link_with' : [
-                        libshared,
-                        libudev_basic,
-                ],
-        },
 ]
