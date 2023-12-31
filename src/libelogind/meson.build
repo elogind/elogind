@@ -241,10 +241,12 @@ simple_tests += files(
         'sd-device/test-sd-device-monitor.c',
         'sd-device/test-sd-device.c',
         'sd-event/test-event.c',
-        'sd-journal/test-journal-flush.c',
-        'sd-journal/test-journal-interleaving.c',
-        'sd-journal/test-journal-stream.c',
-        'sd-journal/test-journal.c',
+#if 0 /// elogind only stubs tiny parts of journald, none of these would work
+#         'sd-journal/test-journal-flush.c',
+#         'sd-journal/test-journal-interleaving.c',
+#         'sd-journal/test-journal-stream.c',
+#         'sd-journal/test-journal.c',
+#endif // 0
         'sd-login/test-login.c',
 #if 0 /// elogind does not provide the networking stuff
 #         'sd-netlink/test-netlink.c',
