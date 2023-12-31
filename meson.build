@@ -1354,10 +1354,8 @@ libmount = dependency('mount',
 #else // 0
 libfdisk = []
 libpwquality = []
-libseccomp = []
 conf.set10('HAVE_LIBFDISK', false)
 conf.set10('HAVE_PWQUALITY', false)
-conf.set10('HAVE_SECCOMP', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
@@ -1365,12 +1363,17 @@ conf.set10('HAVE_SECCOMP', false)
 #                         version : '>= 2.3.1',
 #                         required : get_option('seccomp'))
 # conf.set10('HAVE_SECCOMP', libseccomp.found())
-#
-# libselinux = dependency('libselinux',
-#                         version : '>= 2.1.9',
-#                         required : get_option('selinux'))
-# conf.set10('HAVE_SELINUX', libselinux.found())
-#
+#else
+libseccomp = []
+conf.set10('HAVE_SECCOMP', false)
+#endif // 0
+
+libselinux = dependency('libselinux',
+                        version : '>= 2.1.9',
+                        required : get_option('selinux'))
+conf.set10('HAVE_SELINUX', libselinux.found())
+
+#if 0 /// UNNEEDED by elogind
 # libapparmor = dependency('libapparmor',
 #                          version : '>= 2.13',
 #                          required : get_option('apparmor'))
