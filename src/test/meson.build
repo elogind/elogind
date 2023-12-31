@@ -271,8 +271,8 @@ common_test_dependencies = [
         threads,
 ]
 
+executables += [
 #if 0 /// the functions elogind uses are not covered in these tests
-# executables += [
 #         test_template + {
 #                 'sources' : files('test-acl-util.c'),
 #                 'conditions' : ['HAVE_ACL'],
@@ -526,38 +526,55 @@ common_test_dependencies = [
 #endif // 0
 
         # Symbol tests
+#if 0 /// Do elogind symbol tests, and we also do not provide libudev
+#         test_template + {
+#                 'name' : 'test-libsystemd-sym',
+#                 'link_with' : libsystemd,
+#                 'sources' : test_libsystemd_sym_c,
+#                 'suite' : 'libsystemd',
+#         },
+#         test_template + {
+#                 'name' : 'test-libsystemd-static-sym',
+#                 'sources' : test_libsystemd_sym_c,
+#                 'link_with' : install_libsystemdd_static,
+#                 'build_by_default' : want_tests != 'false' and static_libsystemd != 'false',
+#                 'install' : install_tests and static_libsystemd != 'false',
+#                 'suite' : 'libsystemd',
+#         },
+#         test_template + {
+#                 'name' : 'test-libudev-sym',
+#                 'sources' : test_libudev_sym_c,
+#                 'include_directories' : libudev_includes,
+#                 'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
+#                 'link_with' : libudev,
+#                 'suite' : 'libudev',
+#         },
+#         test_template + {
+#                 'name' : 'test-libudev-static-sym',
+#                 'sources' : test_libudev_sym_c,
+#                 'include_directories' : libudev_includes,
+#                 'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
+#                 'link_with' : install_libudev_static,
+#                 'build_by_default' : want_tests != 'false' and static_libudev != 'false',
+#                 'install' : install_tests and static_libudev != 'false',
+#                 'suite' : 'libudev',
+#         },
+#else // 0
         test_template + {
                 'name' : 'test-libelogind-sym',
                 'link_with' : libelogind,
-                'sources' : test_libsystemd_sym_c,
-                'suite' : 'libsystemd',
+                'sources' : test_libelogind_sym_c,
+                'suite' : 'libelogind',
         },
         test_template + {
                 'name' : 'test-libelogind-static-sym',
                 'sources' : test_libelogind_sym_c,
-                'link_with' : install_libelogind_static,
+                'link_with' : install_libelogindd_static,
                 'build_by_default' : want_tests != 'false' and static_libelogind != 'false',
                 'install' : install_tests and static_libelogind != 'false',
                 'suite' : 'libelogind',
         },
-        test_template + {
-                'name' : 'test-libudev-sym',
-                'sources' : test_libudev_sym_c,
-                'include_directories' : libudev_includes,
-                'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
-                'link_with' : libudev,
-                'suite' : 'libudev',
-        },
-        test_template + {
-                'name' : 'test-libudev-static-sym',
-                'sources' : test_libudev_sym_c,
-                'include_directories' : libudev_includes,
-                'c_args' : ['-Wno-deprecated-declarations'] + test_cflags,
-                'link_with' : install_libudev_static,
-                'build_by_default' : want_tests != 'false' and static_libudev != 'false',
-                'install' : install_tests and static_libudev != 'false',
-                'suite' : 'libudev',
-        },
+#endif // 0
 
 #if 0 /// elogind is never PID 1
 #         # Tests that link to libcore, i.e. tests for pid1 code.
@@ -669,15 +686,12 @@ common_test_dependencies = [
 #endif // 0
 
         # Tests from other directories that have link_with deps that were not defined earlier
-                'sources' : files('../libelogind/sd-bus/test-bus-error.c'),
         test_template + {
                 'link_with' : [
                         libshared_static,
                         libelogind_static,
                 ],
         },
-                'sources' : files('../libelogind/sd-device/test-sd-device-thread.c'),
-                'link_with' : libelogind,
         test_template + {
                 'dependencies' : threads,
         },
