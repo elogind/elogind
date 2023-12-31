@@ -238,6 +238,11 @@ udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : prefixdir / 'lib/udev'
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : udevlibexecdir / 'rules.d'
 factorydir = datadir / 'factory'
+configfiledir = get_option('configfiledir')
+if configfiledir == ''
+        configfiledir= sysconfdir
+endif
+pkgconfigfiledir = configfiledir / 'elogind'
 docdir = get_option('docdir')
 if docdir == ''
         docdir = datadir / 'doc/elogind'
