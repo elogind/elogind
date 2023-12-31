@@ -143,13 +143,13 @@ includedir = prefixdir / get_option('includedir')
 datadir = prefixdir / get_option('datadir')
 localstatedir = '/' / get_option('localstatedir')
 
-#if 0 /// elogind has a different default
+#if 0 /// elogind needs this to be configurable
 # libexecdir = prefixdir / 'lib/elogind'
-# pkglibdir = libdir / 'elogind'
 #else // 0
-rootlibexecdir = get_option('rootlibexecdir')
-rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : prefixdir / 'lib/elogind'
+libexecdir = get_option('libexecdir')
+libexecdir = libexecdir != '' ? libexecdir : prefixdir / 'lib/elogind'
 #endif // 0
+pkglibdir = libdir / 'elogind'
 
 
 #if 0 /// UNNEEDED by elogind
@@ -229,8 +229,8 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 pkgdatadir = datadir / 'elogind'
 pkgsysconfdir = sysconfdir / 'elogind'
 pkgincludedir = includedir / 'elogind/systemd'
-systemshutdowndir = rootlibexecdir / 'system-shutdown'
-systemsleepdir = rootlibexecdir / 'system-sleep'
+systemshutdowndir = libexecdir / 'system-shutdown'
+systemsleepdir = libexecdir / 'system-sleep'
 
 # in elogind, udev is external and thus configurable
 udevlibexecdir = get_option('udevbindir')
@@ -307,13 +307,13 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      bindir / 'systemctl')
-# conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elogind')
-# conf.set_quoted('SYSTEMD_EXECUTOR_BINARY_PATH',               libexecdir / 'elogind-executor')
+# conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'systemd')
+# conf.set_quoted('SYSTEMD_EXECUTOR_BINARY_PATH',               libexecdir / 'systemd-executor')
 # conf.set_quoted('SYSTEMD_CATALOG_DIR',                        catalogdir)
 #else // 0
-conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 rootlibexecdir / 'elogind-cgroups-agent')
-conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               rootlibexecdir / 'elogind-uaccess-command')
-conf.set_quoted('SYSTEMD_BINARY_PATH',                        rootlibexecdir / 'elogind')
+conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'elogind-cgroups-agent')
+conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               libexecdir / 'elogind-uaccess-command')
+conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elogind')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'elogind-cgroups-agent')
@@ -2843,9 +2843,7 @@ endforeach
 
 ############################################################
 
-#if 0 /// UNNEEDED by elogind
-#else // 0
-
+#if 1 /// executables for elogind
 executable('elogind',
                 elogind_sources,
                 include_directories : includes,
@@ -2855,9 +2853,9 @@ executable('elogind',
                                 threads,
                                 userspace,
                                 versiondep],
-                install_rpath : rootlibexecdir,
+                install_rpath : libexecdir,
                 install : true,
-                install_dir : rootlibexecdir)
+                install_dir : libexecdir)
 
 exe = executable('loginctl',
                         loginctl_sources,
@@ -2869,7 +2867,7 @@ exe = executable('loginctl',
                                         threads,
                                         userspace,
                                         versiondep],
-                        install_rpath : rootlibexecdir,
+                        install_rpath : libexecdir,
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
@@ -2880,11 +2878,23 @@ exe = executable('elogind-inhibit',
                         link_with : [libshared],
                         dependencies : [userspace,
                                         versiondep],
-                        install_rpath : rootlibexecdir,
+                        install_rpath : libexecdir,
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
-#endif // 0
+
+executable('elogind-uaccess-command',
+           'src/uaccess-command/uaccess-command.c',
+           include_directories : includes,
+           link_with : [liblogind_core,
+                        libshared],
+           dependencies: [libacl,
+                          libudev,
+                          userspace],
+           install_rpath : libexecdir,
+           install : true,
+           install_dir : libexecdir)
+#endif // 1
 
 #if 1 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
         version_script_arg = project_source_root / pam_elogind_sym
@@ -2915,9 +2925,6 @@ public_programs += [exe]
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
 # ukify = custom_target(
 #         'ukify',
 #         input : 'src/ukify/ukify.py',
@@ -2934,18 +2941,6 @@ public_programs += [exe]
 #                                  ln_s.format(bindir / 'ukify',
 #                                              libexecdir / 'ukify'))
 # endif
-#else // 0
-executable('elogind-uaccess-command',
-           'src/uaccess-command/uaccess-command.c',
-           include_directories : includes,
-           link_with : [liblogind_core,
-                        libshared],
-           dependencies: [libacl,
-                          libudev,
-                          userspace],
-           install_rpath : rootlibexecdir,
-           install : true,
-           install_dir : rootlibexecdir)
 #endif // 0
 
 ############################################################
@@ -3225,7 +3220,7 @@ summary({
         'include directory' :               includedir,
         'lib directory' :                   libdir,
 #if 1 /// Needed by elogind
-        'rootexeclib dir' :                 rootlibexecdir,
+        'libexec dir' :                     libexecdir,
 #endif // 1
 #if 0 /// UNNEEDED by elogind
 #         'SysV init scripts' :               sysvinit_path,

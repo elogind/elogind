@@ -154,7 +154,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dhtml=auto \
 			-Dman=auto \
 			-Dpam=enabled \
-			-Drootlibexecdir=$(PREFIX)/lib64/elogind \
+			-Dlibexecdir=$(PREFIX)/lib64/elogind \
 			-Dselinux=disabled \
 			-Dsmack=true \
 			-Dsysconfdir=$(SYSCONFDIR) \

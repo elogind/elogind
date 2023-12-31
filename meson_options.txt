@@ -67,8 +67,8 @@ option('static-libelogind', type : 'combo',
 #else // 0
        description : '''install a static library for libelogind''')
 
-# elogind must have a configurable rootlibexecdir
-option('rootlibexecdir', type : 'string',
+# elogind must have a configurable libexecdir
+option('libexecdir', type : 'string',
        description : '''override the root libexec directory path''')
 
 # And because elogind depends on external udev, it must be
