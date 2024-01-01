@@ -27,7 +27,8 @@ static inline bool utxent_start(void) {
         return true;
 }
 static inline void utxent_cleanup(bool *initialized) {
-        if (initialized)
+        assert(initialized);
+        if (*initialized)
                 endutxent();
 }
 
