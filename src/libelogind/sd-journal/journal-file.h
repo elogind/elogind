@@ -131,7 +131,8 @@ typedef struct JournalFile {
         uint64_t newest_monotonic_usec;
         uint64_t newest_realtime_usec;
         unsigned newest_boot_id_prioq_idx;
-        usec_t newest_mtime;
+        uint64_t newest_entry_offset;
+        uint8_t newest_state;
 } JournalFile;
 
 #if 0 /// UNNEEDED by elogind
