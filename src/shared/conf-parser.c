@@ -1607,7 +1607,7 @@ int config_parse_mtu(
                 return 0;
         }
 
-        return 0;
+        return 1;
 }
 
 int config_parse_rlimit(
