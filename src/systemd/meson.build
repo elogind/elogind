@@ -27,6 +27,7 @@ systemd_headers = files(_systemd_headers)
 #         'sd-dhcp-lease.h',
 #         'sd-dhcp-option.h',
 #         'sd-dhcp-protocol.h',
+#         'sd-dhcp-server-lease.h',
 #         'sd-dhcp-server.h',
 #         'sd-dhcp6-client.h',
 #         'sd-dhcp6-lease.h',
