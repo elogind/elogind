@@ -21,6 +21,7 @@ systemd_headers = files(_systemd_headers)
 
 #if 0 /// elogind does not need these
 # _not_installed_headers = [
+#         'sd-dhcp-client-id.h',
 #         'sd-dhcp-client.h',
 #         'sd-dhcp-duid.h',
 #         'sd-dhcp-lease.h',
