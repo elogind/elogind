@@ -115,7 +115,8 @@ static int sd_drmdropmaster(int fd) {
 }
 
 static int session_device_open(SessionDevice *sd, bool active) {
-        int fd, r;
+        _cleanup_close_ int fd = -EBADF;
+        int r;
 
         assert(sd);
         assert(sd->type != DEVICE_TYPE_UNKNOWN);
@@ -133,10 +134,8 @@ static int session_device_open(SessionDevice *sd, bool active) {
                         /* Weird legacy DRM semantics might return an error even though we're master. No way to detect
                          * that so fail at all times and let caller retry in inactive state. */
                         r = sd_drmsetmaster(fd);
-                        if (r < 0) {
-                                (void) close_nointr(fd);
+                        if (r < 0)
                                 return r;
-                        }
                 } else
                         /* DRM-Master is granted to the first user who opens a device automatically (ughh,
                          * racy!). Hence, we just drop DRM-Master in case we were the first. */
@@ -154,7 +153,7 @@ static int session_device_open(SessionDevice *sd, bool active) {
                 break;
         }
 
-        return fd;
+        return TAKE_FD(fd);
 }
 
 static int session_device_start(SessionDevice *sd) {
@@ -322,24 +321,25 @@ static int session_device_verify(SessionDevice *sd) {
         return 0;
 }
 
-int session_device_new(Session *s, dev_t dev, bool open_device, SessionDevice **out) {
+int session_device_new(Session *s, dev_t dev, bool open_device, SessionDevice **ret) {
         SessionDevice *sd;
         int r;
 
         assert(s);
-        assert(out);
 
         if (!s->seat)
                 return -EPERM;
 
-        sd = new0(SessionDevice, 1);
+        sd = new(SessionDevice, 1);
         if (!sd)
                 return -ENOMEM;
 
-        sd->session = s;
-        sd->dev = dev;
-        sd->fd = -EBADF;
-        sd->type = DEVICE_TYPE_UNKNOWN;
+        *sd = (SessionDevice) {
+                .session = s,
+                .dev = dev,
+                .fd = -EBADF,
+                .type = DEVICE_TYPE_UNKNOWN,
+        };
 
         r = session_device_verify(sd);
         if (r < 0)
@@ -370,7 +370,9 @@ int session_device_new(Session *s, dev_t dev, bool open_device, SessionDevice **
 
         LIST_PREPEND(sd_by_device, sd->device->session_devices, sd);
 
-        *out = sd;
+        if (ret)
+                *ret = sd;
+
         return 0;
 
 error:
