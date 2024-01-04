@@ -184,6 +184,11 @@ char* startswith_strv(const char *s, char * const *l);
 #define STARTSWITH_SET(p, ...)                                  \
         startswith_strv(p, STRV_MAKE(__VA_ARGS__))
 
+char* endswith_strv(const char *s, char * const *l);
+
+#define ENDSWITH_SET(p, ...)                                    \
+        endswith_strv(p, STRV_MAKE(__VA_ARGS__))
+
 #define strv_from_stdarg_alloca(first)                          \
         ({                                                      \
                 char **_l;                                      \
@@ -225,18 +230,6 @@ char* startswith_strv(const char *s, char * const *l);
         ({                                                       \
                 const char* _x = (x);                            \
                 _x && strv_contains_case(STRV_MAKE(__VA_ARGS__), _x); \
-        })
-
-#define ENDSWITH_SET(p, ...)                                    \
-        ({                                                      \
-                const char *_p = (p);                           \
-                char *_found = NULL;                            \
-                STRV_FOREACH(_i, STRV_MAKE(__VA_ARGS__)) {      \
-                        _found = endswith(_p, *_i);             \
-                        if (_found)                             \
-                                break;                          \
-                }                                               \
-                _found;                                         \
         })
 
 #define _FOREACH_STRING(uniq, x, y, ...)                                \
@@ -284,4 +277,3 @@ int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const 
 #define string_strv_ordered_hashmap_put(h, k, v) _string_strv_ordered_hashmap_put(h, k, v  HASHMAP_DEBUG_SRC_ARGS)
 #endif // 0
 
-char* strv_endswith(const char *s, char **l);
