@@ -726,6 +726,16 @@ int strv_extendf(char ***l, const char *format, ...) {
 }
 
 #if 0 /// UNNEEDED by elogind
+char* startswith_strv(const char *s, char * const *l) {
+        STRV_FOREACH(i, l) {
+                char *found = startswith(s, *i);
+                if (found)
+                        return found;
+        }
+
+        return NULL;
+}
+
 char** strv_reverse(char **l) {
         size_t n;
 
