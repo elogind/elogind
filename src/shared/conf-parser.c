@@ -599,9 +599,11 @@ static int config_parse_many_files(
 }
 
 /* Parse one main config file located in /etc/elogind and its drop-ins, which is what all elogind daemons
+/* Parse one main config file located in /etc/$pkgdir and its drop-ins, which is what all elogind daemons
  * do. */
-int config_parse_config_file(
+int config_parse_config_file_full(
                 const char *conf_file,
+                const char *pkgdir,
                 const char *sections,
                 ConfigItemLookup lookup,
                 const void *table,
@@ -613,6 +615,7 @@ int config_parse_config_file(
         int r;
 
         assert(conf_file);
+        assert(pkgdir);
 
         /* build the dropin dir list */
         dropin_dirs = new0(char*, strv_length(conf_paths) + 1);
@@ -626,7 +629,7 @@ int config_parse_config_file(
         STRV_FOREACH(p, conf_paths) {
                 char *d;
 
-                d = strjoin(*p, "elogind/", conf_file, ".d");
+                d = strjoin(*p, pkgdir, "/", conf_file, ".d");
                 if (!d) {
                         if (flags & CONFIG_PARSE_WARN)
                                 return log_oom();
@@ -640,7 +643,7 @@ int config_parse_config_file(
         if (r < 0)
                 return r;
 
-        const char *sysconf_file = strjoina(PKGSYSCONFDIR, "/", conf_file);
+        const char *sysconf_file = strjoina(SYSCONF_DIR, "/", pkgdir, "/", conf_file);
 
         return config_parse_many_files(STRV_MAKE_CONST(sysconf_file), dropins,
                                        sections, lookup, table, flags, userdata, NULL);
@@ -796,12 +799,12 @@ bool stats_by_path_equal(Hashmap *a, Hashmap *b) {
         return true;
 }
 
-void config_section_hash_func(const ConfigSection *c, struct siphash *state) {
+static void config_section_hash_func(const ConfigSection *c, struct siphash *state) {
         siphash24_compress_string(c->filename, state);
         siphash24_compress_typesafe(c->line, state);
 }
 
-int config_section_compare_func(const ConfigSection *x, const ConfigSection *y) {
+static int config_section_compare_func(const ConfigSection *x, const ConfigSection *y) {
         int r;
 
         r = strcmp(x->filename, y->filename);
@@ -1607,7 +1610,7 @@ int config_parse_mtu(
                 return 0;
         }
 
-        return 0;
+        return 1;
 }
 
 int config_parse_rlimit(

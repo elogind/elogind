@@ -93,8 +93,9 @@ int config_parse(
                 void *userdata,
                 struct stat *ret_stat);     /* possibly NULL */
 
-int config_parse_config_file(
+int config_parse_config_file_full(
                 const char *conf_file,
+                const char *pkgdir,
                 const char *sections,       /* nulstr */
                 ConfigItemLookup lookup,
                 const void *table,
@@ -102,6 +103,16 @@ int config_parse_config_file(
                 void *userdata);
 
 #if 0 /// UNNEEDED by elogind
+static inline int config_parse_config_file(
+                const char *conf_file,
+                const char *sections,       /* nulstr */
+                ConfigItemLookup lookup,
+                const void *table,
+                ConfigParseFlags flags,
+                void *userdata) {
+        return config_parse_config_file_full(conf_file, "elogind", sections, lookup, table, flags, userdata);
+}
+
 int config_parse_many(
                 const char* const* conf_files,  /* possibly empty */
                 const char* const* conf_file_dirs,
@@ -142,11 +153,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(ConfigSection*, config_section_free);
 
 #if 0 /// UNNEEDED by elogind
 int config_section_new(const char *filename, unsigned line, ConfigSection **ret);
-
-void config_section_hash_func(const ConfigSection *c, struct siphash *state);
-int config_section_compare_func(const ConfigSection *x, const ConfigSection *y);
 extern const struct hash_ops config_section_hash_ops;
-
 int _hashmap_by_section_find_unused_line(
                 HashmapBase *entries_by_section,
                 const char *filename,
