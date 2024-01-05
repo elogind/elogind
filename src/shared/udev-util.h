@@ -3,10 +3,12 @@
 
 #include "sd-device.h"
 
+#include "conf-parser.h"
 #include "hashmap.h"
 #include "time-util.h"
 
 #if 0 /// UNNEEDED by elogind
+int udev_parse_config_full(const ConfigTableItem config_table[]);
 int udev_parse_config(void);
 
 int device_wait_for_initialization(sd_device *device, const char *subsystem, usec_t timeout_usec, sd_device **ret);
