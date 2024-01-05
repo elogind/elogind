@@ -458,7 +458,7 @@ Features:
   line, and then generate a mount unit for it using a udev generated symlink
   based on lo_file_name.
 
-  automatically support reverting back to older OS versin images if newer ones
+  automatically support reverting back to older OS version images if newer ones
   fail to boot.
 
 * implement new "elogind-fsrebind" tool that works like gpt-auto-generator but
