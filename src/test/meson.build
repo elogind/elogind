@@ -144,6 +144,7 @@ simple_tests += files(
 #         'test-install-file.c',
 #         'test-install-root.c',
 #         'test-io-util.c',
+#         'test-iovec-util.c',
 #         'test-journal-importer.c',
 #         'test-kbd-util.c',
 #endif // 0
@@ -259,6 +260,7 @@ simple_tests += files(
         'test-utf8.c',
         'test-verbs.c',
 #if 0 /// UNNEEDED by elogind
+#         'test-vpick.c',
 #         'test-web-util.c',
 #endif // 0
         'test-xattr-util.c',

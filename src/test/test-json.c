@@ -6,10 +6,10 @@
 #include "escape.h"
 #include "fd-util.h"
 #include "fileio.h"
+#include "iovec-util.h"
 #include "json-internal.h"
 #include "json.h"
 #include "math-util.h"
-#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 #include "tests.h"
@@ -838,56 +838,6 @@ TEST(json_dispatch) {
         assert_se(foobar.l == INT16_MIN);
 }
 
-typedef enum mytestenum {
-        myfoo, mybar, mybaz, _mymax, _myinvalid = -EINVAL,
-} mytestenum;
-
-static const char *mytestenum_table[_mymax] = {
-        [myfoo] = "myfoo",
-        [mybar] = "mybar",
-        [mybaz] = "mybaz",
-};
-
-DEFINE_PRIVATE_STRING_TABLE_LOOKUP_FROM_STRING(mytestenum, mytestenum);
-
-static JSON_DISPATCH_ENUM_DEFINE(dispatch_mytestenum, mytestenum, mytestenum_from_string);
-
-TEST(json_dispatch_enum_define) {
-
-        struct data {
-                mytestenum a, b, c, d;
-        } data = {
-                .a = _myinvalid,
-                .b = _myinvalid,
-                .c = _myinvalid,
-                .d = mybar,
-        };
-
-        _cleanup_(json_variant_unrefp) JsonVariant *j = NULL;
-
-        assert_se(json_build(&j, JSON_BUILD_OBJECT(
-                                             JSON_BUILD_PAIR("a", JSON_BUILD_STRING("mybaz")),
-                                             JSON_BUILD_PAIR("b", JSON_BUILD_STRING("mybar")),
-                                             JSON_BUILD_PAIR("c", JSON_BUILD_STRING("myfoo")),
-                                             JSON_BUILD_PAIR("d", JSON_BUILD_NULL))) >= 0);
-
-        assert_se(json_dispatch(j,
-                                (const JsonDispatch[]) {
-                                        { "a", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, a), 0 },
-                                        { "b", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, b), 0 },
-                                        { "c", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, c), 0 },
-                                        { "d", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, d), 0 },
-                                        {},
-                                },
-                                /* flags= */ 0,
-                                &data) >= 0);
-
-        assert(data.a == mybaz);
-        assert(data.b == mybar);
-        assert(data.c == myfoo);
-        assert(data.d < 0);
-}
-
 TEST(json_sensitive) {
         _cleanup_(json_variant_unrefp) JsonVariant *a = NULL, *b = NULL, *v = NULL;
         _cleanup_free_ char *s = NULL;
@@ -980,6 +930,26 @@ TEST(json_sensitive) {
 
         assert_se(json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
         assert_se(!s);
+}
+
+TEST(json_iovec) {
+        struct iovec iov1 = CONST_IOVEC_MAKE_STRING("üxknürz"), iov2 = CONST_IOVEC_MAKE_STRING("wuffwuffmiau");
+
+        _cleanup_(json_variant_unrefp) JsonVariant *j = NULL;
+        assert_se(json_build(&j, JSON_BUILD_OBJECT(
+                                             JSON_BUILD_PAIR("nr1", JSON_BUILD_IOVEC_BASE64(&iov1)),
+                                             JSON_BUILD_PAIR("nr2", JSON_BUILD_IOVEC_HEX(&iov2)))) >= 0);
+
+        json_variant_dump(j, JSON_FORMAT_PRETTY_AUTO|JSON_FORMAT_COLOR_AUTO, /* f= */ NULL, /* prefix= */ NULL);
+
+        _cleanup_(iovec_done) struct iovec a = {}, b = {};
+        assert_se(json_variant_unbase64_iovec(json_variant_by_key(j, "nr1"), &a) >= 0);
+        assert_se(json_variant_unhex_iovec(json_variant_by_key(j, "nr2"), &b) >= 0);
+
+        assert_se(iovec_memcmp(&iov1, &a) == 0);
+        assert_se(iovec_memcmp(&iov2, &b) == 0);
+        assert_se(iovec_memcmp(&iov2, &a) < 0);
+        assert_se(iovec_memcmp(&iov1, &b) > 0);
 }
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
