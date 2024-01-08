@@ -1024,8 +1024,8 @@ int putenv_dup(const char *assignment, bool override) {
 #endif // 0
 
 int setenv_elogind_exec_pid(bool update_only) {
-        char str[DECIMAL_STR_MAX(pid_t)];
         const char *e;
+        int r;
 
         /* Update $SYSTEMD_EXEC_PID=pid except when '*' is set for the variable. */
 
@@ -1036,10 +1036,9 @@ int setenv_elogind_exec_pid(bool update_only) {
         if (streq_ptr(e, "*"))
                 return 0;
 
-        xsprintf(str, PID_FMT, getpid_cached());
-
-        if (setenv("SYSTEMD_EXEC_PID", str, 1) < 0)
-                return -errno;
+        r = setenvf("SYSTEMD_EXEC_PID", /* overwrite= */ 1, PID_FMT, getpid_cached());
+        if (r < 0)
+                return r;
 
         return 1;
 }
@@ -1136,3 +1135,25 @@ int set_full_environment(char **env) {
         return 0;
 }
 #endif // 0
+
+int setenvf(const char *name, bool overwrite, const char *valuef, ...) {
+        _cleanup_free_ char *value = NULL;
+        va_list ap;
+        int r;
+
+        assert(name);
+
+        if (!valuef)
+                return RET_NERRNO(unsetenv(name));
+
+        va_start(ap, valuef);
+        DISABLE_WARNING_FORMAT_NONLITERAL;
+        r = vasprintf(&value, valuef, ap);
+        REENABLE_WARNING;
+        va_end(ap);
+
+        if (r < 0)
+                return -ENOMEM;
+
+        return RET_NERRNO(setenv(name, value, overwrite));
+}
