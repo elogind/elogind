@@ -92,3 +92,5 @@ int getenv_steal_erase(const char *name, char **ret);
 
 int set_full_environment(char **env);
 #endif // 0
+
+int setenvf(const char *name, bool overwrite, const char *valuef, ...) _printf_(3,4);
