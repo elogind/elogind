@@ -799,12 +799,12 @@ bool stats_by_path_equal(Hashmap *a, Hashmap *b) {
         return true;
 }
 
-static void config_section_hash_func(const ConfigSection *c, struct siphash *state) {
+void config_section_hash_func(const ConfigSection *c, struct siphash *state) {
         siphash24_compress_string(c->filename, state);
         siphash24_compress_typesafe(c->line, state);
 }
 
-static int config_section_compare_func(const ConfigSection *x, const ConfigSection *y) {
+int config_section_compare_func(const ConfigSection *x, const ConfigSection *y) {
         int r;
 
         r = strcmp(x->filename, y->filename);
@@ -1077,7 +1077,7 @@ int config_parse_tristate(
 
         if (isempty(rvalue)) {
                 *t = -1;
-                return 0;
+                return 1;
         }
 
         r = parse_tristate(rvalue, t);
@@ -1087,7 +1087,7 @@ int config_parse_tristate(
                 return 0;
         }
 
-        return 0;
+        return 1;
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -1104,6 +1104,7 @@ int config_parse_string(
                 void *userdata) {
 
         char **s = ASSERT_PTR(data);
+        int r;
 
         assert(filename);
         assert(lvalue);
@@ -1111,7 +1112,7 @@ int config_parse_string(
 
         if (isempty(rvalue)) {
                 *s = mfree(*s);
-                return 0;
+                return 1;
         }
 
         if (FLAGS_SET(ltype, CONFIG_PARSE_STRING_SAFE) && !string_is_safe(rvalue)) {
@@ -1132,7 +1133,11 @@ int config_parse_string(
                 return 0;
         }
 
-        return free_and_strdup_warn(s, empty_to_null(rvalue));
+        r = free_and_strdup_warn(s, empty_to_null(rvalue));
+        if (r < 0)
+                return r;
+
+        return 1;
 }
 
 int config_parse_dns_name(
