@@ -127,6 +127,22 @@ char** strv_copy_n(char * const *l, size_t m) {
         return TAKE_PTR(result);
 }
 
+int strv_copy_unless_empty(char * const *l, char ***ret) {
+        assert(ret);
+
+        if (strv_isempty(l)) {
+                *ret = NULL;
+                return 0;
+        }
+
+        char **copy = strv_copy(l);
+        if (!copy)
+                return -ENOMEM;
+
+        *ret = TAKE_PTR(copy);
+        return 1;
+}
+
 size_t strv_length(char * const *l) {
         size_t n = 0;
 
@@ -948,4 +964,3 @@ int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const 
 
 DEFINE_HASH_OPS_FULL(string_strv_hash_ops, char, string_hash_func, string_compare_func, free, char*, strv_free);
 #endif // 0
-
