@@ -247,7 +247,7 @@ simple_tests += files(
 #if 0 /// UNNEEDED by elogind
 #         'test-udev-util.c',
 #endif // 0
-        'test-uid-alloc-range.c',
+        'test-uid-classification.c',
         'test-uid-range.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-umask-util.c',

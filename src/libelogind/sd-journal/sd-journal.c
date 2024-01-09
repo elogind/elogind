@@ -40,10 +40,10 @@
 //#include "replace-var.h"
 //#include "stat-util.h"
 #include "stdio-util.h"
-//#include "string-util.h"
-//#include "strv.h"
-// #include "syslog-util.h"
-// #include "uid-alloc-range.h"
+#include "string-util.h"
+#include "strv.h"
+#include "syslog-util.h"
+#include "uid-classification.h"
 
 #if 0 /// UNNEEDED by elogind
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)

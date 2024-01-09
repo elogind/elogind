@@ -38,7 +38,7 @@
 // #include "strv.h"
 #include "terminal-util.h"
 #include "tmpfile-util.h"
-// #include "uid-alloc-range.h"
+#include "uid-classification.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
 #include "cgroup-setup.h"
@@ -1399,10 +1399,7 @@ static void session_remove_fifo(Session *s) {
                 }
 #endif // 1
 
-        if (s->fifo_path) {
-                (void) unlink(s->fifo_path);
-                s->fifo_path = mfree(s->fifo_path);
-        }
+        s->fifo_path = unlink_and_free(s->fifo_path);
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
