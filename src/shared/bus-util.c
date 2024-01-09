@@ -18,7 +18,8 @@
 #include "bus-internal.h"
 //#include "bus-label.h"
 #include "bus-util.h"
-//#include "data-fd-util.h"
+#include "daemon-util.h"
+#include "data-fd-util.h"
 #include "fd-util.h"
 #include "memstream-util.h"
 #include "path-util.h"
@@ -131,8 +132,8 @@ int bus_event_loop_with_idle(
 
                 if (r == 0 && !exiting && idle) {
                         /* Inform the service manager that we are going down, so that it will queue all
-                         * further start requests, instead of assuming we are already running. */
-                        sd_notify(false, "STOPPING=1");
+                         * further start requests, instead of assuming we are still running. */
+                        (void) sd_notify(false, NOTIFY_STOPPING);
 
                         r = bus_async_unregister_and_exit(e, bus, name);
                         if (r < 0)
