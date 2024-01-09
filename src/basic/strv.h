@@ -32,6 +32,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(char**, strv_free_erase);
 #define _cleanup_strv_free_erase_ _cleanup_(strv_free_erasep)
 
 char** strv_copy(char * const *l);
+int strv_copy_unless_empty(char * const *l, char ***ret);
 size_t strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
