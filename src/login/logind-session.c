@@ -751,6 +751,8 @@ int session_activate(Session *s) {
 
 #if 0 /// UNNEEDED by elogind
 static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_error *error) {
+        _cleanup_free_ char *scope = NULL;
+        const char *description;
         int r;
 
         assert(s);
@@ -759,59 +761,45 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
         if (!SESSION_CLASS_WANTS_SCOPE(s->class))
                 return 0;
 
-        if (!s->scope) {
-                _cleanup_strv_free_ char **wants = NULL, **after = NULL;
-                _cleanup_free_ char *scope = NULL;
-                const char *description;
 
-                s->scope_job = mfree(s->scope_job);
 
-                scope = strjoin("session-", s->id, ".scope");
-                if (!scope)
-                        return log_oom();
+        if (s->scope)
+                goto finish;
 
-                description = strjoina("Session ", s->id, " of User ", s->user->user_record->user_name);
+        s->scope_job = mfree(s->scope_job);
+        scope = strjoin("session-", s->id, ".scope");
+        if (!scope)
+                return log_oom();
 
-                /* These two have StopWhenUnneeded= set, hence add a dep towards them */
-                wants = strv_new(s->user->runtime_dir_unit,
-                                 SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class) ? s->user->service_manager_unit : STRV_IGNORE);
-                if (!wants)
-                        return log_oom();
+        description = strjoina("Session ", s->id, " of User ", s->user->user_record->user_name);
+        r = manager_start_scope(
+                        s->manager,
+                        scope,
+                        &s->leader,
+                        s->user->slice,
+                        description,
+                        /* These should have been pulled in explicitly in user_start(). Just to be sure. */
+                        STRV_MAKE_CONST(s->user->runtime_dir_unit,
+                                        SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class) ? s->user->service_manager_unit : NULL),
+                        /* We usually want to order session scopes after elogind-user-sessions.service
+                         * since the unit is used as login session barrier for unprivileged users. However
+                         * the barrier doesn't apply for root as sysadmin should always be able to log in
+                         * (and without waiting for any timeout to expire) in case something goes wrong
+                         * during the boot process. */
+                        STRV_MAKE_CONST("elogind.service",
+                                        SESSION_CLASS_IS_EARLY(s->class) ? NULL : "elogind-user-sessions.service"),
+                        user_record_home_directory(s->user->user_record),
+                        properties,
+                        error,
+                        &s->scope_job);
+        if (r < 0)
+                return log_error_errno(r, "Failed to start session scope %s: %s",
+                                       scope, bus_error_message(error, r));
 
-                /* We usually want to order session scopes after systemd-user-sessions.service since the
-                 * latter unit is used as login session barrier for unprivileged users. However the barrier
-                 * doesn't apply for root as sysadmin should always be able to log in (and without waiting
-                 * for any timeout to expire) in case something goes wrong during the boot process. Since
-                 * ordering after systemd-user-sessions.service and the user instance is optional we make use
-                 * of STRV_IGNORE with strv_new() to skip these order constraints when needed. */
-                after = strv_new("systemd-logind.service",
-                                 SESSION_CLASS_IS_EARLY(s->class) ? STRV_IGNORE : "elogind-user-sessions.service",
-                                 s->user->runtime_dir_unit,
-                                 s->user->service_manager_unit);
-                if (!after)
-                        return log_oom();
+        s->scope = TAKE_PTR(scope);
 
-                r = manager_start_scope(
-                                s->manager,
-                                scope,
-                                &s->leader,
-                                s->user->slice,
-                                description,
-                                wants,
-                                after,
-                                user_record_home_directory(s->user->user_record),
-                                properties,
-                                error,
-                                &s->scope_job);
-                if (r < 0)
-                        return log_error_errno(r, "Failed to start session scope %s: %s",
-                                               scope, bus_error_message(error, r));
-
-                s->scope = TAKE_PTR(scope);
-        }
-
+finish:
         (void) hashmap_put(s->manager->session_units, s->scope, s);
-
         return 0;
 }
 #else // 0
