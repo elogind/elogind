@@ -1270,7 +1270,7 @@ static int message_push_fd(sd_bus_message *m, int fd) {
         if (copy < 0)
                 return -errno;
 
-        f = reallocarray(m->fds, sizeof(int), m->n_fds + 1);
+        f = reallocarray(m->fds, m->n_fds + 1, sizeof(int));
         if (!f) {
                 m->poisoned = true;
                 safe_close(copy);
