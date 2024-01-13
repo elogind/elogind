@@ -2420,6 +2420,12 @@ static int method_do_shutdown_or_sleep(
                 }
         }
 #endif // 1
+        if (m->delayed_action)
+                return sd_bus_error_setf(error, BUS_ERROR_OPERATION_IN_PROGRESS,
+                                         "Action %s already in progress, refusing requested %s operation.",
+                                         handle_action_to_string(m->delayed_action->handle),
+                                         handle_action_to_string(a->handle));
+
         /* reset case we're shorting a scheduled shutdown */
         m->unlink_nologin = false;
         reset_scheduled_shutdown(m);
