@@ -874,13 +874,17 @@ int session_send_lock_all(Manager *m, bool lock) {
 }
 
 #if 0 /// elogind does not support scope and service jobs
-static bool session_ready(Session *s) {
+static bool session_job_pending(Session *s) {
         assert(s);
+        assert(s->user);
 
-        /* Returns true when the session is ready, i.e. all jobs we enqueued for it are done (regardless if successful or not) */
+        /* Check if we have some jobs enqueued and not finished yet. Each time we get JobRemoved signal about
+         * relevant units, session_send_create_reply and hence us is called (see match_job_removed).
+         * Note that we don't care about job result here. */
 
-        return !s->scope_job &&
-                (!SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class) || !s->user->service_job);
+        return s->scope_job ||
+               s->user->runtime_dir_job ||
+               (SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class) && s->user->service_manager_job);
 }
 #endif // 0
 
@@ -898,7 +902,9 @@ int session_send_create_reply(Session *s, sd_bus_error *error) {
                 return 0;
 
 #if 0 /// elogind does not support scope and service jobs
-        if (!sd_bus_error_is_set(error) && !session_ready(s))
+        /* If error occurred, return it immediately. Otherwise let's wait for all jobs to finish before
+         * continuing. */
+        if (!sd_bus_error_is_set(error) && session_job_pending(s))
                 return 0;
 #endif // 0
 
@@ -950,7 +956,8 @@ int session_send_upgrade_reply(Session *s, sd_bus_error *error) {
         if (!s->upgrade_message)
                 return 0;
 
-        if (!sd_bus_error_is_set(error) && !session_ready(s))
+        /* See comments in session_send_create_reply */
+        if (!sd_bus_error_is_set(error) && session_job_pending(s))
                 return 0;
 
         c = TAKE_PTR(s->upgrade_message);
