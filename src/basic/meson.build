@@ -80,6 +80,7 @@
 #         'replace-var.c',
 #         'rlimit-util.c',
 #         'runtime-scope.c',
+#         'sha256.c',
 #         'sigbus.c',
 #         'signal-util.c',
 #         'siphash24.c',
