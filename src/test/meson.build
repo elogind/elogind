@@ -344,11 +344,11 @@ executables += [
 #                 'dependencies' : lib_openssl_or_gcrypt,
 #                 'conditions' : ['HAVE_OPENSSL_OR_GCRYPT'],
 #         },
-#         test_template + {
-#                 'sources' : files('test-dlopen-so.c'),
-#                 'dependencies' : libp11kit_cflags
-#         },
 #endif // 0
+        test_template + {
+                'sources' : files('test-dlopen-so.c'),
+                'dependencies' : libp11kit_cflags
+        },
         test_template + {
                 # only static linking apart from libdl, to make sure that the
                 # module is linked to all libraries that it uses.
@@ -689,12 +689,15 @@ executables += [
 
         # Tests from other directories that have link_with deps that were not defined earlier
         test_template + {
+                'sources' : files('../libelogind/sd-bus/test-bus-error.c'),
                 'link_with' : [
                         libshared_static,
                         libelogind_static,
                 ],
         },
         test_template + {
+                'sources' : files('../libelogind/sd-device/test-sd-device-thread.c'),
+                'link_with' : libelogind,
                 'dependencies' : threads,
         },
 #if 0 /// UNNEEDED by elogind
