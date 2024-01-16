@@ -2570,6 +2570,10 @@ subdir('src/busctl')
 # subdir('src/locale')
 #endif // 0
 
+#if 1 /// elogind needs uaccess-command
+subdir('src/uaccess-command')
+#endif // 1
+
 subdir('src/login')
 
 #if 0 /// UNNEEDED by elogind
@@ -2638,114 +2642,118 @@ subdir('src/test')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/fuzz')
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 # subdir('src/ukify/test')  # needs to be last for test_env variable
 # subdir('test/fuzz')
 #
 # alias_target('devel', libsystemd_pc, libudev_pc, systemd_pc, udev_pc)
-#
-# ############################################################
-#
-# foreach test : simple_tests
-#         executables += test_template + { 'sources' : [test] }
-# endforeach
-#
-# foreach test : libelogind_tests
-#         executables += test_template + test
-# endforeach
-#
+#else // 0
+alias_target('devel', libelogind_pc)
+#endif // 0
+
+############################################################
+
+foreach test : simple_tests
+        executables += test_template + { 'sources' : [test] }
+endforeach
+
+foreach test : libelogind_tests
+        executables += test_template + test
+endforeach
+
+#if 0 /// elogind does not fuzz
 # foreach fuzzer : simple_fuzzers
 #         executables += fuzz_template + { 'sources' : [fuzzer] }
 # endforeach
-#
-# foreach dict : executables
-#         name = dict.get('name', '')
-#         if name == ''
-#                 name = fs.stem(dict.get('sources')[0])
-#                 assert(name.split('-')[0] in ['test', 'fuzz'])
-#         endif
-#
-#         is_test = name.startswith('test-')
-#         is_fuzz = name.startswith('fuzz-')
-#
-#         build = true
-#         foreach cond : dict.get('conditions', [])
-#                 if conf.get(cond) != 1
-#                         build = false
-#                         break
-#                 endif
-#         endforeach
-#         if not build
-#                 continue
-#         endif
-#
-#         kwargs = {}
-#         foreach key, val : dict
-#                 if key in ['name', 'dbus', 'public', 'conditions',
-#                            'type', 'suite', 'timeout', 'parallel']
-#                         continue
-#                 endif
-#
-#                 kwargs += { key : val }
-#         endforeach
-#
-#         foreach key, val : executable_additional_kwargs
-#                 kwargs += { key : [ kwargs.get(key, []), val ]}
-#         endforeach
-#
-#         if is_test
-#                 kwargs += { 'install_dir' : kwargs.get('install_dir') / dict.get('type', '') }
-#                 foreach key, val : test_additional_kwargs
-#                         kwargs += { key : [ kwargs.get(key, []), val ] }
-#                 endforeach
-#         endif
-#
-#         if is_fuzz
-#                 foreach key, val : fuzz_additional_kwargs
-#                         kwargs += { key : [ kwargs.get(key, []), val ] }
-#                 endforeach
-#         endif
-#
-#         exe = executable(
-#                 name,
-#                 kwargs : kwargs,
-#         )
-#
-#         executables_by_name += { name : exe }
-#
-#         if dict.get('build_by_default', true)
-#                 if dict.get('dbus', false)
-#                         dbus_programs += exe
-#                 endif
-#                 if dict.get('public', false)
-#                         public_programs += exe
-#                 endif
-#         endif
-#
-#         if is_test
-#                 type = dict.get('type', '')
-#                 suite = dict.get('suite', '')
-#                 if suite == ''
-#                         suite = fs.name(fs.parent(dict.get('sources')[0]))
-#                         if suite.startswith('sd-')
-#                                 suite = 'libelogind'
-#                         endif
-#                 endif
-#
-#                 if type == 'manual'
-#                         message('@0@/@1@ is a manual test'.format(suite, name))
-#                 elif type == 'unsafe' and want_tests != 'unsafe'
-#                         message('@0@/@1@ is an unsafe test'.format(suite, name))
-#                 elif dict.get('build_by_default')
-#                         test(name, exe,
-#                              env : test_env,
-#                              timeout : dict.get('timeout', 30),
-#                              suite : suite,
-#                              is_parallel : dict.get('parallel', true))
-#                 endif
-#         endif
-#
+#endif // 0
+
+foreach dict : executables
+        name = dict.get('name', '')
+        if name == ''
+                name = fs.stem(dict.get('sources')[0])
+                assert(name.split('-')[0] in ['test', 'fuzz'])
+        endif
+
+        is_test = name.startswith('test-')
+        is_fuzz = name.startswith('fuzz-')
+
+        build = true
+        foreach cond : dict.get('conditions', [])
+                if conf.get(cond) != 1
+                        build = false
+                        break
+                endif
+        endforeach
+        if not build
+                continue
+        endif
+
+        kwargs = {}
+        foreach key, val : dict
+                if key in ['name', 'dbus', 'public', 'conditions',
+                           'type', 'suite', 'timeout', 'parallel']
+                        continue
+                endif
+
+                kwargs += { key : val }
+        endforeach
+
+        foreach key, val : executable_additional_kwargs
+                kwargs += { key : [ kwargs.get(key, []), val ]}
+        endforeach
+
+        if is_test
+                kwargs += { 'install_dir' : kwargs.get('install_dir') / dict.get('type', '') }
+                foreach key, val : test_additional_kwargs
+                        kwargs += { key : [ kwargs.get(key, []), val ] }
+                endforeach
+        endif
+
+        if is_fuzz
+                foreach key, val : fuzz_additional_kwargs
+                        kwargs += { key : [ kwargs.get(key, []), val ] }
+                endforeach
+        endif
+
+        exe = executable(
+                name,
+                kwargs : kwargs,
+        )
+
+        executables_by_name += { name : exe }
+
+        if dict.get('build_by_default', true)
+                if dict.get('dbus', false)
+                        dbus_programs += exe
+                endif
+                if dict.get('public', false)
+                        public_programs += exe
+                endif
+        endif
+
+        if is_test
+                type = dict.get('type', '')
+                suite = dict.get('suite', '')
+                if suite == ''
+                        suite = fs.name(fs.parent(dict.get('sources')[0]))
+                        if suite.startswith('sd-')
+                                suite = 'libelogind'
+                        endif
+                endif
+
+                if type == 'manual'
+                        message('@0@/@1@ is a manual test'.format(suite, name))
+                elif type == 'unsafe' and want_tests != 'unsafe'
+                        message('@0@/@1@ is an unsafe test'.format(suite, name))
+                elif dict.get('build_by_default')
+                        test(name, exe,
+                             env : test_env,
+                             timeout : dict.get('timeout', 30),
+                             suite : suite,
+                             is_parallel : dict.get('parallel', true))
+                endif
+        endif
+        
+#if 0 /// elogind does not fuzz
 #         if is_fuzz
 #                 fuzzer_exes += exe
 #
@@ -2778,11 +2786,11 @@ subdir('src/test')
 #                         endforeach
 #                 endif
 #         endif
-# endforeach
-#
+#endif // 0
+endforeach
+
+#if 0 /// elogind does not fuzz
 # alias_target('fuzzers', fuzzer_exes)
-#else // 0
-alias_target('devel', libelogind_pc)
 #endif // 0
 
 ############################################################
@@ -2851,83 +2859,6 @@ endforeach
 
 ############################################################
 
-#if 1 /// executables for elogind
-executable('elogind',
-                elogind_sources,
-                include_directories : includes,
-                link_with : [liblogind_core,
-                             libshared],
-                dependencies : [libacl,
-                                threads,
-                                userspace],
-                install_rpath : libexecdir,
-                install : true,
-                install_dir : libexecdir)
-
-exe = executable('loginctl',
-                        loginctl_sources,
-                        include_directories : includes,
-                        link_with : [libshared],
-                        dependencies : [liblz4,
-                                        libxz,
-                                        libzstd,
-                                        threads,
-                                        userspace],
-                        install_rpath : libexecdir,
-                        install : true,
-                        install_dir : rootbindir)
-public_programs += [exe]
-
-exe = executable('elogind-inhibit',
-                        'src/login/inhibit.c',
-                        include_directories : includes,
-                        link_with : [libshared],
-                        dependencies : [userspace],
-                        install_rpath : libexecdir,
-                        install : true,
-                        install_dir : rootbindir)
-public_programs += [exe]
-
-executable('elogind-uaccess-command',
-           'src/uaccess-command/uaccess-command.c',
-           include_directories : includes,
-           link_with : [liblogind_core,
-                        libshared],
-           dependencies: [libacl,
-                          libudev,
-                          userspace],
-           install_rpath : libexecdir,
-           install : true,
-           install_dir : libexecdir)
-#endif // 1
-
-#if 1 /// elogind needs pam_elogind. Doing it like this keeps diff happy.
-        version_script_arg = project_source_root / pam_elogind_sym
-        pam_elogind = shared_library(
-                'pam_elogind',
-                pam_elogind_c,
-                name_prefix : '',
-                include_directories : includes,
-                link_args : ['-shared',
-                             '-Wl,--version-script=' + version_script_arg],
-                link_with : [libelogind_static,
-                             libshared_static],
-                dependencies : [libpam_misc,
-                                libpam,
-                                threads,
-                                userspace],
-                link_depends : pam_elogind_sym,
-                install : true,
-                install_dir : pamlibdir)
-
-        if want_tests != 'false'
-                test('dlopen-pam_elogind',
-                     test_dlopen,
-                     # path to dlopen must include a slash
-                     args : pam_elogind.full_path())
-        endif
-#endif // 1
-
 #if 0 /// UNNEEDED by elogind
 # ukify = custom_target(
 #         'ukify',
@@ -2950,8 +2881,9 @@ executable('elogind-uaccess-command',
 ############################################################
 
 subdir('rules.d')
-subdir('test')
-
+#if 0 /// elogind does not need anything in the upstream top test directory
+# subdir('test')
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 # subdir('docs/sysvinit')
@@ -3007,7 +2939,6 @@ install_data('LICENSE.GPL2',
 #                install_dir : docdir)
 #
 #endif // 0
-install_emptydir(elogindstatedir)
 
 ############################################################
 

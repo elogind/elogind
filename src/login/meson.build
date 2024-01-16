@@ -111,6 +111,23 @@ executables += [
                 'conditions' : ['ENABLE_LOGIND'],
                 'sources' : files('user-runtime-dir.c'),
         },
+#if 1 /// elogind has an extra executable to manage uaccess
+        libexec_template + {
+                'name' : 'elogind-uaccess-command',
+                'public' : true,
+                'conditions' : ['ENABLE_LOGIND'],
+                'sources' : uaccess_command_files,
+                'link_with' : [
+                        liblogind_core,
+                        libshared
+                ],
+                'dependencies': [
+                        libacl,
+                        libudev,
+                        userspace
+                ],
+        },
+#endif // 1
         test_template + {
                 'sources' : files('test-inhibit.c'),
                 'type' : 'manual',
