@@ -56,8 +56,8 @@ static int manager_new(Manager **ret) {
                 return -ENOMEM;
 
         *m = (Manager) {
-#if 0 /// elogind does not support autospawning of vts
                 .console_active_fd = -EBADF,
+#if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -EBADF,
                 .enable_wall_messages = true,
                 .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
