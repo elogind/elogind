@@ -297,10 +297,10 @@ int bus_connect_transport(
 
                 case RUNTIME_SCOPE_USER:
                         r = sd_bus_default_user(&bus);
-#if 0 /// elogind is never used with systemd. Avoid useless check.
                         break;
 
                 case RUNTIME_SCOPE_SYSTEM:
+#if 0 /// elogind is never used with systemd. Avoid useless check.
                         if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
