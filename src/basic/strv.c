@@ -603,41 +603,6 @@ int strv_extend_with_size(char ***l, size_t *n, const char *value) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int strv_extend_front(char ***l, const char *value) {
-        size_t n, m;
-        char *v, **c;
-
-        assert(l);
-
-        /* Like strv_extend(), but prepends rather than appends the new entry */
-
-        if (!value)
-                return 0;
-
-        n = strv_length(*l);
-
-        /* Increase and overflow check. */
-        m = n + 2;
-        if (m < n)
-                return -ENOMEM;
-
-        v = strdup(value);
-        if (!v)
-                return -ENOMEM;
-
-        c = reallocarray(*l, m, sizeof(char*));
-        if (!c) {
-                free(v);
-                return -ENOMEM;
-        }
-
-        memmove(c+1, c, n * sizeof(char*));
-        c[0] = v;
-        c[n+1] = NULL;
-
-        *l = c;
-        return 0;
-}
 #endif // 0
 
 char** strv_uniq(char **l) {
