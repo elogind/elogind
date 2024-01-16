@@ -43,9 +43,9 @@ _loginctl () {
 #if 0 /// elogind supports some more options
 #     local -A OPTS=(
 #         [STANDALONE]='--all -a --help -h --no-pager --version
-#                       --no-legend --no-ask-password -l --full --value'
+#                       --no-legend --no-ask-password -l --full --value -j'
 #         [ARG]='--host -H --kill-whom --property -p --signal -s -M --machine
-#                       -n --lines -o --output -P'
+#                       -n --lines -o --output -P --json'
 #     )
 #else // 0
     local -A OPTS=(
@@ -77,6 +77,9 @@ _loginctl () {
                 ;;
             --output|-o)
                 comps=$( loginctl --output=help 2>/dev/null )
+                ;;
+            --json)
+                comps=$( loginctl --json=help 2>/dev/null )
                 ;;
         esac
         COMPREPLY=( $(compgen -W '$comps' -- "$cur") )
