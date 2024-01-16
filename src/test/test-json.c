@@ -10,6 +10,7 @@
 #include "json-internal.h"
 #include "json.h"
 #include "math-util.h"
+#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
 #include "tests.h"
@@ -111,9 +112,9 @@ static void test_variant_one(const char *data, Test test) {
         assert_se(json_variant_equal(v, w));
 
         s = mfree(s);
-        r = json_variant_format(w, JSON_FORMAT_REFUSE_SENSITIVE, &s);
-        assert_se(r == -EPERM);
-        assert_se(!s);
+        r = json_variant_format(w, JSON_FORMAT_CENSOR_SENSITIVE, &s);
+        assert_se(s);
+        assert_se(streq_ptr(s, "\"<sensitive data>\""));
 
         s = mfree(s);
         r = json_variant_format(w, JSON_FORMAT_PRETTY, &s);
@@ -838,6 +839,56 @@ TEST(json_dispatch) {
         assert_se(foobar.l == INT16_MIN);
 }
 
+typedef enum mytestenum {
+        myfoo, mybar, mybaz, _mymax, _myinvalid = -EINVAL,
+} mytestenum;
+
+static const char *mytestenum_table[_mymax] = {
+        [myfoo] = "myfoo",
+        [mybar] = "mybar",
+        [mybaz] = "mybaz",
+};
+
+DEFINE_PRIVATE_STRING_TABLE_LOOKUP_FROM_STRING(mytestenum, mytestenum);
+
+static JSON_DISPATCH_ENUM_DEFINE(dispatch_mytestenum, mytestenum, mytestenum_from_string);
+
+TEST(json_dispatch_enum_define) {
+
+        struct data {
+                mytestenum a, b, c, d;
+        } data = {
+                .a = _myinvalid,
+                .b = _myinvalid,
+                .c = _myinvalid,
+                .d = mybar,
+        };
+
+        _cleanup_(json_variant_unrefp) JsonVariant *j = NULL;
+
+        assert_se(json_build(&j, JSON_BUILD_OBJECT(
+                                             JSON_BUILD_PAIR("a", JSON_BUILD_STRING("mybaz")),
+                                             JSON_BUILD_PAIR("b", JSON_BUILD_STRING("mybar")),
+                                             JSON_BUILD_PAIR("c", JSON_BUILD_STRING("myfoo")),
+                                             JSON_BUILD_PAIR("d", JSON_BUILD_NULL))) >= 0);
+
+        assert_se(json_dispatch(j,
+                                (const JsonDispatch[]) {
+                                        { "a", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, a), 0 },
+                                        { "b", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, b), 0 },
+                                        { "c", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, c), 0 },
+                                        { "d", _JSON_VARIANT_TYPE_INVALID, dispatch_mytestenum, offsetof(struct data, d), 0 },
+                                        {},
+                                },
+                                /* flags= */ 0,
+                                &data) >= 0);
+
+        assert(data.a == mybaz);
+        assert(data.b == mybar);
+        assert(data.c == myfoo);
+        assert(data.d < 0);
+}
+
 TEST(json_sensitive) {
         _cleanup_(json_variant_unrefp) JsonVariant *a = NULL, *b = NULL, *v = NULL;
         _cleanup_free_ char *s = NULL;
@@ -848,10 +899,11 @@ TEST(json_sensitive) {
 
         json_variant_sensitive(a);
 
-        assert_se(json_variant_format(a, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
-        assert_se(!s);
+        assert_se(json_variant_format(a, JSON_FORMAT_CENSOR_SENSITIVE, &s) >= 0);
+        assert_se(streq_ptr(s, "\"<sensitive data>\""));
+        s = mfree(s);
 
-        r = json_variant_format(b, JSON_FORMAT_REFUSE_SENSITIVE, &s);
+        r = json_variant_format(b, JSON_FORMAT_CENSOR_SENSITIVE, &s);
         assert_se(r >= 0);
         assert_se(s);
         assert_se((size_t) r == strlen(s));
@@ -863,7 +915,7 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR("e", JSON_BUILD_EMPTY_OBJECT))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        r = json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s);
+        r = json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s);
         assert_se(r >= 0);
         assert_se(s);
         assert_se((size_t) r == strlen(s));
@@ -877,7 +929,7 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR("e", JSON_BUILD_EMPTY_OBJECT))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        r = json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s);
+        r = json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s);
         assert_se(r >= 0);
         assert_se(s);
         assert_se((size_t) r == strlen(s));
@@ -892,8 +944,9 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR("e", JSON_BUILD_EMPTY_OBJECT))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        assert_se(json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
-        assert_se(!s);
+        assert_se(json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s) >= 0);
+        assert_se(streq_ptr(s, "{\"b\":[\"foo\",\"bar\",\"baz\",\"qux\"],\"a\":\"<sensitive data>\",\"c\":-9223372036854775808,\"d\":\"-9223372036854775808\",\"e\":{}}"));
+        s = mfree(s);
         v = json_variant_unref(v);
 
         assert_se(json_build(&v, JSON_BUILD_OBJECT(
@@ -904,8 +957,9 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR("e", JSON_BUILD_EMPTY_OBJECT))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        assert_se(json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
-        assert_se(!s);
+        assert_se(json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s) >= 0);
+        assert_se(streq_ptr(s, "{\"b\":[\"foo\",\"bar\",\"baz\",\"qux\"],\"c\":-9223372036854775808,\"a\":\"<sensitive data>\",\"d\":\"-9223372036854775808\",\"e\":{}}"));
+        s = mfree(s);
         v = json_variant_unref(v);
 
         assert_se(json_build(&v, JSON_BUILD_OBJECT(
@@ -916,8 +970,9 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR("e", JSON_BUILD_EMPTY_OBJECT))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        assert_se(json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
-        assert_se(!s);
+        assert_se(json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s) >= 0);
+        assert_se(streq_ptr(s, "{\"b\":[\"foo\",\"bar\",\"baz\",\"qux\"],\"c\":-9223372036854775808,\"d\":\"-9223372036854775808\",\"a\":\"<sensitive data>\",\"e\":{}}"));
+        s = mfree(s);
         v = json_variant_unref(v);
 
         assert_se(json_build(&v, JSON_BUILD_OBJECT(
@@ -928,8 +983,8 @@ TEST(json_sensitive) {
                                              JSON_BUILD_PAIR_VARIANT("a", a))) >= 0);
         json_variant_dump(v, JSON_FORMAT_COLOR|JSON_FORMAT_PRETTY, NULL, NULL);
 
-        assert_se(json_variant_format(v, JSON_FORMAT_REFUSE_SENSITIVE, &s) == -EPERM);
-        assert_se(!s);
+        assert_se(json_variant_format(v, JSON_FORMAT_CENSOR_SENSITIVE, &s) >= 0);
+        assert_se(streq_ptr(s, "{\"b\":[\"foo\",\"bar\",\"baz\",\"qux\"],\"c\":-9223372036854775808,\"d\":\"-9223372036854775808\",\"e\":{},\"a\":\"<sensitive data>\"}"));
 }
 
 TEST(json_iovec) {
