@@ -341,15 +341,13 @@ int get_user_creds(
 }
 
 #if 0 /// UNNEEDED by elogind
-int get_group_creds(const char **groupname, gid_t *ret_gid, UserCredsFlags flags) {
-        bool patch_groupname = false;
-        struct group *g;
-        gid_t id;
+static int synthesize_group_creds(
+                const char **groupname,
+                gid_t *ret_gid) {
 
         assert(groupname);
         assert(*groupname);
 
-        /* We enforce some special rules for gid=0: in order to avoid NSS lookups for root we hardcode its data. */
         if (STR_IN_SET(*groupname, "root", "0")) {
                 *groupname = "root";
 
@@ -369,6 +367,26 @@ int get_group_creds(const char **groupname, gid_t *ret_gid, UserCredsFlags flags
                 return 0;
         }
 
+        return -ENOMEDIUM;
+}
+
+int get_group_creds(const char **groupname, gid_t *ret_gid, UserCredsFlags flags) {
+        bool patch_groupname = false;
+        struct group *g;
+        gid_t id;
+        int r;
+
+        assert(groupname);
+        assert(*groupname);
+
+        if (!FLAGS_SET(flags, USER_CREDS_PREFER_NSS)) {
+                r = synthesize_group_creds(groupname, ret_gid);
+                if (r >= 0)
+                        return 0;
+                if (r != -ENOMEDIUM) /* not a groupname we can synthesize */
+                        return r;
+        }
+
         if (parse_gid(*groupname, &id) >= 0) {
                 errno = 0;
                 g = getgrgid(id);
@@ -386,10 +404,17 @@ int get_group_creds(const char **groupname, gid_t *ret_gid, UserCredsFlags flags
                 g = getgrnam(*groupname);
         }
 
-        if (!g)
+        if (!g) {
                 /* getgrnam() may fail with ENOENT if /etc/group is missing.
                  * For us that is equivalent to the name not being defined. */
-                return IN_SET(errno, 0, ENOENT) ? -ESRCH : -errno;
+                r = IN_SET(errno, 0, ENOENT) ? -ESRCH : -errno;
+
+                if (FLAGS_SET(flags, USER_CREDS_PREFER_NSS))
+                        if (synthesize_group_creds(groupname, ret_gid) >= 0)
+                                return 0;
+
+                return r;
+        }
 
         if (ret_gid) {
                 if (!gid_is_valid(g->gr_gid))
