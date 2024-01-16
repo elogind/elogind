@@ -1771,24 +1771,6 @@ int device_read_db_internal_filename(sd_device *device, const char *filename) {
         return 0;
 }
 
-int device_read_db_internal(sd_device *device, bool force) {
-        const char *id, *path;
-        int r;
-
-        assert(device);
-
-        if (device->db_loaded || (!force && device->sealed))
-                return 0;
-
-        r = device_get_device_id(device, &id);
-        if (r < 0)
-                return r;
-
-        path = strjoina("/run/udev/data/", id);
-
-        return device_read_db_internal_filename(device, path);
-}
-
 _public_ int sd_device_get_is_initialized(sd_device *device) {
         int r;
 
@@ -2451,6 +2433,25 @@ int device_get_sysattr_unsigned(sd_device *device, const char *sysattr, unsigned
         return v > 0;
 }
 
+int device_get_sysattr_u32(sd_device *device, const char *sysattr, uint32_t *ret_value) {
+        const char *value;
+        int r;
+
+        r = sd_device_get_sysattr_value(device, sysattr, &value);
+        if (r < 0)
+                return r;
+
+        uint32_t v;
+        r = safe_atou32(value, &v);
+        if (r < 0)
+                return log_device_debug_errno(device, r, "Failed to parse '%s' attribute: %m", sysattr);
+
+        if (ret_value)
+                *ret_value = v;
+        /* We return "true" if the value is positive. */
+        return v > 0;
+}
+
 int device_get_sysattr_bool(sd_device *device, const char *sysattr) {
         const char *value;
         int r;
@@ -2503,7 +2504,7 @@ _public_ int sd_device_set_sysattr_value(sd_device *device, const char *sysattr,
 
         /* drop trailing newlines */
         while (len > 0 && strchr(NEWLINE, _value[len - 1]))
-                len --;
+                len--;
 
         /* value length is limited to 4k */
         if (len > 4096)
