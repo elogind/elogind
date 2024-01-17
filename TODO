@@ -2156,10 +2156,6 @@ Features:
   - store PKCS#11 + FIDO2 token info in LUKS2 header, compatible with
   - on login, if we can't fallocate initially, but rebalance is on, then allow
     login in discard mode, then immediately rebalance, then turn off discard
-  - extend user records with optional "bulk" data. Specifically, a user
-    avatar/photo or so. This data should be stored along with the user record,
-    but probably shouldn't be part of the record itself, since it might be
-    large.
   - add "homectl unbind" command to remove local user record of an inactive
     home dir
 
