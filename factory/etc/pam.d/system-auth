@@ -19,7 +19,7 @@ account   required   pam_permit.so
 #if 0 /// elogind does not ship pam_systemd_home.so
 # -password sufficient pam_systemd_home.so
 #endif // 0
-password  sufficient pam_unix.so sha512 shadow try_first_pass use_authtok
+password  sufficient pam_unix.so sha512 shadow try_first_pass
 password  required   pam_deny.so
 
 -session  optional   pam_keyinit.so revoke
