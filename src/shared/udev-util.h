@@ -27,6 +27,7 @@ size_t udev_replace_chars(char *str, const char *allow);
 
 int udev_queue_is_empty(void);
 
+void reset_cached_udev_availability(void);
 bool udev_available(void);
 
 #if 0 /// UNNEEDED by elogind
