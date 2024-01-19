@@ -1597,7 +1597,10 @@ static int help(int argc, char *argv[], void *userdata) {
                "  -c                       Cancel a pending shutdown or reboot\n"
                "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
 #endif // 0
-               "  -o --output=STRING       Change journal output mode (short, short-precise,\n"
+               "     --json=MODE           Generate JSON output for list-sessions/users/seats\n"
+               "                             (takes one of pretty, short, or off)\n"
+               "  -j                       Same as --json=pretty on tty, --json=short otherwise\n"
+               "  -o --output=MODE         Change journal output mode (short, short-precise,\n"
                "                             short-iso, short-iso-precise, short-full,\n"
                "                             short-monotonic, short-unix, short-delta,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
