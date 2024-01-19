@@ -570,13 +570,8 @@ int user_stop(User *u, bool force) {
         }
 
         log_debug_elogind("Stopping user %s %s ...", u->user_record->user_name, force ? "(forced)" : "");
-        LIST_FOREACH(sessions_by_user, s, u->sessions) {
-                int k;
-
-                k = session_stop(s, force);
-                if (k < 0)
-                        r = k;
-        }
+        LIST_FOREACH(sessions_by_user, s, u->sessions)
+                RET_GATHER(r, session_stop(s, force));
 
 #if 0 /// elogind does not support service or slice jobs...
         user_stop_service(u, force);
@@ -592,7 +587,7 @@ int user_stop(User *u, bool force) {
 }
 
 int user_finalize(User *u) {
-        int r = 0, k;
+        int r = 0;
 
         assert(u);
 
@@ -606,11 +601,8 @@ int user_finalize(User *u) {
                 log_debug_elogind("User %s not started, finalizing...", u->user_record->user_name);
 #endif // 1
 
-        LIST_FOREACH(sessions_by_user, s, u->sessions) {
-                k = session_finalize(s);
-                if (k < 0)
-                        r = k;
-        }
+        LIST_FOREACH(sessions_by_user, s, u->sessions)
+                RET_GATHER(r, session_finalize(s));
 
 #if 1 /// elogind has to remove the XDG_RUNTIME_DIR by itself
         /* Kill XDG_RUNTIME_DIR */
@@ -624,11 +616,8 @@ int user_finalize(User *u) {
          * cases, as we shouldn't accidentally remove a system service's IPC objects while it is running, just because
          * a cronjob running as the same user just finished. Hence: exclude system users generally from IPC clean-up,
          * and do it only for normal users. */
-        if (u->manager->remove_ipc && !uid_is_system(u->user_record->uid)) {
-                k = clean_ipc_by_uid(u->user_record->uid);
-                if (k < 0)
-                        r = k;
-        }
+        if (u->manager->remove_ipc && !uid_is_system(u->user_record->uid))
+                RET_GATHER(r, clean_ipc_by_uid(u->user_record->uid));
 
         (void) unlink(u->state_file);
         user_add_to_gc_queue(u);
