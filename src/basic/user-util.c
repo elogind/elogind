@@ -315,7 +315,7 @@ int get_user_creds(
         if (shell) {
                 if (FLAGS_SET(flags, USER_CREDS_CLEAN) &&
                     (isempty(p->pw_shell) ||
-                     !path_is_valid(p->pw_dir) ||
+                     !path_is_valid(p->pw_shell) ||
                      !path_is_absolute(p->pw_shell) ||
                      is_nologin_shell(p->pw_shell)))
                         *shell = NULL;
