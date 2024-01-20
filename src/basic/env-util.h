@@ -83,6 +83,7 @@ int putenv_dup(const char *assignment, bool override);
 #endif // 0
 
 int setenv_elogind_exec_pid(bool update_only);
+int setenv_elogind_log_level(void);
 
 #if 0 /// UNNEEDED by elogind
 /* Parses and does sanity checks on an environment variable containing

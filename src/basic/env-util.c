@@ -18,6 +18,7 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
+#include "syslog-util.h"
 #include "utf8.h"
 
 /* We follow bash for the character set. Different shells have different rules. */
@@ -1043,6 +1044,17 @@ int setenv_elogind_exec_pid(bool update_only) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int setenv_elogind_log_level(void) {
+        _cleanup_free_ char *val = NULL;
+        int r;
+
+        r = log_level_to_string_alloc(log_get_max_level(), &val);
+        if (r < 0)
+                return r;
+
+        return RET_NERRNO(setenv("SYSTEMD_LOG_LEVEL", val, /* overwrite= */ true));
+}
+
 int getenv_path_list(const char *name, char ***ret_paths) {
         _cleanup_strv_free_ char **l = NULL;
         const char *e;
