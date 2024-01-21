@@ -10,7 +10,6 @@
 #include "bpf-devices.h"
 #include "bpf-firewall.h"
 #include "bpf-foreign.h"
-#include "bpf-restrict-ifaces.h"
 #include "bpf-socket-bind.h"
 #include "btrfs-util.h"
 #include "bus-error.h"
@@ -33,6 +32,7 @@
 #include "percent-util.h"
 #include "process-util.h"
 #include "procfs-util.h"
+#include "restrict-ifaces.h"
 #include "set.h"
 #include "special.h"
 #include "stdio-util.h"
@@ -1850,7 +1850,7 @@ static void cgroup_apply_socket_bind(Unit *u) {
 static void cgroup_apply_restrict_network_interfaces(Unit *u) {
         assert(u);
 
-        (void) bpf_restrict_ifaces_install(u);
+        (void) restrict_network_interfaces_install(u);
 }
 
 static int cgroup_apply_devices(Unit *u) {
@@ -3452,7 +3452,7 @@ void unit_prune_cgroup(Unit *u) {
                 (void) unit_get_memory_accounting(u, metric, /* ret = */ NULL);
 
 #if BPF_FRAMEWORK
-        (void) bpf_restrict_fs_cleanup(u); /* Remove cgroup from the global LSM BPF map */
+        (void) lsm_bpf_cleanup(u); /* Remove cgroup from the global LSM BPF map */
 #endif
 
         unit_modify_nft_set(u, /* add = */ false);
@@ -3898,8 +3898,10 @@ static int unit_check_cgroup_events(Unit *u) {
                         unit_add_to_cgroup_empty_queue(u);
         }
 
-        /* Disregard freezer state changes due to operations not initiated by us */
-        if (values[1] && IN_SET(u->freezer_state, FREEZER_FREEZING, FREEZER_THAWING)) {
+        /* Disregard freezer state changes due to operations not initiated by us.
+         * See: https://github.com/systemd/systemd/pull/13512/files#r416469963 and
+         *      https://github.com/systemd/systemd/pull/13512#issuecomment-573007207 */
+        if (values[1] && IN_SET(u->freezer_state, FREEZER_FREEZING, FREEZER_FREEZING_BY_PARENT, FREEZER_THAWING)) {
                 if (streq(values[1], "0"))
                         unit_thawed(u);
                 else
@@ -3988,7 +3990,7 @@ static int cg_bpf_mask_supported(CGroupMask *ret) {
                 mask |= CGROUP_MASK_BPF_SOCKET_BIND;
 
         /* BPF-based cgroup_skb/{egress|ingress} hooks */
-        r = bpf_restrict_ifaces_supported();
+        r = restrict_network_interfaces_supported();
         if (r < 0)
                 return r;
         if (r > 0)
@@ -4241,7 +4243,7 @@ Unit* manager_get_unit_by_cgroup(Manager *m, const char *cgroup) {
         }
 }
 
-Unit *manager_get_unit_by_pidref_cgroup(Manager *m, const PidRef *pid) {
+Unit *manager_get_unit_by_pidref_cgroup(Manager *m, PidRef *pid) {
         _cleanup_free_ char *cgroup = NULL;
 
         assert(m);
@@ -4252,7 +4254,7 @@ Unit *manager_get_unit_by_pidref_cgroup(Manager *m, const PidRef *pid) {
         return manager_get_unit_by_cgroup(m, cgroup);
 }
 
-Unit *manager_get_unit_by_pidref_watching(Manager *m, const PidRef *pid) {
+Unit *manager_get_unit_by_pidref_watching(Manager *m, PidRef *pid) {
         Unit *u, **array;
 
         assert(m);
@@ -4271,7 +4273,7 @@ Unit *manager_get_unit_by_pidref_watching(Manager *m, const PidRef *pid) {
         return NULL;
 }
 
-Unit *manager_get_unit_by_pidref(Manager *m, const PidRef *pid) {
+Unit *manager_get_unit_by_pidref(Manager *m, PidRef *pid) {
         Unit *u;
 
         assert(m);
@@ -4962,66 +4964,87 @@ void manager_invalidate_startup_units(Manager *m) {
                 unit_invalidate_cgroup(u, CGROUP_MASK_CPU|CGROUP_MASK_IO|CGROUP_MASK_BLKIO|CGROUP_MASK_CPUSET);
 }
 
-int unit_cgroup_freezer_action(Unit *u, FreezerAction action) {
-        _cleanup_free_ char *path = NULL;
-        FreezerState target, kernel = _FREEZER_STATE_INVALID;
-        int r, ret;
+static int unit_cgroup_freezer_kernel_state(Unit *u, FreezerState *ret) {
+        _cleanup_free_ char *val = NULL;
+        FreezerState s;
+        int r;
 
         assert(u);
-        assert(IN_SET(action, FREEZER_FREEZE, FREEZER_THAW));
+        assert(ret);
 
-        if (!cg_freezer_supported())
-                return 0;
+        r = cg_get_keyed_attribute(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, "cgroup.events",
+                                   STRV_MAKE("frozen"), &val);
+        if (IN_SET(r, -ENOENT, -ENXIO))
+                return -ENODATA;
+        if (r < 0)
+                return r;
 
-        /* Ignore all requests to thaw init.scope or -.slice and reject all requests to freeze them */
-        if (unit_has_name(u, SPECIAL_ROOT_SLICE) || unit_has_name(u, SPECIAL_INIT_SCOPE))
-                return action == FREEZER_FREEZE ? -EPERM : 0;
-
-        if (!u->cgroup_realized)
-                return -EBUSY;
-
-        if (action == FREEZER_THAW) {
-                Unit *slice = UNIT_GET_SLICE(u);
-
-                if (slice) {
-                        r = unit_cgroup_freezer_action(slice, FREEZER_THAW);
-                        if (r < 0)
-                                return log_unit_error_errno(u, r, "Failed to thaw slice %s of unit: %m", slice->id);
-                }
+        if (streq(val, "0"))
+                s = FREEZER_RUNNING;
+        else if (streq(val, "1"))
+                s = FREEZER_FROZEN;
+        else {
+                log_unit_debug_errno(u, SYNTHETIC_ERRNO(EINVAL), "Unexpected cgroup frozen state: %s", val);
+                s = _FREEZER_STATE_INVALID;
         }
 
-        target = action == FREEZER_FREEZE ? FREEZER_FROZEN : FREEZER_RUNNING;
+        *ret = s;
+        return 0;
+}
 
-        r = unit_freezer_state_kernel(u, &kernel);
+int unit_cgroup_freezer_action(Unit *u, FreezerAction action) {
+        _cleanup_free_ char *path = NULL;
+        FreezerState target, current, next;
+        int r;
+
+        assert(u);
+        assert(IN_SET(action, FREEZER_FREEZE, FREEZER_PARENT_FREEZE,
+                              FREEZER_THAW, FREEZER_PARENT_THAW));
+
+        if (!cg_freezer_supported() || !u->cgroup_realized)
+                return 0;
+
+        unit_next_freezer_state(u, action, &next, &target);
+
+        r = unit_cgroup_freezer_kernel_state(u, &current);
         if (r < 0)
-                log_unit_debug_errno(u, r, "Failed to obtain cgroup freezer state: %m");
+                return r;
 
-        if (target == kernel) {
-                u->freezer_state = target;
-                if (action == FREEZER_FREEZE)
-                        return 0;
-                ret = 0;
-        } else
-                ret = 1;
+        if (current == target)
+                next = freezer_state_finish(next);
+        else if (IN_SET(next, FREEZER_FROZEN, FREEZER_FROZEN_BY_PARENT, FREEZER_RUNNING)) {
+                /* We're transitioning into a finished state, which implies that the cgroup's
+                 * current state already matches the target and thus we'd return 0. But, reality
+                 * shows otherwise. This indicates that our freezer_state tracking has diverged
+                 * from the real state of the cgroup, which can happen if someone meddles with the
+                 * cgroup from underneath us. This really shouldn't happen during normal operation,
+                 * though. So, let's warn about it and fix up the state to be valid */
+
+                log_unit_warning(u, "Unit wants to transition to %s freezer state but cgroup is unexpectedly %s, fixing up.",
+                                 freezer_state_to_string(next), freezer_state_to_string(current) ?: "(invalid)");
+
+                if (next == FREEZER_FROZEN)
+                        next = FREEZER_FREEZING;
+                else if (next == FREEZER_FROZEN_BY_PARENT)
+                        next = FREEZER_FREEZING_BY_PARENT;
+                else if (next == FREEZER_RUNNING)
+                        next = FREEZER_THAWING;
+        }
 
         r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, u->cgroup_path, "cgroup.freeze", &path);
         if (r < 0)
                 return r;
 
-        log_unit_debug(u, "%s unit.", action == FREEZER_FREEZE ? "Freezing" : "Thawing");
+        log_unit_debug(u, "Unit freezer state was %s, now %s.",
+                       freezer_state_to_string(u->freezer_state),
+                       freezer_state_to_string(next));
 
-        if (target != kernel) {
-                if (action == FREEZER_FREEZE)
-                        u->freezer_state = FREEZER_FREEZING;
-                else
-                        u->freezer_state = FREEZER_THAWING;
-        }
-
-        r = write_string_file(path, one_zero(action == FREEZER_FREEZE), WRITE_STRING_FILE_DISABLE_BUFFER);
+        r = write_string_file(path, one_zero(target == FREEZER_FROZEN), WRITE_STRING_FILE_DISABLE_BUFFER);
         if (r < 0)
                 return r;
 
-        return ret;
+        u->freezer_state = next;
+        return target != current;
 }
 
 int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name) {
@@ -5060,17 +5083,10 @@ static const char* const cgroup_device_policy_table[_CGROUP_DEVICE_POLICY_MAX] =
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_device_policy, CGroupDevicePolicy);
 
-static const char* const freezer_action_table[_FREEZER_ACTION_MAX] = {
-        [FREEZER_FREEZE] = "freeze",
-        [FREEZER_THAW] = "thaw",
-};
-
-DEFINE_STRING_TABLE_LOOKUP(freezer_action, FreezerAction);
-
 static const char* const cgroup_pressure_watch_table[_CGROUP_PRESSURE_WATCH_MAX] = {
-        [CGROUP_PRESSURE_WATCH_OFF] = "off",
+        [CGROUP_PRESSURE_WATCH_OFF]  = "off",
         [CGROUP_PRESSURE_WATCH_AUTO] = "auto",
-        [CGROUP_PRESSURE_WATCH_ON] = "on",
+        [CGROUP_PRESSURE_WATCH_ON]   = "on",
         [CGROUP_PRESSURE_WATCH_SKIP] = "skip",
 };
 
@@ -5104,10 +5120,10 @@ static const char* const cgroup_memory_accounting_metric_table[_CGROUP_MEMORY_AC
 DEFINE_STRING_TABLE_LOOKUP(cgroup_memory_accounting_metric, CGroupMemoryAccountingMetric);
 #endif // 0
 
-static const char *const cgroup_effective_limit_type_table[_CGROUP_LIMIT_TYPE_MAX] = {
+static const char *const cgroup_limit_type_table[_CGROUP_LIMIT_TYPE_MAX] = {
         [CGROUP_LIMIT_MEMORY_MAX]  = "EffectiveMemoryMax",
         [CGROUP_LIMIT_MEMORY_HIGH] = "EffectiveMemoryHigh",
         [CGROUP_LIMIT_TASKS_MAX]   = "EffectiveTasksMax",
 };
 
-DEFINE_STRING_TABLE_LOOKUP(cgroup_effective_limit_type, CGroupLimitType);
+DEFINE_STRING_TABLE_LOOKUP(cgroup_limit_type, CGroupLimitType);
