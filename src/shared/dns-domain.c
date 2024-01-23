@@ -399,9 +399,9 @@ int dns_label_undo_idna(const char *encoded, size_t encoded_size, char *decoded,
 #endif
 #endif // 0
 
-int dns_name_concat(const char *a, const char *b, DNSLabelFlags flags, char **ret) {
-        _cleanup_free_ char *result = NULL;
-        size_t n_result = 0, n_unescaped = 0;
+int dns_name_concat(const char *a, const char *b, DNSLabelFlags flags, char **_ret) {
+        _cleanup_free_ char *ret = NULL;
+        size_t n = 0;
         const char *p;
         bool first = true;
         int r;
@@ -431,18 +431,17 @@ int dns_name_concat(const char *a, const char *b, DNSLabelFlags flags, char **re
 
                         break;
                 }
-                n_unescaped += r + !first; /* Count unescaped length to make max length determination below */
 
-                if (ret) {
-                        if (!GREEDY_REALLOC(result, n_result + !first + DNS_LABEL_ESCAPED_MAX))
+                if (_ret) {
+                        if (!GREEDY_REALLOC(ret, n + !first + DNS_LABEL_ESCAPED_MAX))
                                 return -ENOMEM;
 
-                        r = dns_label_escape(label, r, result + n_result + !first, DNS_LABEL_ESCAPED_MAX);
+                        r = dns_label_escape(label, r, ret + n + !first, DNS_LABEL_ESCAPED_MAX);
                         if (r < 0)
                                 return r;
 
                         if (!first)
-                                result[n_result] = '.';
+                                ret[n] = '.';
                 } else {
                         char escaped[DNS_LABEL_ESCAPED_MAX];
 
@@ -451,34 +450,28 @@ int dns_name_concat(const char *a, const char *b, DNSLabelFlags flags, char **re
                                 return r;
                 }
 
-                n_result += r + !first;
+                n += r + !first;
                 first = false;
         }
 
 finish:
-        if (n_unescaped == 0) {
-                /* Nothing appended? If so, generate at least a single dot, to indicate the DNS root domain */
-
-                if (ret) {
-                        if (!GREEDY_REALLOC(result, 2)) /* Room for dot, and already pre-allocate space for the trailing NUL byte at the same time */
-                                return -ENOMEM;
-
-                        result[n_result++] = '.';
-                }
-
-                n_unescaped++;
-        }
-
-        if (n_unescaped > DNS_HOSTNAME_MAX) /* Enforce max length check on unescaped length */
+        if (n > DNS_HOSTNAME_MAX)
                 return -EINVAL;
 
-        if (ret) {
-                /* Suffix with a NUL byte */
-                if (!GREEDY_REALLOC(result, n_result + 1))
-                        return -ENOMEM;
+        if (_ret) {
+                if (n == 0) {
+                        /* Nothing appended? If so, generate at least a single dot, to indicate the DNS root domain */
+                        if (!GREEDY_REALLOC(ret, 2))
+                                return -ENOMEM;
 
-                result[n_result] = 0;
-                *ret = TAKE_PTR(result);
+                        ret[n++] = '.';
+                } else {
+                        if (!GREEDY_REALLOC(ret, n + 1))
+                                return -ENOMEM;
+                }
+
+                ret[n] = 0;
+                *_ret = TAKE_PTR(ret);
         }
 
         return 0;
@@ -908,6 +901,75 @@ int dns_name_to_wire_format(const char *domain, uint8_t *buffer, size_t len, boo
                 return -EINVAL;
 
         return out - buffer;
+}
+
+/* Decode a domain name according to RFC 1035 Section 3.1, without compression */
+int dns_name_from_wire_format(const uint8_t **data, size_t *len, char **ret) {
+        _cleanup_free_ char *domain = NULL;
+        const uint8_t *optval;
+        size_t optlen, n = 0;
+        int r;
+
+        assert(data);
+        assert(len);
+        assert(*data || *len == 0);
+        assert(ret);
+
+        optval = *data;
+        optlen = *len;
+
+        for (;;) {
+                const char *label;
+                uint8_t c;
+
+                /* Unterminated name */
+                if (optlen == 0)
+                        return -EBADMSG;
+
+                /* RFC 1035 § 3.1 total length of encoded name is limited to 255 octets */
+                if (*len - optlen > 255)
+                        return -EMSGSIZE;
+
+                c = *optval;
+                optval++;
+                optlen--;
+
+                if (c == 0)
+                        /* End label */
+                        break;
+                if (c > DNS_LABEL_MAX)
+                        return -EBADMSG;
+                if (c > optlen)
+                        return -EMSGSIZE;
+
+                /* Literal label */
+                label = (const char*) optval;
+                optval += c;
+                optlen -= c;
+
+                if (!GREEDY_REALLOC(domain, n + (n != 0) + DNS_LABEL_ESCAPED_MAX))
+                        return -ENOMEM;
+
+                if (n != 0)
+                        domain[n++] = '.';
+
+                r = dns_label_escape(label, c, domain + n, DNS_LABEL_ESCAPED_MAX);
+                if (r < 0)
+                        return r;
+
+                n += r;
+        }
+
+        if (!GREEDY_REALLOC(domain, n + 1))
+                return -ENOMEM;
+
+        domain[n] = '\0';
+
+        *ret = TAKE_PTR(domain);
+        *data = optval;
+        *len = optlen;
+
+        return n;
 }
 
 static bool srv_type_label_is_valid(const char *label, size_t n) {
