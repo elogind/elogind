@@ -189,6 +189,7 @@ simple_tests += files(
 #endif // 0
         'test-path-util.c',
         'test-percent-util.c',
+        'test-pidref.c',
         'test-pretty-print.c',
         'test-prioq.c',
         'test-proc-cmdline.c',
