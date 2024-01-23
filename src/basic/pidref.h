@@ -53,6 +53,7 @@ PidRef *pidref_free(PidRef *pidref);
 DEFINE_TRIVIAL_CLEANUP_FUNC(PidRef*, pidref_free);
 
 #if 0 /// UNNEEDED by elogind
+int pidref_copy(const PidRef *pidref, PidRef *dest);
 int pidref_dup(const PidRef *pidref, PidRef **ret);
 
 int pidref_new_from_pid(pid_t pid, PidRef **ret);
