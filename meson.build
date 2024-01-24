@@ -1667,6 +1667,10 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 # endif
 # conf.set('DEFAULT_COMPRESSION', 'COMPRESSION_@0@'.format(compression.to_upper()))
 #
+# libarchive = dependency('libarchive',
+#                         version : '>= 3.0',
+#                         required : get_option('libarchive'))
+# conf.set10('HAVE_LIBARCHIVE', libarchive.found())
 #else // 0
 libmicrohttpd = []
 libcryptsetup = []

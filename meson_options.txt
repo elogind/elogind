@@ -526,6 +526,8 @@ option('pam', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'di
 #endif // 0
 option('dbus', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'libdbus support (for tests only)')
+option('libarchive', type : 'feature',
+       description : 'libarchive support')
 
 #if 0 /// UNNEEDED BY elogind
 # option('bootloader', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },

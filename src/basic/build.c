@@ -246,6 +246,12 @@ const char* const elogind_features =
 #endif
 #endif // 0
 
+#if HAVE_LIBARCHIVE
+        " +LIBARCHIVE"
+#else
+        " -LIBARCHIVE"
+#endif
+
         " default-hierarchy=" DEFAULT_HIERARCHY_NAME
         ;
 
