@@ -595,11 +595,11 @@ int user_finalize(User *u) {
          * done. This is called as a result of an earlier user_done() when all jobs are completed. */
 
         if (u->started)
-                log_debug("User %s logged out.", u->user_record->user_name);
 #if 1 /// let elogind at least issue a debug message if u wasn't even started
         else
                 log_debug_elogind("User %s not started, finalizing...", u->user_record->user_name);
 #endif // 1
+                log_debug("User %s exited.", u->user_record->user_name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions)
                 RET_GATHER(r, session_finalize(s));
