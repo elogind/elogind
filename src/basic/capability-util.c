@@ -386,7 +386,6 @@ static int change_capability(cap_value_t cv, cap_flag_value_t flag) {
 
         return 0;
 }
-#endif // 0
 
 int drop_capability(cap_value_t cv) {
         return change_capability(cv, CAP_CLEAR);
@@ -395,6 +394,7 @@ int drop_capability(cap_value_t cv) {
 int keep_capability(cap_value_t cv) {
         return change_capability(cv, CAP_SET);
 }
+#endif // 0
 
 bool ambient_capabilities_supported(void) {
         static int cache = -1;
