@@ -1182,7 +1182,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **ret_cgroup) {
 
                 *ret_cgroup = n;
         }
-        log_debug_elogind("Resulting cgroup:\"%s\"", *cgroup);
+        log_debug_elogind("Resulting cgroup:\"%s\"", *ret_cgroup);
 
         return 0;
 }
@@ -1494,8 +1494,8 @@ int cg_path_get_cgroupid(const char *path, uint64_t *ret) {
 }
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_session(const char *path, char **ret_session) {
+#if 0 /// UNNEEDED by elogind
         _cleanup_free_ char *unit = NULL;
         char *start, *end;
         int r;
@@ -1567,8 +1567,8 @@ int cg_pid_get_session(pid_t pid, char **ret_session) {
         return cg_path_get_session(cgroup, ret_session);
 }
 
-#if 0 /// elogind needs one more value
 int cg_path_get_owner_uid(const char *path, uid_t *ret_uid) {
+#if 0 /// elogind needs one more value
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
 #else // 0
@@ -1605,7 +1605,7 @@ int cg_path_get_owner_uid(const char *path, uid_t *ret_uid) {
         if (isempty(s))
                 return -EIO;
 
-        if (parse_uid(s, uid) < 0)
+        if (parse_uid(s, ret_uid) < 0)
                 return -ENXIO;
 #endif // 0
 
@@ -1674,9 +1674,9 @@ int cg_path_get_slice(const char *p, char **ret_slice) {
         e = startswith(p, "/");
 
         if (e)
-                *slice = strdup(e);
+                *ret_slice = strdup(e);
         else
-                *slice = strdup(p);
+                *ret_slice = strdup(p);
 
         return 0;
 #endif // 0
@@ -1697,8 +1697,8 @@ int cg_pid_get_slice(pid_t pid, char **ret_slice) {
         return cg_path_get_slice(cgroup, ret_slice);
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_path_get_user_slice(const char *p, char **ret_slice) {
+#if 0 /// UNNEEDED by elogind
         const char *t;
 #endif // 0
         assert(p);
@@ -1718,7 +1718,7 @@ int cg_path_get_user_slice(const char *p, char **ret_slice) {
         /* In elogind there is nothing to skip, we can use the path
          * directly. Generally speaking this is always a session id
          * to user mapping. */
-        return cg_path_get_slice(p, slice);
+        return cg_path_get_slice(p, ret_slice);
 #endif // 0
 }
 
