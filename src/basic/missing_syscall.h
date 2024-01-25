@@ -32,7 +32,6 @@
 
 /* ======================================================================= */
 
-#if 0 /// UNNEEDED by elogind
 #if !HAVE_FCHMODAT2
 static inline int missing_fchmodat2(int dirfd, const char *path, mode_t mode, int flags) {
 #  ifdef __NR_fchmodat2
@@ -48,6 +47,7 @@ static inline int missing_fchmodat2(int dirfd, const char *path, mode_t mode, in
 
 /* ======================================================================= */
 
+#if 0 /// UNNEEDED by elogind
 #if !HAVE_PIVOT_ROOT
 static inline int missing_pivot_root(const char *new_root, const char *put_old) {
         return syscall(__NR_pivot_root, new_root, put_old);

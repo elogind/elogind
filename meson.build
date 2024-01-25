@@ -671,9 +671,9 @@ foreach ident : [
         ['memfd_create',      '''#include <sys/mman.h>'''],
         ['gettid',            '''#include <sys/types.h>
                                  #include <unistd.h>'''],
+        ['fchmodat2',         '''#include <stdlib.h>
+                                 #include <fcntl.h>'''],      # no known header declares fchmodat2
 #if 0 /// Not used in elogind
-#         ['fchmodat2',         '''#include <stdlib.h>
-#                                  #include <fcntl.h>'''],      # no known header declares fchmodat2
 #         ['pivot_root',        '''#include <stdlib.h>
 #                                  #include <unistd.h>'''],     # no known header declares pivot_root
 #endif // 0
