@@ -992,6 +992,7 @@ const char *accmode_to_string(int flags) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 char *format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, int fd) {
         assert(buf);
         assert(fd >= 0);
@@ -999,3 +1000,4 @@ char *format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, 
         assert_se(snprintf_ok(buf, PROC_PID_FD_PATH_MAX, "/proc/" PID_FMT "/fd/%i", pid == 0 ? getpid_cached() : pid, fd));
         return buf;
 }
+#endif // 0
