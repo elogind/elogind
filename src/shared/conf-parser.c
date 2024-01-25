@@ -601,9 +601,8 @@ static int config_parse_many_files(
 /* Parse one main config file located in /etc/elogind and its drop-ins, which is what all elogind daemons
 /* Parse one main config file located in /etc/$pkgdir and its drop-ins, which is what all elogind daemons
  * do. */
-int config_parse_config_file_full(
+int config_parse_config_file(
                 const char *conf_file,
-                const char *pkgdir,
                 const char *sections,
                 ConfigItemLookup lookup,
                 const void *table,
@@ -615,7 +614,6 @@ int config_parse_config_file_full(
         int r;
 
         assert(conf_file);
-        assert(pkgdir);
 
         /* build the dropin dir list */
         dropin_dirs = new0(char*, strv_length(conf_paths) + 1);
@@ -629,10 +627,10 @@ int config_parse_config_file_full(
         STRV_FOREACH(p, conf_paths) {
                 char *d;
 
-                d = strjoin(*p, pkgdir, "/", conf_file, ".d");
+                d = strjoin(*p, conf_file, ".d");
                 if (!d) {
                         if (flags & CONFIG_PARSE_WARN)
-                                return log_oom();
+                                log_oom();
                         return -ENOMEM;
                 }
 
@@ -643,7 +641,7 @@ int config_parse_config_file_full(
         if (r < 0)
                 return r;
 
-        const char *sysconf_file = strjoina(SYSCONF_DIR, "/", pkgdir, "/", conf_file);
+        const char *sysconf_file = strjoina(SYSCONF_DIR, "/", conf_file);
 
         return config_parse_many_files(STRV_MAKE_CONST(sysconf_file), dropins,
                                        sections, lookup, table, flags, userdata, NULL);

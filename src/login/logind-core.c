@@ -94,7 +94,7 @@ int manager_parse_config_file(Manager *m) {
         assert(m);
 
 #if 0 /// elogind parses its own config file
-        return config_parse_config_file("logind.conf", "Login\0",
+        return config_parse_config_file("elogind/logind.conf", "Login\0",
                                         config_item_perf_lookup, logind_gperf_lookup,
                                         CONFIG_PARSE_WARN, m);
 #else // 0
@@ -140,7 +140,7 @@ int manager_add_seat(Manager *m, const char *id, Seat **ret_seat) {
 
         s = hashmap_get(m->seats, id);
         if (!s) {
-                r = seat_new(m, id, &s);
+                r = seat_new(&s, m, id);
                 if (r < 0)
                         return r;
         }
@@ -160,7 +160,7 @@ int manager_add_session(Manager *m, const char *id, Session **ret_session) {
 
         s = hashmap_get(m->sessions, id);
         if (!s) {
-                r = session_new(m, id, &s);
+                r = session_new(&s, m, id);
                 if (r < 0)
                         return r;
         }
@@ -184,7 +184,7 @@ int manager_add_user(
 
         u = hashmap_get(m->users, UID_TO_PTR(ur->uid));
         if (!u) {
-                r = user_new(m, ur, &u);
+                r = user_new(&u, m, ur);
                 if (r < 0)
                         return r;
         }
