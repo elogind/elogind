@@ -417,11 +417,11 @@ int elogind_efi_options_variable(char **ret) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int compare_stat_mtime(const struct stat *a, const struct stat *b) {
         return CMP(timespec_load(&a->st_mtim), timespec_load(&b->st_mtim));
 }
 
-#if 0 /// UNNEEDED by elogind
 int systemd_efi_options_efivarfs_if_newer(char **ret) {
         struct stat a = {}, b;
         int r;
