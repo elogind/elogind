@@ -2123,8 +2123,8 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 ############################################################
 
+check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
-# check_version_history_py = find_program('tools/check-version-history.py')
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
