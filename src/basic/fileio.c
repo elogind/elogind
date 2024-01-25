@@ -1084,6 +1084,7 @@ int fdopen_independent(int fd, const char *mode, FILE **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int search_and_open_internal(
                 const char *path,
                 int mode,            /* if ret_fd is NULL this is an [FRWX]_OK mode for access(), otherwise an open mode for open() */
@@ -1153,7 +1154,6 @@ static int search_and_open_internal(
         return -ENOENT;
 }
 
-#if 0 /// UNNEEDED by elogind
 int search_and_open(
                 const char *path,
                 int mode,
@@ -1231,7 +1231,6 @@ int search_and_fopen(
 
         return search_and_fopen_internal(path, mode, root, copy, ret_file, ret_path);
 }
-#endif // 0
 
 int search_and_fopen_nulstr(
                 const char *path,
@@ -1252,6 +1251,7 @@ int search_and_fopen_nulstr(
 
         return search_and_fopen_internal(path, mode, root, l, ret_file, ret_path);
 }
+#endif // 0
 
 int fflush_and_check(FILE *f) {
         assert(f);
