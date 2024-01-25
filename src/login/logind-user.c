@@ -123,31 +123,31 @@ User *user_free(User *u) {
                 session_free(u->sessions);
 
         if (u->service)
-                hashmap_remove_value(u->manager->user_units, u->service, u);
+                (void) hashmap_remove_value(u->manager->user_units, u->service, u);
 
 #if 0 /// elogind does not need the systemd runtime_dir_service
         if (u->runtime_dir_service)
-                hashmap_remove_value(u->manager->user_units, u->runtime_dir_service, u);
 #endif // 0
+                (void) hashmap_remove_value(u->manager->user_units, u->runtime_dir_service, u);
 
         if (u->slice)
-                hashmap_remove_value(u->manager->user_units, u->slice, u);
+                (void) hashmap_remove_value(u->manager->user_units, u->slice, u);
 
-        hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
+        (void) hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
         sd_event_source_unref(u->timer_event_source);
 
 #if 0 /// elogind does not support services and service jobs.
-        u->service_job = mfree(u->service_job);
 #endif // 0
+        free(u->service_job);
 
-        u->service = mfree(u->service);
 #if 0 /// elogind does not need the systemd runtime_dir_service
-        u->runtime_dir_service = mfree(u->runtime_dir_service);
 #endif // 0
-        u->slice = mfree(u->slice);
-        u->runtime_path = mfree(u->runtime_path);
-        u->state_file = mfree(u->state_file);
+        free(u->service);
+        free(u->runtime_dir_service);
+        free(u->slice);
+        free(u->runtime_path);
+        free(u->state_file);
 
         user_record_unref(u->user_record);
 
