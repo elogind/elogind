@@ -1087,7 +1087,6 @@ int getenv_steal_erase(const char *name, char **ret) {
 
         return 1;
 }
-#endif // 0
 
 int set_full_environment(char **env) {
         int r;
@@ -1107,3 +1106,4 @@ int set_full_environment(char **env) {
 
         return 0;
 }
+#endif // 0

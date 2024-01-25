@@ -89,6 +89,6 @@ int setenv_elogind_exec_pid(bool update_only);
 int getenv_path_list(const char *name, char ***ret_paths);
 
 int getenv_steal_erase(const char *name, char **ret);
-#endif // 0
 
 int set_full_environment(char **env);
+#endif // 0
