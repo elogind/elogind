@@ -86,8 +86,8 @@
 #if 0 /// UNNEEDED by elogind
 int reset_terminal_fd(int fd, bool switch_to_text);
 int reset_terminal(const char *name);
-#endif // 0
 int set_terminal_cursor_position(int fd, unsigned int row, unsigned int column);
+#endif // 0
 
 int open_terminal(const char *name, int mode);
 

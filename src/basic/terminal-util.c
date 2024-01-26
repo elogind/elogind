@@ -1554,6 +1554,7 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int set_terminal_cursor_position(int fd, unsigned int row, unsigned int column) {
         int r;
         char cursor_position[STRLEN("\x1B[") + DECIMAL_STR_MAX(int) * 2 + STRLEN(";H") + 1];
@@ -1568,3 +1569,4 @@ int set_terminal_cursor_position(int fd, unsigned int row, unsigned int column) 
 
         return 0;
 }
+#endif // 0
