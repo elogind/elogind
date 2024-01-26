@@ -15,6 +15,7 @@ static const char* utf8_only(const char *s) {
         return s && utf8_is_valid(s) ? s : NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int strv_extend_strv_utf8_only(char ***dst, char **src, bool filter_duplicates) {
         _cleanup_free_ char **t = NULL;
         size_t l, j = 0;
@@ -34,6 +35,7 @@ static int strv_extend_strv_utf8_only(char ***dst, char **src, bool filter_dupli
         t[j] = NULL;
         return strv_extend_strv(dst, t, filter_duplicates);
 }
+#endif // 0
 
 int nss_passwd_to_user_record(
                 const struct passwd *pwd,
