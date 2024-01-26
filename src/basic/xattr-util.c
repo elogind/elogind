@@ -119,7 +119,6 @@ int getxattr_at_malloc(
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int getxattr_at_bool(int fd, const char *path, const char *name, int flags) {
         _cleanup_free_ char *v = NULL;
         int r;
@@ -134,6 +133,7 @@ int getxattr_at_bool(int fd, const char *path, const char *name, int flags) {
         return parse_boolean(v);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int parse_crtime(le64_t le, usec_t *usec) {
         uint64_t u;
 
