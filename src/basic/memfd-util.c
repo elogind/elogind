@@ -68,13 +68,13 @@ int memfd_new(const char *name) {
         return memfd_create_wrapper(name, MFD_ALLOW_SEALING | MFD_CLOEXEC | MFD_NOEXEC_SEAL);
 }
 
-#if 0 /// UNNEEDED by elogind
 int memfd_add_seals(int fd, unsigned int seals) {
         assert(fd >= 0);
 
         return RET_NERRNO(fcntl(fd, F_ADD_SEALS, seals));
 }
 
+#if 0 /// UNNEEDED by elogind
 int memfd_get_seals(int fd, unsigned int *ret_seals) {
         int r;
 
