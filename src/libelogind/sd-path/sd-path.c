@@ -314,7 +314,7 @@ static int get_path(uint64_t type, char **buffer, const char **ret) {
 #if 0 /// elogind is most probably somewhere else
                 *ret = PREFIX_NOSLASH "/lib/elogind";
 #else // 0
-                *ret = ROOTLIBEXECDIR;
+                *ret = LIBEXECDIR;
 #endif // 0
                 return 0;
 

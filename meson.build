@@ -144,7 +144,7 @@ datadir = prefixdir / get_option('datadir')
 localstatedir = '/' / get_option('localstatedir')
 
 #if 0 /// elogind needs this to be configurable
-# libexecdir = prefixdir / 'lib/elogind'
+# libexecdir = prefixdir / 'lib/systemd'
 #else // 0
 libexecdir = get_option('libexecdir')
 libexecdir = libexecdir != '' ? libexecdir : prefixdir / 'lib/elogind'
@@ -294,8 +294,8 @@ conf.set_quoted('DOC_DIR',                                    docdir)
 #endif // 0
 conf.set_quoted('INCLUDE_DIR',                                includedir)
 conf.set_quoted('LIBDIR',                                     libdir)
+conf.set_quoted('LIBEXECDIR',                                 libexecdir)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('LIBEXECDIR',                                 libexecdir)
 # conf.set_quoted('MODPROBE_DIR',                               modprobedir)
 # conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
 #endif // 0

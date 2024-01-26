@@ -14,7 +14,7 @@ ENV{ID_SEAT}=="", IMPORT{parent}="ID_SEAT"
 
 ENV{ID_SEAT}!="", TAG+="$env{ID_SEAT}"
 {% if HAVE_ACL %}
-TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="{{ROOTLIBEXECDIR}}/elogind-uaccess-command %N $env{ID_SEAT}"
+TAG=="uaccess", ENV{MAJOR}!="", RUN{program}+="{{LIBEXECDIR}}/elogind-uaccess-command %N $env{ID_SEAT}"
 {% endif %}
 
 LABEL="seat_late_end"
