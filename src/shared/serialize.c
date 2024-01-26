@@ -116,7 +116,6 @@ int serialize_fd(FILE *f, FDSet *fds, const char *key, int fd) {
 
         return serialize_item_format(f, key, "%i", copy);
 }
-#endif // 0
 
 int serialize_fd_many(FILE *f, FDSet *fds, const char *key, const int fd_array[], size_t n_fd_array) {
         _cleanup_free_ char *t = NULL;
@@ -144,6 +143,7 @@ int serialize_fd_many(FILE *f, FDSet *fds, const char *key, const int fd_array[]
 
         return serialize_item(f, key, t);
 }
+#endif // 0
 
 int serialize_usec(FILE *f, const char *key, usec_t usec) {
         assert(f);
@@ -471,7 +471,6 @@ int deserialize_environment(const char *value, char ***list) {
 
         return 0;
 }
-#endif // 0
 
 int deserialize_pidref(FDSet *fds, const char *value, PidRef *ret) {
         const char *e;
@@ -502,6 +501,7 @@ int deserialize_pidref(FDSet *fds, const char *value, PidRef *ret) {
 
         return 0;
 }
+#endif // 0
 
 void deserialize_ratelimit(RateLimit *rl, const char *name, const char *value) {
         usec_t begin, interval;
