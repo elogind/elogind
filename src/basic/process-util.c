@@ -383,6 +383,7 @@ int container_get_leader(const char *machine, pid_t *pid) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int namespace_get_leader(pid_t pid, NamespaceType type, pid_t *ret) {
         int r;
 
@@ -409,6 +410,7 @@ int namespace_get_leader(pid_t pid, NamespaceType type, pid_t *ret) {
                 pid = ppid;
         }
 }
+#endif // 0
 
 int pid_is_kernel_thread(pid_t pid) {
         _cleanup_free_ char *line = NULL;
@@ -1037,7 +1039,6 @@ int pid_is_my_child(pid_t pid) {
 
         return ppid == getpid_cached();
 }
-#endif // 0
 
 int pidref_is_my_child(const PidRef *pid) {
         int r, result;
@@ -1055,6 +1056,7 @@ int pidref_is_my_child(const PidRef *pid) {
 
         return result;
 }
+#endif // 0
 
 int pid_is_unwaited(pid_t pid) {
         /* Checks whether a PID is still valid at all, including a zombie */
@@ -1074,6 +1076,7 @@ int pid_is_unwaited(pid_t pid) {
         return errno != ESRCH;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_is_unwaited(const PidRef *pid) {
         int r;
 
@@ -1091,6 +1094,7 @@ int pidref_is_unwaited(const PidRef *pid) {
 
         return true;
 }
+#endif // 0
 
 int pid_is_alive(pid_t pid) {
         int r;

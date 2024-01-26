@@ -60,7 +60,9 @@ int get_process_umask(pid_t pid, mode_t *ret);
 
 int container_get_leader(const char *machine, pid_t *pid);
 
+#if 0 /// UNNEEDED by elogind
 int namespace_get_leader(pid_t pid, NamespaceType type, pid_t *ret);
+#endif // 0
 
 int wait_for_terminate(pid_t pid, siginfo_t *status);
 
@@ -92,8 +94,8 @@ int getenv_for_pid(pid_t pid, const char *field, char **_value);
 
 int pid_is_alive(pid_t pid);
 int pidref_is_alive(const PidRef *pidref);
-#if 0 /// UNNEEDED by elogind
 int pid_is_unwaited(pid_t pid);
+#if 0 /// UNNEEDED by elogind
 int pidref_is_unwaited(const PidRef *pidref);
 int pid_is_my_child(pid_t pid);
 int pidref_is_my_child(const PidRef *pidref);
