@@ -11,6 +11,7 @@
 
 #include "errno-util.h"
 #include "macro.h"
+#include "pidref.h"
 #include "runtime-scope.h"
 #include "set.h"
 #include "string-util.h"
@@ -86,3 +87,6 @@ int bus_message_append_string_set(sd_bus_message *m, Set *s);
 #if 0 /// UNNEEDED by elogind
 int bus_property_get_string_set(sd_bus *bus, const char *path, const char *interface, const char *property, sd_bus_message *reply, void *userdata, sd_bus_error *error);
 #endif // 0
+
+int bus_creds_get_pidref(sd_bus_creds *c, PidRef *ret);
+int bus_query_sender_pidref(sd_bus_message *m, PidRef *ret);
