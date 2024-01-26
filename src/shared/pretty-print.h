@@ -31,8 +31,8 @@ typedef enum CatFlags {
 } CatFlags;
 
 int cat_files(const char *file, char **dropins, CatFlags flags);
-#endif // 0
 int conf_files_cat(const char *root, const char *name, CatFlags flags);
+#endif // 0
 
 #define RED_CROSS_MARK_MAX (STRLEN(ANSI_HIGHLIGHT_RED) + STRLEN("✗") + STRLEN(ANSI_NORMAL) + 1)
 #define GREEN_CHECK_MARK_MAX (STRLEN(ANSI_HIGHLIGHT_GREEN) + STRLEN("✓") + STRLEN(ANSI_NORMAL) + 1)
