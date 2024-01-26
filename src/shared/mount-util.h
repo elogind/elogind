@@ -73,8 +73,8 @@ int umount_verbose(
                 const char *where,
                 int flags);
 
-#endif // 0
 int mount_exchange_graceful(int fsmount_fd, const char *dest, bool mount_beneath);
+#endif // 0
 
 int mount_option_mangle(
                 const char *options,
@@ -149,4 +149,6 @@ int trigger_automount_at(int dir_fd, const char *path);
 unsigned long credentials_fs_mount_flags(bool ro);
 int mount_credentials_fs(const char *path, size_t size, bool ro);
 
+#if 0 /// UNNEEDED by elogind
 int make_fsmount(int error_log_level, const char *what, const char *type, unsigned long flags, const char *options, int userns_fd);
+#endif // 0

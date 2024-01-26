@@ -735,7 +735,6 @@ int umount_verbose(
 
         return 0;
 }
-#endif // 0
 
 int mount_exchange_graceful(int fsmount_fd, const char *dest, bool mount_beneath) {
         int r;
@@ -775,6 +774,7 @@ int mount_exchange_graceful(int fsmount_fd, const char *dest, bool mount_beneath
 
         return r;
 }
+#endif // 0
 
 int mount_option_mangle(
                 const char *options,
@@ -1708,6 +1708,7 @@ int mount_credentials_fs(const char *path, size_t size, bool ro) {
                         opts);
 }
 
+#if 0 /// UNNEEDED by elogind
 int make_fsmount(
                 int error_log_level,
                 const char *what,
@@ -1792,3 +1793,4 @@ int make_fsmount(
 
         return TAKE_FD(mnt_fd);
 }
+#endif // 0
