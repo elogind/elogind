@@ -48,4 +48,6 @@ typedef enum LockType {
 
 int lock_generic(int fd, LockType type, int operation);
 
+#if 0 /// UNNEEDED by elogind
 int lock_generic_with_timeout(int fd, LockType type, int operation, usec_t timeout);
+#endif // 0

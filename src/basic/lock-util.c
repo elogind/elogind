@@ -194,6 +194,7 @@ int lock_generic(int fd, LockType type, int operation) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int lock_generic_with_timeout(int fd, LockType type, int operation, usec_t timeout) {
         _cleanup_(sigkill_waitp) pid_t pid = 0;
         int r;
@@ -279,3 +280,4 @@ int lock_generic_with_timeout(int fd, LockType type, int operation, usec_t timeo
                 assert_not_reached();
         }
 }
+#endif // 0
