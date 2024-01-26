@@ -3805,7 +3805,6 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
-#endif // 0
                 case _JSON_BUILD_IOVEC_BASE64: {
                         const struct iovec *iov;
 
@@ -3834,7 +3833,6 @@ int json_buildv(JsonVariant **ret, va_list ap) {
                         break;
                 }
 
-#if 0 /// UNNEEDED by elogind
                 case _JSON_BUILD_ID128:
                 case _JSON_BUILD_UUID: {
                         const sd_id128_t *id;
@@ -3895,7 +3893,6 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
-#endif // 0
 
                 case _JSON_BUILD_HW_ADDR: {
                         const struct hw_addr_data *hw_addr;
@@ -3995,6 +3992,7 @@ int json_buildv(JsonVariant **ret, va_list ap) {
 
                         break;
                 }
+#endif // 0
 
                 case _JSON_BUILD_OBJECT_BEGIN:
 
@@ -4969,6 +4967,7 @@ int json_dispatch_unsupported(const char *name, JsonVariant *variant, JsonDispat
         return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not allowed in this object.", strna(name));
 }
 
+#if 0 /// UNNEEDED by elogind
 int json_dispatch_unbase64_iovec(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         _cleanup_free_ void *buffer = NULL;
         struct iovec *iov = ASSERT_PTR(userdata);
@@ -4986,6 +4985,7 @@ int json_dispatch_unbase64_iovec(const char *name, JsonVariant *variant, JsonDis
         iov->iov_len = sz;
         return 0;
 }
+#endif // 0
 
 static int json_cmp_strings(const void *x, const void *y) {
         JsonVariant *const *a = x, *const *b = y;
