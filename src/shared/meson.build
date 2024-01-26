@@ -224,6 +224,7 @@ shared_sources = files(
         'fileio-label.c',
         'find-esp.c',
         'format-table.c',
+        'hibernate-util.c',
         'json.c',
         'label-util.c',
         'libcrypt-util.c',
