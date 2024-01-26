@@ -114,6 +114,7 @@ basic_sources = files(
         'alloc-util.c',
         'argv-util.c',
         'audit-util.c',
+        'btrfs.c',
         'build.c',
         'bus-label.c',
         'capability-util.c',
