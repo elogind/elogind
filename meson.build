@@ -1175,7 +1175,7 @@ enable_debug_siphash = false
 foreach name : get_option('debug-extra')
         if name == 'hashmap'
                 enable_debug_hashmap = true
-#if 0 // UNNEEDED by elogind
+#if 0 /// UNNEEDED by elogind
 #         elif name == 'mmap-cache'
 #                 enable_debug_mmap_cache = true
 #endif // 0
