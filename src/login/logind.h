@@ -24,9 +24,7 @@ typedef struct Manager Manager;
 
 /// Additional includes needed by elogind
 #include "cgroup-util.h"
-#include "elogind.h"
-#include "musl_missing.h"
-#include "sleep-util.h"
+#include "sleep-config.h"
 
 #if 1 /// elogind has to ident itself
 #define MANAGER_IS_SYSTEM(m)   (  (m)->is_system)

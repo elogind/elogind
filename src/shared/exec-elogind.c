@@ -30,11 +30,11 @@
 
 
 
-static int gather_output_generate(int fd, void *arg) {
+static int gather_output_generate(int const fd, void *arg) {
         _cleanup_fclose_ FILE *f = NULL;
-        Manager* m = (Manager*)arg;
+        Manager* m = arg;
         unsigned line = 0;
-        int r = 0;
+        int r;
 
         /* Read and log lines from fd. Check if any line begins with a keyword
          * representing failure. Set callback_failed to true if such a keyword
