@@ -139,10 +139,10 @@ int _ordered_hashmap_ensure_allocated(OrderedHashmap **h, const struct hash_ops 
 #define hashmap_ensure_put(s, ops, key, value) _hashmap_ensure_put(s, ops, key, value  HASHMAP_DEBUG_SRC_ARGS)
 #define ordered_hashmap_ensure_allocated(h, ops) _ordered_hashmap_ensure_allocated(h, ops  HASHMAP_DEBUG_SRC_ARGS)
 
-#if 0 /// UNNEEDED by elogind
 int _ordered_hashmap_ensure_put(OrderedHashmap **h, const struct hash_ops *hash_ops, const void *key, void *value  HASHMAP_DEBUG_PARAMS);
 #define ordered_hashmap_ensure_put(s, ops, key, value) _ordered_hashmap_ensure_put(s, ops, key, value  HASHMAP_DEBUG_SRC_ARGS)
 
+#if 0 /// UNNEEDED by elogind
 IteratedCache* _hashmap_iterated_cache_new(HashmapBase *h);
 static inline IteratedCache* hashmap_iterated_cache_new(Hashmap *h) {
         return (IteratedCache*) _hashmap_iterated_cache_new(HASHMAP_BASE(h));

@@ -28,7 +28,7 @@
 #include "nulstr-util.h"
 //#include "parse-helpers.h"
 #include "parse-util.h"
-//#include "path-util.h"
+#include "path-util.h"
 //#include "percent-util.h"
 //#include "process-util.h"
 //#include "rlimit-util.h"
@@ -43,7 +43,6 @@
 #include "time-util.h"
 #include "utf8.h"
 
-/// Additional includes needed by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(config_file_hash_ops_fclose,
                                               char, path_hash_func, path_compare,
                                               FILE, safe_fclose);
