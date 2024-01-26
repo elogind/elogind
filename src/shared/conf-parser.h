@@ -218,7 +218,9 @@ CONFIG_PARSER_PROTOTYPE(config_parse_sec_def_infinity);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_def_unset);
 CONFIG_PARSER_PROTOTYPE(config_parse_nsec);
 CONFIG_PARSER_PROTOTYPE(config_parse_mode);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_warn_compat);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_log_facility);
 CONFIG_PARSER_PROTOTYPE(config_parse_log_level);
 CONFIG_PARSER_PROTOTYPE(config_parse_signal);
@@ -241,13 +243,13 @@ CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
 
-#if 0 /// UNNEEDED by elogind
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
         DISABLED_LEGACY,
         DISABLED_EXPERIMENTAL,
 } Disabled;
 
+#if 0 /// UNNEEDED by elogind
 typedef enum ConfigParseStringFlags {
         CONFIG_PARSE_STRING_SAFE  = 1 << 0,
         CONFIG_PARSE_STRING_ASCII = 1 << 1,

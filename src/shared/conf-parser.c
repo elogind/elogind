@@ -1284,7 +1284,6 @@ int config_parse_strv(
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_warn_compat(
                 const char *unit,
                 const char *filename,
@@ -1320,6 +1319,7 @@ int config_parse_warn_compat(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_log_facility(
                 const char *unit,
                 const char *filename,
