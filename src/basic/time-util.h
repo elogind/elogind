@@ -88,8 +88,8 @@ dual_timestamp* dual_timestamp_from_monotonic(dual_timestamp *ts, usec_t u);
 dual_timestamp* dual_timestamp_from_boottime(dual_timestamp *ts, usec_t u);
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 triple_timestamp* triple_timestamp_now(triple_timestamp *ts);
+#if 0 /// UNNEEDED by elogind
 triple_timestamp* triple_timestamp_from_realtime(triple_timestamp *ts, usec_t u);
 triple_timestamp* triple_timestamp_from_boottime(triple_timestamp *ts, usec_t u);
 
