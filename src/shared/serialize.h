@@ -47,7 +47,9 @@ int deserialize_read_line(FILE *f, char **ret);
 #if 0 /// UNNEEDED by elogind
 int deserialize_fd(FDSet *fds, const char *value);
 int deserialize_fd_many(FDSet *fds, const char *value, size_t n, int *ret);
+#endif // 0
 int deserialize_usec(const char *value, usec_t *ret);
+#if 0 /// UNNEEDED by elogind
 int deserialize_dual_timestamp(const char *value, dual_timestamp *ret);
 int deserialize_environment(const char *value, char ***environment);
 #endif // 0
