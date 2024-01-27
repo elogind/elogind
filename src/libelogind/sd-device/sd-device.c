@@ -345,18 +345,12 @@ _public_ int sd_device_new_from_ifname(sd_device **ret, const char *ifname) {
         assert_return(ret, -EINVAL);
         assert_return(ifname, -EINVAL);
 
-        r = parse_ifindex(ifname);
-        if (r > 0)
-                return sd_device_new_from_ifindex(ret, r);
-
-        if (ifname_valid(ifname)) {
-                r = device_new_from_main_ifname(ret, ifname);
-                if (r >= 0)
-                        return r;
-        }
+        r = device_new_from_main_ifname(ret, ifname);
+        if (r >= 0)
+                return r;
 
 #if 0 /// elogind does not support this, or we would have to pull in a ton of dependencies for one never really needed call
-        r = rtnl_resolve_link_alternative_name(NULL, ifname, &main_name);
+        r = rtnl_resolve_ifname_full(NULL, RESOLVE_IFNAME_ALTERNATIVE | RESOLVE_IFNAME_NUMERIC, ifname, &main_name, NULL);
         if (r < 0)
                 return r;
 
@@ -368,14 +362,15 @@ _public_ int sd_device_new_from_ifname(sd_device **ret, const char *ifname) {
 
 _public_ int sd_device_new_from_ifindex(sd_device **ret, int ifindex) {
         _cleanup_(sd_device_unrefp) sd_device *dev = NULL;
-        char ifname[IF_NAMESIZE];
+        _cleanup_free_ char *ifname = NULL;
         int r, i;
 
         assert_return(ret, -EINVAL);
         assert_return(ifindex > 0, -EINVAL);
 
-        if (format_ifname(ifindex, ifname) < 0)
-                return -ENODEV;
+        r = rtnl_get_ifname_full(NULL, ifindex, &ifname, NULL);
+        if (r < 0)
+                return r;
 
         r = device_new_from_main_ifname(&dev, ifname);
         if (r < 0)
