@@ -44,6 +44,10 @@ void elogind_set_program_name(const char* pcall);
 #  define HAVE_SECURE_GETENV 1
 #endif // HAVE_[__]SECURE_GETENV
 
+/* Poor man's basename */
+#define basename(path) \
+        (strrchr(path, '/') ? strrchr(path, '/')+1 : path)
+
 /* strndupa may already be defined in another compatibility header */
 #if !defined(strndupa)
 #define strndupa(x_src, x_n) \
