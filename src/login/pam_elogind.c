@@ -868,6 +868,7 @@ static int create_session_message(sd_bus *bus, pam_handle_t *handle, const Sessi
         if (r != PAM_SUCCESS)
                 return r;
 
+#if 0 /// elogind neither handles io_weight nor cpu_weight
         r = append_session_cpu_weight(handle, m, context->cpu_weight);
         if (r != PAM_SUCCESS)
                 return r;
@@ -875,6 +876,7 @@ static int create_session_message(sd_bus *bus, pam_handle_t *handle, const Sessi
         r = append_session_io_weight(handle, m, context->io_weight);
         if (r != PAM_SUCCESS)
                 return r;
+#endif // 0
 
         r = sd_bus_message_close_container(m);
         if (r < 0)
