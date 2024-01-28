@@ -786,7 +786,6 @@ static int print_user_status_info(sd_bus *bus, const char *path) {
 
         if (i.slice) {
 #if 0 /// UNNEEDED by elogind
-#endif // 0
                 show_unit_cgroup(bus, i.slice, /* leader = */ 0, /* prefix = */ strrepa(" ", STRLEN("Sessions: ")));
 
                 if (arg_transport == BUS_TRANSPORT_LOCAL)
@@ -803,6 +802,7 @@ static int print_user_status_info(sd_bus *bus, const char *path) {
                                         SD_JOURNAL_LOCAL_ONLY,
                                         true,
                                         NULL);
+#endif // 0
         }
 
         return 0;
