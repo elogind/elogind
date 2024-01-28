@@ -141,7 +141,7 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
                                           ACTION_KEXEC) ? "shutdown" : "sleep"))
                         continue;
 
-                get_process_comm(pid, &comm);
+                pid_get_comm(pid, &comm);
                 user = uid_to_name(uid);
 
                 log_warning("Operation inhibited by \"%s\" (PID "PID_FMT" \"%s\", user %s), reason is \"%s\".",
