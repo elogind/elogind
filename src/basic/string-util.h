@@ -208,6 +208,7 @@ int strextendf_with_separator(char **x, const char *separator, const char *forma
 
 #if 0 /// UNNEEDED by elogind
 char *strrep(const char *s, unsigned n);
+#endif // 0
 
 #define strrepa(s, n)                                           \
         ({                                                      \
@@ -220,6 +221,7 @@ char *strrep(const char *s, unsigned n);
                 _d_;                                            \
         })
 
+#if 0 /// UNNEEDED by elogind
 int split_pair(const char *s, const char *sep, char **l, char **r);
 #endif // 0
 
