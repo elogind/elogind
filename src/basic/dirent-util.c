@@ -94,7 +94,6 @@ struct dirent *readdir_ensure_type(DIR *d) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 struct dirent *readdir_no_dot(DIR *d) {
         assert(d);
 
@@ -106,4 +105,3 @@ struct dirent *readdir_no_dot(DIR *d) {
                         return de;
         }
 }
-#endif // 0
