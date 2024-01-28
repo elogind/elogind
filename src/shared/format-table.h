@@ -62,8 +62,8 @@ typedef enum TableDataType {
 
         /* The following are not really data types, but commands for table_add_cell_many() to make changes to
          * a cell just added. */
-#if 0 /// UNNEEDED by elogind
         TABLE_SET_MINIMUM_WIDTH,
+#if 0 /// UNNEEDED by elogind
         TABLE_SET_MAXIMUM_WIDTH,
         TABLE_SET_WEIGHT,
         TABLE_SET_ALIGN_PERCENT,

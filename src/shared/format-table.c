@@ -527,7 +527,6 @@ int table_add_cell_full(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_add_cell_stringf_full(Table *t, TableCell **ret_cell, TableDataType dt, const char *format, ...) {
         _cleanup_free_ char *buffer = NULL;
         va_list ap;
@@ -544,7 +543,6 @@ int table_add_cell_stringf_full(Table *t, TableCell **ret_cell, TableDataType dt
 
         return table_add_cell(t, ret_cell, dt, buffer);
 }
-#endif // 0
 
 int table_fill_empty(Table *t, size_t until_column) {
         int r;
