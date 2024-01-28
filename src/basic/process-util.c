@@ -470,7 +470,6 @@ int pid_is_kernel_thread(pid_t pid) {
         return !!(flags & PF_KTHREAD);
 }
 
-#if 0 /// UNNEEDED by elogind
 int pidref_is_kernel_thread(const PidRef *pid) {
         int result, r;
 
@@ -488,6 +487,7 @@ int pidref_is_kernel_thread(const PidRef *pid) {
         return result;
 }
 
+#if 0 /// UNNEEDED by elogind
 int get_process_capeff(pid_t pid, char **ret) {
         const char *p;
         int r;
@@ -2001,6 +2001,7 @@ fail:
         posix_spawnattr_destroy(&attr);
         return -r;
 }
+#endif // 0
 
 int proc_dir_open(DIR **ret) {
         DIR *d;
@@ -2070,6 +2071,7 @@ int proc_dir_read_pidref(DIR *d, PidRef *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static const char *const sigchld_code_table[] = {
         [CLD_EXITED] = "exited",
         [CLD_KILLED] = "killed",
