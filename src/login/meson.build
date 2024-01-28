@@ -162,14 +162,16 @@ modules += [
                 'sources' : files('pam_elogind.c'),
                 'version-script' : meson.current_source_dir() / 'pam_elogind.sym',
         },
-        pam_template + {
-                'name' : 'pam_elogind_loadkey',
-                'conditions' : [
-                        'HAVE_PAM',
-                ],
-                'sources' : files('pam_elogind_loadkey.c'),
-                'version-script' : meson.current_source_dir() / 'pam_elogind_loadkey.sym',
-        },
+#if 0 /// elogind can currently not be used to autounlock LUKS containers/drives
+#         pam_template + {
+#                 'name' : 'pam_elogind_loadkey',
+#                 'conditions' : [
+#                         'HAVE_PAM',
+#                 ],
+#                 'sources' : files('pam_elogind_loadkey.c'),
+#                 'version-script' : meson.current_source_dir() / 'pam_elogind_loadkey.sym',
+#         },
+#endif // 0
 ]
 
 enable_logind = conf.get('ENABLE_LOGIND') == 1
