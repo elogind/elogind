@@ -281,7 +281,9 @@ endif
 #         status_unit_format_default = conf.get('BUILD_MODE_DEVELOPER') == 1 ? 'name' : 'description'
 # endif
 #
-# conf.set_quoted('BINDIR',                                     bindir)
+#endif // 0
+conf.set_quoted('BINDIR',                                     bindir)
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('BINFMT_DIR',                                 binfmtdir)
 # conf.set_quoted('BOOTLIBDIR',                                 bootlibdir)
 # conf.set_quoted('CATALOG_DATABASE',                           catalogstatedir / 'database')
