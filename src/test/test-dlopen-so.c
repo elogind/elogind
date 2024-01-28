@@ -3,20 +3,20 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 
-#include "bpf-dlopen.h"
-#include "cryptsetup-util.h"
-#include "elf-util.h"
-#include "idn-util.h"
-#include "libfido2-util.h"
+//#include "bpf-dlopen.h"
+//#include "cryptsetup-util.h"
+//#include "elf-util.h"
+//#include "idn-util.h"
+//#include "libfido2-util.h"
 #include "macro.h"
 #include "main-func.h"
-#include "password-quality-util-passwdqc.h"
-#include "password-quality-util-pwquality.h"
-#include "pcre2-util.h"
+//#include "password-quality-util-passwdqc.h"
+//#include "password-quality-util-pwquality.h"
+//#include "pcre2-util.h"
 #include "pkcs11-util.h"
-#include "qrcode-util.h"
+//#include "qrcode-util.h"
 #include "tests.h"
-#include "tpm2-util.h"
+//#include "tpm2-util.h"
 
 static int run(int argc, char **argv) {
         test_setup_logging(LOG_DEBUG);

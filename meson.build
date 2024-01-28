@@ -1361,6 +1361,7 @@ libfdisk = []
 libpwquality = []
 conf.set10('HAVE_LIBFDISK', false)
 conf.set10('HAVE_PWQUALITY', false)
+conf.set10('HAVE_PASSWDQC', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
@@ -1676,6 +1677,7 @@ conf.set10('HAVE_TPM2', false)
 conf.set10('HAVE_BZIP2', false)
 conf.set10('HAVE_LZ4', false)
 conf.set10('HAVE_XZ', false)
+conf.set10('HAVE_ELFUTILS', false)
 conf.set10('HAVE_ZLIB', false)
 conf.set10('HAVE_ZSTD', false)
 conf.set10('HAVE_COMPRESSION', false)
