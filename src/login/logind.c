@@ -39,6 +39,7 @@
 #include "terminal-util.h"
 //#include "udev-util.h"
 /// Additional includes needed by elogind
+#include "elogind.h"
 #include "musl_missing.h"
 #include "user-util.h"
 
