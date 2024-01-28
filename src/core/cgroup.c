@@ -20,11 +20,11 @@
 //#include "devnum-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "firewall-util.h"
-#include "in-addr-prefix-util.h"
+//#include "firewall-util.h"
+//#include "in-addr-prefix-util.h"
 #include "inotify-util.h"
 #include "io-util.h"
-#include "ip-protocol-list.h"
+//#include "ip-protocol-list.h"
 #include "limits-util.h"
 #include "nulstr-util.h"
 //#include "parse-util.h"
@@ -3980,9 +3980,9 @@ Unit *manager_get_unit_by_pidref(Manager *m, PidRef *pid) {
         if (u)
                 return u;
 
-#endif // 0
         return NULL;
 }
+#endif // 0
 
 #if 0 /// elogind must substitute this with its own variant
 Unit *manager_get_unit_by_pid(Manager *m, pid_t pid) {
@@ -4707,7 +4707,6 @@ static const char* const cgroup_pressure_watch_table[_CGROUP_PRESSURE_WATCH_MAX]
 };
 
 DEFINE_STRING_TABLE_LOOKUP_WITH_BOOLEAN(cgroup_pressure_watch, CGroupPressureWatch, CGROUP_PRESSURE_WATCH_ON);
-#endif // 0
 
 static const char* const cgroup_ip_accounting_metric_table[_CGROUP_IP_ACCOUNTING_METRIC_MAX] = {
         [CGROUP_IP_INGRESS_BYTES]   = "IPIngressBytes",
@@ -4735,3 +4734,4 @@ static const char* const cgroup_memory_accounting_metric_table[_CGROUP_MEMORY_AC
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_memory_accounting_metric, CGroupMemoryAccountingMetric);
+#endif // 0

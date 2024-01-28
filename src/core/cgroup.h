@@ -6,7 +6,7 @@
 //#include "bpf-lsm.h"
 #include "cgroup-util.h"
 //#include "cpu-set-util.h"
-#include "firewall-util.h"
+//#include "firewall-util.h"
 #include "list.h"
 #include "pidref.h"
 #include "time-util.h"
@@ -422,7 +422,6 @@ FreezerAction freezer_action_from_string(const char *s) _pure_;
 
 const char* cgroup_pressure_watch_to_string(CGroupPressureWatch a) _const_;
 CGroupPressureWatch cgroup_pressure_watch_from_string(const char *s) _pure_;
-#endif // 0
 
 const char *cgroup_device_permissions_to_string(CGroupDevicePermissions p) _const_;
 CGroupDevicePermissions cgroup_device_permissions_from_string(const char *s) _pure_;
@@ -435,3 +434,4 @@ CGroupIOAccountingMetric cgroup_io_accounting_metric_from_string(const char *s) 
 
 const char* cgroup_memory_accounting_metric_to_string(CGroupMemoryAccountingMetric m) _const_;
 CGroupMemoryAccountingMetric cgroup_memory_accounting_metric_from_string(const char *s) _pure_;
+#endif // 0
