@@ -491,7 +491,7 @@ static int execute(
                 }
 
                 if ( m->broadcast_suspend_interrupts )
-                        utmp_wall(l, "root", "n/a", logind_wall_tty_filter, m);
+                        wall(l, "root", "n/a", logind_wall_tty_filter, m);
 
                 log_error_errno(r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR " %s", l);
 

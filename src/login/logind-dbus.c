@@ -61,6 +61,7 @@
 // Additional includes needed by elogind
 #include <stdio.h>
 #include "exec-elogind.h"
+#include "os-util.h"
 #include "sd-login.h"
 #include "sleep.h"
 #include "update-utmp.h"
@@ -1733,6 +1734,40 @@ static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active)
         int k = 0, r, active = _active;
 
         assert(m);
+        assert(a);
+        assert(IN_SET(a->inhibit_what, INHIBIT_SHUTDOWN, INHIBIT_SLEEP));
+
+        /* We need to send both old and new signal for backward compatibility. The newer one allows clients
+         * to know which type of reboot is going to happen, as they might be doing different actions (e.g.:
+         * on soft-reboot), and it is sent first, so that clients know that if they receive the old one
+         * first then they don't have to wait for the new one, as it means it's not supported. So, do not
+         * change the order here, as it is an API. */
+        if (a->inhibit_what == INHIBIT_SHUTDOWN) {
+                k = sd_bus_emit_signal(m->bus,
+                                       "/org/freedesktop/login1",
+                                       "org.freedesktop.login1.Manager",
+                                       "PrepareForShutdownWithMetadata",
+                                       "ba{sv}",
+                                       active,
+                                       1,
+                                       "type",
+                                       "s",
+                                       handle_action_to_string(a->handle));
+                if (k < 0)
+                        log_debug_errno(k, "Failed to emit PrepareForShutdownWithMetadata(): %m");
+        }
+
+        r = sd_bus_emit_signal(m->bus,
+                               "/org/freedesktop/login1",
+                               "org.freedesktop.login1.Manager",
+                               a->inhibit_what == INHIBIT_SHUTDOWN ? "PrepareForShutdown" : "PrepareForSleep",
+                               "b",
+                               active);
+        if (r < 0)
+                log_debug_errno(r, "Failed to emit PrepareForShutdown(): %m");
+
+        return RET_GATHER(k, r);
+}
 
 #if 1 /// elogind specific helper to make HALT and REBOOT possible.
 static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb ) {
@@ -1767,7 +1802,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
                 }
 
                 if ( m->broadcast_poweroff_interrupts )
-                        utmp_wall( l, "root", "n/a", logind_wall_tty_filter, m );
+                        wall( l, "root", "n/a", logind_wall_tty_filter, m );
 
                 log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SHUTDOWN=%s", arg_verb);
 
@@ -1777,7 +1812,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         /* If this was successful and hook scripts were allowed to interrupt, we have
          * to signal everybody that a shutdown is imminent, now. */
         if ( m->allow_poweroff_interrupts )
-                (void) send_prepare_for(m, INHIBIT_SHUTDOWN, true );
+                (void) send_prepare_for(m, handle_action_lookup(HANDLE_POWEROFF), true );
 
         r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
 
@@ -1870,46 +1905,15 @@ static int elogind_execute_shutdown_or_sleep(
 
         if ( r < 0 )
                 return r;
-        assert(a);
-        assert(IN_SET(a->inhibit_what, INHIBIT_SHUTDOWN, INHIBIT_SLEEP));
 
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
          * by ourselves.
          * Note: execute_shutdown_or_sleep() does not send the
          *       signal unless an error occurred. */
-        (void) send_prepare_for( m, a->inhibit_what, false );
-        /* We need to send both old and new signal for backward compatibility. The newer one allows clients
-         * to know which type of reboot is going to happen, as they might be doing different actions (e.g.:
-         * on soft-reboot), and it is sent first, so that clients know that if they receive the old one
-         * first then they don't have to wait for the new one, as it means it's not supported. So, do not
-         * change the order here, as it is an API. */
-        if (a->inhibit_what == INHIBIT_SHUTDOWN) {
-                k = sd_bus_emit_signal(m->bus,
-                                       "/org/freedesktop/login1",
-                                       "org.freedesktop.login1.Manager",
-                                       "PrepareForShutdownWithMetadata",
-                                       "ba{sv}",
-                                       active,
-                                       1,
-                                       "type",
-                                       "s",
-                                       handle_action_to_string(a->handle));
-                if (k < 0)
-                        log_debug_errno(k, "Failed to emit PrepareForShutdownWithMetadata(): %m");
-        }
-
-        r = sd_bus_emit_signal(m->bus,
-                               "/org/freedesktop/login1",
-                               "org.freedesktop.login1.Manager",
-                               a->inhibit_what == INHIBIT_SHUTDOWN ? "PrepareForShutdown" : "PrepareForSleep",
-                               "b",
-                               active);
-        if (r < 0)
-                log_debug_errno(r, "Failed to emit PrepareForShutdown(): %m");
+        (void) send_prepare_for( m, a, false );
 
         return 0;
-        return RET_GATHER(k, r);
 }
 #endif // 1
 
@@ -2280,10 +2284,6 @@ static int method_do_shutdown_or_sleep(
                                          "There's already a shutdown or sleep operation in progress");
 
         if (a->sleep_operation >= 0) {
-#if 0 /// Within elogind the manager m must be provided, too
-#else // 0
-                r = can_sleep(m, a->sleep_operation);
-#endif // 0
                 SleepSupport support;
 
                 r = sleep_supported_full(a->sleep_operation, &support);
@@ -2808,7 +2808,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         return 0;
                 }
 
-                utmp_wall(l, username, tty, logind_wall_tty_filter, m);
+                wall(l, username, tty, logind_wall_tty_filter, m);
 #endif // 0
         }
 
@@ -2834,10 +2834,6 @@ static int method_can_shutdown_or_sleep(
         assert(a);
 
         if (a->sleep_operation >= 0) {
-#if 0 /// elogind needs to have the manager being passed
-#else // 0
-                r = can_sleep(m, a->sleep_operation);
-#endif // 0
                 SleepSupport support;
 
                 r = sleep_supported_full(a->sleep_operation, &support);
