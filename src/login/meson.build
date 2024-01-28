@@ -106,11 +106,13 @@ executables += [
                 'conditions' : ['ENABLE_LOGIND'],
                 'sources' : files('inhibit.c'),
         },
-        libexec_template + {
-                'name' : 'elogind-user-runtime-dir',
-                'conditions' : ['ENABLE_LOGIND'],
-                'sources' : files('user-runtime-dir.c'),
-        },
+#if 0 /// elogind does not ship systemd-user-runtime-dir, but uses its functionality directly
+#         libexec_template + {
+#                 'name' : 'systemd-user-runtime-dir',
+#                 'conditions' : ['ENABLE_LOGIND'],
+#                 'sources' : files('user-runtime-dir.c'),
+#         },
+#endif // 0
 #if 1 /// elogind has an extra executable to manage uaccess
         libexec_template + {
                 'name' : 'elogind-uaccess-command',
