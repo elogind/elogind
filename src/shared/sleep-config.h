@@ -24,6 +24,7 @@ static inline bool sleep_operation_is_hibernation(SleepOperation operation) {
         return IN_SET(operation, SLEEP_HIBERNATE, SLEEP_HYBRID_SLEEP);
 }
 
+#if 0 /// elogind needs to hand over its manager
 typedef struct SleepConfig {
         bool allow[_SLEEP_OPERATION_MAX];
 
@@ -33,9 +34,14 @@ typedef struct SleepConfig {
         usec_t hibernate_delay_usec;
         usec_t suspend_estimation_usec;
 } SleepConfig;
+#else // 0
+typedef struct Manager SleepConfig;
+#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 SleepConfig* sleep_config_free(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, sleep_config_free);
+#endif // 0
 
 int parse_sleep_config(SleepConfig **sleep_config);
 
@@ -49,10 +55,17 @@ typedef enum SleepSupport {
         SLEEP_ALARM_NOT_SUPPORTED,         /* CLOCK_BOOTTIME_ALARM is unsupported by kernel (only used by s2h) */
 } SleepSupport;
 
+#if 0 /// elogind stores the sleep configuration in its Manager
 int sleep_supported_full(SleepOperation operation, SleepSupport *ret_support);
 static inline int sleep_supported(SleepOperation operation) {
         return sleep_supported_full(operation, NULL);
 }
+#else // 0
+int sleep_supported_full(SleepConfig *m, SleepOperation operation, SleepSupport *ret_support);
+static inline int sleep_supported(SleepConfig *m, SleepOperation operation) {
+        return sleep_supported_full(m, operation, NULL);
+}
+#endif // 0
 
 /* Only for test-sleep-config */
 int sleep_state_supported(char **states);

@@ -21,6 +21,8 @@
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
+// Additional includes needed by elogind
+#include "logind.h"
 
 #define DEFAULT_SUSPEND_ESTIMATION_USEC (1 * USEC_PER_HOUR)
 
@@ -45,6 +47,7 @@ static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] 
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("suspend"),
 };
 
+#if 0 /// UNNEEDED by elogind
 SleepConfig* sleep_config_free(SleepConfig *sc) {
         if (!sc)
                 return NULL;
@@ -56,6 +59,7 @@ SleepConfig* sleep_config_free(SleepConfig *sc) {
 
         return mfree(sc);
 }
+#endif // 0
 
 static int config_parse_sleep_mode(
                 const char *unit,
@@ -112,11 +116,19 @@ static void sleep_config_validate_state_and_mode(SleepConfig *sc) {
 }
 
 int parse_sleep_config(SleepConfig **ret) {
-        _cleanup_(sleep_config_freep) SleepConfig *sc = NULL;
+#if 0 /// elogind uses its own manager
+        _cleanup_(free_sleep_configp) SleepConfig *sc = NULL;
+#else // 0
+        Manager* sc = *ret;
+#if ENABLE_DEBUG_ELOGIND
+        int dbg_cnt;
+#endif // ENABLE_DEBUG_ELOGIND
+#endif // 0
         int allow_suspend = -1, allow_hibernate = -1, allow_s2h = -1, allow_hybrid_sleep = -1;
 
         assert(ret);
 
+#if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be read anew.
         sc = new(SleepConfig, 1);
         if (!sc)
                 return log_oom();
@@ -124,6 +136,19 @@ int parse_sleep_config(SleepConfig **ret) {
         *sc = (SleepConfig) {
                 .hibernate_delay_usec = USEC_INFINITY,
         };
+#else // 0
+        for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
+                if (sc->modes[i]) {
+                        sc->modes[i] = strv_free(sc->modes[i]);
+                }
+
+                if (sc->states[i]) {
+                        sc->states[i] = strv_free(sc->states[i]);
+                }
+        }
+        sc->suspend_by_using   = strv_free(sc->suspend_by_using);
+        sc->hibernate_by_using = strv_free(sc->hibernate_by_using);
+#endif // 0
 
         const ConfigTableItem items[] = {
                 { "Sleep", "AllowSuspend",              config_parse_tristate,    0,               &allow_suspend               },
@@ -176,7 +201,33 @@ int parse_sleep_config(SleepConfig **ret) {
 
         sleep_config_validate_state_and_mode(sc);
 
+#if ENABLE_DEBUG_ELOGIND
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_SUSPEND] && sc->modes[SLEEP_SUSPEND][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->modes[SLEEP_SUSPEND][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_SUSPEND] && sc->states[SLEEP_SUSPEND][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->states[SLEEP_SUSPEND][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_HIBERNATE] && sc->modes[SLEEP_HIBERNATE][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->modes[SLEEP_HIBERNATE][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_HIBERNATE] && sc->states[SLEEP_HIBERNATE][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->states[SLEEP_HIBERNATE][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->modes[SLEEP_HYBRID_SLEEP] && sc->modes[SLEEP_HYBRID_SLEEP][++dbg_cnt])
+                log_debug_elogind("modes[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->modes[SLEEP_HYBRID_SLEEP][dbg_cnt]);
+        dbg_cnt = -1;
+        while (sc->states[SLEEP_HYBRID_SLEEP] && sc->states[SLEEP_HYBRID_SLEEP][++dbg_cnt])
+                log_debug_elogind("states[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->states[SLEEP_HYBRID_SLEEP][dbg_cnt]);
+        log_debug_elogind("hibernate_delay_usec: %lu seconds (%lu minutes)",
+                          sc->hibernate_delay_usec / USEC_PER_SEC, sc->hibernate_delay_usec / USEC_PER_MINUTE);
+#endif // ENABLE_DEBUG_ELOGIND
+
+#if 0 /// UNNEEDED by elogind
         *ret = TAKE_PTR(sc);
+#endif // 0
+
         return 0;
 }
 
@@ -365,8 +416,12 @@ static int sleep_supported_internal(
         return true;
 }
 
+#if 0 /// elogind stores the sleep configuration in its Manager
 int sleep_supported_full(SleepOperation operation, SleepSupport *ret_support) {
         _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
+#else // 0
+int sleep_supported_full(SleepConfig *sleep_config, SleepOperation operation, SleepSupport *ret_support) {
+#endif // 0
         SleepSupport support;
         int r;
 

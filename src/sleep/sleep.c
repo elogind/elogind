@@ -55,6 +55,8 @@
 #include "sleep.h"
 #include "terminal-util.h"
 #include "utmp-wtmp.h"
+#include "wall.h"
+
 #define DEFAULT_HIBERNATE_DELAY_USEC_NO_BATTERY (2 * USEC_PER_HOUR)
 
 static SleepOperation arg_operation = _SLEEP_OPERATION_INVALID;
@@ -248,7 +250,6 @@ static int write_efi_hibernate_location(const HibernationDevice *hibernation_dev
 }
 
 
-#if 0 /// elogind uses a special variant to heed suspension modes
 static int write_state(int fd, char * const *states) {
         int r = 0;
 
@@ -274,8 +275,27 @@ static int write_state(int fd, char * const *states) {
 
         return r;
 }
+
+#if 0 /// elogind uses a special variant to heed suspension modes
+static int write_mode(char * const *modes) {
+        int r = 0;
+
+        STRV_FOREACH(mode, modes) {
+                int k;
+
+                k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (k >= 0) {
+                        log_debug("Using sleep disk mode '%s'.", *mode);
+                        return 0;
+                }
+
+                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode));
+        }
+
+        return r;
+}
 #else // 0
-static int write_mode(SleepOperation operation, char **modes) {
+static int write_mode(SleepOperation operation, char * const *modes) {
         int r = 0;
         static char const mode_disk[] = "/sys/power/disk";
         static char const mode_mem[] = "/sys/power/mem_sleep";
@@ -312,24 +332,6 @@ static int write_mode(SleepOperation operation, char **modes) {
         return r;
 }
 #endif // 0
-
-static int write_mode(char * const *modes) {
-        int r = 0;
-
-        STRV_FOREACH(mode, modes) {
-                int k;
-
-                k = write_string_file("/sys/power/disk", *mode, WRITE_STRING_FILE_DISABLE_BUFFER);
-                if (k >= 0) {
-                        log_debug("Using sleep disk mode '%s'.", *mode);
-                        return 0;
-                }
-
-                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to /sys/power/disk: %m", *mode));
-        }
-
-        return r;
-}
 
 #if 0 /// elogind does neither ship homed nor supports any substitution right now
 static int lock_all_homes(void) {
@@ -457,7 +459,7 @@ static int execute(
         }
 #else // 0
         }
-        (void)write_mode(operation, modes);
+        (void)write_mode(operation, sleep_config->modes[operation]);
 #endif // 0
 
         /* Pass an action string to the call-outs. This is mostly our operation string, except if the
@@ -478,7 +480,7 @@ static int execute(
         log_debug_elogind("Executing suspend hook scripts... (Must succeed: %s)",
                           m->callback_must_succeed ? "YES" : "no");
 
-        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL, EXEC_DIR_NONE);
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, (char **) arguments, NULL, EXEC_DIR_NONE);
 
         log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
 
@@ -524,7 +526,7 @@ static int execute(
 #else // 0
         r = execute_external(m, operation);
         if (r < 0)
-                r = write_state(&f, states);
+                r = write_state(state_fd, sleep_config->states[operation]);
 #endif // 0
         if (r < 0)
                 log_struct_errno(LOG_ERR, r,
@@ -542,9 +544,12 @@ static int execute(
                 nvidia_sleep(m, _SLEEP_OPERATION_MAX, &vtnr);
 #endif // 1
 
-#if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         arguments[1] = "post";
+#if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
+#else // 0
+        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
+#endif // 0
 
         if (r >= 0)
                 return 0;
@@ -552,9 +557,6 @@ static int execute(
 fail:
         if (sleep_operation_is_hibernation(operation) && is_efi_boot())
                 (void) efi_set_variable(EFI_SYSTEMD_VARIABLE(HibernateLocation), NULL, 0);
-#else // 0
-        (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_IGNORE_ERRORS);
-#endif // 0
 
         return r;
 }

@@ -2286,7 +2286,7 @@ static int method_do_shutdown_or_sleep(
         if (a->sleep_operation >= 0) {
                 SleepSupport support;
 
-                r = sleep_supported_full(a->sleep_operation, &support);
+                r = sleep_supported_full(m, a->sleep_operation, &support);
                 if (r < 0)
                         return r;
                 if (r == 0)
@@ -2836,7 +2836,7 @@ static int method_can_shutdown_or_sleep(
         if (a->sleep_operation >= 0) {
                 SleepSupport support;
 
-                r = sleep_supported_full(a->sleep_operation, &support);
+                r = sleep_supported_full(m, a->sleep_operation, &support);
                 if (r < 0)
                         return r;
                 if (r == 0)
