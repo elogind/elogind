@@ -110,7 +110,6 @@
   <refsect1>
     <title>Parsing Timestamps</title>
 
-    <!-- 0 /// No timedatectl in elogind
     <para>When parsing, elogind will accept a similar syntax, but some fields can be omitted,
     and the space between the date and time can be replaced with a <literal>T</literal>
     (à la the <ulink url="https://tools.ietf.org/html/rfc3339">RFC 3339</ulink> profile of ISO 8601);
@@ -123,13 +122,14 @@
     <para>The timezone defaults to the current timezone if not specified explicitly.
     It may be given after a space, like above, in which case it can be:
     <literal>UTC</literal>,
+    <!-- 0 /// No timedatectl in elogind
     an entry in the installed IANA timezone database (<literal>CET</literal>, <literal>Asia/Tokyo</literal>, &amp;c.;
     complete list obtainable with <literal>timedatectl
     list-timezones</literal> (see
-    --><!-- else // 0 -->
-    the locally configured timezone, or the timezone name in the IANA timezone database format. Using
-    <!-- // 0 -->
     <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>)),
+    --><!-- else // 0 -->
+    the locally configured timezone, or the timezone name in the IANA timezone database format,
+    <!-- // 0 -->
     or <literal>±<replaceable>05</replaceable></literal>,
     <literal>±<replaceable>05</replaceable><replaceable>30</replaceable></literal>,
     <literal>±<replaceable>05</replaceable>:<replaceable>30</replaceable></literal>,
