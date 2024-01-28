@@ -554,9 +554,18 @@
 
         <listitem><para>When used with <command>user-status</command>
         and <command>session-status</command>, controls the formatting
+<!-- 0 /// elogind does not ship journalctl
         of the journal entries that are shown. For the available
         choices, see
         <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+        Defaults to <literal>short</literal>.</para>
+--><!-- else // 0 -->
+        of the journal entries that are shown.
+        Defaults to <literal>short</literal>.</para>
+<!-- // 0 -->
+
+        <xi:include href="version-info.xml" xpointer="v219"/></listitem>
+      </varlistentry>
 
       <!-- 1 /// elogind has a few options on its own. -->
       <varlistentry>
@@ -579,7 +588,6 @@
           additional privileges.</para>
         </listitem>
       </varlistentry>
-        Defaults to <literal>short</literal>.</para>
 
       <varlistentry>
         <term><option>--dry-run</option></term>
@@ -590,7 +598,6 @@
           <command>suspend</command>, <command>hibernate</command>, <command>hybrid-sleep</command>,
           and <command>suspend-then-hibernate</command>.</para>
         </listitem>
-        <xi:include href="version-info.xml" xpointer="v219"/></listitem>
       </varlistentry>
 
       <varlistentry>
