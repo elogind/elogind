@@ -26,16 +26,12 @@ ImageClass image_class_from_string(const char *s) _pure_;
 
 bool image_name_is_valid(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 int path_is_extension_tree(ImageClass image_class, const char *path, const char *extension, bool relax_extension_release_check);
 static inline int path_is_os_tree(const char *path) {
         return path_is_extension_tree(_IMAGE_CLASS_INVALID, path, NULL, false);
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int open_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
-#endif // 0
 int open_extension_release_at(int rfd, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 int open_os_release(const char *root, char **ret_path, int *ret_fd);
 int open_os_release_at(int rfd, char **ret_path, int *ret_fd);

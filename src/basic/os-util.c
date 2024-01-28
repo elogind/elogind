@@ -61,7 +61,6 @@ bool image_name_is_valid(const char *s) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
 int path_is_extension_tree(ImageClass image_class, const char *path, const char *extension, bool relax_extension_release_check) {
         int r;
 
@@ -84,7 +83,6 @@ int path_is_extension_tree(ImageClass image_class, const char *path, const char 
 
         return 1;
 }
-#endif // 0
 
 static int extension_release_strict_xattr_value(int extension_release_fd, const char *extension_release_dir_path, const char *filename) {
         int r;
@@ -264,7 +262,6 @@ int open_extension_release_at(
         return 0;
 }
 
-#if 0 /// UNNEEDED in elogind
 int open_extension_release(
                 const char *root,
                 ImageClass image_class,
@@ -297,7 +294,6 @@ int open_extension_release(
 
         return 0;
 }
-#endif // 0
 
 static int parse_extension_release_atv(
                 int rfd,
