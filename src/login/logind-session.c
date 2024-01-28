@@ -747,16 +747,16 @@ static int session_start_cgroup(Session *s) {
 
         assert(s);
         assert(s->user);
-        assert(s->leader > 0);
+        assert(s->leader.pid > 0);
 
         /* First, create our own group */
         r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
 
-        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader);
+        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader.pid);
         if (r < 0)
-                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader, s->id);
+                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader.pid, s->id);
 
         return 0;
 }
@@ -1373,9 +1373,7 @@ int session_watch_pidfd(Session *s) {
 }
 
 bool session_may_gc(Session *s, bool drop_not_started) {
-#if 0 /// elogind supports neither scopes nor jobs
         int r;
-#endif // 0
 
         assert(s);
 
@@ -1472,17 +1470,18 @@ int session_kill(Session *s, KillWho who, int signo) {
         return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
 #else // 0
         if (who == KILL_LEADER) {
-                if (s->leader <= 0)
+                if (s->leader.pid <= 0)
                         return -ESRCH;
 
                 /* FIXME: verify that leader is in cgroup?  */
 
-                if (kill(s->leader, signo) < 0) {
-                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
+                if (kill(s->leader.pid, signo) < 0) {
+                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader.pid, s->id);
                 }
                 return 0;
         } else
-                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
+                // const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata
+                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, signo,
                                           CGROUP_IGNORE_SELF | CGROUP_REMOVE,
                                           NULL, NULL, NULL);
 #endif // 0
