@@ -795,6 +795,7 @@ TEST(json_dispatch) {
         JsonDispatch table[] = {
                 { "a", _JSON_VARIANT_TYPE_INVALID, json_dispatch_uint64, offsetof(struct foobar, a) },
                 { "b", _JSON_VARIANT_TYPE_INVALID, json_dispatch_uint64, offsetof(struct foobar, b) },
+#if 0 /// elogind does not need any of these dispatchers
                 { "c", _JSON_VARIANT_TYPE_INVALID, json_dispatch_int64,  offsetof(struct foobar, c) },
                 { "d", _JSON_VARIANT_TYPE_INVALID, json_dispatch_int64,  offsetof(struct foobar, d) },
                 { "e", _JSON_VARIANT_TYPE_INVALID, json_dispatch_uint32, offsetof(struct foobar, e) },
@@ -805,6 +806,7 @@ TEST(json_dispatch) {
                 { "j", _JSON_VARIANT_TYPE_INVALID, json_dispatch_uint16, offsetof(struct foobar, j) },
                 { "k", _JSON_VARIANT_TYPE_INVALID, json_dispatch_int16,  offsetof(struct foobar, k) },
                 { "l", _JSON_VARIANT_TYPE_INVALID, json_dispatch_int16,  offsetof(struct foobar, l) },
+#endif // 0
                 {}
         };
 
