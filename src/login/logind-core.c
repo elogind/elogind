@@ -368,8 +368,8 @@ int manager_process_button_device(Manager *m, sd_device *d) {
         return 0;
 }
 
-#if 0 /// elogind does not support systemd units, but its own session system
 int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) {
+#if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
 #else // 0
         _cleanup_free_ char *session_name = NULL;
@@ -382,21 +382,21 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
         if (!pidref_is_set(pid))
                 return -EINVAL;
 
-#if 0 /// elogind does not support systemd units, but its own session system
         s = hashmap_get(m->sessions_by_leader, pid);
         if (s) {
                 r = pidref_verify(pid);
                 if (r < 0)
                         return r;
         } else {
+#if 0 /// elogind does not support systemd units, but its own session system
                 r = cg_pidref_get_unit(pid, &unit);
                 if (r < 0)
                         return r;
 
                 s = hashmap_get(m->session_units, unit);
 #else // 0
-                log_debug_elogind("Searching session for PID %d", pid);
-                r = cg_pid_get_session(pid, &session_name);
+                log_debug_elogind("Searching session for PID %d", pid->pid);
+                r = cg_pid_get_session(pid->pid, &session_name);
 
                 if (r >= 0)
                         s = hashmap_get(m->sessions, session_name);
@@ -431,7 +431,7 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
 
 #if 1 /// elogind also has its own session system
         if ((r < 0) || (NULL == u)) {
-                r = manager_get_session_by_pid(m, pid, &s);
+                r = manager_get_session_by_pidref(m, &PIDREF_MAKE_FROM_PID(pid), &s);
                 // If a session was found, ignore it if it is already closing.
                 if ((r > 0) && (SESSION_CLOSING != session_get_state(s)))
                         u = s->user;

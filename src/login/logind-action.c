@@ -162,23 +162,6 @@ static int handle_action_execute(
 
         assert(m);
 
-
-#if 0 /// elogind needs its own can_sleep() variant.
-#else // 0
-        if (handle == HANDLE_SUSPEND)
-                supported = can_sleep(m, SLEEP_SUSPEND) > 0;
-        else if (handle == HANDLE_HIBERNATE)
-                supported = can_sleep(m, SLEEP_HIBERNATE) > 0;
-        else if (handle == HANDLE_HYBRID_SLEEP)
-                supported = can_sleep(m, SLEEP_HYBRID_SLEEP) > 0;
-        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
-                supported = can_sleep(m, SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
-#endif // 0
-
-#if 0 /// elogind needs the manager
-#else // 0
-                supported = can_sleep(m, SLEEP_SUSPEND) > 0;
-#endif // 0
         if (handle == HANDLE_KEXEC && access(KEXEC, X_OK) < 0)
                 return log_warning_errno(SYNTHETIC_ERRNO(EOPNOTSUPP),
                                          "Requested %s operation not supported, ignoring.", handle_action_to_string(handle));
