@@ -120,7 +120,7 @@ static int elogind_daemonize( void ) {
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
         r = safe_fork( "elogind-forker",
-                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
+                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
                        &child );
 
         if ( r ) {
@@ -199,7 +199,7 @@ static pid_t elogind_is_already_running( void ) {
                  * process will be "elogind".
                  * Therefore check comm with startswith().
                  */
-                get_process_comm( pid, &comm );
+                pid_get_comm( pid, &comm );
                 if ( NULL == startswith( strna( comm ), program_invocation_short_name ) )
                         goto we_are_alone;
                 return pid;
