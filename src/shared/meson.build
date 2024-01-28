@@ -252,6 +252,7 @@ shared_sources = files(
         'user-record.c',
         'userdb.c',
         'verbs.c',
+        'wall.c',
         'xml.c',
 )
 #endif // 0
