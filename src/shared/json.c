@@ -4671,7 +4671,6 @@ int json_dispatch_tristate(const char *name, JsonVariant *variant, JsonDispatchF
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         int64_t *i = ASSERT_PTR(userdata);
 
@@ -4688,7 +4687,6 @@ int json_dispatch_int64(const char *name, JsonVariant *variant, JsonDispatchFlag
         *i = json_variant_integer(variant);
         return 0;
 }
-#endif // 0
 
 int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uint64_t *u = ASSERT_PTR(userdata);
@@ -4710,7 +4708,6 @@ int json_dispatch_uint64(const char *name, JsonVariant *variant, JsonDispatchFla
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int json_dispatch_uint32(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         uint32_t *u = ASSERT_PTR(userdata);
         uint64_t u64;
@@ -4782,7 +4779,6 @@ int json_dispatch_uint16(const char *name, JsonVariant *variant, JsonDispatchFla
         *u = (uint16_t) u64;
         return 0;
 }
-#endif // 0
 
 int json_dispatch_string(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         char **s = ASSERT_PTR(userdata);
