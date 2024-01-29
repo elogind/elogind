@@ -20,59 +20,36 @@
  */
 
 #include <errno.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 
-#include "sd-login.h"
-
-//#include "device-util.h"
+#include "build.h"
 #include "devnode-acl.h"
 #include "login-util.h"
 #include "log.h"
-//#include "udev-builtin.h"
-/// Additional includes needed by elogind
+#include "macro.h"
+#include "main-func.h"
 #include "musl_missing.h"
-//#include "sd-device.h"
-#include <string.h>
-//#include <sys/stat.h>
-//#include <sys/types.h>
+#include "sd-login.h"
+#include "verbs.h"
 
 /*
  * Copy of builtin_uaccess() from
  * systemd/src/udev/udev-builtin-uaccess.c
+ * adapted for elogind
  */
-#if 0 /// Within elogind a different set of parameters are used
-static int builtin_uaccess(sd_device *dev, int argc, char *argv[], bool test) {
-        const char *path = NULL, *seat;
-#else // 0
 static int dev_uaccess(const char *path, const char *seat) {
-#endif // 0
         bool changed_acl = false;
         uid_t uid;
         int r;
 
         umask(0022);
 
-#if 0 /// If elogind is not running, yet, dbus will start it when it is needed.
-        /* don't muck around with ACLs when the system is not running systemd-logind */
-        if (!logind_running())
-                return 0;
-#endif // 0
-
-#if 0 /// With elogind both path and seat are delivered from main()
-        r = sd_device_get_devname(dev, &path);
-        if (r < 0) {
-                log_device_error_errno(dev, r, "Failed to get device name: %m");
-                goto finish;
-        }
-
-        if (sd_device_get_property_value(dev, "ID_SEAT", &seat) < 0)
-                seat = "seat0";
-#else // 0
         if (!seat || !strlen(seat))
                 seat = "seat0";
-#endif // 0
 
         r = sd_seat_get_active(seat, NULL, &uid);
         if (r < 0) {
@@ -80,22 +57,14 @@ static int dev_uaccess(const char *path, const char *seat) {
                         /* No active session on this seat */
                         r = 0;
                 else
-#if 0 /// No sd-device available in this special instance for elogind, use a different log function
-                        log_device_error_errno(dev, r, "Failed to determine active user on seat %s: %m", seat);
-#else // 0
                         log_error_errno(r, "Failed to determine active user on seat %s: %m", seat);
-#endif // 0
 
                 goto finish;
         }
 
         r = devnode_acl(path, true, false, 0, true, uid);
         if (r < 0) {
-#if 0 /// No sd-device available in this special instance for elogind, use a different log function
-                log_device_full_errno(dev, r == -ENOENT ? LOG_DEBUG : LOG_ERR, r, "Failed to apply ACL: %m");
-#else // 0
                 log_full_errno(r == -ENOENT ? LOG_DEBUG : LOG_ERR, r, "Failed to apply ACL: %m");
-#endif // 0
                 goto finish;
         }
 
@@ -109,11 +78,7 @@ static int dev_uaccess(const char *path, const char *seat) {
                 /* Better be safe than sorry and reset ACL */
                 k = devnode_acl(path, true, false, 0, false, 0);
                 if (k < 0) {
-#if 0 /// No sd-device available in this special instance for elogind, use a different log function
-                        log_device_full_errno(dev, k == -ENOENT ? LOG_DEBUG : LOG_ERR, k, "Failed to apply ACL: %m");
-#else // 0
                         log_full_errno(k == -ENOENT ? LOG_DEBUG : LOG_ERR, k, "Failed to apply ACL: %m");
-#endif // 0
                         if (r >= 0)
                                 r = k;
                 }
@@ -122,17 +87,79 @@ static int dev_uaccess(const char *path, const char *seat) {
         return r < 0 ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
-int main(int argc, char *argv[]) {
+static int help(void) {
+        printf("%s DEVPATH [SEAT]\n\n"
+               "Handle uaccess for a device\n\n"
+               "  -h --help              Show this help and exit\n"
+               "  --version              Print version string and exit\n",
+               program_invocation_short_name);
+
+        return 0;
+}
+
+static int parse_argv(int argc, char *argv[]) {
+
+        enum {
+                ARG_VERSION = 0x100,
+        };
+
+        static const struct option options[] = {
+                { "help",         no_argument,       NULL, 'h'           },
+                { "version",      no_argument,       NULL, ARG_VERSION   },
+                {}
+        };
+
+        int c;
+
+        assert(argc >= 0);
+        assert(argv);
+
+        while ((c = getopt_long(argc, argv, "h", options, NULL)) >= 0)
+                switch (c) {
+
+                case 'h':
+                        return help();
+
+                case ARG_VERSION:
+                        return version();
+
+                case '?':
+                        return -EINVAL;
+
+                default:
+                        assert_not_reached();
+
+                }
+
+        if (argc - optind != 1)
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                       "Usage: %s DEVPATH [SEAT]",
+                                       program_invocation_short_name);
+
+        return 1 /* work to do */;
+}
+
+static int uaccess_command_main(int argc, char *argv[]) {
 
         if (argc < 2) {
                 printf("Usage: %s DEVPATH [SEAT]\n", argv[0]);
                 return 0;
         }
 
-        elogind_set_program_name(argv[0]);
-        log_set_target(LOG_TARGET_AUTO);
-        log_parse_environment();
-        log_open();
-
         return dev_uaccess(argv[1], argc > 2 ? argv[2] : NULL);
 }
+
+static int run(int argc, char *argv[]) {
+        int r;
+
+        elogind_set_program_name(argv[0]);
+        log_setup();
+
+        r = parse_argv(argc, argv);
+        if (r <= 0)
+                return r;
+
+        return uaccess_command_main(argc, argv);
+}
+
+DEFINE_MAIN_FUNCTION(run);
