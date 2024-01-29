@@ -2543,7 +2543,9 @@ subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
 # subdir('src/cgls')
-# subdir('src/cgroups-agent')
+#endif // 0
+subdir('src/cgroups-agent')
+#if 0 /// UNNEEDED by elogind
 # subdir('src/cgtop')
 # subdir('src/coredump')
 # subdir('src/creds')
