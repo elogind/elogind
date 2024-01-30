@@ -110,7 +110,9 @@ simple_tests += files(
         'test-extract-word.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-fdset.c',
-#         'test-fiemap.c',
+#endif // 0
+        'test-fiemap.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-fileio.c',
 #         'test-firewall-util.c',
 #endif // 0
