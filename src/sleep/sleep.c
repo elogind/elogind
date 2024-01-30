@@ -757,19 +757,19 @@ static int execute_s2h(const SleepConfig *sleep_config) {
 #if 0 /// elogind does not support systemd scopes and slices
         r = freeze_thaw_user_slice(&(const char*) { "FreezeUnit" });
         if (r < 0)
-                log_debug_errno(r, "Failed to freeze unit user.slice, ignoring: %m");
 #endif // 0
+                log_warning_errno(r, "Failed to freeze unit user.slice, ignoring: %m");
 
         /* Only check if we have automated battery alarms if HibernateDelaySec= is not set, as in that case
          * we'll busy poll for the configured interval instead */
         if (!timestamp_is_set(sleep_config->hibernate_delay_usec)) {
                 r = check_wakeup_type();
                 if (r < 0)
-                        log_debug_errno(r, "Failed to check hardware wakeup type, ignoring: %m");
+                        log_warning_errno(r, "Failed to check hardware wakeup type, ignoring: %m");
                 else {
                         r = battery_trip_point_alarm_exists();
                         if (r < 0)
-                                log_debug_errno(r, "Failed to check whether acpi_btp support is enabled or not, ignoring: %m");
+                                log_warning_errno(r, "Failed to check whether acpi_btp support is enabled or not, ignoring: %m");
                 }
         } else
                 r = 0;  /* Force fallback path */
