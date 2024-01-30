@@ -2969,15 +2969,15 @@ install_data('LICENSE.GPL2',
 #else // 0
              'README.md',
 #endif // 0
-             'docs/CODING_STYLE.md',
 #if 0 /// irrelevant for elogind
-#              'docs/DISTRO_PORTING.md',
-#              'docs/ENVIRONMENT.md',
-#              'docs/HACKING.md',
-#              'docs/TRANSIENT-SETTINGS.md',
-#              'docs/TRANSLATORS.md',
-#              'docs/UIDS-GIDS.md',
 #endif // 0
+             'docs/_contributing/CODING_STYLE.md',
+             'docs/_concepts/DISTRO_PORTING.md',
+             'docs/_interfaces/ENVIRONMENT.md',
+             'docs/_contributing/HACKING.md',
+             'docs/_interfaces/TRANSIENT-SETTINGS.md',
+             'docs/_contributing/TRANSLATORS.md',
+             'docs/_groups/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
