@@ -1,12 +1,12 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <stddef.h>
-#include <unistd.h>
+//#include <unistd.h>
 
 #include "format-util.h"
-#include "io-util.h"
-#include "iovec-util.h"
-#include "iovec-wrapper.h"
+//#include "io-util.h"
+//#include "iovec-util.h"
+//#include "iovec-wrapper.h"
 #include "log.h"
 #include "process-util.h"
 #include "string-util.h"
