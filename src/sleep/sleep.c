@@ -433,7 +433,6 @@ static int execute(
         /* This file is opened first, so that if we hit an error, we can abort before modifying any state. */
         state_fd = open("/sys/power/state", O_WRONLY|O_CLOEXEC);
         if (state_fd < 0)
-                return -errno;
 
 #if 1 /// The same with nvidia handling. elogind opens the write-to path now, so we can exit early on errors
         if (m->handle_nvidia_sleep) {
@@ -443,6 +442,7 @@ static int execute(
                         return -errno;
         }
 #endif // 1
+                return log_error_errno(errno, "Failed to open /sys/power/state: %m");
 
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
