@@ -22,9 +22,7 @@ int fmkostemp_safe(char *pattern, const char *mode, FILE**_f);
 
 int tempfn_xxxxxx(const char *p, const char *extra, char **ret);
 int tempfn_random(const char *p, const char *extra, char **ret);
-#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret);
-#endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags);
 int open_tmpfile_linkable_at(int dir_fd, const char *target, int flags, char **ret_path);

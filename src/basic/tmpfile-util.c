@@ -120,11 +120,7 @@ int fmkostemp_safe(char *pattern, const char *mode, FILE **ret_f) {
         return 0;
 }
 
-#if 0 /// Within elogind the paramter 'child' is always false and thus useless
 static int tempfn_build(const char *p, const char *pre, const char *post, bool child, char **ret) {
-#else // 0
-static int tempfn_build(const char *p, const char *pre, const char *post, char **ret) {
-#endif // 0
         _cleanup_free_ char *d = NULL, *fn = NULL, *nf = NULL, *result = NULL;
         size_t len_pre, len_post, len_add;
         int r;
@@ -156,13 +152,11 @@ static int tempfn_build(const char *p, const char *pre, const char *post, char *
 
         len_add = len_pre + len_post + STRLEN(".#");
 
-#if 0 /// Within elogind the paramter 'child' is always false and thus useless
         if (child) {
                 d = strdup(p);
                 if (!d)
                         return -ENOMEM;
         } else {
-#endif // 0
                 r = path_extract_directory(p, &d);
                 if (r < 0 && r != -EDESTADDRREQ) /* EDESTADDRREQ → No directory specified, just a filename */
                         return r;
@@ -174,9 +168,7 @@ static int tempfn_build(const char *p, const char *pre, const char *post, char *
                 if (strlen(fn) > NAME_MAX - len_add)
                         /* We cannot simply prepend and append strings to the filename. Let's truncate the filename. */
                         fn[NAME_MAX - len_add] = '\0';
-#if 0 /// Within elogind the paramter 'child' is always false and thus useless
         }
-#endif // 0
 
         nf = strjoin(".#", strempty(pre), strempty(fn), strempty(post));
         if (!nf)
@@ -206,11 +198,7 @@ int tempfn_xxxxxx(const char *p, const char *extra, char **ret) {
          *         /foo/bar/.#<extra>waldoXXXXXX
          */
 
-#if 0 /// Within elogind the paramter 'child' is always false and thus useless
         return tempfn_build(p, extra, "XXXXXX", /* child = */ false, ret);
-#else // 0
-        return tempfn_build(p, extra, "XXXXXX", ret);
-#endif // 0
 }
 
 int tempfn_random(const char *p, const char *extra, char **ret) {
@@ -230,14 +218,9 @@ int tempfn_random(const char *p, const char *extra, char **ret) {
         if (asprintf(&s, "%016" PRIx64, random_u64()) < 0)
                 return -ENOMEM;
 
-#if 0 /// Within elogind the paramter 'child' is always false and thus useless
         return tempfn_build(p, extra, s, /* child = */ false, ret);
-#else // 0
-        return tempfn_build(p, extra, s, ret);
-#endif // 0
 }
 
-#if 0 /// UNNEEDED by elogind
 int tempfn_random_child(const char *p, const char *extra, char **ret) {
         _cleanup_free_ char *s = NULL;
         int r;
@@ -261,7 +244,6 @@ int tempfn_random_child(const char *p, const char *extra, char **ret) {
 
         return tempfn_build(p, extra, s, /* child = */ true, ret);
 }
-#endif // 0
 
 int open_tmpfile_unlinkable(const char *directory, int flags) {
         char *p;
