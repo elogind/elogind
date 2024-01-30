@@ -13,9 +13,10 @@
 #include "libfido2-util.h"
 #include "macro.h"
 #include "main-func.h"
-//#include "password-quality-util-passwdqc.h"
-//#include "password-quality-util-pwquality.h"
-//#include "pcre2-util.h"
+#include "module-util.h"
+#include "password-quality-util-passwdqc.h"
+#include "password-quality-util-pwquality.h"
+#include "pcre2-util.h"
 #include "pkcs11-util.h"
 //#include "qrcode-util.h"
 #include "tests.h"
@@ -91,6 +92,10 @@ static int run(int argc, char **argv) {
 
 #if HAVE_GCRYPT
         assert_se(initialize_libgcrypt(/* secmem= */ false) >= 0);
+#endif
+
+#if HAVE_KMOD
+        assert_se(dlopen_libkmod() >= 0);
 #endif
 
         return 0;

@@ -133,7 +133,7 @@ libcore_sources = files(
 #                         libaudit,
 #                         libblkid,
 #                         libdl,
-#                         libkmod,
+#                         libkmod_cflags,
 #                         libm,
 #                         libmount,
 #                         libpam,

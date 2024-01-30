@@ -1456,6 +1456,7 @@ conf.set10('HAVE_AUDIT', libaudit.found())
 #                      version : '>= 15',
 #                      required : get_option('kmod'))
 # conf.set10('HAVE_KMOD', libkmod.found())
+# libkmod_cflags = libkmod.partial_dependency(includes: true, compile_args: true)
 #else // 0
 libblkid = []
 conf.set10('HAVE_BLKID', false)
@@ -2027,7 +2028,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #         bpf_gcc_flags = [
 #                 '-std=gnu11',
 #                 '-fno-stack-protector',
-#                 '-fno-ssa-phiopt',
 #                 '-O2',
 #                 '-mcpu=v3',
 #                 '-mco-re',
