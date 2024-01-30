@@ -112,8 +112,8 @@ simple_tests += files(
 #         'test-fdset.c',
 #endif // 0
         'test-fiemap.c',
+        'test-fileio.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-fileio.c',
 #         'test-firewall-util.c',
 #endif // 0
         'test-format-table.c',
