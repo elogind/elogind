@@ -1391,12 +1391,14 @@ size_t strspn_from_end(const char *str, const char *accept) {
         return n;
 }
 
+#if 0 /// UNNEEDED by elogind
 char *strdupspn(const char *a, const char *accept) {
         if (isempty(a) || isempty(accept))
                 return strdup("");
 
         return strndup(a, strspn(a, accept));
 }
+#endif // 0
 
 char *strdupcspn(const char *a, const char *reject) {
         if (isempty(a))
@@ -1456,6 +1458,7 @@ bool version_is_valid(const char *s) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool version_is_valid_versionspec(const char *s) {
         if (!filename_part_is_valid(s))
                 return false;
@@ -1465,6 +1468,7 @@ bool version_is_valid_versionspec(const char *s) {
 
         return true;
 }
+#endif // 0
 
 ssize_t strlevenshtein(const char *x, const char *y) {
         _cleanup_free_ size_t *t0 = NULL, *t1 = NULL, *t2 = NULL;

@@ -303,7 +303,9 @@ int make_cstring(const char *s, size_t n, MakeCStringMode mode, char **ret);
 
 size_t strspn_from_end(const char *str, const char *accept);
 
+#if 0 /// UNNEEDED by elogind
 char *strdupspn(const char *a, const char *accept);
+#endif // 0
 char *strdupcspn(const char *a, const char *reject);
 
 char *find_line_startswith(const char *haystack, const char *needle);
@@ -315,10 +317,13 @@ char *startswith_strv(const char *string, char **strv);
 
 bool version_is_valid(const char *s);
 
+#if 0 /// UNNEEDED by elogind
 bool version_is_valid_versionspec(const char *s);
+#endif // 0
 
 ssize_t strlevenshtein(const char *x, const char *y);
 
+#if 0 /// UNNEEDED by elogind
 static inline int strdup_or_null(const char *s, char **ret) {
         char *c;
 
@@ -339,3 +344,4 @@ static inline int strdup_or_null(const char *s, char **ret) {
         *ret = c;
         return 1;
 }
+#endif // 0
