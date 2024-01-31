@@ -27,4 +27,6 @@ bool ratelimit_below(RateLimit *r);
 unsigned ratelimit_num_dropped(RateLimit *r);
 
 usec_t ratelimit_end(const RateLimit *rl);
+#if 0 /// UNNEEDED by elogind
 usec_t ratelimit_left(const RateLimit *rl);
+#endif // 0
