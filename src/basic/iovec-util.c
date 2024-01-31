@@ -39,6 +39,7 @@ bool iovec_increment(struct iovec *iovec, size_t n, size_t k) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value) {
         char *x;
 
@@ -61,6 +62,7 @@ char* set_iovec_string_field_free(struct iovec *iovec, size_t *n_iovec, const ch
         free(value);
         return x;
 }
+#endif // 0
 
 void iovec_array_free(struct iovec *iovec, size_t n) {
         FOREACH_ARRAY(i, iovec, n)

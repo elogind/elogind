@@ -19,6 +19,7 @@ bool iovec_increment(struct iovec *iovec, size_t n, size_t k);
                 IOVEC_MAKE((char*) _s, strlen(_s));     \
         })
 
+#if 0 /// UNNEEDED by elogind
 static inline void iovec_done(struct iovec *iovec) {
         /* A _cleanup_() helper that frees the iov_base in the iovec */
         assert(iovec);
@@ -40,5 +41,6 @@ static inline bool iovec_is_set(const struct iovec *iovec) {
 
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value);
 char* set_iovec_string_field_free(struct iovec *iovec, size_t *n_iovec, const char *field, char *value);
+#endif // 0
 
 void iovec_array_free(struct iovec *iovec, size_t n);
