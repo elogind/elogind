@@ -17,8 +17,10 @@ typedef enum ImageClass {
         _IMAGE_CLASS_INVALID = -EINVAL,
 } ImageClass;
 
+#if 0 /// UNNEEDED by elogind
 const char* image_class_to_string(ImageClass cl) _const_;
 ImageClass image_class_from_string(const char *s) _pure_;
+#endif // 0
 
 /* The *_extension_release flavours will look for /usr/lib/extension-release/extension-release.NAME
  * for sysext images and for /etc/extension-release.d/extension-release.NAME for confext images
@@ -33,7 +35,9 @@ static inline int path_is_os_tree(const char *path) {
 
 int open_extension_release(const char *root, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
 int open_extension_release_at(int rfd, ImageClass image_class, const char *extension, bool relax_extension_release_check, char **ret_path, int *ret_fd);
+#if 0 /// UNNEEDED by elogind
 int open_os_release(const char *root, char **ret_path, int *ret_fd);
+#endif // 0
 int open_os_release_at(int rfd, char **ret_path, int *ret_fd);
 
 int parse_extension_release_sentinel(const char *root, ImageClass image_class, bool relax_extension_release_check, const char *extension, ...) _sentinel_;
@@ -60,4 +64,6 @@ int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char
 #endif // 0
 int os_release_support_ended(const char *support_end, bool quiet, usec_t *ret_eol);
 
+#if 0 /// UNNEEDED by elogind
 const char *os_release_pretty_name(const char *pretty_name, const char *name);
+#endif // 0

@@ -20,6 +20,7 @@
 #include "utf8.h"
 #include "xattr-util.h"
 
+#if 0 /// UNNEEDED by elogind
 static const char* const image_class_table[_IMAGE_CLASS_MAX] = {
         [IMAGE_MACHINE]  = "machine",
         [IMAGE_PORTABLE] = "portable",
@@ -28,6 +29,7 @@ static const char* const image_class_table[_IMAGE_CLASS_MAX] = {
 };
 
 DEFINE_STRING_TABLE_LOOKUP(image_class, ImageClass);
+#endif // 0
 
 /* Helper struct for naming simplicity and reusability */
 static const struct {
@@ -133,6 +135,7 @@ int open_os_release_at(int rfd, char **ret_path, int *ret_fd) {
         return -ENOENT;
 }
 
+#if 0 /// UNNEEDED by elogind
 int open_os_release(const char *root, char **ret_path, int *ret_fd) {
         _cleanup_close_ int rfd = -EBADF, fd = -EBADF;
         _cleanup_free_ char *p = NULL;
@@ -157,6 +160,7 @@ int open_os_release(const char *root, char **ret_path, int *ret_fd) {
 
         return 0;
 }
+#endif // 0
 
 int open_extension_release_at(
                 int rfd,
@@ -434,7 +438,6 @@ int os_release_support_ended(const char *support_end, bool quiet, usec_t *ret_eo
 
         return DIV_ROUND_UP(now(CLOCK_REALTIME), USEC_PER_SEC) > (usec_t) eol;
 }
-#endif // 0
 
 const char *os_release_pretty_name(const char *pretty_name, const char *name) {
         /* Distills a "pretty" name to show from os-release data. First argument is supposed to be the
@@ -444,3 +447,4 @@ const char *os_release_pretty_name(const char *pretty_name, const char *name) {
         return empty_to_null(pretty_name) ?:
                 empty_to_null(name) ?: "Linux";
 }
+#endif // 0
