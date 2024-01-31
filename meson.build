@@ -1514,7 +1514,8 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 #                  'crypt_token_max',
 #                  'crypt_reencrypt_init_by_passphrase',
 #                  'crypt_reencrypt',
-#                  'crypt_set_data_offset']
+#                  'crypt_set_data_offset',
+#                  'crypt_set_keyring_to_link']
 #         have_ident = have and cc.has_function(
 #                 ident,
 #                 prefix : '#include <libcryptsetup.h>',
