@@ -18,6 +18,7 @@
 int saved_argc = 0;
 char **saved_argv = NULL;
 
+#if 0 /// UNNEEDED by elogind
 bool invoked_as(char *argv[], const char *token) {
         if (!argv || isempty(argv[0]))
                 return false;
@@ -27,6 +28,7 @@ bool invoked_as(char *argv[], const char *token) {
 
         return strstr(last_path_component(argv[0]), token);
 }
+#endif // 0
 
 bool invoked_by_elogind(void) {
         int r;

@@ -18,7 +18,9 @@ static inline void save_argc_argv(int argc, char **argv) {
         saved_argv = argv;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool invoked_as(char *argv[], const char *token);
+#endif // 0
 bool invoked_by_elogind(void);
 bool argv_looks_like_help(int argc, char **argv);
 
