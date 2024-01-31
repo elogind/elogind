@@ -1428,25 +1428,31 @@ void log_show_location(bool b) {
         show_location = b;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_location(void) {
         return show_location;
 }
+#endif // 0
 
 void log_show_time(bool b) {
         show_time = b;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_time(void) {
         return show_time;
 }
+#endif // 0
 
 void log_show_tid(bool b) {
         show_tid = b;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_tid(void) {
         return show_tid;
 }
+#endif // 0
 
 int log_show_color_from_string(const char *e) {
         int r;

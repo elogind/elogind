@@ -71,11 +71,17 @@ void log_set_facility(int facility);
 void log_show_color(bool b);
 bool log_get_show_color(void) _pure_;
 void log_show_location(bool b);
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_location(void) _pure_;
+#endif // 0
 void log_show_time(bool b);
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_time(void) _pure_;
+#endif // 0
 void log_show_tid(bool b);
+#if 0 /// UNNEEDED by elogind
 bool log_get_show_tid(void) _pure_;
+#endif // 0
 
 int log_show_color_from_string(const char *e);
 int log_show_location_from_string(const char *e);
