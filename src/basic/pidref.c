@@ -123,6 +123,7 @@ PidRef *pidref_free(PidRef *pidref) {
         return mfree(pidref);
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_dup(const PidRef *pidref, PidRef **ret) {
         _cleanup_close_ int dup_fd = -EBADF;
         pid_t dup_pid = 0;
@@ -185,6 +186,7 @@ int pidref_new_from_pid(pid_t pid, PidRef **ret) {
         *ret = TAKE_PTR(n);
         return 0;
 }
+#endif // 0
 
 int pidref_kill(const PidRef *pidref, int sig) {
 
@@ -200,6 +202,7 @@ int pidref_kill(const PidRef *pidref, int sig) {
         return -ESRCH;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_kill_and_sigcont(const PidRef *pidref, int sig) {
         int r;
 
@@ -239,6 +242,7 @@ int pidref_sigqueue(const PidRef *pidref, int sig, int value) {
 
         return -ESRCH;
 }
+#endif // 0
 
 int pidref_verify(const PidRef *pidref) {
         int r;
