@@ -323,6 +323,7 @@ Features:
   - elogind-sysupdate
   - elogind-cryptenroll (to allow UIs to enroll FIDO2 keys and such)
   - kernel-install
+  - elogind-mount (with PK so that desktop environments could use it to mount disks)
 
 * in the service manager, pick up ERRNO= + BUSERROR= + VARLINKERROR= error
   identifiers, and store them along with the exit status of a server and report
