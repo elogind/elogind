@@ -366,6 +366,7 @@ void rlimit_free_all(struct rlimit **rl) {
         free_many((void**) rl, _RLIMIT_MAX);
 }
 
+#if 0 /// UNNEEDED by elogind
 int rlimit_copy_all(struct rlimit* target[static _RLIMIT_MAX], struct rlimit* const source[static _RLIMIT_MAX]) {
         struct rlimit* copy[_RLIMIT_MAX] = {};
 
@@ -386,6 +387,7 @@ int rlimit_copy_all(struct rlimit* target[static _RLIMIT_MAX], struct rlimit* co
         memcpy(target, copy, sizeof(struct rlimit*) * _RLIMIT_MAX);
         return 0;
 }
+#endif // 0
 
 int rlimit_nofile_bump(int limit) {
         int r;
