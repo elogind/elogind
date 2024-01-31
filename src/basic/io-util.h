@@ -49,6 +49,3 @@ static inline bool FILE_SIZE_VALID_OR_INFINITY(uint64_t l) {
 
 }
 #endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
