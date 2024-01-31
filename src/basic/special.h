@@ -117,6 +117,7 @@
 /* The scope unit systemd itself lives in. */
 #define SPECIAL_INIT_SCOPE "init.scope"
 
+#if 0 /// UNNEEDED by elogind
 /* The root directory. */
 #define SPECIAL_ROOT_MOUNT "-.mount"
 
@@ -124,3 +125,4 @@
 #define SPECIAL_SESSION_SLICE "session.slice"
 #define SPECIAL_APP_SLICE "app.slice"
 #define SPECIAL_BACKGROUND_SLICE "background.slice"
+#endif // 0
