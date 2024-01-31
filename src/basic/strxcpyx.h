@@ -7,9 +7,11 @@
 #include "macro.h"
 
 size_t strnpcpy_full(char **dest, size_t size, const char *src, size_t len, bool *ret_truncated);
+#if 0 /// UNNEEDED by elogind
 static inline size_t strnpcpy(char **dest, size_t size, const char *src, size_t len) {
         return strnpcpy_full(dest, size, src, len, NULL);
 }
+#endif // 0
 size_t strpcpy_full(char **dest, size_t size, const char *src, bool *ret_truncated);
 static inline size_t strpcpy(char **dest, size_t size, const char *src) {
         return strpcpy_full(dest, size, src, NULL);
@@ -23,9 +25,11 @@ size_t strpcpyl_full(char **dest, size_t size, bool *ret_truncated, const char *
         strpcpyl_full((dest), (size), NULL, (src), ##__VA_ARGS__)
 #endif // 0
 size_t strnscpy_full(char *dest, size_t size, const char *src, size_t len, bool *ret_truncated);
+#if 0 /// UNNEEDED by elogind
 static inline size_t strnscpy(char *dest, size_t size, const char *src, size_t len) {
         return strnscpy_full(dest, size, src, len, NULL);
 }
+#endif // 0
 size_t strscpy_full(char *dest, size_t size, const char *src, bool *ret_truncated);
 static inline size_t strscpy(char *dest, size_t size, const char *src) {
         return strscpy_full(dest, size, src, NULL);
