@@ -33,7 +33,9 @@ static inline int safe_close_above_stdio(int fd) {
 }
 
 void close_many(const int fds[], size_t n_fd);
+#if 0 /// UNNEEDED by elogind
 void close_many_unset(int fds[], size_t n_fd);
+#endif // 0
 void close_many_and_free(int *fds, size_t n_fds);
 
 int fclose_nointr(FILE *f);
@@ -149,9 +151,9 @@ char *format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, 
 /* Kinda the same as FORMAT_PROC_FD_PATH(), but goes by PID rather than "self" symlink */
 #define FORMAT_PROC_PID_FD_PATH(pid, fd)                                \
         format_proc_pid_fd_path((char[PROC_PID_FD_PATH_MAX]) {}, (pid), (fd))
-#endif // 0
 
 const char *accmode_to_string(int flags);
+#endif // 0
 
 /* Like ASSERT_PTR, but for fds */
 #define ASSERT_FD(fd)                           \

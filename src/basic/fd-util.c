@@ -99,12 +99,14 @@ void close_many(const int fds[], size_t n_fd) {
                 safe_close(fds[i]);
 }
 
+#if 0 /// UNNEEDED by elogind
 void close_many_unset(int fds[], size_t n_fd) {
         assert(fds || n_fd <= 0);
 
         for (size_t i = 0; i < n_fd; i++)
                 fds[i] = safe_close(fds[i]);
 }
+#endif // 0
 
 void close_many_and_free(int *fds, size_t n_fds) {
         assert(fds || n_fds <= 0);
@@ -979,6 +981,7 @@ int path_is_root_at(int dir_fd, const char *path) {
         return statx_mount_same(&st.nsx, &pst.nsx);
 }
 
+#if 0 /// UNNEEDED by elogind
 const char *accmode_to_string(int flags) {
         switch (flags & O_ACCMODE) {
         case O_RDONLY:
@@ -992,7 +995,6 @@ const char *accmode_to_string(int flags) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 char *format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, int fd) {
         assert(buf);
         assert(fd >= 0);
