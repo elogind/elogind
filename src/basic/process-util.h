@@ -42,9 +42,13 @@ typedef enum ProcessCmdlineFlags {
 int pid_get_comm(pid_t pid, char **ret);
 int pidref_get_comm(const PidRef *pid, char **ret);
 int pid_get_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
+#if 0 /// UNNEEDED by elogind
 int pidref_get_cmdline(const PidRef *pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret);
+#endif // 0
 int pid_get_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret);
+#if 0 /// UNNEEDED by elogind
 int pidref_get_cmdline_strv(const PidRef *pid, ProcessCmdlineFlags flags, char ***ret);
+#endif // 0
 int get_process_exe(pid_t pid, char **ret);
 #if 0 /// UNNEEDED by elogind
 int pid_get_uid(pid_t pid, uid_t *ret);
@@ -83,7 +87,9 @@ void sigkill_waitp(pid_t *pid);
 #endif // 0
 void sigterm_wait(pid_t pid);
 void sigkill_nowait(pid_t pid);
+#if 0 /// UNNEEDED by elogind
 void sigkill_nowaitp(pid_t *pid);
+#endif // 0
 
 int kill_and_sigcont(pid_t pid, int sig);
 
@@ -124,9 +130,7 @@ int opinionated_personality(unsigned long *ret);
 
 const char *sigchld_code_to_string(int i) _const_;
 int sigchld_code_from_string(const char *s) _pure_;
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 int sched_policy_to_string_alloc(int i, char **s);
 int sched_policy_from_string(const char *s);
 #endif // 0

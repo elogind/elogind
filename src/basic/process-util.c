@@ -279,6 +279,7 @@ int pid_get_cmdline(pid_t pid, size_t max_columns, ProcessCmdlineFlags flags, ch
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_get_cmdline(const PidRef *pid, size_t max_columns, ProcessCmdlineFlags flags, char **ret) {
         _cleanup_free_ char *s = NULL;
         int r;
@@ -298,6 +299,7 @@ int pidref_get_cmdline(const PidRef *pid, size_t max_columns, ProcessCmdlineFlag
                 *ret = TAKE_PTR(s);
         return 0;
 }
+#endif // 0
 
 int pid_get_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret) {
         _cleanup_free_ char *t = NULL;
@@ -321,6 +323,7 @@ int pid_get_cmdline_strv(pid_t pid, ProcessCmdlineFlags flags, char ***ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_get_cmdline_strv(const PidRef *pid, ProcessCmdlineFlags flags, char ***ret) {
         _cleanup_strv_free_ char **args = NULL;
         int r;
@@ -341,6 +344,7 @@ int pidref_get_cmdline_strv(const PidRef *pid, ProcessCmdlineFlags flags, char *
 
         return 0;
 }
+#endif // 0
 
 int container_get_leader(const char *machine, pid_t *pid) {
         _cleanup_free_ char *s = NULL, *class = NULL;
@@ -930,6 +934,7 @@ void sigkill_nowait(pid_t pid) {
         (void) kill(pid, SIGKILL);
 }
 
+#if 0 /// UNNEEDED by elogind
 void sigkill_nowaitp(pid_t *pid) {
         PROTECT_ERRNO;
 
@@ -940,6 +945,7 @@ void sigkill_nowaitp(pid_t *pid) {
 
         sigkill_nowait(*pid);
 }
+#endif // 0
 
 int kill_and_sigcont(pid_t pid, int sig) {
         int r;
