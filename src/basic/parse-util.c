@@ -790,7 +790,6 @@ int parse_loadavg_fixed_point(const char *s, loadavg_t *ret) {
 
         return store_loadavg_fixed_point(i, f, ret);
 }
-#endif // 0
 
 /* Limitations are described in https://www.netfilter.org/projects/nftables/manpage.html and
  * https://bugzilla.netfilter.org/show_bug.cgi?id=1175 */
@@ -810,3 +809,4 @@ bool nft_identifier_valid(const char *id) {
                         return false;
         return true;
 }
+#endif // 0
