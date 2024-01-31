@@ -278,6 +278,7 @@ unsigned _hashmap_buckets(HashmapBase *h) _pure_;
 static inline unsigned hashmap_buckets(Hashmap *h) {
         return _hashmap_buckets(HASHMAP_BASE(h));
 }
+
 static inline unsigned ordered_hashmap_buckets(OrderedHashmap *h) {
         return _hashmap_buckets(HASHMAP_BASE(h));
 }
