@@ -255,6 +255,7 @@ static inline void free_many_charp(char **c, size_t n) {
         free_many((void**) c, n);
 }
 
+#if 0 /// UNNEEDED by elogind
 _alloc_(2) static inline void *realloc0(void *p, size_t new_size) {
         size_t old_size;
         void *q;
@@ -274,5 +275,6 @@ _alloc_(2) static inline void *realloc0(void *p, size_t new_size) {
 
         return q;
 }
+#endif // 0
 
 #include "memory-util.h"
