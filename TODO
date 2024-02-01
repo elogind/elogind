@@ -243,7 +243,7 @@ Features:
 
 * add a new ExecStart= flag that inserts the configured user's shell as first
   word in the command line. (maybe use character '.'). Usecase: tool such as
-  uid0 can use that to spawn the target user's default shell.
+  run0 can use that to spawn the target user's default shell.
 
 * varlink: figure out how to do docs for our varlink interfaces. Idea: install
   interface files augmented with docs in /usr/share/ somewhere. And have
@@ -2183,8 +2183,6 @@ Features:
   - fingerprint authentication, pattern authentication, …
   - make sure "classic" user records can also be managed by homed
   - make size of $XDG_RUNTIME_DIR configurable in user record
-  - query password from kernel keyring first
-  - update even if record is "absent"
   - make slice for users configurable (requires logind rework)
   - logind: populate auto-login list bus property from PKCS#11 token
   - when determining state of a LUKS home directory, check DM suspended sysfs file
