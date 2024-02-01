@@ -52,7 +52,9 @@ sd_id128_t id128_make_v4_uuid(sd_id128_t id);
 
 int id128_get_product(sd_id128_t *ret);
 
+#if 0 /// UNNEEDED by elogind
 sd_id128_t id128_digest(const void *data, size_t size);
+#endif // 0
 
 /* A helper to check for the three relevant cases of "machine ID not initialized" */
 #define ERRNO_IS_NEG_MACHINE_ID_UNSET(r)        \

@@ -238,6 +238,7 @@ int id128_get_product(sd_id128_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 sd_id128_t id128_digest(const void *data, size_t size) {
         assert(data || size == 0);
 
@@ -255,3 +256,4 @@ sd_id128_t id128_digest(const void *data, size_t size) {
 
         return id128_make_v4_uuid(id);
 }
+#endif // 0
