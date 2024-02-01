@@ -29,10 +29,12 @@ void sha256_init_ctx(struct sha256_ctx *ctx);
 uint8_t *sha256_finish_ctx(struct sha256_ctx *ctx, uint8_t resbuf[static SHA256_DIGEST_SIZE]);
 void sha256_process_bytes(const void *buffer, size_t len, struct sha256_ctx *ctx);
 
+#if 0 /// UNNEEDED by elogind
 static inline void sha256_process_bytes_and_size(const void *buffer, size_t len, struct sha256_ctx *ctx) {
         sha256_process_bytes(&len, sizeof(len), ctx);
         sha256_process_bytes(buffer, len, ctx);
 }
+#endif // 0
 
 uint8_t* sha256_direct(const void *buffer, size_t sz, uint8_t result[static SHA256_DIGEST_SIZE]);
 
