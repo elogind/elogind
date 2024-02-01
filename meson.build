@@ -1506,7 +1506,8 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 #                  'crypt_reencrypt_init_by_passphrase',
 #                  'crypt_reencrypt',
 #                  'crypt_set_data_offset',
-#                  'crypt_set_keyring_to_link']
+#                  'crypt_set_keyring_to_link',
+#                  'crypt_resume_by_volume_key']
 #         have_ident = have and cc.has_function(
 #                 ident,
 #                 prefix : '#include <libcryptsetup.h>',
@@ -1870,7 +1871,8 @@ endif
 # have = get_option('homed').require(
 #         conf.get('HAVE_OPENSSL') == 1 and
 #         conf.get('HAVE_LIBFDISK') == 1 and
-#         conf.get('HAVE_LIBCRYPTSETUP') == 1,
+#         conf.get('HAVE_LIBCRYPTSETUP') == 1 and
+#         conf.get('HAVE_CRYPT_RESUME_BY_VOLUME_KEY') == 1,
 #         error_message : 'openssl, fdisk and libcryptsetup required').allowed()
 # conf.set10('ENABLE_HOMED', have)
 #
@@ -2019,6 +2021,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #                 '-std=gnu11',
 #                 '-fno-stack-protector',
 #                 '-O2',
+#                 '-mkernel=5.2',
 #                 '-mcpu=v3',
 #                 '-mco-re',
 #                 '-gbtf',
@@ -2067,7 +2070,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #
 #         bpf_o_unstripped_cmd += ['-I.']
 #
-#         if not meson.is_cross_build()
+#         if not meson.is_cross_build() and bpf_compiler == 'clang'
 #                 target_triplet_cmd = run_command('gcc', '-dumpmachine', check: false)
 #                 if target_triplet_cmd.returncode() == 0
 #                         target_triplet = target_triplet_cmd.stdout().strip()
@@ -2154,7 +2157,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
 
-check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
 # elf2efi_py = find_program('tools/elf2efi.py')
