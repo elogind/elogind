@@ -187,6 +187,7 @@
 #         'varlink-io.elogind.Credentials.c',
 #         'varlink-io.elogind.Network.c',
 #         'varlink-io.elogind.Hostname.c',
+#         'varlink-io.elogind.PCRLock.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
