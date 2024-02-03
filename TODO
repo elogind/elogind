@@ -1,3 +1,6 @@
 TODO
 
-* Nothing listed right now
+* Add some EFI support
+Currently, elogind can not do anything useful with EFI. Rudimentary support is
+included, so it would be nice if loginctl could at least reboot to EFI setup or
+the EFI boot menu.
