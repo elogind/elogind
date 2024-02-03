@@ -392,6 +392,7 @@ bool udev_available(void) {
         return (cache = (path_is_read_only_fs("/sys/") <= 0));
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_get_vendor_string(sd_device *device, const char **ret) {
         int r;
 
@@ -446,3 +447,4 @@ int device_get_property_value_with_fallback(
 
         return 1;
 }
+#endif // 0
