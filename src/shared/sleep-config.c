@@ -117,7 +117,7 @@ static void sleep_config_validate_state_and_mode(SleepConfig *sc) {
 
 int parse_sleep_config(SleepConfig **ret) {
 #if 0 /// elogind uses its own manager
-        _cleanup_(free_sleep_configp) SleepConfig *sc = NULL;
+        _cleanup_(sleep_config_freep) SleepConfig *sc = NULL;
 #else // 0
         Manager* sc = *ret;
 #if ENABLE_DEBUG_ELOGIND

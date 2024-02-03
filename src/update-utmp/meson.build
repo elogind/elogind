@@ -9,7 +9,6 @@
 #                 'dependencies' : libaudit,
 #         },
 # ]
-#
 #else // 0
 update_utmp_files = files(
         'update-utmp.c'

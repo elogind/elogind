@@ -14,7 +14,6 @@ typedef enum RuntimeScope {
 } RuntimeScope;
 
 const char *runtime_scope_to_string(RuntimeScope scope) _const_;
-
 RuntimeScope runtime_scope_from_string(const char *s) _const_;
 
 #if 0 /// UNNEEDED by elogind

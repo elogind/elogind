@@ -25,7 +25,6 @@
 #include "tests.h"
 #include "tmpfile-util.h"
 
-
 TEST(mount_option_mangle) {
         char *opts = NULL;
         unsigned long f;

@@ -1075,7 +1075,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                          "memory_max=%s tasks_max=%s cpu_weight=%s io_weight=%s runtime_max_sec=%s",
                          strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
 
-
         const SessionContext context = {
                 .uid = ur->uid,
                 .pid = 0,

@@ -58,7 +58,6 @@ int btrfs_is_subvol_at(int dir_fd, const char *path) {
         return is_fs_type_at(dir_fd, path, BTRFS_SUPER_MAGIC);
 }
 
-
 int btrfs_subvol_set_read_only_at(int dir_fd, const char *path, bool b) {
         _cleanup_close_ int fd = -EBADF;
         uint64_t flags, nflags;

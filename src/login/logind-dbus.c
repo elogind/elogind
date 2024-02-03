@@ -2286,7 +2286,11 @@ static int method_do_shutdown_or_sleep(
         if (a->sleep_operation >= 0) {
                 SleepSupport support;
 
+#if 0 /// elogind has to hand over its manager
+                r = sleep_supported_full(a->sleep_operation, &support);
+#else // 0
                 r = sleep_supported_full(m, a->sleep_operation, &support);
+#endif // 0
                 if (r < 0)
                         return r;
                 if (r == 0)
@@ -2836,7 +2840,11 @@ static int method_can_shutdown_or_sleep(
         if (a->sleep_operation >= 0) {
                 SleepSupport support;
 
+#if 0 /// elogind has to hand over its manager
+                r = sleep_supported_full(a->sleep_operation, &support);
+#else // 0
                 r = sleep_supported_full(m, a->sleep_operation, &support);
+#endif // 0
                 if (r < 0)
                         return r;
                 if (r == 0)

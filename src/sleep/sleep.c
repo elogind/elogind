@@ -249,7 +249,6 @@ static int write_efi_hibernate_location(const HibernationDevice *hibernation_dev
 #endif
 }
 
-
 static int write_state(int fd, char * const *states) {
         int r = 0;
 
@@ -294,6 +293,7 @@ static int write_mode(char * const *modes) {
 
         return r;
 }
+
 #else // 0
 static int write_mode(SleepOperation operation, char * const *modes) {
         int r = 0;
