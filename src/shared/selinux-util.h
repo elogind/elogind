@@ -21,7 +21,9 @@ void mac_selinux_retest(void);
 bool mac_selinux_enforcing(void);
 
 int mac_selinux_init(void);
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_init_lazy(void);
+#endif // 0
 void mac_selinux_maybe_reload(void);
 void mac_selinux_finish(void);
 

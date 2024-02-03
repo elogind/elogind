@@ -205,6 +205,7 @@ int mac_selinux_init(void) {
         return selinux_init(/* force= */ true);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mac_selinux_init_lazy(void) {
 #if HAVE_SELINUX
         if (initialized == UNINITIALIZED)
@@ -213,6 +214,7 @@ int mac_selinux_init_lazy(void) {
 
         return 0;
 }
+#endif // 0
 
 void mac_selinux_maybe_reload(void) {
 #if HAVE_SELINUX
