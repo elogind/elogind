@@ -151,7 +151,6 @@ libexecdir = libexecdir != '' ? libexecdir : prefixdir / 'lib/elogind'
 #endif // 0
 pkglibdir = libdir / 'elogind'
 
-
 #if 0 /// UNNEEDED by elogind
 # install_sysconfdir = get_option('install-sysconfdir') != 'false'
 #endif // 0
@@ -186,15 +185,15 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # sysctldir = prefixdir / 'lib/sysctl.d'
 # binfmtdir = prefixdir / 'lib/binfmt.d'
 # modulesloaddir = prefixdir / 'lib/modules-load.d'
-# networkdir = prefixdir / 'lib/elogind/network'
+# networkdir = prefixdir / 'lib/systemd/network'
 # systemgeneratordir = libexecdir / 'system-generators'
 # usergeneratordir = prefixdir / 'lib/systemd/user-generators'
 # systemenvgeneratordir = prefixdir / 'lib/systemd/system-environment-generators'
 # userenvgeneratordir = prefixdir / 'lib/systemd/user-environment-generators'
 # systemshutdowndir = libexecdir / 'system-shutdown'
 # systemsleepdir = libexecdir / 'system-sleep'
-# systemunitdir = prefixdir / 'lib/elogind/system'
-# systempresetdir = prefixdir / 'lib/elogind/system-preset'
+# systemunitdir = prefixdir / 'lib/systemd/system'
+# systempresetdir = prefixdir / 'lib/systemd/system-preset'
 # udevlibexecdir = prefixdir / 'lib/udev'
 # udevrulesdir = udevlibexecdir / 'rules.d'
 # udevhwdbdir = udevlibexecdir / 'hwdb.d'
@@ -210,8 +209,8 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # catalogstatedir = systemdstatedir / 'catalog'
 # randomseeddir = localstatedir / 'lib/systemd'
 # profiledir = libexecdir / 'portable' / 'profile'
-# ntpservicelistdir = prefixdir / 'lib/elogind/ntp-units.d'
 # repartdefinitionsdir = libexecdir / 'repart/definitions'
+# ntpservicelistdir = prefixdir / 'lib/systemd/ntp-units.d'
 # credstoredir = prefixdir / 'lib/credstore'
 # pcrlockdir = prefixdir / 'lib/pcrlock.d'
 #
@@ -219,11 +218,11 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 # if configfiledir == ''
 #         configfiledir= sysconfdir
 # endif
-# pkgconfigfiledir = configfiledir / 'elogind'
+# pkgconfigfiledir = configfiledir / 'systemd'
 #
 # docdir = get_option('docdir')
 # if docdir == ''
-#         docdir = datadir / 'doc/elogind'
+#         docdir = datadir / 'doc/systemd'
 # endif
 #else // 0
 pkgdatadir = datadir / 'elogind'
@@ -324,21 +323,21 @@ conf.set_quoted('ELOGIND_UACCESS_COMMAND_PATH',               libexecdir / 'elog
 conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elogind')
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'elogind-cgroups-agent')
-# conf.set_quoted('SYSTEMD_FSCK_PATH',                          libexecdir / 'elogind-fsck')
-# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        libexecdir / 'elogind-growfs')
-# conf.set_quoted('SYSTEMD_IMPORT_PATH',                        libexecdir / 'elogind-import')
-# conf.set_quoted('SYSTEMD_INTEGRITYSETUP_PATH',                libexecdir / 'elogind-integritysetup')
+# conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'systemd-cgroups-agent')
+# conf.set_quoted('SYSTEMD_FSCK_PATH',                          libexecdir / 'systemd-fsck')
+# conf.set_quoted('SYSTEMD_GROWFS_PATH',                        libexecdir / 'systemd-growfs')
+# conf.set_quoted('SYSTEMD_IMPORT_PATH',                        libexecdir / 'systemd-import')
+# conf.set_quoted('SYSTEMD_INTEGRITYSETUP_PATH',                libexecdir / 'systemd-integritysetup')
 # conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      pkgdatadir / 'kbd-model-map')
 # conf.set_quoted('SYSTEMD_LANGUAGE_FALLBACK_MAP',              pkgdatadir / 'language-fallback-map')
-# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        libexecdir / 'elogind-makefs')
-# conf.set_quoted('SYSTEMD_PULL_PATH',                          libexecdir / 'elogind-pull')
-# conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               libexecdir / 'elogind-shutdown')
+# conf.set_quoted('SYSTEMD_MAKEFS_PATH',                        libexecdir / 'systemd-makefs')
+# conf.set_quoted('SYSTEMD_PULL_PATH',                          libexecdir / 'systemd-pull')
+# conf.set_quoted('SYSTEMD_SHUTDOWN_BINARY_PATH',               libexecdir / 'systemd-shutdown')
 # conf.set_quoted('SYSTEMD_TEST_DATA',                          testdata_dir)
-# conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', bindir / 'elogind-tty-ask-password-agent')
-# conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 libexecdir / 'elogind-update-helper')
-# conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'elogind-userwork')
-# conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   libexecdir / 'elogind-veritysetup')
+# conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', bindir / 'systemd-tty-ask-password-agent')
+# conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 libexecdir / 'systemd-update-helper')
+# conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'systemd-userwork')
+# conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   libexecdir / 'systemd-veritysetup')
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     pkgsysconfdir / 'system')
 # conf.set_quoted('SYSTEM_DATA_UNIT_DIR',                       systemunitdir)
 # conf.set_quoted('SYSTEM_ENV_GENERATOR_DIR',                   systemenvgeneratordir)
@@ -380,6 +379,7 @@ conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('defaul
 #if 0 /// UNNEEDED by elogind
 # conf.set('DEFAULT_USER_TIMEOUT_SEC',                          get_option('default-user-timeout-sec'))
 # conf.set('UPDATE_HELPER_USER_TIMEOUT_SEC',                    get_option('update-helper-user-timeout-sec'))
+#
 # conf.set10('ENABLE_FIRST_BOOT_FULL_PRESET',                   get_option('first-boot-full-preset'))
 #endif // 0
 
@@ -1247,7 +1247,6 @@ endforeach
 #                     version : bpf_compiler == 'gcc' ? '>= 1.0.0' : '>= 0.1.0')
 # conf.set10('HAVE_LIBBPF', libbpf.found())
 #
-#
 # if not libbpf.found()
 #         conf.set10('BPF_FRAMEWORK', false)
 # else
@@ -1411,7 +1410,6 @@ if install_polkit_pkla
         message('Old polkit detected, will install pkla files')
 endif
 conf.set10('ENABLE_POLKIT', install_polkit)
-
 
 libacl = dependency('libacl',
                     required : get_option('acl'))
@@ -2523,6 +2521,7 @@ subdir('src/update-utmp')
 # hwdb requires 'udev_link_with' and 'udev_rpath'
 #if 0 /// UNNEEDED by elogind
 # subdir('src/udev')
+#
 # subdir('src/ac-power')
 # subdir('src/analyze')
 #endif // 0
@@ -2589,7 +2588,7 @@ subdir('src/login')
 # subdir('src/nss-myhostname')
 # subdir('src/nss-mymachines')
 # subdir('src/nss-resolve')
-# subdir('src/nss-elogind')
+# subdir('src/nss-systemd')
 # subdir('src/oom')
 # subdir('src/partition')
 # subdir('src/path')
@@ -2755,6 +2754,7 @@ foreach dict : executables
                 endif
         endif
         
+
 #if 0 /// elogind does not fuzz
 #         if is_fuzz
 #                 fuzzer_exes += exe
@@ -2888,6 +2888,8 @@ subdir('rules.d')
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
+# ############################################################
+#
 # subdir('docs/sysvinit')
 # subdir('docs/var-log')
 # subdir('hwdb.d')

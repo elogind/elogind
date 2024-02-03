@@ -143,6 +143,7 @@ _loginctl_commands() {
         "attach:Attach one or more devices to a seat"
         "flush-devices:Flush all device associations"
         "terminate-seat:Terminate all sessions on one or more seats"
+#if 1 /// elogind supports some more commands
         "reload:Reload the elogind config file"
         "poweroff:Turn off the machine"
         "reboot:Reboot the machine"
@@ -150,6 +151,7 @@ _loginctl_commands() {
         "hibernate:Suspend the machine to disk"
         "hybrid-sleep:Suspend the machine to memory and disk"
         "suspend-then-hibernate:Suspend the system, wake after a period of time and put it into hibernate"
+#endif // 1
     )
 
     if (( CURRENT == 1 )); then
@@ -170,7 +172,24 @@ _loginctl_commands() {
     fi
 }
 
-
+#if 0 /// elogind supports more options
+# _arguments -s \
+#     {-h,--help}'[Show help]' \
+#     '--version[Show package version]' \
+#     \*{-p+,--property=}'[Show only properties by this name]:unit property' \
+#     {-a,--all}'[Show all properties, including empty ones]' \
+#     '--kill-whom=[Whom to send signal to]:killwhom:(main control all)' \
+#     {-s+,--signal=}'[Which signal to send]:signal:_signals' \
+#     {-H+,--host=}'[Operate on remote host]:userathost:_sd_hosts_or_user_at_host' \
+#     {-M+,--machine=}'[Operate on local container]:machine:_sd_machines' \
+#     {-l,--full}'[Do not ellipsize output]' \
+#     '--no-pager[Do not pipe output into a pager]' \
+#     '--no-legend[Do not show the headers and footers]' \
+#     '--no-ask-password[Do not ask for system passwords]' \
+#     {-n+,--lines=}'[Number of journal entries to show]' \
+#     {-o+,--output=}'[Change journal output mode]:output modes:_sd_outputmodes' \
+#     '*::loginctl command:_loginctl_commands'
+#else // 0
 _arguments -s \
     {-h,--help}'[Show help]' \
     '--version[Show package version]' \
@@ -192,3 +211,4 @@ _arguments -s \
     '--dry-run[Only print what would be done]' \
     '--firmware-setup[Tell the firmware to show the setup menu on next boot]' \
     '*::loginctl command:_loginctl_commands'
+#endif // 0

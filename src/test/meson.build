@@ -535,14 +535,14 @@ executables += [
 #if 0 /// Do elogind symbol tests, and we also do not provide libudev
 #         test_template + {
 #                 'name' : 'test-libsystemd-sym',
-#                 'link_with' : libsystemd,
 #                 'sources' : test_libsystemd_sym_c,
+#                 'link_with' : libsystemd,
 #                 'suite' : 'libsystemd',
 #         },
 #         test_template + {
 #                 'name' : 'test-libsystemd-static-sym',
 #                 'sources' : test_libsystemd_sym_c,
-#                 'link_with' : install_libsystemdd_static,
+#                 'link_with' : install_libsystemd_static,
 #                 'build_by_default' : want_tests != 'false' and static_libsystemd != 'false',
 #                 'install' : install_tests and static_libsystemd != 'false',
 #                 'suite' : 'libsystemd',
