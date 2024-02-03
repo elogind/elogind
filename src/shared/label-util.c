@@ -119,6 +119,7 @@ int btrfs_subvol_make_label(const char *path) {
 }
 #endif // 0
 
+#if 0 /// elogind does not need (or use) lazy init, so take it out
 static int init_internal(bool lazy) {
         int r;
 
@@ -141,3 +142,20 @@ int mac_init_lazy(void) {
 int mac_init(void) {
         return init_internal(/* lazy=*/ false);
 }
+#else // 0
+static int init_internal(void) {
+        int r;
+
+        assert(!(mac_selinux_use() && mac_smack_use()));
+
+        r = mac_selinux_init();
+        if (r < 0)
+                return r;
+
+        return mac_smack_init();
+}
+
+int mac_init(void) {
+        return init_internal();
+}
+#endif // 0

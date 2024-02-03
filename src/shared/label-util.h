@@ -28,4 +28,6 @@ int btrfs_subvol_make_label(const char *path);
 #endif // 0
 
 int mac_init(void);
+#if 0 /// UNNEEDED by elogind
 int mac_init_lazy(void);
+#endif // 0
