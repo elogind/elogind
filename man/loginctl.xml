@@ -609,8 +609,10 @@
       </varlistentry>
       <!-- // 1 -->
 
+      <!-- 0 /// elogind has no user option
       <xi:include href="user-system-options.xml" xpointer="host" />
       <xi:include href="user-system-options.xml" xpointer="machine" />
+      // 0 -->
 
       <xi:include href="standard-options.xml" xpointer="no-pager" />
       <xi:include href="standard-options.xml" xpointer="no-legend" />

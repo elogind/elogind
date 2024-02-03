@@ -11,9 +11,9 @@ manpages = [
  ['elogind.syntax', '7', [], ''],
  ['elogind.time', '7', [], ''],
  ['libelogind', '3', [], ''],
- ['loginctl', '1', [], ''],
- ['logind.conf', '5', ['logind.conf.d'], ''],
- ['org.freedesktop.login1', '5', [], ''],
+ ['loginctl', '1', [], 'ENABLE_LOGIND'],
+ ['logind.conf', '5', ['logind.conf.d'], 'ENABLE_LOGIND'],
+ ['org.freedesktop.login1', '5', [], 'ENABLE_LOGIND'],
  ['pam_elogind', '8', [], 'HAVE_PAM'],
  ['sd-bus', '3', [], ''],
  ['sd-event', '3', [], ''],
@@ -506,7 +506,8 @@ manpages = [
   'HAVE_PAM'],
  ['sd_id128_get_machine',
   '3',
-  ['sd_id128_get_boot',
+  ['sd_id128_get_app_specific',
+   'sd_id128_get_boot',
    'sd_id128_get_boot_app_specific',
    'sd_id128_get_invocation',
    'sd_id128_get_machine_app_specific'],
@@ -607,7 +608,6 @@ manpages = [
    'sd_uid_is_on_seat'],
   'HAVE_PAM'],
  ['sd_watchdog_enabled', '3', [], ''],
- ['sleep.conf', '5', ['sleep.conf.d'], ''],
- ['smbios-type-11', '7', [], '']
+ ['sleep.conf', '5', ['sleep.conf.d'], '']
 ]
 # Really, do not edit.
