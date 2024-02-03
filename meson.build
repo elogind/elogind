@@ -2753,7 +2753,6 @@ foreach dict : executables
                              is_parallel : dict.get('parallel', true))
                 endif
         endif
-        
 
 #if 0 /// elogind does not fuzz
 #         if is_fuzz
