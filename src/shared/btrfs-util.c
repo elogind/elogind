@@ -59,9 +59,6 @@ int btrfs_is_subvol_at(int dir_fd, const char *path) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 int btrfs_subvol_set_read_only_at(int dir_fd, const char *path, bool b) {
         _cleanup_close_ int fd = -EBADF;
         uint64_t flags, nflags;

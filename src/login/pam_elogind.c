@@ -1076,9 +1076,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                          strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
 
 
-#if 0 /// elogind neither handles io_weight nor cpu_weight
-#endif // 0
-
         const SessionContext context = {
                 .uid = ur->uid,
                 .pid = 0,

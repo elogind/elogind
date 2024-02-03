@@ -784,15 +784,10 @@ env = find_program('env')
 #endif // 0
 diff = find_program('diff')
 find = find_program('find')
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
 meson_symlink_headers = project_source_root + '/tools/meson-symlink_headers.sh'
 #endif // 1
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 ln_s = ln.full_path() + ' -frsT -- "${DESTDIR:-}@0@" "${DESTDIR:-}@1@"'
 
@@ -3410,6 +3405,3 @@ summary({
         'enabled' :  ', '.join(found),
         'disabled' : ', '.join(missing)},
         section : 'Features')
-
-#if 0 /// Nicely enough this isn't true for elogind. :-)
-#endif // 0

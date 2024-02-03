@@ -280,10 +280,6 @@ int cg_get_root_path(char **path);
 #if 0 /// UNNEEDED by elogind
 int cg_path_get_cgroupid(const char *path, uint64_t *ret);
 #endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int cg_path_get_session(const char *path, char **ret_session);
 int cg_path_get_owner_uid(const char *path, uid_t *ret_uid);
 int cg_path_get_unit(const char *path, char **ret_unit);

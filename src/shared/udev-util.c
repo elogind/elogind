@@ -375,9 +375,6 @@ int udev_queue_is_empty(void) {
                 (errno == ENOENT ? true : -errno) : false;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 bool udev_available(void) {
         static int cache = -1;
 

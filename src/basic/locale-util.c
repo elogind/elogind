@@ -283,9 +283,6 @@ int locale_is_installed(const char *name) {
         return true;
 }
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 bool is_locale_utf8(void) {
         static int cached_answer = -1;
         const char *set;
