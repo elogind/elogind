@@ -25,6 +25,7 @@ static size_t pe_header_size(const PeHeader *pe_header) {
         return offsetof(PeHeader, optional) + le16toh(pe_header->pe.SizeOfOptionalHeader);
 }
 
+#if 0 /// UNNEEDED by elogind
 const IMAGE_DATA_DIRECTORY *pe_header_get_data_directory(
                 const PeHeader *h,
                 size_t i) {
@@ -36,6 +37,7 @@ const IMAGE_DATA_DIRECTORY *pe_header_get_data_directory(
 
         return PE_HEADER_OPTIONAL_FIELD(h, DataDirectory) + i;
 }
+#endif // 0
 
 const IMAGE_SECTION_HEADER *pe_header_find_section(
                 const PeHeader *pe_header,

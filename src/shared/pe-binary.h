@@ -133,7 +133,9 @@ bool pe_header_is_64bit(const PeHeader *h);
 #define PE_HEADER_OPTIONAL_FIELD_OFFSET(h, field) \
         (pe_header_is_64bit(h) ? offsetof(PeHeader, optional.pe32plus_##field) : offsetof(PeHeader, optional.pe32_##field))
 
+#if 0 /// UNNEEDED by elogind
 const IMAGE_DATA_DIRECTORY *pe_header_get_data_directory(const PeHeader *h, size_t i);
+#endif // 0
 const IMAGE_SECTION_HEADER *pe_header_find_section(const PeHeader *pe_header, const IMAGE_SECTION_HEADER *sections, const char *name);
 
 int pe_load_headers(int fd, IMAGE_DOS_HEADER **ret_dos_header, PeHeader **ret_pe_header);
