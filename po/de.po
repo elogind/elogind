@@ -14,7 +14,7 @@ msgstr ""
 "POT-Creation-Date: 2023-11-14 21:25+0000\n"
 "PO-Revision-Date: 2023-09-06 21:21+0000\n"
 "Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
-"Language-Team: German <https://translate.fedoraproject.org/projects/elogind/master/de/>\n"
+"Language-Team: German <https://translate.fedoraproject.org/projects/systemd/master/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -452,22 +452,22 @@ msgstr "Nicht angemeldete Benutzer dürfen Programme ausführen"
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr "Legitimierung ist erforderlich, damit nicht angemeldete Benutzer Programme ausführen dürfen."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
 msgstr "Das Anschließen von Geräten an Arbeitsstationen erlauben"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
 msgstr "Legitimierung ist zum Anschließen eines Geräts an eine Arbeitsstation notwendig."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
 msgstr "Zurücksetzen der an eine Arbeitsstation angeschlossenen Geräte"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:160
 msgid "Authentication is required to reset how devices are attached to seats."
 msgstr "Legitimierung ist zum Zurücksetzen notwendig, wie Geräte an eine Arbeitsstation angeschlossen werden."
@@ -596,7 +596,7 @@ msgstr "Legitimierung ist zum Versetzen des System in den Ruhezustand notwendig,
 msgid "Manage active sessions, users and seats"
 msgstr "Aktive Sitzungen, Benutzer und Arbeitsstationen verwalten"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:333
 msgid "Authentication is required to manage active sessions, users and seats."
 msgstr "Legitimierung ist zur Verwaltung aktiver Sitzungen, Benutzern und Arbeitsstationen notwendig."

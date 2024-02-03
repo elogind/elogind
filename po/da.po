@@ -9,7 +9,7 @@ msgstr ""
 "POT-Creation-Date: 2023-11-14 21:25+0000\n"
 "PO-Revision-Date: 2021-06-02 16:03+0000\n"
 "Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
-"Language-Team: Danish <https://translate.fedoraproject.org/projects/elogind/master/da/>\n"
+"Language-Team: Danish <https://translate.fedoraproject.org/projects/systemd/master/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -451,22 +451,22 @@ msgstr "Tillad brugere der ikke er logget ind, at køre programmer"
 msgid "Authentication is required to run programs as a non-logged-in user."
 msgstr "Der kræves godkendelse for at brugere, som ikke er logget ind, kan køre programmer."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:148
 msgid "Allow attaching devices to seats"
 msgstr "Tillad at montere af enheder til arbejdsstationer"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:149
 msgid "Authentication is required to attach a device to a seat."
 msgstr "Der kræves godkendelse for at montere en enhed til en arbejdsstation."
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:159
 msgid "Flush device to seat attachments"
 msgstr "Nulstil enhed monteret til en arbejdsstation"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:160
 msgid "Authentication is required to reset how devices are attached to seats."
 msgstr "Der kræves godkendelse for at nulstille måden enheder er monteret arbejdsstationer."
@@ -595,7 +595,7 @@ msgstr "Der kræves godkendelse for at indstille systemet i dvale-tilstand, mens
 msgid "Manage active sessions, users and seats"
 msgstr "Håndter aktive sessioner, brugere og arbejdsstationer"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:333
 msgid "Authentication is required to manage active sessions, users and seats."
 msgstr "Der kræves godkendelse for at håndtere aktive sessioner, brugere og arbejdsstationer."
