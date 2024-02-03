@@ -501,7 +501,6 @@ int deserialize_pidref(FDSet *fds, const char *value, PidRef *ret) {
 
         return 0;
 }
-#endif // 0
 
 void deserialize_ratelimit(RateLimit *rl, const char *name, const char *value) {
         usec_t begin, interval;
@@ -518,6 +517,7 @@ void deserialize_ratelimit(RateLimit *rl, const char *name, const char *value) {
         rl->num = (interval == rl->interval && burst == rl->burst) ? num : 0;
         rl->begin = begin;
 }
+#endif // 0
 
 int open_serialization_fd(const char *ident) {
         int fd;
