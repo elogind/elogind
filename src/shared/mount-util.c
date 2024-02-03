@@ -1654,6 +1654,7 @@ unsigned long credentials_fs_mount_flags(bool ro) {
         return MS_NODEV|MS_NOEXEC|MS_NOSUID|ms_nosymfollow_supported()|(ro ? MS_RDONLY : 0);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mount_credentials_fs(const char *path, size_t size, bool ro) {
         _cleanup_free_ char *opts = NULL;
         int r, noswap_supported;
@@ -1708,7 +1709,6 @@ int mount_credentials_fs(const char *path, size_t size, bool ro) {
                         opts);
 }
 
-#if 0 /// UNNEEDED by elogind
 int make_fsmount(
                 int error_log_level,
                 const char *what,
