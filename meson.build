@@ -15,7 +15,7 @@ project('elogind', 'c',
 
 libsystemd_version = '0.38.0'
 #if 0 /// elogind does not ship libudev
-libudev_version = '1.7.8'
+# libudev_version = '1.7.8'
 #endif // 0
 
 conf = configuration_data()
@@ -237,6 +237,7 @@ udevlibexecdir = get_option('udevbindir')
 udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : prefixdir / 'lib/udev'
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : udevlibexecdir / 'rules.d'
+elogindstatedir = localstatedir / 'lib/elogind'
 factorydir = datadir / 'factory'
 configfiledir = get_option('configfiledir')
 if configfiledir == ''
@@ -1322,7 +1323,7 @@ endforeach
 #         # Can build BPF program from source code in restricted C
 #         conf.set10('BPF_FRAMEWORK', deps_found)
 # endif
-# #else // 0
+#else // 0
 bpf_framework = 'disabled'
 bpf_compiler  = 'none'
 conf.set10('HAVE_LIBBPF', false)
@@ -1366,7 +1367,7 @@ conf.set10('HAVE_PASSWDQC', false)
 #                         version : '>= 2.3.1',
 #                         required : get_option('seccomp'))
 # conf.set10('HAVE_SECCOMP', libseccomp.found())
-#else
+#else // 0
 libseccomp = []
 conf.set10('HAVE_SECCOMP', false)
 #endif // 0
@@ -2940,6 +2941,7 @@ install_data('LICENSE.GPL2',
 #                install_dir : docdir)
 #
 #endif // 0
+install_emptydir(elogindstatedir)
 
 ############################################################
 
