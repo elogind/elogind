@@ -495,7 +495,6 @@ int cg_set_access(
 
         return 0;
 }
-#endif // 0
 
 struct access_callback_data {
         uid_t uid;
@@ -572,6 +571,7 @@ int cg_set_access_recursive(
 
         return -d.error;
 }
+#endif // 0
 
 int cg_migrate(
                 const char *cfrom,
