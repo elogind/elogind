@@ -181,6 +181,7 @@ success:
         return PAM_SUCCESS;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pam_release_bus_connection(pam_handle_t *handle, const char *module_name) {
         _cleanup_free_ char *cache_id = NULL;
         int r;
@@ -197,6 +198,7 @@ int pam_release_bus_connection(pam_handle_t *handle, const char *module_name) {
 
         return PAM_SUCCESS;
 }
+#endif // 0
 
 void pam_cleanup_free(pam_handle_t *handle, void *data, int error_status) {
         /* A generic destructor for pam_set_data() that just frees the specified data */

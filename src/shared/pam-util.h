@@ -36,6 +36,8 @@ void pam_bus_data_disconnectp(PamBusData **d);
 /* Use a different module name per different PAM module. They are all loaded in the same namespace, and this
  * helps avoid a clash in the internal data structures of sd-bus. It will be used as key for cache items. */
 int pam_acquire_bus_connection(pam_handle_t *handle, const char *module_name, sd_bus **ret_bus, PamBusData **ret_bus_data);
+#if 0 /// UNNEEDED by elogind
 int pam_release_bus_connection(pam_handle_t *handle, const char *module_name);
+#endif // 0
 
 void pam_cleanup_free(pam_handle_t *handle, void *data, int error_status);
