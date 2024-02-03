@@ -21,6 +21,8 @@ static inline int mkdir_parents_label(const char *path, mode_t mod) {
         return mkdirat_parents_label(AT_FDCWD, path, mod);
 }
 
+#if 0 /// UNNEEDED by elogind
 int mkdir_parents_safe_label(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags);
+#endif // 0
 
 int mkdir_p_label(const char *path, mode_t mode);
