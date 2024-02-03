@@ -704,6 +704,7 @@ int bus_message_append_string_set(sd_bus_message *m, Set *set) {
         return sd_bus_message_close_container(m);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_property_get_string_set(
                 sd_bus *bus,
                 const char *path,
@@ -721,3 +722,4 @@ int bus_property_get_string_set(
 
         return bus_message_append_string_set(reply, *s);
 }
+#endif // 0
