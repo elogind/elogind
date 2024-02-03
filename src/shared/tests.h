@@ -48,7 +48,9 @@ void test_setup_logging(int level);
                 EXIT_TEST_SKIP;                                         \
         })
 
+#if 0 /// UNNEEDED by elogind
 int write_tmpfile(char *pattern, const char *contents);
+#endif // 0
 
 bool have_namespaces(void);
 

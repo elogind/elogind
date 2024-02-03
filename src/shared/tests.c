@@ -120,6 +120,7 @@ void test_setup_logging(int level) {
         log_open();
 }
 
+#if 0 /// UNNEEDED by elogind
 int write_tmpfile(char *pattern, const char *contents) {
         _cleanup_close_ int fd = -EBADF;
 
@@ -136,6 +137,7 @@ int write_tmpfile(char *pattern, const char *contents) {
                 return errno_or_else(EIO);
         return 0;
 }
+#endif // 0
 
 bool have_namespaces(void) {
         siginfo_t si = {};
