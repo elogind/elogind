@@ -419,6 +419,7 @@ int config_parse_unsigned_bounded(
                 bool ignoring,
                 unsigned *ret);
 
+#if 0 /// UNNEEDED by elogind
 static inline int config_parse_uint32_bounded(
                 const char *unit,
                 const char *filename,
@@ -499,3 +500,4 @@ static inline int config_parse_uint8_bounded(
         *ret = t;
         return 1;
 }
+#endif // 0
