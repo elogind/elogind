@@ -403,7 +403,6 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 libshared_deps = [threads,
                   libacl,
                   libcap,
-                  libcrypt,
                   libdl,
                   libmount,
                   libpam,

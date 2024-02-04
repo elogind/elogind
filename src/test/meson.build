@@ -393,11 +393,13 @@ executables += [
                 'sources' : files('test-json.c'),
                 'dependencies' : libm,
         },
-        test_template + {
-                'sources' : files('test-libcrypt-util.c'),
-                'dependencies' : libcrypt,
-                'timeout' : 120,
-        },
+#if 0 /// UNNEEDED by elogind
+#         test_template + {
+#                 'sources' : files('test-libcrypt-util.c'),
+#                 'dependencies' : libcrypt,
+#                 'timeout' : 120,
+#         },
+#endif // 0
         test_template + {
                 'sources' : files('test-libmount.c'),
                 'dependencies' : [
