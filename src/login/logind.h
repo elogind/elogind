@@ -106,7 +106,7 @@ struct Manager {
         /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
 #else // 0
-        /* Suspension and hibernation can be disabled in logind.conf. */
+        /* Suspension and hibernation can be disabled in sleep.conf. */
         bool allow[_SLEEP_OPERATION_MAX];
         char **modes[_SLEEP_OPERATION_MAX];
         char **states[_SLEEP_OPERATION_MAX];
