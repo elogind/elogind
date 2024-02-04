@@ -1212,11 +1212,13 @@ librt = []
 #endif //  0
 libm = cc.find_library('m')
 libdl = cc.find_library('dl')
-libcrypt = dependency('libcrypt', 'libxcrypt', required : false)
-if not libcrypt.found()
-        # fallback to use find_library() if libcrypt is provided by glibc, e.g. for LibreELEC.
-        libcrypt = cc.find_library('crypt')
-endif
+#if 0 /// elogind does not need libcrypt anywhere
+# libcrypt = dependency('libcrypt', 'libxcrypt', required : false)
+# if not libcrypt.found()
+#         # fallback to use find_library() if libcrypt is provided by glibc, e.g. for LibreELEC.
+#         libcrypt = cc.find_library('crypt')
+# endif
+#endif // 0
 libcap = dependency('libcap')
 
 # On some architectures, libatomic is required. But on some installations,
@@ -1230,16 +1232,18 @@ else
         libatomic = []
 endif
 
-crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
-foreach ident : [
-        ['crypt_ra',               crypt_header],
-        ['crypt_preferred_method', crypt_header],
-        ['crypt_gensalt_ra',       crypt_header]]
-
-        have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
-                               dependencies : libcrypt)
-        conf.set10('HAVE_' + ident[0].to_upper(), have)
-endforeach
+#if 0 /// elogind does not need libcrypt anywhere
+# crypt_header = conf.get('HAVE_CRYPT_H') == 1 ? '''#include <crypt.h>''' : '''#include <unistd.h>'''
+# foreach ident : [
+#         ['crypt_ra',               crypt_header],
+#         ['crypt_preferred_method', crypt_header],
+#         ['crypt_gensalt_ra',       crypt_header]]
+#
+#         have = cc.has_function(ident[0], prefix : ident[1], args : '-D_GNU_SOURCE',
+#                                dependencies : libcrypt)
+#         conf.set10('HAVE_' + ident[0].to_upper(), have)
+# endforeach
+#endif // 0
 
 #if 0 /// BPF is nowhere used or usable within elogind
 # bpf_framework = get_option('bpf-framework')
