@@ -254,6 +254,7 @@ typedef struct UserRecord {
         char **environment;
         char *time_zone;
         char *preferred_language;
+        char **additional_languages;
         int nice_level;
         struct rlimit *rlimits[_RLIMIT_MAX];
 
@@ -423,6 +424,7 @@ uint64_t user_record_rebalance_weight(UserRecord *h);
 #endif // 0
 uint64_t user_record_capability_bounding_set(UserRecord *h);
 uint64_t user_record_capability_ambient_set(UserRecord *h);
+int user_record_languages(UserRecord *h, char ***ret);
 
 int user_record_build_image_path(UserStorage storage, const char *user_name_and_realm, char **ret);
 
