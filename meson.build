@@ -141,11 +141,14 @@ libdir = prefixdir / get_option('libdir')
 sysconfdir = prefixdir / get_option('sysconfdir')
 includedir = prefixdir / get_option('includedir')
 datadir = prefixdir / get_option('datadir')
-localstatedir = '/' / get_option('localstatedir')
-
-#if 0 /// elogind needs this to be configurable
+#if 0 /// elogind needs this to be better configurable
+# localstatedir = '/' / get_option('localstatedir')
+#
 # libexecdir = prefixdir / 'lib/systemd'
 #else // 0
+localstatedir = get_option('localstatedir')
+localstatedir = localstatedir != '' ? localstatedir : '/var'
+
 libexecdir = get_option('libexecdir')
 libexecdir = libexecdir != '' ? libexecdir : prefixdir / 'lib/elogind'
 #endif // 0
