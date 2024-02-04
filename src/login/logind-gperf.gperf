@@ -18,27 +18,6 @@ struct ConfigPerfItem;
 %struct-type
 %includes
 %%
-#if 1 /// Additions for elogind
-Sleep.AllowSuspend,                config_parse_tristate,      0, offsetof(Manager, allow[SLEEP_SUSPEND])
-Sleep.AllowHibernation,            config_parse_tristate,      0, offsetof(Manager, allow[SLEEP_HIBERNATE])
-Sleep.AllowSuspendThenHibernate,   config_parse_tristate,      0, offsetof(Manager, allow[SLEEP_SUSPEND_THEN_HIBERNATE])
-Sleep.AllowHybridSleep,            config_parse_tristate,      0, offsetof(Manager, allow[SLEEP_HYBRID_SLEEP])
-Sleep.AllowPowerOffInterrupts,     config_parse_bool,          0, offsetof(Manager, allow_poweroff_interrupts)
-Sleep.BroadcastPowerOffInterrupts, config_parse_bool,          0, offsetof(Manager, broadcast_poweroff_interrupts)
-Sleep.AllowSuspendInterrupts,      config_parse_bool,          0, offsetof(Manager, allow_suspend_interrupts)
-Sleep.BroadcastSuspendInterrupts,  config_parse_bool,          0, offsetof(Manager, broadcast_suspend_interrupts)
-Sleep.HandleNvidiaSleep,           config_parse_bool,          0, offsetof(Manager, handle_nvidia_sleep)
-Sleep.SuspendMode,                 config_parse_strv,          0, offsetof(Manager, modes[SLEEP_SUSPEND])
-Sleep.SuspendState,                config_parse_strv,          0, offsetof(Manager, states[SLEEP_SUSPEND])
-Sleep.SuspendByUsing,              config_parse_strv,          0, offsetof(Manager, suspend_by_using)
-Sleep.HibernateMode,               config_parse_strv,          0, offsetof(Manager, modes[SLEEP_HIBERNATE])
-Sleep.HibernateState,              config_parse_strv,          0, offsetof(Manager, states[SLEEP_HIBERNATE])
-Sleep.HibernateByUsing,            config_parse_strv,          0, offsetof(Manager, hibernate_by_using)
-Sleep.HybridSleepMode,             config_parse_strv,          0, offsetof(Manager, modes[SLEEP_HYBRID_SLEEP])
-Sleep.HybridSleepState,            config_parse_strv,          0, offsetof(Manager, states[SLEEP_HYBRID_SLEEP])
-Sleep.HibernateDelaySec,           config_parse_sec,           0, offsetof(Manager, hibernate_delay_usec)
-Sleep.SuspendEstimationSec,        config_parse_sec,           0, offsetof(Manager, suspend_estimation_usec)
-#endif // 1
 #if 0 /// UNNEEDED by elogind
 # Login.NAutoVTs,                     config_parse_n_autovts,             0, offsetof(Manager, n_autovts)
 # Login.ReserveVT,                    config_parse_unsigned,              0, offsetof(Manager, reserve_vt)

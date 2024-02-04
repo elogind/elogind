@@ -98,7 +98,7 @@ int manager_parse_config_file(Manager *m) {
                 logind_conf = PKGSYSCONFDIR "/logind.conf";
 
         return config_parse_config_file(
-                        logind_conf, "Login\0Sleep\0",
+                        logind_conf, "Login\0",
                         config_item_perf_lookup, logind_gperf_lookup,
                         CONFIG_PARSE_WARN, m);
 #endif // 0
