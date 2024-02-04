@@ -680,7 +680,8 @@ foreach ident : [
 #         ['pivot_root',        '''#include <stdlib.h>
 #                                  #include <unistd.h>'''],     # no known header declares pivot_root
 #endif // 0
-#if 1 /// elogind supports musl, but upstream refuses to add qsort_r
+#if 1 /// elogind supports musl, but upstream refuses to add qsort_r and has removed basename
+        ['basename',          '''#include <string.h>'''],     # _GNU_SOURCE is defined, so test for GNU basename()
         ['qsort_r',           '''#include <stdlib.h>'''],
 #endif // 1
         ['ioprio_get',        '''#include <sched.h>'''],      # no known header declares ioprio_get

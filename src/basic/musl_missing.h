@@ -44,9 +44,11 @@ void elogind_set_program_name(const char* pcall);
 #  define HAVE_SECURE_GETENV 1
 #endif // HAVE_[__]SECURE_GETENV
 
+#if ! HAVE_BASENAME
 /* Poor man's basename */
-#define basename(path) \
+#  define basename(path) \
         (strrchr(path, '/') ? strrchr(path, '/')+1 : path)
+#endif // HAVE_BASENAME
 
 /* strndupa may already be defined in another compatibility header */
 #if !defined(strndupa)
@@ -121,4 +123,3 @@ typedef int (*__compar_d_fn_t) (const void *, const void *, void *);
 #endif // !defined(__GLIBC__)
 
 #endif // ELOGIND_BASIC_MUSL_MISSING_H_INCLUDED
-
