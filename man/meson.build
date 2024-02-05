@@ -59,13 +59,6 @@ foreach tuple : manpages
 
         mandirn = get_option('mandir') / ('man' + section)
 
-#if 1 /// This must be configurable in elogind
-        htmldir = get_option('htmldir')
-        if htmldir == ''
-                htmldir = docdir / 'html'
-        endif
-#endif // 1
-
         if condition == '' or conf.get(condition) == 1
                 file = files(tuple[0] + '.xml')
                 source_xml_files += file
@@ -92,10 +85,10 @@ foreach tuple : manpages
                                         command : [ln, '-fs', html, '@OUTPUT@'])
                                 if want_html
 #if 0 /// This is configurable in elogind - see above
+#                                         meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
 #else // 0
-                                        dst = htmldir / htmlalias
+                                        meson.add_install_script(sh, '-c', ln_s.format(html, htmldir / htmlalias))
 #endif // 0
-                                        meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
                                         p2 += link
                                 endif
                                 html_pages += link
@@ -108,7 +101,11 @@ foreach tuple : manpages
                                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
                                 depends : [man_page_depends, p2],
                                 install : want_html,
-                                install_dir : docdir / 'html')
+#if 0 /// This is configurable in elogind - see above
+#                                 install_dir : docdir / 'html')
+#else // 0
+                                install_dir : htmldir)
+#endif // 0
                         html_pages += p3
                 endif
         else
@@ -148,13 +145,6 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
 
         mandirn = get_option('mandir') / ('man' + section)
 
-#if 1 /// This must be configurable in elogind
-        htmldir = get_option('htmldir')
-        if htmldir == ''
-                htmldir = docdir / 'html'
-        endif
-#endif // 1
-
         p1 = custom_target(
                 man,
                 input : xml,
@@ -174,10 +164,10 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                         command : [ln, '-fs', html, '@OUTPUT@'])
                 if want_html
 #if 0 /// This is configurable in elogind - see above
+#                         meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
 #else // 0
-                        dst = htmldir / htmlalias
+                        meson.add_install_script(sh, '-c', ln_s.format(html, htmldir / htmlalias))
 #endif // 0
-                        meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
                         p2 += link
                 endif
                 html_pages += link
@@ -190,7 +180,11 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
                 depends : [man_page_depends, p2],
                 install : want_html and have_lxml,
-                install_dir : docdir / 'html')
+#if 0 /// This is configurable in elogind - see above
+#                 install_dir : docdir / 'html')
+#else // 0
+                install_dir : htmldir)
+#endif // 0
         html_pages += p3
 endforeach
 

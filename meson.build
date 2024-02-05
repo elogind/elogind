@@ -250,6 +250,10 @@ docdir = get_option('docdir')
 if docdir == ''
         docdir = datadir / 'doc/elogind'
 endif
+htmldir = get_option('htmldir')
+if htmldir == ''
+        htmldir = docdir / 'html'
+endif
 testsdir = prefixdir / 'lib/elogind/tests'
 unittestsdir = testsdir / 'unit-tests'
 testdata_dir = testsdir / 'testdata'
@@ -3157,6 +3161,11 @@ summary({
 #if 0 /// UNNEEDED by elogind
 #         'D-Bus interfaces directory' :      dbus_interfaces_dir,
 #endif // 0
+#if 1 /// Let elogind show where docs are installed
+        'mandir' :                          get_option('mandir'),
+        'docdir' :                          docdir,
+        'htmldir' :                         htmldir,
+#endif // 1
         'bash completions directory' :      bashcompletiondir,
         'zsh completions directory' :       zshcompletiondir,
 #if 0 /// UNNEEDED by elogind
