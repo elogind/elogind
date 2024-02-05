@@ -25,9 +25,9 @@ CGCONTROL  ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
 CGDEFAULT  ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
 DESTDIR    ?=
 MESON_LST  := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
-PREFIX     ?= /tmp/elogind_test
-ROOTPREFIX ?= $(PREFIX)
-SYSCONFDIR ?= $(PREFIX)/etc
+ROOTPREFIX ?= /tmp/elogind_test
+PREFIX     ?= $(ROOTPREFIX)/usr
+SYSCONFDIR ?= $(ROOTPREFIX)/etc
 VERSION    ?= 9999
 
 CC    ?= $(shell which cc)
@@ -144,9 +144,16 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 		$(MESON) configure $(BUILDDIR) $(BASIC_OPT) \
 	) || ( \
 		$(MESON) setup $(BUILDDIR) $(BASIC_OPT) \
-			--prefix $(PREFIX) \
-			--libexecdir $(PREFIX)/lib64/elogind \
+			--prefix="$(PREFIX)" \
+			--libdir="$(PREFIX)"/lib64 \
+			--libexecdir="$(ROOTPREFIX)"/lib64/elogind \
+			--localstatedir="$(ROOTPREFIX)"/var \
+			--sysconfdir="$(SYSCONFDIR)" \
 			--wrap-mode nodownload  \
+			-Ddbuspolicydir="$(PREFIX)"/share/dbus-1/system-services \
+			-Ddbussystemservicedir="$(PREFIX)"/share/dbus-1/system-services \
+			-Dbashcompletiondir="$(PREFIX)"/share/bash-completion/completions \
+			-Dzshcompletiondir="$(PREFIX)"/share/zsh/site-functions \
 			-Dacl=enabled \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddbus=enabled \
@@ -157,7 +164,6 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dpam=enabled \
 			-Dselinux=disabled \
 			-Dsmack=true \
-			-Dsysconfdir=$(SYSCONFDIR) \
 			-Dutmp=true \
 			-Dxenctrl=auto \
 			-Dmode=$(BUILDMODE) \
