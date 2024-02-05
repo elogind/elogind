@@ -87,7 +87,7 @@ foreach tuple : manpages
 #if 0 /// This is configurable in elogind - see above
 #                                         meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
 #else // 0
-                                        meson.add_install_script(sh, '-c', ln_s.format(html, htmldir / htmlalias))
+                                        meson.add_install_script(sh, '-c', ln_s.format(htmldir / html, htmldir / htmlalias))
 #endif // 0
                                         p2 += link
                                 endif
@@ -166,7 +166,7 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
 #if 0 /// This is configurable in elogind - see above
 #                         meson.add_install_script(sh, '-c', ln_s.format(html, docdir / 'html' / htmlalias))
 #else // 0
-                        meson.add_install_script(sh, '-c', ln_s.format(html, htmldir / htmlalias))
+                        meson.add_install_script(sh, '-c', ln_s.format(htmldir / html, htmldir / htmlalias))
 #endif // 0
                         p2 += link
                 endif
