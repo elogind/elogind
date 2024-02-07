@@ -117,10 +117,10 @@ bool oom_score_adjust_is_valid(int oa);
 #endif // 0
 
 #ifndef PERSONALITY_INVALID
-/* personality(7) documents that 0xffffffffUL is used for querying the
+/* personality(2) documents that 0xFFFFFFFFUL is used for querying the
  * current personality, hence let's use that here as error
  * indicator. */
-#define PERSONALITY_INVALID 0xffffffffLU
+#define PERSONALITY_INVALID 0xFFFFFFFFUL
 #endif
 
 #if 0 /// UNNEEDED by elogind
