@@ -40,9 +40,13 @@ static char* const* const sleep_default_state_table[_SLEEP_OPERATION_CONFIG_MAX]
         [SLEEP_HIBERNATE]    = STRV_MAKE("disk"),
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("disk"),
 };
-
+        TODO: CONFIGS trennen!
 static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] = {
+#if 0 /// elogind supports suspend modes (deep s2idle) so we need defaults, too
         /* Not used by SLEEP_SUSPEND */
+#else // 0
+        [SLEEP_SUSPEND]      = STRV_MAKE("s2idle", "deep"),
+#endif // 0
         [SLEEP_HIBERNATE]    = STRV_MAKE("platform", "shutdown"),
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("suspend"),
 };
@@ -157,7 +161,11 @@ int parse_sleep_config(SleepConfig **ret) {
                 { "Sleep", "AllowHybridSleep",          config_parse_tristate,    0,               &allow_hybrid_sleep          },
 
                 { "Sleep", "SuspendState",              config_parse_strv,        0,               sc->states + SLEEP_SUSPEND   },
+#if 0 /// elogind does support suspend modes
                 { "Sleep", "SuspendMode",               config_parse_warn_compat, DISABLED_LEGACY, NULL                         },
+#else // 0
+                { "Sleep", "SuspendMode",               config_parse_sleep_mode,  0,               sc->modes + SLEEP_SUSPEND    },
+#endif // 0
 
                 { "Sleep", "HibernateState",            config_parse_warn_compat, DISABLED_LEGACY, NULL                         },
                 { "Sleep", "HibernateMode",             config_parse_sleep_mode,  0,               sc->modes + SLEEP_HIBERNATE  },
