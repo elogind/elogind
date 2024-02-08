@@ -67,9 +67,9 @@ static int manager_new(Manager **ret) {
                 .console_active_fd = -EBADF,
 #if 0 /// elogind does not support autospawning of vts
                 .reserve_vt_fd = -EBADF,
+#endif // 0
                 .enable_wall_messages = true,
                 .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
-#endif // 0
         };
 
         m->devices = hashmap_new(&device_hash_ops);
@@ -85,7 +85,7 @@ static int manager_new(Manager **ret) {
 
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
 #else // 0
-        if (!m->devices || !m->seats || !m->sessions || !m->sessions_by_leader || !m->users || !m->inhibitors || !m->buttons || !m->user_units)
+        if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units)
 #endif // 0
                 return -ENOMEM;
 
@@ -163,7 +163,13 @@ static Manager* manager_free(Manager *m) {
         sd_event_source_unref(m->utmp_event_source);
 #endif
 
+#if 0 /// Do not fail with an assert if manager creation fails when elogind forks
         safe_close(m->console_active_fd);
+#else // 0
+        if (m->console_active_fd >= 0) {
+                safe_close(m->console_active_fd);
+        }
+#endif // 0
 
         sd_device_monitor_unref(m->device_seat_monitor);
         sd_device_monitor_unref(m->device_monitor);
