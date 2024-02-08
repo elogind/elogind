@@ -40,7 +40,7 @@ static char* const* const sleep_default_state_table[_SLEEP_OPERATION_CONFIG_MAX]
         [SLEEP_HIBERNATE]    = STRV_MAKE("disk"),
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("disk"),
 };
-        TODO: CONFIGS trennen!
+
 static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] = {
 #if 0 /// elogind supports suspend modes (deep s2idle) so we need defaults, too
         /* Not used by SLEEP_SUSPEND */
