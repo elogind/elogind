@@ -28,4 +28,8 @@ sleep_files = files(
 if install_sysconfdir_samples
         install_data('sleep.conf',
                      install_dir : pkgconfigfiledir)
+#if 1 /// elogind comes with a first drop-in representing its defaults
+        install_data('10-elogind.conf',
+                     install_dir : pkgconfigfiledir / 'sleep.conf.d' )
+#endif // 1
 endif

@@ -155,6 +155,15 @@ int parse_sleep_config(SleepConfig **ret) {
 #endif // 0
 
         const ConfigTableItem items[] = {
+#if 1 /// Additional options for elogind
+                { "Sleep", "AllowPowerOffInterrupts",     config_parse_bool, 0, &sc->allow_poweroff_interrupts },
+                { "Sleep", "BroadcastPowerOffInterrupts", config_parse_bool, 0, &sc->broadcast_poweroff_interrupts },
+                { "Sleep", "AllowSuspendInterrupts",      config_parse_bool, 0, &sc->allow_suspend_interrupts },
+                { "Sleep", "BroadcastSuspendInterrupts",  config_parse_bool, 0, &sc->broadcast_suspend_interrupts },
+                { "Sleep", "HandleNvidiaSleep",           config_parse_bool, 0, &sc->handle_nvidia_sleep },
+                { "Sleep", "SuspendByUsing",              config_parse_strv, 0, &sc->suspend_by_using },
+                { "Sleep", "HibernateByUsing",            config_parse_strv, 0, &sc->hibernate_by_using },
+#endif // 1
                 { "Sleep", "AllowSuspend",              config_parse_tristate,    0,               &allow_suspend               },
                 { "Sleep", "AllowHibernation",          config_parse_tristate,    0,               &allow_hibernate             },
                 { "Sleep", "AllowSuspendThenHibernate", config_parse_tristate,    0,               &allow_s2h                   },
