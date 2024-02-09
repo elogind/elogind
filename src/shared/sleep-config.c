@@ -329,6 +329,60 @@ int sleep_mode_supported(char **modes) {
         return false;
 }
 
+#if 1 /// elogind also supports setting suspend modes like s2idle and deep
+/* Yes, this is Copy-Pasta from above. But manipulating sleep_mode_supported() with preprocessor
+ * masks to enable it to handle both, would turn it into an unmaintainable mess. (I tried...)
+ * - Sven */
+static int suspend_mode_supported(char **modes) {
+        _cleanup_free_ char *supported_sysfs = NULL;
+        int r;
+
+        /* Unlike state, kernel has its own default choice if not configured */
+        if (strv_isempty(modes)) {
+                log_debug("No sleep mode configured, using kernel default.");
+                return true;
+        }
+
+        if (access("/sys/power/mem_sleep", W_OK) < 0)
+                return log_debug_errno(errno, "/sys/power/mem_sleep is not writable: %m");
+
+        r = read_one_line_file("/sys/power/mem_sleep", &supported_sysfs);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to read /sys/power/mem_sleep: %m");
+
+        for (const char *p = supported_sysfs;;) {
+                _cleanup_free_ char *word = NULL;
+                char *mode;
+                size_t l;
+
+                r = extract_first_word(&p, &word, NULL, 0);
+                if (r < 0)
+                        return log_debug_errno(r, "Failed to parse /sys/power/mem_sleep: %m");
+                if (r == 0)
+                        break;
+
+                mode = word;
+                l = strlen(word);
+
+                if (mode[0] == '[' && mode[l - 1] == ']') {
+                        mode[l - 1] = '\0';
+                        mode++;
+                }
+
+                if (strv_contains(modes, mode)) {
+                        log_debug("Mem sleep mode '%s' is supported by kernel.", mode);
+                        return true;
+                }
+        }
+
+        if (DEBUG_LOGGING) {
+                _cleanup_free_ char *joined = strv_join(modes, " ");
+                log_debug("None of the configured suspend modes are supported by kernel: %s", strnull(joined));
+        }
+        return false;
+}
+#endif // 1
+
 static int sleep_supported_internal(
                 const SleepConfig *sleep_config,
                 SleepOperation operation,
@@ -428,8 +482,20 @@ static int sleep_supported_internal(
                 }
                 if (r < 0)
                         return r;
+#if 0 /// elogind does support setting suspend modes
         } else
                 assert(!sleep_config->modes[operation]);
+#else // 0
+        } else {
+                r = suspend_mode_supported(sleep_config->modes[operation]);
+                if (r < 0)
+                        return r;
+                if (r == 0) {
+                        *ret_support = SLEEP_STATE_OR_MODE_NOT_SUPPORTED;
+                        return false;
+                }
+        }
+#endif // 0
 
         *ret_support = SLEEP_SUPPORTED;
         return true;
