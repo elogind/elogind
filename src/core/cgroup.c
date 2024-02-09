@@ -10,6 +10,7 @@
 #include "bpf-devices.h"
 #include "bpf-firewall.h"
 #include "bpf-foreign.h"
+#include "bpf-restrict-ifaces.h"
 #include "bpf-socket-bind.h"
 #include "btrfs-util.h"
 #include "bus-error.h"
@@ -32,7 +33,6 @@
 #include "percent-util.h"
 #include "process-util.h"
 #include "procfs-util.h"
-#include "restrict-ifaces.h"
 #include "set.h"
 #include "special.h"
 #include "stdio-util.h"
@@ -1850,7 +1850,7 @@ static void cgroup_apply_socket_bind(Unit *u) {
 static void cgroup_apply_restrict_network_interfaces(Unit *u) {
         assert(u);
 
-        (void) restrict_network_interfaces_install(u);
+        (void) bpf_restrict_ifaces_install(u);
 }
 
 static int cgroup_apply_devices(Unit *u) {
@@ -1885,10 +1885,14 @@ static int cgroup_apply_devices(Unit *u) {
 
         bool allow_list_static = policy == CGROUP_DEVICE_POLICY_CLOSED ||
                 (policy == CGROUP_DEVICE_POLICY_AUTO && c->device_allow);
-        if (allow_list_static)
-                (void) bpf_devices_allow_list_static(prog, path);
 
-        bool any = allow_list_static;
+        bool any = false;
+        if (allow_list_static) {
+                r = bpf_devices_allow_list_static(prog, path);
+                if (r > 0)
+                        any = true;
+        }
+
         LIST_FOREACH(device_allow, a, c->device_allow) {
                 const char *val;
 
@@ -1906,7 +1910,7 @@ static int cgroup_apply_devices(Unit *u) {
                         continue;
                 }
 
-                if (r >= 0)
+                if (r > 0)
                         any = true;
         }
 
@@ -3452,7 +3456,7 @@ void unit_prune_cgroup(Unit *u) {
                 (void) unit_get_memory_accounting(u, metric, /* ret = */ NULL);
 
 #if BPF_FRAMEWORK
-        (void) lsm_bpf_cleanup(u); /* Remove cgroup from the global LSM BPF map */
+        (void) bpf_restrict_fs_cleanup(u); /* Remove cgroup from the global LSM BPF map */
 #endif
 
         unit_modify_nft_set(u, /* add = */ false);
@@ -3990,7 +3994,7 @@ static int cg_bpf_mask_supported(CGroupMask *ret) {
                 mask |= CGROUP_MASK_BPF_SOCKET_BIND;
 
         /* BPF-based cgroup_skb/{egress|ingress} hooks */
-        r = restrict_network_interfaces_supported();
+        r = bpf_restrict_ifaces_supported();
         if (r < 0)
                 return r;
         if (r > 0)
@@ -4243,7 +4247,7 @@ Unit* manager_get_unit_by_cgroup(Manager *m, const char *cgroup) {
         }
 }
 
-Unit *manager_get_unit_by_pidref_cgroup(Manager *m, PidRef *pid) {
+Unit *manager_get_unit_by_pidref_cgroup(Manager *m, const PidRef *pid) {
         _cleanup_free_ char *cgroup = NULL;
 
         assert(m);
@@ -4254,7 +4258,7 @@ Unit *manager_get_unit_by_pidref_cgroup(Manager *m, PidRef *pid) {
         return manager_get_unit_by_cgroup(m, cgroup);
 }
 
-Unit *manager_get_unit_by_pidref_watching(Manager *m, PidRef *pid) {
+Unit *manager_get_unit_by_pidref_watching(Manager *m, const PidRef *pid) {
         Unit *u, **array;
 
         assert(m);
@@ -4273,7 +4277,7 @@ Unit *manager_get_unit_by_pidref_watching(Manager *m, PidRef *pid) {
         return NULL;
 }
 
-Unit *manager_get_unit_by_pidref(Manager *m, PidRef *pid) {
+Unit *manager_get_unit_by_pidref(Manager *m, const PidRef *pid) {
         Unit *u;
 
         assert(m);
@@ -5120,10 +5124,10 @@ static const char* const cgroup_memory_accounting_metric_table[_CGROUP_MEMORY_AC
 DEFINE_STRING_TABLE_LOOKUP(cgroup_memory_accounting_metric, CGroupMemoryAccountingMetric);
 #endif // 0
 
-static const char *const cgroup_limit_type_table[_CGROUP_LIMIT_TYPE_MAX] = {
+static const char *const cgroup_effective_limit_type_table[_CGROUP_LIMIT_TYPE_MAX] = {
         [CGROUP_LIMIT_MEMORY_MAX]  = "EffectiveMemoryMax",
         [CGROUP_LIMIT_MEMORY_HIGH] = "EffectiveMemoryHigh",
         [CGROUP_LIMIT_TASKS_MAX]   = "EffectiveTasksMax",
 };
 
-DEFINE_STRING_TABLE_LOOKUP(cgroup_limit_type, CGroupLimitType);
+DEFINE_STRING_TABLE_LOOKUP(cgroup_effective_limit_type, CGroupLimitType);
