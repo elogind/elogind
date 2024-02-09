@@ -110,7 +110,9 @@ static void sleep_config_validate_state_and_mode(SleepConfig *sc) {
                 log_warning("Sleep state 'disk' is not supported by operation %s, ignoring.",
                             sleep_operation_to_string(SLEEP_SUSPEND));
         }
+#if 0 /// elogind does support setting suspend modes
         assert(!sc->modes[SLEEP_SUSPEND]);
+#endif // 0
 
         /* People should use hybrid-sleep instead of setting HibernateMode=suspend. Warn about it but don't
          * drop it in this case. */
