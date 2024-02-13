@@ -2681,9 +2681,11 @@ _public_ int sd_journal_get_seqnum(
                 *ret_seqnum_id = f->header->seqnum_id;
         if (ret_seqnum)
                 *ret_seqnum = le64toh(o->entry.seqnum);
-#endif // 0
 
         return 0;
+#else // 0
+        return -EADDRNOTAVAIL;
+#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind
