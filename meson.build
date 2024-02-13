@@ -419,7 +419,7 @@ slow_tests = want_tests != 'false' and get_option('slow-tests')
 #if 0 /// elogind does not utilize fuzzing
 # fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
 #endif // 0
-install_tests = get_option('install-tests')
+install_tests = want_tests != 'false' and get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
 # if add_languages('cpp', native : false, required : fuzzer_build)
