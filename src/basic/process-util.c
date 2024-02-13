@@ -1496,7 +1496,7 @@ static int fork_flags_to_signal(ForkFlags flags) {
 int safe_fork_full(
                 const char *name,
                 const int stdio_fds[3],
-                const int except_fds[],
+                int except_fds[],
                 size_t n_except_fds,
                 ForkFlags flags,
                 pid_t *ret_pid) {
@@ -1725,6 +1725,19 @@ int safe_fork_full(
                 }
         }
 
+        if (flags & FORK_PACK_FDS) {
+                /* FORK_CLOSE_ALL_FDS ensures that except_fds are the only FDs >= 3 that are
+                 * open, this is including the log. This is required by pack_fds, which will
+                 * get stuck in an infinite loop of any FDs other than except_fds are open. */
+                assert(FLAGS_SET(flags, FORK_CLOSE_ALL_FDS));
+
+                r = pack_fds(except_fds, n_except_fds);
+                if (r < 0) {
+                        log_full_errno(prio, r, "Failed to pack file descriptors: %m");
+                        _exit(EXIT_FAILURE);
+                }
+        }
+
         if (flags & FORK_CLOEXEC_OFF) {
                 r = fd_cloexec_many(except_fds, n_except_fds, false);
                 if (r < 0) {
@@ -1764,7 +1777,7 @@ int safe_fork_full(
 int pidref_safe_fork_full(
                 const char *name,
                 const int stdio_fds[3],
-                const int except_fds[],
+                int except_fds[],
                 size_t n_except_fds,
                 ForkFlags flags,
                 PidRef *ret_pid) {
@@ -1788,7 +1801,7 @@ int pidref_safe_fork_full(
 int namespace_fork(
                 const char *outer_name,
                 const char *inner_name,
-                const int except_fds[],
+                int except_fds[],
                 size_t n_except_fds,
                 ForkFlags flags,
                 int pidns_fd,
