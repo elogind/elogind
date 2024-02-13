@@ -314,19 +314,17 @@ char **strv_env_delete(char **x, size_t n_lists, ...) {
 }
 #endif // 0
 
-char **strv_env_unset(char **l, const char *p) {
-        char **f, **t;
+char** strv_env_unset(char **l, const char *p) {
+        assert(p);
 
         if (!l)
                 return NULL;
 
-        assert(p);
-
         /* Drops every occurrence of the env var setting p in the
          * string list. Edits in-place. */
 
+        char **f, **t;
         for (f = t = l; *f; f++) {
-
                 if (env_match(*f, p)) {
                         free(*f);
                         continue;
@@ -340,14 +338,13 @@ char **strv_env_unset(char **l, const char *p) {
 }
 
 #if 0 /// UNNEEDED by elogind
-char **strv_env_unset_many(char **l, ...) {
-        char **f, **t;
-
+char** strv_env_unset_many_internal(char **l, ...) {
         if (!l)
                 return NULL;
 
         /* Like strv_env_unset() but applies many at once. Edits in-place. */
 
+        char **f, **t;
         for (f = t = l; *f; f++) {
                 bool found = false;
                 const char *p;
@@ -355,12 +352,11 @@ char **strv_env_unset_many(char **l, ...) {
 
                 va_start(ap, l);
 
-                while ((p = va_arg(ap, const char*))) {
+                while ((p = va_arg(ap, const char*)))
                         if (env_match(*f, p)) {
                                 found = true;
                                 break;
                         }
-                }
 
                 va_end(ap);
 

@@ -45,11 +45,12 @@ char** _strv_env_merge(char **first, ...);
 char **strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 #endif // 0
 
-char **strv_env_unset(char **l, const char *p); /* In place ... */
 
 #if 0 /// UNNEEDED by elogind
-char **strv_env_unset_many(char **l, ...) _sentinel_;
 #endif // 0
+char** strv_env_unset(char **l, const char *p); /* In place ... */
+char** strv_env_unset_many_internal(char **l, ...) _sentinel_;
+#define strv_env_unset_many(l, ...) strv_env_unset_many_internal(l, __VA_ARGS__, NULL)
 int strv_env_replace_consume(char ***l, char *p); /* In place ... */
 int strv_env_replace_strdup(char ***l, const char *assignment);
 #if 0 /// UNNEEDED by elogind
