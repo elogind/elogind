@@ -128,6 +128,14 @@ Deprecations and removals:
 
 Features:
 
+  close as we can make it for the MainPID of a service. Should be built around
+  pidfd, so that we can reasonably robustly do this. Would only cover the
+  execution environment like namespaces, but not the privilege settings.
+
+* add a generic client to importd called importctl, then make machinectl just
+  chain-exec() it. Make sure importd/importctl can be used for sysext images,
+  portable images too.
+
 * varlink: extend varlink IDL macros to include documentation strings
 
 * Get rid of the symlinks in /run/systemd/units/* and exclusively use cgroupfs
