@@ -400,7 +400,7 @@ meson_build_sh = find_program('tools/meson-build.sh')
 want_tests = get_option('tests')
 slow_tests = want_tests != 'false' and get_option('slow-tests')
 fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
-install_tests = get_option('install-tests')
+install_tests = want_tests != 'false' and get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
 # if add_languages('cpp', required : fuzzer_build)
