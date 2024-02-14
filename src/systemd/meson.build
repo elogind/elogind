@@ -39,6 +39,8 @@ systemd_headers = files(_systemd_headers)
 #         'sd-lldp-tx.h',
 #         'sd-lldp.h',
 #         'sd-ndisc.h',
+#         'sd-ndisc-protocol.h',
+#         'sd-ndisc-router.h',
 #         'sd-netlink.h',
 #         'sd-network.h',
 #         'sd-radv.h',
