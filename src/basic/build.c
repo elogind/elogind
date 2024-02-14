@@ -296,7 +296,7 @@ int version(void) {
         if (colors_enabled())
                 b = elogind_features_with_color();
 
-        printf("%selogind " STRINGIFY(PROJECT_VERSION) "%s (" GIT_VERSION ")\n%s\n",
+        printf("%selogind " PROJECT_VERSION_FULL "%s (" GIT_VERSION ")\n%s\n",
                ansi_highlight(), ansi_normal(),
                b ?: elogind_features);
         return 0;
