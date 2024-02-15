@@ -1679,7 +1679,6 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
 
 #if 1 /// elogind specific executor
 static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
-
         assert( m );
 
         log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
@@ -1714,7 +1713,8 @@ static int elogind_execute_shutdown_or_sleep(
                 sd_bus_error *error) {
 
         char** argv_utmp = NULL;
-        int r;
+        int t = -1, r = 0;
+        const char *forker;
 
         assert( m );
         assert( a->inhibit_what >= 0 );
@@ -1744,14 +1744,41 @@ static int elogind_execute_shutdown_or_sleep(
                 strv_free( argv_utmp );
         }
 
-        /* Now perform the requested action */
-        r = elogind_shutdown_or_sleep( m, a->handle );
+        /* systemd calls systemd-sleep, but we do it ourselves. This means we have
+         * to fork out the call to action, as the daemon has to react to dbus calls
+         * from the shutdown/sleep routines. Doing this in the main thread would
+         * make it impossible to talk to ourselves.
+         */
+        forker = strjoina( "e-", handle_action_to_string( a->handle ) );
+        t = safe_fork( forker, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+
+        if ( t < 0 )
+                return log_error_errno( errno, "Failed to fork %s: %m", forker );
+
+        if ( t == 0 ) {
+                /* This is the forked out child */
+                umask( 0022 );
+
+                log_debug_elogind( "Started '%s'", program_invocation_short_name );
+
+                /* Now perform the requested action */
+                r = elogind_shutdown_or_sleep( m, a->handle );
+
+                /* As elogind cannot rely on a systemd manager to call all
+                 * sleeping processes to wake up, we have to tell them all
+                 * by ourselves.
+                 * Note: execute_shutdown_or_sleep() does not send the
+                 *       signal unless an error occurred. */
+                if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
+                        (void) send_prepare_for( m, a, false );
+
+                log_debug_elogind("Exiting from %s", program_invocation_short_name);
+
+                _exit( r );
+        }
 
         /* no more pending actions, whether this failed or not */
         m->delayed_action = NULL;
-
-        if ( r < 0 )
-                return r;
 
         /* As elogind can not rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
