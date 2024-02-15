@@ -182,6 +182,25 @@ TEST(dir_is_empty) {
 }
 #endif // 0
 
+TEST(fd_verify_linked) {
+        _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
+        _cleanup_close_ int tfd = -EBADF, fd = -EBADF;
+        _cleanup_free_ char *p = NULL;
+
+        tfd = mkdtemp_open(NULL, O_PATH, &t);
+        assert_se(tfd >= 0);
+
+        assert_se(p = path_join(t, "hoge"));
+        assert_se(touch(p) >= 0);
+
+        fd = open(p, O_CLOEXEC | O_PATH);
+        assert_se(fd >= 0);
+
+        assert_se(fd_verify_linked(fd) >= 0);
+        assert_se(unlinkat(tfd, "hoge", 0) >= 0);
+        assert_se(fd_verify_linked(fd) == -EIDRM);
+}
+
 static int intro(void) {
         log_show_color(true);
         return EXIT_SUCCESS;
