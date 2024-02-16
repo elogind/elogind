@@ -2197,13 +2197,27 @@ conf.set_quoted('DEBUGTTY',                         '/dev/null')
 #####################################################################
 
 version_tag = get_option('version-tag')
-version_h = vcs_tag(
-        input : 'src/version/version.h.in',
-        output : 'version.h',
-        command: [project_source_root / 'tools/meson-vcs-tag.sh',
-                  project_source_root,
-                  version_tag,
-                 ])
+if version_tag == ''
+        version_tag = meson.project_version()
+endif
+
+conf.set_quoted('VERSION_TAG', version_tag)
+
+vcs_tag = get_option('vcs-tag')
+if vcs_tag and fs.is_dir(project_source_root / '.git')
+        version_h = vcs_tag(
+                input : 'src/version/version.h.in',
+                output : 'version.h',
+                fallback : '',
+                command : ['sh', '-c', 'echo "-g$(git -C . describe --abbrev=7 --match="" --always --dirty=^)"'],
+        )
+else
+        version_h = configure_file(
+                input : 'src/version/version.h.in',
+                output : 'version.h',
+                configuration : configuration_data({'VCS_TAG' : ''}),
+        )
+endif
 
 shared_lib_tag = get_option('shared-lib-tag')
 if shared_lib_tag == ''
@@ -2969,15 +2983,14 @@ install_data('LICENSE.GPL2',
 #else // 0
              'README.md',
 #endif // 0
-#if 0 /// irrelevant for elogind
-#endif // 0
-             'docs/_contributing/CODING_STYLE.md',
-             'docs/_concepts/DISTRO_PORTING.md',
-             'docs/_interfaces/ENVIRONMENT.md',
-             'docs/_contributing/HACKING.md',
-             'docs/_interfaces/TRANSIENT-SETTINGS.md',
-             'docs/_contributing/TRANSLATORS.md',
-             'docs/_groups/UIDS-GIDS.md',
+/// elogind empty mask removed (irrelevant for elogind)
+             'docs/CODING_STYLE.md',
+             'docs/DISTRO_PORTING.md',
+             'docs/ENVIRONMENT.md',
+             'docs/HACKING.md',
+             'docs/TRANSIENT-SETTINGS.md',
+             'docs/TRANSLATORS.md',
+             'docs/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
@@ -3165,14 +3178,6 @@ alias_target('update-man-rules', update_man_rules)
 #                 install_dir : fs.parent(dbus_interfaces_dir),
 #                 command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 # endif
-#
-# meson_extract_unit_files = find_program('tools/meson-extract-unit-files.py')
-# custom_target('installed-unit-files.txt',
-#               output : 'installed-unit-files.txt',
-#               capture : true,
-#               install : want_tests != 'no' and install_tests,
-#               install_dir : testdata_dir,
-#               command : [meson_extract_unit_files, project_build_root])
 #
 # #####################################################################
 #
