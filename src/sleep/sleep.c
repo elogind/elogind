@@ -6,10 +6,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <getopt.h>
+//#include <getopt.h>
 #include <poll.h>
 #include <sys/timerfd.h>
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -20,29 +20,29 @@
 
 #include "battery-capacity.h"
 #include "battery-util.h"
-#include "build.h"
-#include "bus-error.h"
-#include "bus-locator.h"
-#include "bus-util.h"
+//#include "build.h"
+//#include "bus-error.h"
+//#include "bus-locator.h"
+//#include "bus-util.h"
 #include "constants.h"
-#include "devnum-util.h"
+//#include "devnum-util.h"
 #include "efivars.h"
 #include "exec-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-#include "format-util.h"
+//#include "format-util.h"
 #include "hibernate-util.h"
 #include "id128-util.h"
 #include "io-util.h"
 #include "json.h"
 #include "log.h"
-#include "main-func.h"
+//#include "main-func.h"
 #include "os-util.h"
-#include "parse-util.h"
-#include "pretty-print.h"
+//#include "parse-util.h"
+//#include "pretty-print.h"
 #include "sleep-config.h"
-#include "special.h"
-#include "stdio-util.h"
+//#include "special.h"
+//#include "stdio-util.h"
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
@@ -54,7 +54,7 @@
 #include "sd-login.h"
 #include "sleep.h"
 #include "terminal-util.h"
-#include "utmp-wtmp.h"
+//#include "utmp-wtmp.h"
 #include "wall.h"
 
 #define DEFAULT_HIBERNATE_DELAY_USEC_NO_BATTERY (2 * USEC_PER_HOUR)
@@ -62,29 +62,29 @@
 static SleepOperation arg_operation = _SLEEP_OPERATION_INVALID;
 
 #if 1 /// If an nvidia card is present, elogind informs its driver about suspend/resume actions
-static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
+static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
-        int r;
+        _cleanup_fclose_ FILE *f = NULL;
+        int k, r;
         char** sessions;
-        struct stat std;
         unsigned vt = 0;
 
         assert(m);
+        assert(fd >= 0);
         assert(operation >= 0);
         assert(operation <= _SLEEP_OPERATION_MAX);
         assert(operation != SLEEP_SUSPEND_THEN_HIBERNATE); /* execute_s2h() calls execute() with suspend/hibernate */
         assert(vtnr);
 
-        // See whether an nvidia suspension is possible
-        r = stat(drv_suspend, &std);
-        if (r)
-                return 0;
+        k = fdopen_independent(fd, "we", &f);
+        if (k < 0)
+                return RET_GATHER(r, k);
 
         if (operation != _SLEEP_OPERATION_MAX) {
                 *vtnr = 0;
 
                 // Find the (active) sessions of the sleep sender
-                r = sd_uid_get_sessions(m->scheduled_sleep_uid, 1, &sessions);
+                r = sd_uid_get_sessions(m ? m->scheduled_sleep_uid : 0, 1, &sessions);
 #if ENABLE_DEBUG_ELOGIND
                 char *t = strv_join(sessions, " ");
                 log_debug_elogind("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
@@ -95,9 +95,8 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
 
                 // Find one with a VT (Really, sessions should hold only one active session anyway!)
                 STRV_FOREACH(session, sessions) {
-                        int k;
-                        k = sd_session_get_vt(*session, &vt);
-                        if (k >= 0) {
+                        int s = sd_session_get_vt(*session, &vt);
+                        if (s >= 0) {
                                 log_debug_elogind("Active session %s with VT %u found", *session, vt);
                                 break;
                         }
@@ -113,21 +112,33 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                 }
 
                 // Okay, go to sleep.
+
                 if (operation == SLEEP_SUSPEND) {
                         log_debug_elogind("Writing 'suspend' into %s", drv_suspend);
-                        r = write_string_file(drv_suspend, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
+                        k = write_string_stream(f, "suspend", WRITE_STRING_FILE_DISABLE_BUFFER);
+                        if (k >= 0) {
+                                return 1;
+                        }
+                        RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to %s: %m", "suspend", drv_suspend));
                 } else {
                         log_debug_elogind("Writing 'hibernate' into %s", drv_suspend);
-                        r = write_string_file(drv_suspend, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
+                        k = write_string_stream(f, "hibernate", WRITE_STRING_FILE_DISABLE_BUFFER);
+                        if (k >= 0) {
+                                return 1;
+                        }
+                        RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to %s: %m", "hibernate", drv_suspend));
                 }
-                return 0;
 
-                if (r)
-                        return 0;
+                return 0;
         } else {
                 // Wakeup the device
                 log_debug_elogind("Writing 'resume' into %s", drv_suspend);
-                (void) write_string_file(drv_suspend, "resume", WRITE_STRING_FILE_DISABLE_BUFFER);
+                k = write_string_stream(f, "resume", WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (k >= 0) {
+                        return 1;
+                }
+                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to %s: %m", "resume", drv_suspend));
+
                 // Then try to change back
                 if (*vtnr > 0) {
                         log_debug_elogind("Switching back to VT %u", *vtnr);
@@ -405,6 +416,9 @@ static int execute(
 
         _cleanup_(hibernation_device_done) HibernationDevice hibernation_device = {};
         _cleanup_close_ int state_fd = -EBADF;
+#if 1 /// If nvidia suspend is to be used, elogind has to write to its drivers proc place
+        _cleanup_close_ int driver_fd = -EBADF;
+#endif // 1
         int r;
 
         assert(sleep_config);
@@ -416,12 +430,19 @@ static int execute(
                                        "No sleep states configured for sleep operation %s, can't sleep.",
                                        sleep_operation_to_string(operation));
 
-#ifdef __GLIBC__ /// elogind must not disable buffers on musl-libc based systems
-#endif // __GLIBC__
         /* This file is opened first, so that if we hit an error, we can abort before modifying any state. */
         state_fd = open("/sys/power/state", O_WRONLY|O_CLOEXEC);
         if (state_fd < 0)
                 return -errno;
+
+#if 1 /// The same with nvidia handling. elogind opens the write-to path now, so we can exit early on errors
+        if (m->handle_nvidia_sleep) {
+                /* This file is opened first, so that if we hit an error, we can abort before modifying any state. */
+                driver_fd = open("/proc/driver/nvidia/suspend", O_WRONLY | O_CLOEXEC);
+                if (driver_fd < 0)
+                        return -errno;
+        }
+#endif // 1
 
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
@@ -516,7 +537,7 @@ static int execute(
 
 #if 1 /// elogind may try to send a suspend signal to an nvidia card
         if ( m->handle_nvidia_sleep )
-                have_nvidia = nvidia_sleep(m, operation, &vtnr);
+                have_nvidia = nvidia_sleep(m, driver_fd, operation, &vtnr);
 #endif // 1
 
 #if 0 /// Instead of only writing to /sys/power/state, elogind offers the possibility to call an extra program instead
@@ -539,7 +560,7 @@ static int execute(
 
 #if 1 /// if put to sleep, elogind also has to wakeup an nvidia card
         if (have_nvidia)
-                nvidia_sleep(m, _SLEEP_OPERATION_MAX, &vtnr);
+                nvidia_sleep(m, driver_fd, _SLEEP_OPERATION_MAX, &vtnr);
 #endif // 1
 
         arguments[1] = "post";
