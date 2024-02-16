@@ -1902,7 +1902,7 @@ static int elogind_execute_shutdown_or_sleep(
          * from the shutdown/sleep routines. Doing this in the main thread would
          * make it impossible to talk to ourselves.
          */
-        forker = strjoina( "elogind-", handle_action_to_string( a->handle ) );
+        forker = strjoina( "e-", handle_action_to_string( a->handle ) );
         t = safe_fork( forker, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
 
         if ( t < 0 )
@@ -1910,6 +1910,8 @@ static int elogind_execute_shutdown_or_sleep(
 
         if ( t == 0 ) {
                 /* This is the forked out child */
+                umask( 0022 );
+
                 log_debug_elogind( "Started '%s'", program_invocation_short_name );
 
                 /* Now perform the requested action */
