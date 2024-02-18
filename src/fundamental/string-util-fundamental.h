@@ -36,24 +36,20 @@ static inline int strcmp_ptr(const sd_char *a, const sd_char *b) {
         return CMP(a, b);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline int strcasecmp_ptr(const sd_char *a, const sd_char *b) {
         if (a && b)
                 return strcasecmp(a, b);
 
         return CMP(a, b);
 }
-#endif // 0
 
 static inline bool streq_ptr(const sd_char *a, const sd_char *b) {
         return strcmp_ptr(a, b) == 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline bool strcaseeq_ptr(const sd_char *a, const sd_char *b) {
         return strcasecmp_ptr(a, b) == 0;
 }
-#endif // 0
 
 static inline size_t strlen_ptr(const sd_char *s) {
         if (!s)
