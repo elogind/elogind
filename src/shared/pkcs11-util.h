@@ -10,7 +10,7 @@
 #endif
 #endif // 0
 
-#include "ask-password-api.h"
+//#include "ask-password-api.h"
 #include "macro.h"
 //#include "openssl-util.h"
 #include "time-util.h"
