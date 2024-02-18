@@ -323,6 +323,7 @@ pam_set_data(handle, "systemd.runtime_max_sec", (void *)"3600", cleanup);
     <para>Here's an example PAM configuration fragment that allows users sessions to be managed by
     <filename>elogind-logind.service</filename>:</para>
 
+    <!-- 0 /// elogind has no homed service file
     <programlisting>#%PAM-1.0
 auth      sufficient pam_unix.so
 -auth     sufficient pam_elogind_home.so
@@ -342,6 +343,23 @@ password  required   pam_deny.so
 -session  optional   pam_elogind_home.so
 <command>-session  optional   pam_elogind.so</command>
 session   required   pam_unix.so</programlisting>
+  --><!-- else // 0 -->
+    <programlisting>#%PAM-1.0
+auth      sufficient pam_unix.so
+auth      required   pam_deny.so
+
+account   required   pam_nologin.so
+account   sufficient pam_unix.so
+account   required   pam_permit.so
+
+password  sufficient pam_unix.so sha512 shadow try_first_pass
+password  required   pam_deny.so
+
+-session  optional   pam_keyinit.so revoke
+-session  optional   pam_loginuid.so
+<command>-session  optional   pam_elogind.so</command>
+session   required   pam_unix.so</programlisting>
+  <!-- // 0 -->
   </refsect1>
 
   <refsect1>
