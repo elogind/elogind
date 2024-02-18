@@ -2,14 +2,14 @@
 
 #include <errno.h>
 #include <stdbool.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 //#include <sys/types.h>
 
 #include "acl-util.h"
-#include "alloc-util.h"
+//#include "alloc-util.h"
 #include "errno-util.h"
-#include "string-util.h"
-#include "strv.h"
+//#include "string-util.h"
+//#include "strv.h"
 #include "user-util.h"
 //#include "util.h"
 
