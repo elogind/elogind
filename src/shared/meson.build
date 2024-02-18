@@ -348,6 +348,7 @@
 # )
 #else // 0
 shared_sources = files(
+        'acl-util.c',
         'acl-util.h',
         'blockdev-util.c',
         'blockdev-util.h',
