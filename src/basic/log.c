@@ -1299,19 +1299,20 @@ void log_settle_target(void) {
          * problem, this function is used to permanently change the log target depending on whether stderr is
          * connected to the journal or not. */
 
-#if 0 /// elogind does not support journald
         LogTarget t = log_get_target();
 
         if (t != LOG_TARGET_AUTO)
                 return;
 
+#if 0 /// elogind does not support journald
         t = getpid_cached() == 1 || stderr_is_journal() ? (prohibit_ipc ? LOG_TARGET_KMSG : LOG_TARGET_JOURNAL_OR_KMSG)
                                                         : LOG_TARGET_CONSOLE;
-        log_set_target(t);
-}
 #else // 0
         t = LOG_TARGET_SYSLOG_OR_KMSG;
 #endif // 0
+
+        log_set_target(t);
+}
 
 int log_get_max_level(void) {
         return log_max_level;
