@@ -13,6 +13,7 @@
 
 #define CYLON_WIDTH 6
 
+#if 0 /// UNNEEDED by elogind
 static void test_draw_cylon_one(unsigned pos) {
         char buf[CYLON_WIDTH + CYLON_BUFFER_EXTRA + 1];
 
@@ -38,6 +39,7 @@ TEST(draw_cylon) {
 
         log_show_color(saved);
 }
+#endif // 0
 
 TEST(terminal_urlify) {
         _cleanup_free_ char *formatted = NULL;

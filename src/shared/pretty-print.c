@@ -18,6 +18,7 @@
 #include "terminal-util.h"
 #include "util.h"
 
+#if 0 /// UNNEEDED by elogind
 void draw_cylon(char buffer[], size_t buflen, unsigned width, unsigned pos) {
         char *p = buffer;
 
@@ -53,6 +54,7 @@ void draw_cylon(char buffer[], size_t buflen, unsigned width, unsigned pos) {
 
         *p = '\0';
 }
+#endif // 0
 
 bool urlify_enabled(void) {
 #if ENABLE_URLIFY
