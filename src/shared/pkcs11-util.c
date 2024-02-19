@@ -298,8 +298,7 @@ int pkcs11_token_login(
                 const char *askpw_keyring,
                 const char *askpw_credential,
                 usec_t until,
-                AskPasswordFlags ask_password_flags,
-                bool headless,
+                AskPasswordFlags askpw_flags,
                 char **ret_used_pin) {
 
         _cleanup_free_ char *token_uri_string = NULL, *token_uri_escaped = NULL, *id = NULL, *token_label = NULL;
@@ -354,7 +353,7 @@ int pkcs11_token_login(
                         if (!passwords)
                                 return log_oom();
 
-                } else if (headless)
+                } else if (FLAGS_SET(askpw_flags, ASK_PASSWORD_HEADLESS))
                         return log_error_errno(SYNTHETIC_ERRNO(ENOPKG), "PIN querying disabled via 'headless' option. Use the 'PIN' environment variable.");
                 else {
                         _cleanup_free_ char *text = NULL;
@@ -387,7 +386,7 @@ int pkcs11_token_login(
                         };
 
                         /* We never cache PINs, simply because it's fatal if we use wrong PINs, since usually there are only 3 tries */
-                        r = ask_password_auto(&req, until, ask_password_flags, &passwords);
+                        r = ask_password_auto(&req, until, askpw_flags, &passwords);
                         if (r < 0)
                                 return log_error_errno(r, "Failed to query PIN for security token '%s': %m", token_label);
                 }
@@ -1656,7 +1655,6 @@ struct pkcs11_acquire_public_key_callback_data {
         EVP_PKEY *pkey;
         const char *askpw_friendly_name, *askpw_icon, *askpw_credential;
         AskPasswordFlags askpw_flags;
-        bool headless;
 };
 
 static void pkcs11_acquire_public_key_callback_data_release(struct pkcs11_acquire_public_key_callback_data *data) {
@@ -1706,7 +1704,6 @@ static int pkcs11_acquire_public_key_callback(
                         data->askpw_credential,
                         UINT64_MAX,
                         data->askpw_flags,
-                        data->headless,
                         &pin_used);
         if (r < 0)
                 return r;
@@ -1834,6 +1831,7 @@ int pkcs11_acquire_public_key(
                 const char *askpw_friendly_name,
                 const char *askpw_icon,
                 const char *askpw_credential,
+                AskPasswordFlags askpw_flags,
                 EVP_PKEY **ret_pkey,
                 char **ret_pin_used) {
 
@@ -1841,6 +1839,7 @@ int pkcs11_acquire_public_key(
                 .askpw_friendly_name = askpw_friendly_name,
                 .askpw_icon = askpw_icon,
                 .askpw_credential = askpw_credential,
+                .askpw_flags = askpw_flags,
         };
         int r;
 
@@ -2048,7 +2047,6 @@ int pkcs11_crypt_device_callback(
                         data->askpw_credential,
                         data->until,
                         data->askpw_flags,
-                        data->headless,
                         NULL);
         if (r < 0)
                 return r;
