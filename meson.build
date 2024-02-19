@@ -858,8 +858,6 @@ foreach prog : progs
 endforeach
 
 #if 0 /// unneeded by elogind
-# conf.set_quoted('TELINIT', get_option('telinit-path'))
-#
 # if run_command(ln, '--relative', '--help', check : false).returncode() != 0
 #         error('ln does not support --relative (added in coreutils 8.16)')
 # endif
@@ -3167,6 +3165,14 @@ alias_target('update-man-rules', update_man_rules)
 #                 install_dir : fs.parent(dbus_interfaces_dir),
 #                 command : [export_dbus_interfaces_py, '@OUTPUT@', dbus_programs])
 # endif
+#
+# meson_extract_unit_files = find_program('tools/meson-extract-unit-files.py')
+# custom_target('installed-unit-files.txt',
+#               output : 'installed-unit-files.txt',
+#               capture : true,
+#               install : want_tests != 'no' and install_tests,
+#               install_dir : testdata_dir,
+#               command : [meson_extract_unit_files, project_build_root])
 #
 # #####################################################################
 #
