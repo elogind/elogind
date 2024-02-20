@@ -49,6 +49,7 @@
 #include "sleep-config.h"
 #include "special.h"
 #include "serialize.h"
+#include "signal-util.h"
 #include "stdio-util.h"
 #include "strv.h"
 #include "terminal-util.h"
@@ -1881,11 +1882,20 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
          * to signal everybody that a shutdown is imminent, now. */
         if ( m->allow_poweroff_interrupts )
                 (void) send_prepare_for(m, handle_action_lookup(HANDLE_POWEROFF), true );
+static int strdup_job(sd_bus_message *reply, char **ret) {
+        const char *j;
+        char *job;
+        int r;
 
         r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, &m->tool_fork_pid );
+        assert(reply);
+        assert(ret);
 
         if ( r < 0 )
                 return log_error_errno( errno, "Failed to fork run %s: %m", helper );
+        r = sd_bus_message_read_basic(reply, 'o', &j);
+        if (r < 0)
+                return r;
 
         if ( 0 == r ) {
                 /* Child */
@@ -1893,7 +1903,11 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
                 log_error_errno( errno, "Failed to execute %s: %m", helper );
                 _exit( EXIT_FAILURE );
         }
+        job = strdup(j);
+        if (!job)
+                return -ENOMEM;
 
+        *ret = job;
         return 0;
 }
 #endif // 1
@@ -2008,7 +2022,6 @@ static int execute_shutdown_or_sleep(
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
 #if 0 /// elogind does not support systemd actions
-        const char *p;
 #endif // 0
         int r;
 
@@ -2028,21 +2041,16 @@ static int execute_shutdown_or_sleep(
                         &reply,
                         "ss", a->target, "replace-irreversibly");
         if (r < 0)
-                goto error;
+                goto fail;
 
-        r = sd_bus_message_read(reply, "o", &p);
+        r = strdup_job(reply, &m->action_job);
 #else // 0
         r = elogind_execute_shutdown_or_sleep(m, a, error);
 #endif // 0
         if (r < 0)
-                goto error;
 
 #if 0 /// elogind does not support systemd actions
-        m->action_job = strdup(p);
-        if (!m->action_job) {
-                r = -ENOMEM;
-                goto error;
-        }
+                goto fail;
 
         m->delayed_action = a;
 #endif // 0
@@ -2052,7 +2060,7 @@ static int execute_shutdown_or_sleep(
 
         return 0;
 
-error:
+fail:
         /* Tell people that they now may take a lock again */
         (void) send_prepare_for(m, a, false);
 
@@ -4568,23 +4576,6 @@ int manager_send_changed(Manager *manager, const char *property, ...) {
 }
 
 #if 0 /// UNNEEDED by elogind
-static int strdup_job(sd_bus_message *reply, char **job) {
-        const char *j;
-        char *copy;
-        int r;
-
-        r = sd_bus_message_read(reply, "o", &j);
-        if (r < 0)
-                return r;
-
-        copy = strdup(j);
-        if (!copy)
-                return -ENOMEM;
-
-        *job = copy;
-        return 1;
-}
-
 int manager_start_scope(
                 Manager *manager,
                 const char *scope,
@@ -4695,13 +4686,13 @@ int manager_start_scope(
         return strdup_job(reply, ret_job);
 }
 
-int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **job) {
+int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, char **ret_job) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
         int r;
 
         assert(manager);
         assert(unit);
-        assert(job);
+        assert(ret_job);
 
         r = bus_call_method(
                         manager->bus,
@@ -4713,11 +4704,18 @@ int manager_start_unit(Manager *manager, const char *unit, sd_bus_error *error, 
         if (r < 0)
                 return r;
 
-        return strdup_job(reply, job);
+        return strdup_job(reply, ret_job);
 }
 
-int manager_stop_unit(Manager *manager, const char *unit, const char *job_mode, sd_bus_error *error, char **ret_job) {
+int manager_stop_unit(
+                Manager *manager,
+                const char *unit,
+                const char *job_mode,
+                sd_bus_error *ret_error,
+                char **ret_job) {
+
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(manager);
@@ -4728,22 +4726,24 @@ int manager_stop_unit(Manager *manager, const char *unit, const char *job_mode, 
                         manager->bus,
                         bus_systemd_mgr,
                         "StopUnit",
-                        error,
+                        &error,
                         &reply,
                         "ss", unit, job_mode ?: "fail");
         if (r < 0) {
-                if (sd_bus_error_has_names(error, BUS_ERROR_NO_SUCH_UNIT,
-                                                  BUS_ERROR_LOAD_FAILED)) {
-
+                if (sd_bus_error_has_names(&error, BUS_ERROR_NO_SUCH_UNIT, BUS_ERROR_LOAD_FAILED)) {
                         *ret_job = NULL;
-                        sd_bus_error_free(error);
                         return 0;
                 }
 
+                sd_bus_error_move(ret_error, &error);
                 return r;
         }
 
-        return strdup_job(reply, ret_job);
+        r = strdup_job(reply, ret_job);
+        if (r < 0)
+                return r;
+
+        return 1;
 }
 
 int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *ret_error) {
@@ -4783,6 +4783,7 @@ int manager_abandon_scope(Manager *manager, const char *scope, sd_bus_error *ret
 int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo, sd_bus_error *error) {
         assert(manager);
         assert(unit);
+        assert(SIGNAL_VALID(signo));
 
         return bus_call_method(
                         manager->bus,
@@ -4790,7 +4791,10 @@ int manager_kill_unit(Manager *manager, const char *unit, KillWho who, int signo
                         "KillUnit",
                         error,
                         NULL,
-                        "ssi", unit, who == KILL_LEADER ? "main" : "all", signo);
+                        "ssi",
+                        unit,
+                        who == KILL_LEADER ? "main" : "all",
+                        signo);
 }
 
 int manager_unit_is_active(Manager *manager, const char *unit, sd_bus_error *ret_error) {
