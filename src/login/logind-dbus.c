@@ -1770,7 +1770,7 @@ static int elogind_execute_shutdown_or_sleep(
                  * Note: execute_shutdown_or_sleep() does not send the
                  *       signal unless an error occurred. */
                 if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
-                        (void) send_prepare_for( m, a, false );
+                        (void) send_prepare_for( m, a->inhibit_what, false );
 
                 log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
