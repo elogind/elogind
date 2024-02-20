@@ -353,9 +353,9 @@ int user_load(User *u) {
                 (void) deserialize_usec(last_session_timestamp, &u->last_session_timestamp);
 
         log_debug_elogind(" --> User stopping    : %d",  u->stopping);
-        log_debug_elogind(" --> User realtime    : %lu", u->timestamp.realtime);
-        log_debug_elogind(" --> User monotonic   : %lu", u->timestamp.monotonic);
-        log_debug_elogind(" --> User last session: %lu", u->last_session_timestamp);
+        log_debug_elogind(" --> User realtime    : %" PRIu64, u->timestamp.realtime);
+        log_debug_elogind(" --> User monotonic   : %" PRIu64, u->timestamp.monotonic);
+        log_debug_elogind(" --> User last session: %" PRIu64, u->last_session_timestamp);
         return 0;
 }
 
