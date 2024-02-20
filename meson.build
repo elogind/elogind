@@ -2923,7 +2923,7 @@ executable('elogind',
                 dependencies : [threads,
                                 libacl,
                                 libudev],
-                install_rpath : rootlibexecdir,
+                install_rpath : rootpkglibdir,
                 install : true,
                 install_dir : rootlibexecdir)
 
@@ -2933,7 +2933,7 @@ exe = executable('loginctl',
                         link_with : [libshared],
                         dependencies : [threads,
                                         libudev],
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
@@ -2943,7 +2943,7 @@ exe = executable('elogind-inhibit',
                         include_directories : includes,
                         link_with : [libshared],
                         dependencies : [threads],
-                        install_rpath : rootlibexecdir,
+                        install_rpath : rootpkglibdir,
                         install : true,
                         install_dir : rootbindir)
 public_programs += [exe]
@@ -4303,7 +4303,7 @@ executable('elogind-uaccess-command',
                         libshared],
            dependencies: [libacl,
                           libudev],
-           install_rpath : rootlibexecdir,
+           install_rpath : rootpkglibdir,
            install : true,
            install_dir : rootlibexecdir)
 #endif // 0
