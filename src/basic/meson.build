@@ -11,6 +11,7 @@
 #         'audit-util.c',
 #         'btrfs.c',
 #         'build.c',
+#         'build-path.c',
 #         'bus-label.c',
 #         'cap-list.c',
 #         'capability-util.c',
