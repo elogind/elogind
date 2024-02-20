@@ -3328,7 +3328,7 @@ static int method_set_reboot_to_boot_loader_menu(
         if (r < 0)
                 return r;
 
-        log_debug_elogind("Reboot to menu with %zu s", x);
+        log_debug_elogind("Reboot to menu with %" PRIu64 " s", x);
         r = getenv_bool("SYSTEMD_REBOOT_TO_BOOT_LOADER_MENU");
         if (r == -ENXIO) {
                 uint64_t features;
@@ -3336,7 +3336,7 @@ static int method_set_reboot_to_boot_loader_menu(
                 /* EFI case: let's see if booting into boot loader menu is supported. */
 
                 r = efi_loader_get_features(&features);
-                log_debug_elogind("efi_loader_features: 0x%08lx [%d]", features, r);
+                log_debug_elogind("efi_loader_features: 0x%08" PRIx64 " [%d]", features, r);
                 if (r < 0)
                         log_warning_errno(r, "Failed to determine whether reboot to boot loader menu is supported: %m");
                 if (r < 0 || !FLAGS_SET(features, EFI_LOADER_FEATURE_CONFIG_TIMEOUT_ONE_SHOT))
