@@ -39,6 +39,7 @@ int pam_acquire_bus_connection(pam_handle_t *handle, const char *module_name, sd
 #if 0 /// UNNEEDED by elogind
 int pam_release_bus_connection(pam_handle_t *handle, const char *module_name);
 #endif // 0
+int pam_get_bus_data(pam_handle_t *handle, const char *module_name, PamBusData **ret);
 
 void pam_cleanup_free(pam_handle_t *handle, void *data, int error_status);
 
