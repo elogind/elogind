@@ -48,7 +48,10 @@ size_t strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
 #if 0 /// UNNEEDED by elogind
-int strv_extend_strv_concat(char ***a, char * const *b, const char *suffix);
+int strv_extend_strv_biconcat(char ***a, const char *prefix, const char* const *b, const char *suffix);
+static inline int strv_extend_strv_concat(char ***a, const char* const *b, const char *suffix) {
+        return strv_extend_strv_biconcat(a, NULL, b, suffix);
+}
 int strv_prepend(char ***l, const char *value);
 #endif // 0
 

@@ -537,6 +537,22 @@ TEST(strv_sort) {
 }
 
 #if 0 /// UNNEEDED by elogind
+TEST(strv_extend_strv_biconcat) {
+        _cleanup_strv_free_ char **a = NULL, **b = NULL;
+
+        a = strv_new("without", "suffix");
+        b = strv_new("with", "suffix");
+        assert_se(a);
+        assert_se(b);
+
+        assert_se(strv_extend_strv_biconcat(&a, "prefix_", (const char* const*) b, "_suffix") >= 0);
+
+        assert_se(streq(a[0], "without"));
+        assert_se(streq(a[1], "suffix"));
+        assert_se(streq(a[2], "prefix_with_suffix"));
+        assert_se(streq(a[3], "prefix_suffix_suffix"));
+}
+
 TEST(strv_extend_strv_concat) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
 
@@ -545,7 +561,7 @@ TEST(strv_extend_strv_concat) {
         assert_se(a);
         assert_se(b);
 
-        assert_se(strv_extend_strv_concat(&a, b, "_suffix") >= 0);
+        assert_se(strv_extend_strv_concat(&a, (const char* const*) b, "_suffix") >= 0);
 
         assert_se(streq(a[0], "without"));
         assert_se(streq(a[1], "suffix"));
