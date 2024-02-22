@@ -93,13 +93,6 @@ int config_parse(
                 void *userdata,
                 struct stat *ret_stat);     /* possibly NULL */
 
-int config_parse_config_file(
-                const char *conf_file,      /* a path like "elogind/frobnicator.conf" */
-                const char *sections,       /* nulstr */
-                ConfigItemLookup lookup,
-                const void *table,
-                ConfigParseFlags flags,
-                void *userdata);
 
 #if 0 /// UNNEEDED by elogind
 int config_parse_many(
@@ -125,6 +118,25 @@ int config_parse_standard_file_with_dropins_full(
                 void *userdata,
                 Hashmap **ret_stats_by_path,  /* possibly NULL */
                 char ***ret_dropin_files);    /* possibly NULL */
+
+static inline int config_parse_standard_file_with_dropins(
+                const char *main_file,        /* A path like "elogind/frobnicator.conf" */
+                const char *sections,         /* nulstr */
+                ConfigItemLookup lookup,
+                const void *table,
+                ConfigParseFlags flags,
+                void *userdata) {
+        return config_parse_standard_file_with_dropins_full(
+                        /* root= */ NULL,
+                        main_file,
+                        sections,
+                        lookup,
+                        table,
+                        flags,
+                        userdata,
+                        /* ret_stats_by_path= */ NULL,
+                        /* ret_dropin_files= */ NULL);
+}
 
 int config_get_stats_by_path(
                 const char *suffix,
