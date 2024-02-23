@@ -124,8 +124,6 @@ Deprecations and removals:
 * Once baseline is 4.13, remove support for INTERFACE_OLD= checks in "udevadm
   trigger"'s waiting logic, since we can then rely on uuid-tagged uevents
 
-* remove remaining tpm1.2 support from sd-stub
-
 Features:
 
 * vmspawn: to speed up boot let's disable all PCR banks in swtpm except for
@@ -135,16 +133,6 @@ Features:
 * in os-release define a field that can be initialized at build time from
   SOURCE_DATE_EPOCH (maybe even under that name?). Would then be used to
   initialize the timestamp logic of ConditionNeedsUpdate=.
-
-* ptyfwd: look for window title ANSI sequences and insert colored dot in front
-  of it while passing it through, to indicate whether we are in privileged, VM,
-  container terminal sessions.
-
-* nspawn/vmspawn/pid1: add ability to easily insert fully booted VMs/FOSC into
-  shell pipelines, i.e. add easy to use switch that turns off console status
-  output, and generates the right credentials for elogind-run-generator so that
-  a program is invoked, and its output captured, with correct EOF handling and
-  exit code propagation
 
   close as we can make it for the MainPID of a service. Should be built around
   pidfd, so that we can reasonably robustly do this. Would only cover the
@@ -375,7 +363,7 @@ Features:
 
 * elogind-tpm2-setup should probably have a factory reset logic, i.e. when some
   kernel command line option is set we reset the TPM (equivalent of tpm2_clear
-  -c owner? or rather echo 5 >/sys/class/tpm/tpm0/ppi/request?).
+  -c owner?).
 
 * elogind-tpm2-setup should support a mode where we refuse booting if the SRK
   changed. (Must be opt-in, to not break systems which are supposed to be
