@@ -21,7 +21,7 @@
 
   <refnamediv>
     <refname>elogind-ssh-generator</refname>
-    <refpurpose>Generator for binding a socket-activated SSH server to local <constant>AV_VSOCK</constant>
+    <refpurpose>Generator for binding a socket-activated SSH server to local <constant>AF_VSOCK</constant>
     and <constant>AF_UNIX</constant> sockets</refpurpose>
   </refnamediv>
 
@@ -33,7 +33,7 @@
     <title>Description</title>
 
     <para><command>elogind-ssh-generator</command> binds a socket-activated SSH server to local
-    <constant>AV_VSOCK</constant> and <constant>AF_UNIX</constant> sockets under certain conditions. It only
+    <constant>AF_VSOCK</constant> and <constant>AF_UNIX</constant> sockets under certain conditions. It only
     has an effect if the <citerefentry
     project="man-pages"><refentrytitle>sshd</refentrytitle><manvolnum>8</manvolnum></citerefentry> binary is
     installed. Specifically, it does the following:</para>
@@ -62,6 +62,11 @@
     <para>See
     <citerefentry><refentrytitle>elogind-ssh-proxy</refentrytitle><manvolnum>8</manvolnum></citerefentry> for
     details on how to connect to these sockets via the <command>ssh</command> client.</para>
+
+    <para>The <varname>ssh.authorized_keys.root</varname> credential can be used to allow specific public keys
+    to log in over SSH. See
+    <citerefentry><refentrytitle>elogind.elogind-credentials</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+    for more information.</para>
 
     <para>The generator will use a packaged <filename>sshd@.service</filename> service template file if one
     exists, and otherwise generate a suitable service template file.</para>
