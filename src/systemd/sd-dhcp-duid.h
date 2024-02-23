@@ -3,7 +3,6 @@
 #define foosddhcpduidhfoo
 
 /***
-  Copyright © 2013 Intel Corporation. All rights reserved.
   elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
@@ -63,6 +62,8 @@ int sd_dhcp_duid_set_ll(
                 uint16_t arp_type);
 int sd_dhcp_duid_set_en(sd_dhcp_duid *duid);
 int sd_dhcp_duid_set_uuid(sd_dhcp_duid *duid);
+
+int sd_dhcp_duid_to_string(const sd_dhcp_duid *duid, char **ret);
 
 _SD_END_DECLARATIONS;
 

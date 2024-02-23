@@ -3,7 +3,6 @@
 #define foosddhcpclientidhfoo
 
 /***
-  Copyright © 2013 Intel Corporation. All rights reserved.
   elogind is free software; you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as published by
   the Free Software Foundation; either version 2.1 of the License, or
@@ -53,6 +52,9 @@ int sd_dhcp_client_id_set_iaid_duid(
                 sd_dhcp_client_id *client_id,
                 uint32_t iaid,
                 sd_dhcp_duid *duid);
+
+int sd_dhcp_client_id_to_string(const sd_dhcp_client_id *client_id, char **ret);
+int sd_dhcp_client_id_to_string_from_raw(const void *data, size_t data_size, char **ret);
 
 _SD_END_DECLARATIONS;
 
