@@ -12,5 +12,5 @@ int mount_setup_early(void);
 int mount_setup(bool loaded_policy, bool leave_propagation);
 
 #if 0 /// UNNEEDED by elogind
-int mount_cgroup_controllers(void);
 #endif // 0
+int mount_cgroup_legacy_controllers(bool loaded_policy);
