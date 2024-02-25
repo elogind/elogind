@@ -252,7 +252,6 @@ const char* const elogind_features =
         " -LIBARCHIVE"
 #endif
 
-        " default-hierarchy=" DEFAULT_HIERARCHY_NAME
         ;
 
 static char *elogind_features_with_color(void) {

@@ -922,16 +922,6 @@ if fallback_hostname == '' or fallback_hostname[0] == '.' or fallback_hostname[0
 endif
 conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 
-default_hierarchy = get_option('default-hierarchy')
-conf.set_quoted('DEFAULT_HIERARCHY_NAME', default_hierarchy,
-                description : 'default cgroup hierarchy as string')
-if default_hierarchy == 'legacy'
-        conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_NONE')
-elif default_hierarchy == 'hybrid'
-        conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_SYSTEMD')
-else
-        conf.set('DEFAULT_HIERARCHY', 'CGROUP_UNIFIED_ALL')
-endif
 
 #if 0 /// UNNEEDED by elogind
 # extra_net_naming_schemes = []
@@ -2197,13 +2187,27 @@ conf.set_quoted('DEBUGTTY',                         '/dev/null')
 #####################################################################
 
 version_tag = get_option('version-tag')
-version_h = vcs_tag(
-        input : 'src/version/version.h.in',
-        output : 'version.h',
-        command: [project_source_root / 'tools/meson-vcs-tag.sh',
-                  project_source_root,
-                  version_tag,
-                 ])
+if version_tag == ''
+        version_tag = meson.project_version()
+endif
+
+conf.set_quoted('VERSION_TAG', version_tag)
+
+vcs_tag = get_option('vcs-tag')
+if vcs_tag and fs.is_dir(project_source_root / '.git')
+        version_h = vcs_tag(
+                input : 'src/version/version.h.in',
+                output : 'version.h',
+                fallback : '',
+                command : ['sh', '-c', 'echo "-g$(git -C . describe --abbrev=7 --match="" --always --dirty=^)"'],
+        )
+else
+        version_h = configure_file(
+                input : 'src/version/version.h.in',
+                output : 'version.h',
+                configuration : configuration_data({'VCS_TAG' : ''}),
+        )
+endif
 
 shared_lib_tag = get_option('shared-lib-tag')
 if shared_lib_tag == ''
@@ -3247,7 +3251,6 @@ summary({
 #         'default DNS servers' :             dns_servers.split(' '),
 #         'default NTP servers' :             ntp_servers.split(' '),
 #endif // 0
-        'default cgroup hierarchy' :        default_hierarchy,
 #if 0 /// UNNEEDED by elogind
 #         'default net.naming-scheme value' : default_net_naming_scheme,
 #endif // 0
