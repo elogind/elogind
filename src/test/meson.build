@@ -16,6 +16,7 @@ test_env = environment()
 #endif // 0
 test_env.set('PATH', project_build_root + ':' + path)
 test_env.set('PROJECT_BUILD_ROOT', project_build_root)
+test_env.set('SYSTEMD_SLOW_TESTS', slow_tests ? '1' : '0')
 
 #if 0 /// UNNEEDED in elogind
 # if efi_addon != ''
@@ -478,6 +479,10 @@ executables += [
                 'dependencies' : threads,
         },
 #if 0 /// UNNEEDED by elogind
+#         test_template + {
+#                 'sources' : files('test-progress-bar.c'),
+#                 'type' : 'manual',
+#         },
 #         test_template + {
 #                 'sources' : files('test-qrcode-util.c'),
 #                 'dependencies' : libdl,
