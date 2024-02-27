@@ -1626,16 +1626,19 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 # libxz = dependency('liblzma',
 #                    required : get_option('xz'))
 # conf.set10('HAVE_XZ', libxz.found())
+# libxz_cflags = libxz.partial_dependency(includes: true, compile_args: true)
 #
 # liblz4 = dependency('liblz4',
 #                     version : '>= 1.3.0',
 #                     required : get_option('lz4'))
 # conf.set10('HAVE_LZ4', liblz4.found())
+# liblz4_cflags = liblz4.partial_dependency(includes: true, compile_args: true)
 #
 # libzstd = dependency('libzstd',
 #                      version : '>= 1.4.0',
 #                      required : get_option('zstd'))
 # conf.set10('HAVE_ZSTD', libzstd.found())
+# libzstd_cflags = libzstd.partial_dependency(includes: true, compile_args: true)
 #
 # conf.set10('HAVE_COMPRESSION', libxz.found() or liblz4.found() or libzstd.found())
 #
@@ -2311,14 +2314,15 @@ subdir('src/shared')
 
 libelogind = shared_library(
         'elogind',
+        'systemd',
         version : libsystemd_version,
         include_directories : libelogind_includes,
+        include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic,
-#                      libbasic_gcrypt,
-#                      libbasic_compress],
+#                      libbasic_gcrypt],
 #         link_whole : [libsystemd_static],
 #         dependencies : [librt,
 #                         threads,
@@ -2354,7 +2358,6 @@ install_libelogind_static = static_library(
         basic_sources,
 #if 0 /// No gcrypt or compress with elogind
 #         basic_gcrypt_sources,
-#         basic_compress_sources,
 #endif // 0
         fundamental_sources,
         include_directories : libelogind_includes,
@@ -2368,12 +2371,12 @@ install_libelogind_static = static_library(
 #                         libcap,
 #                         libdl,
 #                         libgcrypt,
-#                         liblz4,
+#                         liblz4_cflags,
 #                         libmount,
 #                         libopenssl,
 #                         librt,
-#                         libxz,
-#                         libzstd,
+#                         libxz_cflags,
+#                         libzstd_cflags,
 #                         threads,
 #                         userspace],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))

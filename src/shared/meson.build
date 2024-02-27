@@ -391,7 +391,7 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   libgcrypt,
 #                   libiptc_cflags,
 #                   libkmod,
-#                   liblz4,
+#                   liblz4_cflags,
 #                   libmount,
 #                   libopenssl,
 #                   libp11kit_cflags,
@@ -400,8 +400,8 @@ libshared_name = 'elogind-shared-@0@'.format(shared_lib_tag)
 #                   libseccomp,
 #                   libselinux,
 #                   libxenctrl_cflags,
-#                   libxz,
-#                   libzstd]
+#                   libxz_cflags,
+#                   libzstd_cflags]
 #else // 0
 libshared_deps = [threads,
                   libacl,
