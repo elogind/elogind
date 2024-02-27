@@ -56,7 +56,6 @@
 #         'device-nodes.c',
 #         'discover-image.c',
 #         'dissect-image.c',
-#         'dlfcn-util.c',
 #         'dm-util.c',
 #         'dns-domain.c',
 #         'dropin.c',
