@@ -54,7 +54,6 @@
 #include "sd-login.h"
 #include "sleep.h"
 #include "terminal-util.h"
-//#include "utmp-wtmp.h"
 #include "wall.h"
 
 #define DEFAULT_HIBERNATE_DELAY_USEC_NO_BATTERY (2 * USEC_PER_HOUR)
