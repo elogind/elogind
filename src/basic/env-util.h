@@ -72,8 +72,8 @@ int getenv_bool(const char *p);
 int secure_getenv_bool(const char *p);
 
 #if 0 /// UNNEEDED by elogind
-int getenv_uint64_secure(const char *p, uint64_t *ret);
 #endif // 0
+int secure_getenv_uint64(const char *p, uint64_t *ret);
 
 /* Like setenv, but calls unsetenv if value == NULL. */
 int set_unset_env(const char *name, const char *value, bool overwrite);
