@@ -45,10 +45,12 @@
   <refsect1>
     <title>Description</title>
 
-
-    <!-- 0 /// Be more vague for elogind, as this is a systemd feature not implemented by other service managers(, yet?)
     <para><function>sd_listen_fds()</function> may be invoked by a daemon to check for file descriptors
+    <!-- 0 /// Be more vague for elogind, as this is a systemd feature not implemented by other service managers(, yet?)
     passed by the service manager as part of the socket-based activation and file descriptor store logic. It
+    --><!-- else // 0 -->
+    passed by the service manager in use. It
+    <!-- // 0 -->
     returns the number of received file descriptors. If no file descriptors have been received, zero is
     returned. The first file descriptor may be found at file descriptor number 3
     (i.e. <constant>SD_LISTEN_FDS_START</constant>), the remaining descriptors follow at 4, 5, 6, …, if
@@ -57,6 +59,7 @@
     <para>The file descriptors passed this way may be closed at will by the processes receiving them: it's up
     to the processes themselves to close them after use or whether to leave them open until the process exits
     (in which case the kernel closes them automatically). Note that the file descriptors received by daemons
+    <!-- 0 /// Be more vague for elogind, as this is a systemd feature not implemented by other service managers(, yet?)
     are duplicates of the file descriptors the service manager originally allocated and bound and of which it
     continuously keeps a copy (except if <varname>Accept=yes</varname> is used). This means any socket option
     changes and other changes made to the sockets will be visible to the service manager too. Most
@@ -64,17 +67,21 @@
     project='man-pages'><refentrytitle>shutdown</refentrytitle><manvolnum>2</manvolnum></citerefentry> on
     such sockets, since it will shut down communication on the file descriptor the service manager holds for
     the same socket too. Also note that if a daemon is restarted (and its associated sockets are not) it will
+    --><!-- else // 0 -->
+    are duplicates of the file descriptors the used service manager originally allocated and bound.
+    Also note that if a daemon is restarted (and its associated sockets are not) it will
+    <!-- // 0 -->
     receive file descriptors to the very same sockets as the earlier invocations, thus all socket options
     applied then will still apply.</para>
 
-    --><!-- else // 0 -->
-    will be passed in the same order as configured in the service manager.
-    It is thereforce recommended to verify the correct
-    <!-- // 0 -->
     <para>If a daemon receives more than one file descriptor, they will be passed in the same order as
+    <!-- 0 /// elogind has no such socket service or anything like that
     configured in the elogind socket unit file (see
-    <citerefentry><refentrytitle>elogind.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
+    <citerefentry><refentrytitle>systemd.socket</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
     details) — if there's only one such file (see below).  Nonetheless, it is recommended to verify the
+    --><!-- else // 0 -->
+    configured. Nonetheless, it is recommended to verify the
+    <!-- // 0 -->
     correct socket types before using them. To simplify this checking, the functions
     <citerefentry><refentrytitle>sd_is_fifo</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
     <citerefentry><refentrytitle>sd_is_socket</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
@@ -204,12 +211,12 @@
   <refsect1>
     <title>Notes</title>
 
-
     <!-- 1 /// It is important that we tell people that this is a systemd feature not provided by elogind ! -->
     <para>Please note that this is a description of the socket activation technique as
-    used by elogind. If the service manager you use does not set the needed environment
+    used by systemd. If the service manager you use does not set the needed environment
     variables, none of the functions described here do anything but return 0.</para>
     <!-- // 1 -->
+
     <xi:include href="libelogind-pkgconfig.xml" xpointer="pkgconfig-text"/>
     <!-- 0 /// This part is irrellevant for elogind
     <xi:include href="threads-aware.xml" xpointer="getenv"/>
