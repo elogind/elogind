@@ -134,7 +134,6 @@ int chattr_full(
         return current_attr == new_attr ? 1 : ERRNO_IS_NOT_SUPPORTED(set_flags_errno) ? set_flags_errno : -ENOANO;
 }
 
-#if 0 /// UNNEEDED by elogind
 int read_attr_fd(int fd, unsigned *ret) {
         struct stat st;
 
@@ -149,6 +148,7 @@ int read_attr_fd(int fd, unsigned *ret) {
         return RET_NERRNO(ioctl(fd, FS_IOC_GETFLAGS, ret));
 }
 
+#if 0 /// UNNEEDED by elogind
 int read_attr_path(const char *p, unsigned *ret) {
         _cleanup_close_ int fd = -EBADF;
 
