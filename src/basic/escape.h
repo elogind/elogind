@@ -61,10 +61,10 @@ typedef enum XEscapeFlags {
 } XEscapeFlags;
 
 char* xescape_full(const char *s, const char *bad, size_t console_width, XEscapeFlags flags);
-#if 0 /// UNNEEDED by elogind
 static inline char* xescape(const char *s, const char *bad) {
         return xescape_full(s, bad, SIZE_MAX, 0);
 }
+#if 0 /// UNNEEDED by elogind
 char* octescape(const char *s, size_t len);
 #endif // 0
 char* escape_non_printable_full(const char *str, size_t console_width, XEscapeFlags flags);
