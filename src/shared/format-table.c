@@ -651,7 +651,6 @@ static TableData *table_get_data(Table *t, TableCell *cell) {
         return t->data[i];
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         int r;
 
@@ -668,7 +667,6 @@ int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         table_get_data(t, cell)->minimum_width = minimum_width;
         return 0;
 }
-#endif // 0
 
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         int r;
@@ -1058,7 +1056,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.mode;
                         break;
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_DEVNUM:
                         buffer.devnum = va_arg(ap, dev_t);
                         data = &buffer.devnum;
@@ -1071,6 +1068,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         goto check;
                 }
 
+#if 0 /// UNNEEDED by elogind
                 case TABLE_SET_MAXIMUM_WIDTH: {
                         size_t w = va_arg(ap, size_t);
                         r = table_set_maximum_width(t, last_cell, w);
