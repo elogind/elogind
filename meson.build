@@ -3252,10 +3252,10 @@ summary({
 #         'default NTP servers' :             ntp_servers.split(' '),
 #endif // 0
 #if 0 /// UNNEEDED by elogind
-#         'default net.naming-scheme value' : default_net_naming_scheme,
 #endif // 0
-        'default KillUserProcesses value' : kill_user_processes,
 #if 0 /// UNNEEDED by elogind
+#         'default net.naming_scheme= value': default_net_naming_scheme,
+#         'default KillUserProcesses= value': kill_user_processes,
 #         'default locale' :                  default_locale,
 #         'default nspawn locale' :           nspawn_locale,
 #         'default status unit format' :      status_unit_format_default,
