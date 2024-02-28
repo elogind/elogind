@@ -6,7 +6,7 @@
 auth      sufficient pam_unix.so
 #if 0 /// elogind has no homed service
 # -auth     sufficient pam_systemd_home.so
-#endif
+#endif // 0
 auth      required   pam_deny.so
 
 account   required   pam_nologin.so
