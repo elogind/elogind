@@ -69,7 +69,7 @@ char *strv_env_pairs_get(char **l, const char *name) _pure_;
 #endif // 0
 
 int getenv_bool(const char *p);
-int getenv_bool_secure(const char *p);
+int secure_getenv_bool(const char *p);
 
 #if 0 /// UNNEEDED by elogind
 int getenv_uint64_secure(const char *p, uint64_t *ret);
