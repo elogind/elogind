@@ -321,6 +321,7 @@ conf.set_quoted('INCLUDE_DIR',                                includedir)
 conf.set_quoted('LIBDIR',                                     libdir)
 conf.set_quoted('LIBEXECDIR',                                 libexecdir)
 #if 0 /// UNNEEDED by elogind
+# conf.set_quoted('KERNEL_INSTALL_DIR',                         kernelinstalldir)
 # conf.set_quoted('MODPROBE_DIR',                               modprobedir)
 # conf.set_quoted('MODULESLOAD_DIR',                            modulesloaddir)
 #endif // 0
