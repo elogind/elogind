@@ -262,6 +262,8 @@ option('pamconfdir', type : 'string',
 #        description : 'directory for SSH client configuration ["no" disables]')
 # option('sshdconfdir', type : 'string',
 #        description : 'directory for SSH server configuration ["no" disables]')
+# option('sshdprivsepdir', type : 'string',
+#        description : 'directory for SSH privilege separation ["no" disables]', value : '/run/sshd')
 # option('libcryptsetup-plugins-dir', type : 'string',
 #        description : 'directory for libcryptsetup plugins')
 #endif // 0

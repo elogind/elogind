@@ -293,6 +293,10 @@ endif
 #         sshdconfdir = sysconfdir / 'ssh/sshd_config.d'
 # endif
 #
+# sshdprivsepdir = get_option('sshdprivsepdir')
+# conf.set10('CREATE_SSHDPRIVSEPDIR', sshdprivsepdir != 'no' and not sshdprivsepdir.startswith('/usr/'))
+# conf.set('SSHDPRIVSEPDIR', sshdprivsepdir, description : 'SSH privilege separation directory')
+#
 # libcryptsetup_plugins_dir = get_option('libcryptsetup-plugins-dir')
 # if libcryptsetup_plugins_dir == ''
 #         libcryptsetup_plugins_dir = libdir / 'cryptsetup'
@@ -3199,6 +3203,7 @@ summary({
 #         'PAM modules directory' :           pamlibdir,
 #         'PAM configuration directory' :     pamconfdir,
 #         'ssh server configuration directory' : sshdconfdir,
+#         'ssh server privilege separation directory' : sshdprivsepdir,
 #         'ssh client configuration directory' : sshconfdir,
 #         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
 #         'RPM macros directory' :            rpmmacrosdir,
