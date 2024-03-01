@@ -34,7 +34,7 @@ assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #  error Unknown timex member size
 #endif
 
-#ifdef __GLIBC__ /// Go directly for %ju in elogind if not. Enhances musl-libc compatibility.
+#ifdef __GLIBC__ /// Go directly for %llu in elogind if not.
 #if SIZEOF_RLIM_T == 8
 #  define RLIM_FMT "%" PRIu64
 #elif SIZEOF_RLIM_T == 4
@@ -43,7 +43,8 @@ assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #  error Unknown rlim_t size
 #endif
 #else // __GLIBC__
-#define RLIM_FMT "%ju"
+// musl-libc always defines rlim_t as unsigned long long, even on 64-bit builds
+#define RLIM_FMT "%llu"
 #endif // __GLIBC__
 
 #if SIZEOF_DEV_T == 8
