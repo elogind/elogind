@@ -50,13 +50,13 @@
 static void session_remove_fifo(Session *s);
 static void session_restore_vt(Session *s);
 
-int session_new(Session **ret, Manager *m, const char *id) {
+int session_new(Manager *m, const char *id, Session **ret) {
         _cleanup_(session_freep) Session *s = NULL;
         int r;
 
-        assert(ret);
         assert(m);
         assert(id);
+        assert(ret);
 
         if (!session_id_valid(id))
                 return -EINVAL;
@@ -761,17 +761,17 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
         if (!SESSION_CLASS_WANTS_SCOPE(s->class))
                 return 0;
 
-
-
         if (s->scope)
                 goto finish;
 
         s->scope_job = mfree(s->scope_job);
+
         scope = strjoin("session-", s->id, ".scope");
         if (!scope)
                 return log_oom();
 
         description = strjoina("Session ", s->id, " of User ", s->user->user_record->user_name);
+
         r = manager_start_scope(
                         s->manager,
                         scope,

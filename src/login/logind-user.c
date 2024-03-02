@@ -39,17 +39,15 @@
 /// Additional includes needed by elogind
 #include "user-runtime-dir.h"
 
-int user_new(User **ret,
-             Manager *m,
-             UserRecord *ur) {
 
+int user_new(Manager *m, UserRecord *ur, User **ret) {
         _cleanup_(user_freep) User *u = NULL;
         char lu[DECIMAL_STR_MAX(uid_t) + 1];
         int r;
 
-        assert(ret);
         assert(m);
         assert(ur);
+        assert(ret);
 
         if (!ur->user_name)
                 return -EINVAL;
@@ -145,9 +143,7 @@ User *user_free(User *u) {
 
         (void) hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
-
 /// elogind empty mask removed (elogind does not support services and service jobs.)
-
 /// elogind empty mask removed (elogind does not need the systemd runtime_dir_service)
         free(u->runtime_path);
         free(u->state_file);
