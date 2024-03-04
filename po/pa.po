@@ -5,10 +5,10 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-14 21:25+0000\n"
+"POT-Creation-Date: 2024-03-04 10:06+0100\n"
 "PO-Revision-Date: 2024-01-16 14:35+0000\n"
 "Last-Translator: A S Alam <aalam@users.noreply.translate.fedoraproject.org>\n"
-"Language-Team: Punjabi <https://translate.fedoraproject.org/projects/elogind/"
+"Language-Team: Punjabi <https://translate.fedoraproject.org/projects/systemd/"
 "master/pa/>\n"
 "Language: pa\n"
 "MIME-Version: 1.0\n"
@@ -23,7 +23,8 @@ msgstr ""
 # msgstr "ਵਾਕ ਵਾਪਸ ਸਿਸਟਮ ਨੂੰ ਭੇਜੋ"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:23
-# msgid "Authentication is required to send the entered passphrase back to the system."
+# msgid ""
+# "Authentication is required to send the entered passphrase back to the system."
 # msgstr "ਦਿੱਤਾ ਵਾਕ ਸਿਸਟਮ ਨੂੰ ਵਾਪਸ ਭੇਜਣ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
@@ -47,7 +48,9 @@ msgstr ""
 # msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:55
-# msgid "Authentication is required to set or unset system and service manager environment variables."
+# msgid ""
+# "Authentication is required to set or unset system and service manager "
+# "environment variables."
 # msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
@@ -64,7 +67,8 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
 # #, fuzzy
-# msgid "Authentication is required to dump the elogind state without rate limits."
+# msgid ""
+# "Authentication is required to dump the systemd state without rate limits."
 # msgstr "systemd ਹਾਲਤ ਲੋਡ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/home/org.freedesktop.home1.policy:13
@@ -88,7 +92,8 @@ msgstr ""
 # msgstr ""
 #
 # #: src/home/org.freedesktop.home1.policy:34
-# msgid "Authentication is required to check credentials against a user's home area."
+# msgid ""
+# "Authentication is required to check credentials against a user's home area."
 # msgstr ""
 #
 # #: src/home/org.freedesktop.home1.policy:43
@@ -112,155 +117,181 @@ msgstr ""
 # msgstr "ਹੋਮ ਖੇਤਰ ਲਈ ਪਾਸਵਰਡ ਬਦਲੋ"
 #
 # #: src/home/org.freedesktop.home1.policy:64
-# msgid "Authentication is required to change the password of a user's home area."
+# msgid ""
+# "Authentication is required to change the password of a user's home area."
 # msgstr "ਵਰਤੋਂਕਾਰ ਦੇ ਹੋਮ ਖੇਤਰ ਲਈ ਪਾਸਵਰਡ ਨੂੰ ਬਦਲਣ ਲਈ ਪਰਮਾਣਿਕਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:287
-# #, c-format
-# msgid "Home of user %s is currently absent, please plug in the necessary storage device or backing file system."
+# #: src/home/org.freedesktop.home1.policy:73
+# msgid "Inhibit automatic lock of a home area"
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:292
+# #: src/home/org.freedesktop.home1.policy:74
+# #, fuzzy
+# msgid ""
+# "Authentication is required to inhibit automatic lock of a user's home area."
+# msgstr "ਵਰਤੋਂਕਾਰ ਦੇ ਹੋਮ ਖੇਤਰ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਪਰਮਾਣਿਕਤਾ ਚਾਹੀਦੀ ਹੈ।"
+#
+# #: src/home/org.freedesktop.home1.policy:83
+# #, fuzzy
+# msgid "Activate a home area"
+# msgstr "ਹੋਮ ਖੇਤਰ ਬਣਾਓ"
+#
+# #: src/home/org.freedesktop.home1.policy:84
+# #, fuzzy
+# msgid "Authentication is required to activate a user's home area."
+# msgstr "ਵਰਤੋਂਕਾਰ ਦੇ ਹੋਮ ਖੇਤਰ ਨੂੰ ਬਣਾਉਣ ਲਈ ਪਰਮਾਣਿਕਤਾ ਚਾਹੀਦੀ ਹੈ।"
+#
+# #: src/home/pam_systemd_home.c:293
+# #, c-format
+# msgid ""
+# "Home of user %s is currently absent, please plug in the necessary storage "
+# "device or backing file system."
+# msgstr ""
+#
+# #: src/home/pam_systemd_home.c:298
 # #, c-format
 # msgid "Too frequent login attempts for user %s, try again later."
-# msgstr ""
-# "ਵਰਤੋਂਕਾਰ %s ਲਈ ਬਹੁਤ ਛੇਤੀ ਛੇਤੀ ਲਾਗਇਨ ਕੋਸ਼ਿਸ਼ਾਂ ਕੀਤੀਆਂ, ਬਾਅਦ ਵਿੱਚ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ।"
+# msgstr "ਵਰਤੋਂਕਾਰ %s ਲਈ ਬਹੁਤ ਛੇਤੀ ਛੇਤੀ ਲਾਗਇਨ ਕੋਸ਼ਿਸ਼ਾਂ ਕੀਤੀਆਂ, ਬਾਅਦ ਵਿੱਚ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ।"
 #
-# #: src/home/pam_systemd_home.c:304
+# #: src/home/pam_systemd_home.c:310
 # msgid "Password: "
 # msgstr "ਪਾਸਵਰਡ: "
 #
-# #: src/home/pam_systemd_home.c:306
+# #: src/home/pam_systemd_home.c:312
 # #, c-format
 # msgid "Password incorrect or not sufficient for authentication of user %s."
 # msgstr "ਵਰਤੋਂਕਾਰ %s ਦੀ ਪਰਮਾਣਿਕਤਾ ਲਈ ਪਾਸਵਰਡ ਗਲਤ ਹੈ ਜਾਂ ਕਾਫ਼ੀ ਨਹੀਂ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:307
+# #: src/home/pam_systemd_home.c:313
 # msgid "Sorry, try again: "
 # msgstr "ਅਫ਼ਸੋਸ, ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ: "
 #
-# #: src/home/pam_systemd_home.c:329
+# #: src/home/pam_systemd_home.c:335
 # msgid "Recovery key: "
 # msgstr "ਰਿਕਵਰੀ ਕੁੰਜੀ: "
 #
-# #: src/home/pam_systemd_home.c:331
+# #: src/home/pam_systemd_home.c:337
 # #, c-format
-# msgid "Password/recovery key incorrect or not sufficient for authentication of user %s."
-# msgstr ""
-# "ਵਰਤੋਂਕਾਰ %s ਦੀ ਪਰਮਾਣਿਕਤਾ ਲਈ ਪਾਸਵਰਡ/ਰਿਕਵਰੀ ਕੁੰਜੀ ਗਲਤ ਹੈ ਜਾਂ ਕਾਫ਼ੀ ਨਹੀਂ ਹੈ।"
+# msgid ""
+# "Password/recovery key incorrect or not sufficient for authentication of user "
+# "%s."
+# msgstr "ਵਰਤੋਂਕਾਰ %s ਦੀ ਪਰਮਾਣਿਕਤਾ ਲਈ ਪਾਸਵਰਡ/ਰਿਕਵਰੀ ਕੁੰਜੀ ਗਲਤ ਹੈ ਜਾਂ ਕਾਫ਼ੀ ਨਹੀਂ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:332
+# #: src/home/pam_systemd_home.c:338
 # msgid "Sorry, reenter recovery key: "
 # msgstr "ਅਫ਼ਸੋਸ, ਰਿਕਵਰੀ ਕੁੰਜੀ ਫੇਰ ਭਰਿਓ: "
 #
-# #: src/home/pam_systemd_home.c:352
+# #: src/home/pam_systemd_home.c:358
 # #, c-format
 # msgid "Security token of user %s not inserted."
 # msgstr "%s ਵਰਤੋਂਕਾਰ ਲਈ ਸੁਰੱਖਿਆ ਟੋਕਨ ਨਹੀਂ ਦਿੱਤਾ ਗਿਆ।"
 #
-# #: src/home/pam_systemd_home.c:353 src/home/pam_systemd_home.c:356
+# #: src/home/pam_systemd_home.c:359 src/home/pam_systemd_home.c:362
 # msgid "Try again with password: "
 # msgstr "ਪਾਸਵਰਡ ਨਾਲ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰਿਓ: "
 #
-# #: src/home/pam_systemd_home.c:355
+# #: src/home/pam_systemd_home.c:361
 # #, c-format
-# msgid "Password incorrect or not sufficient, and configured security token of user %s not inserted."
+# msgid ""
+# "Password incorrect or not sufficient, and configured security token of user "
+# "%s not inserted."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:376
+# #: src/home/pam_systemd_home.c:381
 # msgid "Security token PIN: "
 # msgstr "ਸੁਰੱਖਿਆ ਟੋਕਨ ਪਿੰਨ: "
 #
-# #: src/home/pam_systemd_home.c:393
+# #: src/home/pam_systemd_home.c:398
 # #, c-format
 # msgid "Please authenticate physically on security token of user %s."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:404
+# #: src/home/pam_systemd_home.c:409
 # #, c-format
 # msgid "Please confirm presence on security token of user %s."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:415
+# #: src/home/pam_systemd_home.c:420
 # #, c-format
 # msgid "Please verify user on security token of user %s."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:424
-# msgid "Security token PIN is locked, please unlock it first. (Hint: Removal and re-insertion might suffice.)"
+# #: src/home/pam_systemd_home.c:429
+# msgid ""
+# "Security token PIN is locked, please unlock it first. (Hint: Removal and re-"
+# "insertion might suffice.)"
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:432
+# #: src/home/pam_systemd_home.c:437
 # #, c-format
 # msgid "Security token PIN incorrect for user %s."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:433 src/home/pam_systemd_home.c:452
-# #: src/home/pam_systemd_home.c:471
+# #: src/home/pam_systemd_home.c:438 src/home/pam_systemd_home.c:457
+# #: src/home/pam_systemd_home.c:476
 # msgid "Sorry, retry security token PIN: "
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:451
+# #: src/home/pam_systemd_home.c:456
 # #, c-format
 # msgid "Security token PIN of user %s incorrect (only a few tries left!)"
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:470
+# #: src/home/pam_systemd_home.c:475
 # #, c-format
 # msgid "Security token PIN of user %s incorrect (only one try left!)"
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:616
+# #: src/home/pam_systemd_home.c:643
 # #, c-format
 # msgid "Home of user %s is currently not active, please log in locally first."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:618
+# #: src/home/pam_systemd_home.c:645
 # #, c-format
 # msgid "Home of user %s is currently locked, please unlock locally first."
-# msgstr ""
-# "%s ਵਰਤੋਂਕਾਰ ਦਾ ਹੋਮ ਇਸ ਵੇਲੇ ਲਾਕ ਹੈ, ਪਹਿਲਾਂ ਇਸ ਨੂੰ ਲੋਕਲ ਰੂਪ ਵਿੱਚ ਅਣ-ਲਾਕ ਕਰੋ।"
+# msgstr "%s ਵਰਤੋਂਕਾਰ ਦਾ ਹੋਮ ਇਸ ਵੇਲੇ ਲਾਕ ਹੈ, ਪਹਿਲਾਂ ਇਸ ਨੂੰ ਲੋਕਲ ਰੂਪ ਵਿੱਚ ਅਣ-ਲਾਕ ਕਰੋ।"
 #
-# #: src/home/pam_systemd_home.c:645
+# #: src/home/pam_systemd_home.c:677
 # #, c-format
 # msgid "Too many unsuccessful login attempts for user %s, refusing."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:868
+# #: src/home/pam_systemd_home.c:956
 # msgid "User record is blocked, prohibiting access."
 # msgstr "ਵਰਤੋਂਕਾਰ ਰਿਕਾਰਡ ਉੱਤੇ ਪਾਬੰਦੀ ਲਾਈ ਹੈ, ਪਹੁੰਚ ਤੋਂ ਰੋਕਿਆ ਜਾ ਰਿਹਾ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:872
+# #: src/home/pam_systemd_home.c:960
 # msgid "User record is not valid yet, prohibiting access."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:876
+# #: src/home/pam_systemd_home.c:964
 # msgid "User record is not valid anymore, prohibiting access."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:881 src/home/pam_systemd_home.c:932
+# #: src/home/pam_systemd_home.c:969 src/home/pam_systemd_home.c:1020
 # msgid "User record not valid, prohibiting access."
 # msgstr ""
 #
-# #: src/home/pam_systemd_home.c:893
+# #: src/home/pam_systemd_home.c:981
 # #, c-format
 # msgid "Too many logins, try again in %s."
 # msgstr "ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ ਕੀਤੀਆਂ, %s ਵਿੱਚ ਫੇਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ।"
 #
-# #: src/home/pam_systemd_home.c:904
+# #: src/home/pam_systemd_home.c:992
 # msgid "Password change required."
 # msgstr "ਪਾਸਵਰਡ ਬਦਲਣ ਦੀ ਲੋੜ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:908
+# #: src/home/pam_systemd_home.c:996
 # msgid "Password expired, change required."
 # msgstr "ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ ਪੁੱਗੀ ਹੈ, ਇਹ ਬਦਲਣ ਦੀ ਲੋੜ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:914
+# #: src/home/pam_systemd_home.c:1002
 # msgid "Password is expired, but can't change, refusing login."
 # msgstr ""
 # "ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ ਪੁੱਗੀ, ਪਰ ਬਦਲਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ, ਲਾਗਇਨ ਤੋਂ ਇਨਕਾਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।"
 #
-# #: src/home/pam_systemd_home.c:918
+# #: src/home/pam_systemd_home.c:1006
 # msgid "Password will expire soon, please change."
 # msgstr "ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ ਛੇਤੀ ਹੀ ਪੁੱਗ ਜਾਵੇਗੀ, ਇਸ ਨੂੰ ਬਦਲ ਲਵੋ।"
 #
@@ -277,7 +308,9 @@ msgstr ""
 # msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:31
-# msgid "Authentication is required to set the statically configured local hostname, as well as the pretty hostname."
+# msgid ""
+# "Authentication is required to set the statically configured local hostname, "
+# "as well as the pretty hostname."
 # msgstr ""
 #
 # #: src/hostname/org.freedesktop.hostname1.policy:41
@@ -313,28 +346,41 @@ msgstr ""
 # msgstr "ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਲੈਣ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/import/org.freedesktop.import1.policy:22
-# msgid "Import a VM or container image"
+# msgid "Import a disk image"
 # msgstr ""
 #
 # #: src/import/org.freedesktop.import1.policy:23
-# msgid "Authentication is required to import a VM or container image"
-# msgstr ""
+# #, fuzzy
+# msgid "Authentication is required to import an image"
+# msgstr "'$(unit)' ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/import/org.freedesktop.import1.policy:32
-# msgid "Export a VM or container image"
+# msgid "Export a disk image"
 # msgstr ""
 #
 # #: src/import/org.freedesktop.import1.policy:33
-# msgid "Authentication is required to export a VM or container image"
-# msgstr ""
+# #, fuzzy
+# msgid "Authentication is required to export disk image"
+# msgstr "ਸਿਸਟਮ ਟਾਈਮ ਸੈੱਟ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/import/org.freedesktop.import1.policy:42
-# msgid "Download a VM or container image"
+# msgid "Download a disk image"
 # msgstr ""
 #
 # #: src/import/org.freedesktop.import1.policy:43
-# msgid "Authentication is required to download a VM or container image"
+# #, fuzzy
+# msgid "Authentication is required to download a disk image"
+# msgstr "systemd ਹਾਲਤ ਲੋਡ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
+#
+# #: src/import/org.freedesktop.import1.policy:52
+# msgid "Cancel transfer of a disk image"
 # msgstr ""
+#
+# #: src/import/org.freedesktop.import1.policy:53
+# #, fuzzy
+# msgid ""
+# "Authentication is required to cancel the ongoing transfer of a disk image"
+# msgstr "ਵਰਤੋਂਕਾਰ ਦੇ ਹੋਮ ਖੇਤਰ ਲਈ ਪਾਸਵਰਡ ਨੂੰ ਬਦਲਣ ਲਈ ਪਰਮਾਣਿਕਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/locale/org.freedesktop.locale1.policy:22
 # msgid "Set system locale"
@@ -350,15 +396,16 @@ msgstr ""
 #
 # #: src/locale/org.freedesktop.locale1.policy:34
 # msgid "Authentication is required to set the system keyboard settings."
+# msgstr "ਸਿਸਟਮ ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਸੈੱਟ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #endif // 0
-msgstr "ਸਿਸਟਮ ਕੀਬੋਰਡ ਸੈਟਿੰਗਾਂ ਸੈੱਟ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 
 #: src/login/org.freedesktop.login1.policy:22
 msgid "Allow applications to inhibit system shutdown"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:23
-msgid "Authentication is required for an application to inhibit system shutdown."
+msgid ""
+"Authentication is required for an application to inhibit system shutdown."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:33
@@ -390,7 +437,9 @@ msgid "Allow applications to inhibit automatic system suspend"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:66
-msgid "Authentication is required for an application to inhibit automatic system suspend."
+msgid ""
+"Authentication is required for an application to inhibit automatic system "
+"suspend."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:75
@@ -398,7 +447,9 @@ msgid "Allow applications to inhibit system handling of the power key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:76
-msgid "Authentication is required for an application to inhibit system handling of the power key."
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the power key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:86
@@ -406,7 +457,9 @@ msgid "Allow applications to inhibit system handling of the suspend key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:87
-msgid "Authentication is required for an application to inhibit system handling of the suspend key."
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the suspend key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:97
@@ -414,7 +467,9 @@ msgid "Allow applications to inhibit system handling of the hibernate key"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:98
-msgid "Authentication is required for an application to inhibit system handling of the hibernate key."
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the hibernate key."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:107
@@ -422,7 +477,9 @@ msgid "Allow applications to inhibit system handling of the lid switch"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:108
-msgid "Authentication is required for an application to inhibit system handling of the lid switch."
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the lid switch."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:117
@@ -431,7 +488,9 @@ msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:118
 #, fuzzy
-msgid "Authentication is required for an application to inhibit system handling of the reboot key."
+msgid ""
+"Authentication is required for an application to inhibit system handling of "
+"the reboot key."
 msgstr "ਸਿਸਟਮ ਸੇਵਾਵਾਂ ਜਾਂ ਹੋਰ ਇਕਾਈਆਂ ਦੇ ਇੰਤਜਾਮ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 
 #: src/login/org.freedesktop.login1.policy:128
@@ -479,7 +538,9 @@ msgid "Power off the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:181
-msgid "Authentication is required to power off the system while other users are logged in."
+msgid ""
+"Authentication is required to power off the system while other users are "
+"logged in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:191
@@ -487,7 +548,9 @@ msgid "Power off the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:192
-msgid "Authentication is required to power off the system while an application is inhibiting this."
+msgid ""
+"Authentication is required to power off the system while an application is "
+"inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:202
@@ -503,7 +566,9 @@ msgid "Reboot the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:214
-msgid "Authentication is required to reboot the system while other users are logged in."
+msgid ""
+"Authentication is required to reboot the system while other users are logged "
+"in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:224
@@ -511,7 +576,9 @@ msgid "Reboot the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:225
-msgid "Authentication is required to reboot the system while an application is inhibiting this."
+msgid ""
+"Authentication is required to reboot the system while an application is "
+"inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:235
@@ -527,7 +594,9 @@ msgid "Halt the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:247
-msgid "Authentication is required to halt the system while other users are logged in."
+msgid ""
+"Authentication is required to halt the system while other users are logged "
+"in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:257
@@ -535,7 +604,9 @@ msgid "Halt the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:258
-msgid "Authentication is required to halt the system while an application is inhibiting this."
+msgid ""
+"Authentication is required to halt the system while an application is "
+"inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:268
@@ -551,7 +622,9 @@ msgid "Suspend the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:279
-msgid "Authentication is required to suspend the system while other users are logged in."
+msgid ""
+"Authentication is required to suspend the system while other users are "
+"logged in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:289
@@ -559,7 +632,9 @@ msgid "Suspend the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:290
-msgid "Authentication is required to suspend the system while an application is inhibiting this."
+msgid ""
+"Authentication is required to suspend the system while an application is "
+"inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:300
@@ -575,7 +650,9 @@ msgid "Hibernate the system while other users are logged in"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:311
-msgid "Authentication is required to hibernate the system while other users are logged in."
+msgid ""
+"Authentication is required to hibernate the system while other users are "
+"logged in."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:321
@@ -583,7 +660,9 @@ msgid "Hibernate the system while an application is inhibiting this"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:322
-msgid "Authentication is required to hibernate the system while an application is inhibiting this."
+msgid ""
+"Authentication is required to hibernate the system while an application is "
+"inhibiting this."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:332
@@ -615,7 +694,9 @@ msgid "Indicate to the firmware to boot to setup interface"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:364
-msgid "Authentication is required to indicate to the firmware to boot to setup interface."
+msgid ""
+"Authentication is required to indicate to the firmware to boot to setup "
+"interface."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:374
@@ -623,7 +704,9 @@ msgid "Indicate to the boot loader to boot to the boot loader menu"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:375
-msgid "Authentication is required to indicate to the boot loader to boot to the boot loader menu."
+msgid ""
+"Authentication is required to indicate to the boot loader to boot to the "
+"boot loader menu."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:385
@@ -631,7 +714,9 @@ msgid "Indicate to the boot loader to boot a specific entry"
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:386
-msgid "Authentication is required to indicate to the boot loader to boot into a specific boot loader entry."
+msgid ""
+"Authentication is required to indicate to the boot loader to boot into a "
+"specific boot loader entry."
 msgstr ""
 
 #: src/login/org.freedesktop.login1.policy:396
@@ -688,7 +773,8 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:65
-# msgid "Authentication is required to acquire a pseudo TTY in a local container."
+# msgid ""
+# "Authentication is required to acquire a pseudo TTY in a local container."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:74
@@ -704,7 +790,8 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:85
-# msgid "Authentication is required to manage local virtual machines and containers."
+# msgid ""
+# "Authentication is required to manage local virtual machines and containers."
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:95
@@ -712,7 +799,9 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/machine/org.freedesktop.machine1.policy:96
-# msgid "Authentication is required to manage local virtual machine and container images."
+# msgid ""
+# "Authentication is required to manage local virtual machine and container "
+# "images."
 # msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:22
@@ -864,7 +953,8 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:24
-# msgid "Authentication is required to attach or detach a portable service image."
+# msgid ""
+# "Authentication is required to attach or detach a portable service image."
 # msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:34
@@ -872,7 +962,8 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:35
-# msgid "Authentication is required to delete or modify a portable service image."
+# msgid ""
+# "Authentication is required to delete or modify a portable service image."
 # msgstr ""
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:22
@@ -920,7 +1011,9 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:44
-# msgid "Authentication is required to control whether the RTC stores the local or UTC time."
+# msgid ""
+# "Authentication is required to control whether the RTC stores the local or "
+# "UTC time."
 # msgstr ""
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:53
@@ -928,42 +1021,49 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr ""
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:54
-# msgid "Authentication is required to control whether network time synchronization shall be enabled."
+# msgid ""
+# "Authentication is required to control whether network time synchronization "
+# "shall be enabled."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:352
+# #: src/core/dbus-unit.c:353
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "'$(unit)' ਨੂੰ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
-# #: src/core/dbus-unit.c:353
+# #: src/core/dbus-unit.c:354
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "'$(unit)' ਨੂੰ ਰੋਕਣ ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
-# #: src/core/dbus-unit.c:354
+# #: src/core/dbus-unit.c:355
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "'$(unit)' ਨੂੰ ਮੁੜ-ਲੋਡ (reload) ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
-# #: src/core/dbus-unit.c:355 src/core/dbus-unit.c:356
+# #: src/core/dbus-unit.c:356 src/core/dbus-unit.c:357
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "'$(unit)' ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ (restart) ਕਰਨ ਲਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
-# #: src/core/dbus-unit.c:553
-# msgid "Authentication is required to send a UNIX signal to the processes of '$(unit)'."
+# #: src/core/dbus-unit.c:549
+# msgid ""
+# "Authentication is required to send a UNIX signal to the processes of "
+# "'$(unit)'."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:583
+# #: src/core/dbus-unit.c:577
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:615
+# #: src/core/dbus-unit.c:607
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:716
-# msgid "Authentication is required to delete files and directories associated with '$(unit)'."
+# #: src/core/dbus-unit.c:704
+# msgid ""
+# "Authentication is required to delete files and directories associated with "
+# "'$(unit)'."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:764
-# msgid "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
+# #: src/core/dbus-unit.c:743
+# msgid ""
+# "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
 #endif // 0
