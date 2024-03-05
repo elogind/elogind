@@ -414,7 +414,6 @@ libbasic = static_library(
 #         build_by_default : false)
 #endif // 0
 
-############################################################
 
 #if 0 /// UNNEEDED by elogind
 #endif // 0
