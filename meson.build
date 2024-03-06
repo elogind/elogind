@@ -2232,7 +2232,7 @@ config_h = configure_file(
 
 userspace_c_args += ['-include', 'config.h']
 
-jinja2_cmdline = [meson_render_jinja2, config_h, version_h]
+jinja2_cmdline = [meson_render_jinja2, config_h]
 
 userspace = declare_dependency(
         compile_args : userspace_c_args,
@@ -2313,10 +2313,8 @@ subdir('src/shared')
 #endif // 0
 
 libelogind = shared_library(
-        'elogind',
         'systemd',
         version : libsystemd_version,
-        include_directories : libelogind_includes,
         include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
