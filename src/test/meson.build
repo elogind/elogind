@@ -161,6 +161,7 @@ simple_tests += files(
 #endif // 0
         'test-log.c',
         'test-logarithm.c',
+        'test-login-util.c',
         'test-macro.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-memfd-util.c',
