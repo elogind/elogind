@@ -93,6 +93,7 @@ simple_tests += files(
 #endif // 0
         'test-devnum-util.c',
 #if 0 /// UNNEEDED by elogind
+#         'test-dirent-util.c',
 #         'test-dns-domain.c',
 #endif // 0
         'test-ellipsize.c',
