@@ -61,8 +61,8 @@ DEF_TEMPLATE_B = '''\
 #    define systemd_NR_{syscall} {nr_i386}
 #  elif defined(__ia64__)
 #    define systemd_NR_{syscall} {nr_ia64}
-#    define elogind_NR_{syscall} {nr_loongarch64}
 #  elif defined(__loongarch_lp64)
+#    define systemd_NR_{syscall} {nr_loongarch64}
 #  elif defined(__m68k__)
 #    define systemd_NR_{syscall} {nr_m68k}
 #  elif defined(_MIPS_SIM)
@@ -76,14 +76,14 @@ DEF_TEMPLATE_B = '''\
 #      error "Unknown MIPS ABI"
 #    endif
 #  elif defined(__hppa__)
-#    define elogind_NR_{syscall} {nr_parisc}
+#    define systemd_NR_{syscall} {nr_parisc}
 #  elif defined(__powerpc__)
 #    define systemd_NR_{syscall} {nr_powerpc}
 #  elif defined(__riscv)
 #    if __riscv_xlen == 32
-#      define elogind_NR_{syscall} {nr_riscv32}
+#      define systemd_NR_{syscall} {nr_riscv32}
 #    elif __riscv_xlen == 64
-#      define elogind_NR_{syscall} {nr_riscv64}
+#      define systemd_NR_{syscall} {nr_riscv64}
 #    else
 #      error "Unknown RISC-V ABI"
 #    endif
