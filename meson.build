@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 project('elogind', 'c',
-        version : '252',
+        version : '252.23',
         license : 'LGPLv2+',
         default_options: [
                 'c_std=gnu11',
@@ -678,12 +678,7 @@ foreach ident : [
                                  #include <sys/stat.h>
                                  #include <unistd.h>'''],
         ['explicit_bzero' ,   '''#include <string.h>'''],
-#if 0 /// elogind supports mus, which has reallocarray prototype in stdlib.h
-#         ['reallocarray',      '''#include <stdlib.h>'''],
-#else // 0
-        ['reallocarray',      '''#include <malloc.h>
-                                 #include <stdlib.h>'''],
-#endif // 0
+        ['reallocarray',      '''#include <stdlib.h>'''],
         ['set_mempolicy',     '''#include <stdlib.h>
                                  #include <unistd.h>'''],
         ['get_mempolicy',     '''#include <stdlib.h>
