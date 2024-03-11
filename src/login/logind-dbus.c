@@ -1464,8 +1464,8 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
                         uid == auth_uid ? "org.freedesktop.login1.set-self-linger" :
                                           "org.freedesktop.login1.set-user-linger",
                         /* details= */ NULL,
-                        interactive,
                         /* good_user= */ UID_INVALID,
+                        interactive ? POLKIT_ALLOW_INTERACTIVE : 0,
                         &m->polkit_registry,
                         error);
         if (r < 0)
@@ -1636,8 +1636,8 @@ static int method_attach_device(sd_bus_message *message, void *userdata, sd_bus_
                         message,
                         "org.freedesktop.login1.attach-device",
                         /* details= */ NULL,
-                        interactive,
                         /* good_user= */ UID_INVALID,
+                        interactive ? POLKIT_ALLOW_INTERACTIVE : 0,
                         &m->polkit_registry,
                         error);
         if (r < 0)
