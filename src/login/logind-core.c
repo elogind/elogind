@@ -143,7 +143,7 @@ int manager_add_seat(Manager *m, const char *id, Seat **ret_seat) {
 
         s = hashmap_get(m->seats, id);
         if (!s) {
-                r = seat_new(&s, m, id);
+                r = seat_new(m, id, &s);
                 if (r < 0)
                         return r;
         }
@@ -163,7 +163,7 @@ int manager_add_session(Manager *m, const char *id, Session **ret_session) {
 
         s = hashmap_get(m->sessions, id);
         if (!s) {
-                r = session_new(&s, m, id);
+                r = session_new(m, id, &s);
                 if (r < 0)
                         return r;
         }
@@ -187,7 +187,7 @@ int manager_add_user(
 
         u = hashmap_get(m->users, UID_TO_PTR(ur->uid));
         if (!u) {
-                r = user_new(&u, m, ur);
+                r = user_new(m, ur, &u);
                 if (r < 0)
                         return r;
         }
@@ -243,7 +243,7 @@ int manager_add_inhibitor(Manager *m, const char* id, Inhibitor **ret) {
 
         i = hashmap_get(m->inhibitors, id);
         if (!i) {
-                r = inhibitor_new(&i, m, id);
+                r = inhibitor_new(m, id, &i);
                 if (r < 0)
                         return r;
         }
