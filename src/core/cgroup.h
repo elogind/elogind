@@ -198,6 +198,8 @@ struct CGroupContext {
         bool startup_memory_swap_max_set:1;
         bool startup_memory_zswap_max_set:1;
 
+        bool memory_zswap_writeback;
+
         Set *ip_address_allow;
         Set *ip_address_deny;
         /* These two flags indicate that redundant entries have been removed from
