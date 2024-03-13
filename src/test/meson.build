@@ -151,6 +151,7 @@ simple_tests += files(
 #         'test-journal-importer.c',
 #         'test-kbd-util.c',
 #endif // 0
+        'test-label.c',
         'test-limits-util.c',
         'test-list.c',
 #if 0 /// UNNEEDED by elogind
