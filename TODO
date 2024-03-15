@@ -1351,6 +1351,7 @@ Features:
   - cryptsetup-generator: allow specification of passwords in crypttab itself
   - support rd.luks.allow-discards= kernel cmdline params in cryptsetup generator
 
+
 * Add service setting to run a service within the specified VRF. i.e. do the
   equivalent of "ip vrf exec".
 
@@ -2418,6 +2419,7 @@ Features:
    - allow Name= to be specified repeatedly in the [Match] section. Maybe also
      support Name=foo*|bar*|baz ?
    - whenever uplink info changes, make DHCP server send out FORCERENEW
+   - figure out spelling: NamespaceId vs. NamespaceNSID
 
 * in networkd, when matching device types, fix up DEVTYPE rubbish the kernel passes to us
 
