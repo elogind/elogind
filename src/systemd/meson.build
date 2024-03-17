@@ -76,7 +76,7 @@ opts = [['c'],
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
 # foreach opt : ['-std=iso9899:2017',
-#                '-std=c2x',
+#                '-std=c23',
 #               ]
 #         if cc.has_argument(opt)
 #                 opts += [['c', opt]]
