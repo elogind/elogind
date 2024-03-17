@@ -92,6 +92,7 @@ opts = [['c'],
 #                        '-std=c++17',
 #                        '-std=c++20',
 #                        '-std=c++23',
+#                        '-std=c++26',
 #                       ]
 #                 if cxx.has_argument(opt)
 #                         opts += [['c++', opt]]
