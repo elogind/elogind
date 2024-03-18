@@ -204,6 +204,7 @@ simple_tests += files(
 #endif // 0
         'test-ratelimit.c',
         'test-raw-clone.c',
+        'test-recovery-key.c',
         'test-recurse-dir.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-replace-var.c',
