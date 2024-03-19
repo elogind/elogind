@@ -26,7 +26,7 @@ int format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NA
 
 #if 0 /// UNNEEDED by elogind
 int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret) {
-        char buf[IF_NAMESIZE], *copy;
+        char buf[IF_NAMESIZE];
         int r;
 
         assert(ret);
@@ -35,12 +35,7 @@ int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret) {
         if (r < 0)
                 return r;
 
-        copy = strdup(buf);
-        if (!copy)
-                return -ENOMEM;
-
-        *ret = copy;
-        return 0;
+        return strdup_to(ret, buf);
 }
 #endif // 0
 
