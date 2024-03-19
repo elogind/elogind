@@ -243,7 +243,7 @@ Features:
 
 * add a new ExecStart= flag that inserts the configured user's shell as first
   word in the command line. (maybe use character '.'). Usecase: tool such as
-  run0 can use that to spawn the target user's default shell.
+  uid0 can use that to spawn the target user's default shell.
 
 * varlink: figure out how to do docs for our varlink interfaces. Idea: install
   interface files augmented with docs in /usr/share/ somewhere. And have
@@ -2419,7 +2419,6 @@ Features:
    - allow Name= to be specified repeatedly in the [Match] section. Maybe also
      support Name=foo*|bar*|baz ?
    - whenever uplink info changes, make DHCP server send out FORCERENEW
-   - figure out spelling: NamespaceId vs. NamespaceNSID
 
 * in networkd, when matching device types, fix up DEVTYPE rubbish the kernel passes to us
 
