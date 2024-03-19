@@ -202,7 +202,7 @@ static inline bool colors_enabled(void) {
         }
 
 static inline const char *ansi_underline(void) {
-        return underline_enabled() ? ANSI_UNDERLINE : ANSI_NORMAL;
+        return underline_enabled() ? ANSI_UNDERLINE : "";
 }
 
 #define DEFINE_ANSI_FUNC_UNDERLINE(name, NAME)                          \
