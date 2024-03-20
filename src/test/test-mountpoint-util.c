@@ -130,16 +130,16 @@ TEST(path_is_mount_point) {
         _cleanup_free_ char *dir1 = NULL, *dir1file = NULL, *dirlink1 = NULL, *dirlink1file = NULL;
         _cleanup_free_ char *dir2 = NULL, *dir2file = NULL;
 
-
-
         assert_se(path_is_mount_point_full("/", NULL, AT_SYMLINK_FOLLOW) > 0);
         assert_se(path_is_mount_point_full("/", NULL, 0) > 0);
         assert_se(path_is_mount_point_full("//", NULL, AT_SYMLINK_FOLLOW) > 0);
         assert_se(path_is_mount_point_full("//", NULL, 0) > 0);
+
         assert_se(path_is_mount_point_full("/proc", NULL, AT_SYMLINK_FOLLOW) > 0);
         assert_se(path_is_mount_point_full("/proc", NULL, 0) > 0);
         assert_se(path_is_mount_point_full("/proc/", NULL, AT_SYMLINK_FOLLOW) > 0);
         assert_se(path_is_mount_point_full("/proc/", NULL, 0) > 0);
+
         assert_se(path_is_mount_point_full("/proc/1", NULL, AT_SYMLINK_FOLLOW) == 0);
         assert_se(path_is_mount_point_full("/proc/1", NULL, 0) == 0);
         assert_se(path_is_mount_point_full("/proc/1/", NULL, AT_SYMLINK_FOLLOW) == 0);
@@ -159,7 +159,7 @@ TEST(path_is_mount_point) {
          */
 
         /* file mountpoints */
-        assert_se(mkdtemp(tmp_dir) != NULL);
+        ASSERT_NOT_NULL(mkdtemp(tmp_dir));
         file1 = path_join(tmp_dir, "file1");
         assert_se(file1);
         file2 = path_join(tmp_dir, "file2");
