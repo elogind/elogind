@@ -12,7 +12,7 @@
 #include "journal-def.h"
 #include "journal-file.h"
 #include "list.h"
-#include "set.h"
+#include "prioq.h"
 
 #define JOURNAL_FILES_MAX 7168u
 
@@ -63,6 +63,7 @@ struct Location {
 
 #if 0 /// UNNEEDED by elogind
 struct Directory {
+        sd_journal *journal;
         char *path;
         int wd;
         bool is_root;
@@ -70,6 +71,10 @@ struct Directory {
 };
 #endif // 0
 
+typedef struct NewestByBootId {
+        sd_id128_t boot_id;
+        Prioq *prioq; /* JournalFile objects ordered by monotonic timestamp of last update. */
+} NewestByBootId;
 
 struct sd_journal {
         int toplevel_fd;
@@ -84,7 +89,9 @@ struct sd_journal {
         MMapCache *mmap;
 #endif // 0
 
-        Hashmap *newest_by_boot_id; /* key: boot_id, value: prioq, ordered by monotonic timestamp of last update */
+        /* a bisectable array of NewestByBootId, ordered by boot id. */
+        NewestByBootId *newest_by_boot_id;
+        size_t n_newest_by_boot_id;
 
         Location current_location;
 
@@ -92,6 +99,7 @@ struct sd_journal {
         uint64_t current_field;
 
         Match *level0, *level1, *level2;
+        Set *exclude_syslog_identifiers;
 
         uint64_t origin_id;
 
@@ -136,6 +144,9 @@ struct sd_journal {
 char *journal_make_match_string(sd_journal *j);
 void journal_print_header(sd_journal *j);
 int journal_get_directories(sd_journal *j, char ***ret);
+
+int journal_add_match_pair(sd_journal *j, const char *field, const char *value);
+int journal_add_matchf(sd_journal *j, const char *format, ...) _printf_(2, 3);
 
 #define JOURNAL_FOREACH_DATA_RETVAL(j, data, l, retval)                     \
         for (sd_journal_restart_data(j); ((retval) = sd_journal_enumerate_data((j), &(data), &(l))) > 0; )

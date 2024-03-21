@@ -326,6 +326,37 @@ fail:
         j->level0 = match_free_if_empty(j->level0);
 
         return -ENOMEM;
+}
+
+int journal_add_match_pair(sd_journal *j, const char *field, const char *value) {
+        _cleanup_free_ char *s = NULL;
+
+        assert(j);
+        assert(field);
+        assert(value);
+
+        s = strjoin(field, "=", value);
+        if (!s)
+                return -ENOMEM;
+
+        return sd_journal_add_match(j, s, 0);
+}
+
+int journal_add_matchf(sd_journal *j, const char *format, ...) {
+        _cleanup_free_ char *s = NULL;
+        va_list ap;
+        int r;
+
+        assert(j);
+        assert(format);
+
+        va_start(ap, format);
+        r = vasprintf(&s, format, ap);
+        va_end(ap);
+        if (r < 0)
+                return -ENOMEM;
+
+        return sd_journal_add_match(j, s, 0);
 #else // 0
         return 0;
 #endif // 0
