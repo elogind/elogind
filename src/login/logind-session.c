@@ -720,6 +720,7 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
                                 s->manager,
                                 scope,
                                 &s->leader,
+                                /* allow_pidfd = */ true,
                                 s->user->slice,
                                 description,
                                 /* These two have StopWhenUnneeded= set, hence add a dep towards them */

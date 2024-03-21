@@ -4471,6 +4471,7 @@ int manager_start_scope(
                 Manager *manager,
                 const char *scope,
                 const PidRef *pidref,
+                bool allow_pidfd,
                 const char *slice,
                 const char *description,
                 char **wants,
@@ -4536,7 +4537,10 @@ int manager_start_scope(
         if (r < 0)
                 return r;
 
-        r = bus_append_scope_pidref(m, pidref);
+        if (allow_pidfd)
+                r = bus_append_scope_pidref(m, pidref);
+        else
+                r = sd_bus_message_append(m, "(sv)", "PIDs", "au", 1, (uint32_t) pidref->pid);
         if (r < 0)
                 return r;
 
@@ -4567,8 +4571,27 @@ int manager_start_scope(
                 return r;
 
         r = sd_bus_call(manager->bus, m, 0, error, &reply);
-        if (r < 0)
+        if (r < 0) {
+                /* If this failed with a property we couldn't write, this is quite likely because the server
+                 * doesn't support PIDFDs yet, let's try without. */
+                if (allow_pidfd &&
+                    sd_bus_error_has_names(error, SD_BUS_ERROR_UNKNOWN_PROPERTY, SD_BUS_ERROR_PROPERTY_READ_ONLY))
+                        return manager_start_scope(
+                                        manager,
+                                        scope,
+                                        pidref,
+                                        /* allow_pidfd = */ false,
+                                        slice,
+                                        description,
+                                        wants,
+                                        after,
+                                        requires_mounts_for,
+                                        more_properties,
+                                        error,
+                                        job);
+
                 return r;
+        }
 
         return strdup_job(reply, job);
 }
