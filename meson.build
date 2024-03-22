@@ -2019,7 +2019,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #                 '-std=gnu11',
 #                 '-fno-stack-protector',
 #                 '-O2',
-#                 '-mkernel=5.2',
 #                 '-mcpu=v3',
 #                 '-mco-re',
 #                 '-gbtf',
@@ -2068,7 +2067,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #
 #         bpf_o_unstripped_cmd += ['-I.']
 #
-#         if not meson.is_cross_build() and bpf_compiler == 'clang'
+#         if not meson.is_cross_build()
 #                 target_triplet_cmd = run_command('gcc', '-dumpmachine', check: false)
 #                 if target_triplet_cmd.returncode() == 0
 #                         target_triplet = target_triplet_cmd.stdout().strip()
