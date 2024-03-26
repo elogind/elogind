@@ -448,7 +448,7 @@ static int execute(
 
         /* Configure hibernation settings if we are supposed to hibernate */
 #if 0 /// elogind supports suspend modes, and keeps its config, so checking modes for emptiness alone doesn't cut it
-        if (sleep_operation_is_hibernation(operation)) {
+        if (SLEEP_OPERATION_IS_HIBERNATION(operation)) {
                 _cleanup_(hibernation_device_done) HibernationDevice hibernation_device = {};
 #else // 0
         if (operation != SLEEP_SUSPEND) {
@@ -579,7 +579,7 @@ static int execute(
                 return 0;
 
 fail:
-        if (sleep_operation_is_hibernation(operation))
+        if (SLEEP_OPERATION_IS_HIBERNATION(operation))
                 clear_efi_hibernate_location_and_warn();
 
         return r;
