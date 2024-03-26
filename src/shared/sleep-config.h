@@ -68,5 +68,5 @@ static inline int sleep_supported(SleepConfig *m, SleepOperation operation) {
 #endif // 0
 
 /* Only for test-sleep-config */
-int sleep_state_supported(char **states);
-int sleep_mode_supported(char **modes);
+int sleep_state_supported(char * const *states);
+int sleep_mode_supported(const char *path, char * const *modes);

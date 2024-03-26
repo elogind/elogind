@@ -253,7 +253,7 @@ int parse_sleep_config(SleepConfig **ret) {
         return 0;
 }
 
-int sleep_state_supported(char **states) {
+int sleep_state_supported(char * const *states) {
         _cleanup_free_ char *supported_sysfs = NULL;
         const char *found;
         int r;
@@ -284,6 +284,7 @@ int sleep_state_supported(char **states) {
 }
 
 int sleep_mode_supported(char **modes) {
+int sleep_mode_supported(const char *path, char * const *modes) {
         _cleanup_free_ char *supported_sysfs = NULL;
         int r;
 
@@ -339,19 +340,25 @@ int sleep_mode_supported(char **modes) {
 static int suspend_mode_supported(char **modes) {
         _cleanup_free_ char *supported_sysfs = NULL;
         int r;
+        assert(path);
 
         /* Unlike state, kernel has its own default choice if not configured */
         if (strv_isempty(modes)) {
                 log_debug("No sleep mode configured, using kernel default.");
+                log_debug("No sleep mode configured, using kernel default for %s.", path);
                 return true;
         }
 
         if (access("/sys/power/mem_sleep", W_OK) < 0)
                 return log_debug_errno(errno, "/sys/power/mem_sleep is not writable: %m");
+        if (access(path, W_OK) < 0)
+                return log_debug_errno(errno, "%s is not writable: %m", path);
 
         r = read_one_line_file("/sys/power/mem_sleep", &supported_sysfs);
+        r = read_one_line_file(path, &supported_sysfs);
         if (r < 0)
                 return log_debug_errno(r, "Failed to read /sys/power/mem_sleep: %m");
+                return log_debug_errno(r, "Failed to read %s: %m", path);
 
         for (const char *p = supported_sysfs;;) {
                 _cleanup_free_ char *word = NULL;
@@ -361,6 +368,7 @@ static int suspend_mode_supported(char **modes) {
                 r = extract_first_word(&p, &word, NULL, 0);
                 if (r < 0)
                         return log_debug_errno(r, "Failed to parse /sys/power/mem_sleep: %m");
+                        return log_debug_errno(r, "Failed to parse %s: %m", path);
                 if (r == 0)
                         break;
 
@@ -374,6 +382,7 @@ static int suspend_mode_supported(char **modes) {
 
                 if (strv_contains(modes, mode)) {
                         log_debug("Mem sleep mode '%s' is supported by kernel.", mode);
+                        log_debug("Sleep mode '%s' is supported by kernel (%s).", mode, path);
                         return true;
                 }
         }
@@ -381,6 +390,8 @@ static int suspend_mode_supported(char **modes) {
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *joined = strv_join(modes, " ");
                 log_debug("None of the configured suspend modes are supported by kernel: %s", strnull(joined));
+                log_debug("None of the configured modes are supported by kernel (%s): %s",
+                          path, strnull(joined));
         }
         return false;
 }
@@ -466,7 +477,7 @@ static int sleep_supported_internal(
         }
 
         if (SLEEP_OPERATION_IS_HIBERNATION(operation)) {
-                r = sleep_mode_supported(sleep_config->modes[operation]);
+                r = sleep_mode_supported("/sys/power/disk", sleep_config->modes[operation]);
                 if (r < 0)
                         return r;
                 if (r == 0) {
