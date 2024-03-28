@@ -4579,6 +4579,7 @@ int manager_start_scope(
                 char **ret_job) {
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL, *reply = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error e = SD_BUS_ERROR_NULL;
         int r;
 
         assert(manager);
@@ -4668,12 +4669,12 @@ int manager_start_scope(
         if (r < 0)
                 return r;
 
-        r = sd_bus_call(manager->bus, m, 0, error, &reply);
+        r = sd_bus_call(manager->bus, m, 0, &e, &reply);
         if (r < 0) {
                 /* If this failed with a property we couldn't write, this is quite likely because the server
                  * doesn't support PIDFDs yet, let's try without. */
                 if (allow_pidfd &&
-                    sd_bus_error_has_names(error, SD_BUS_ERROR_UNKNOWN_PROPERTY, SD_BUS_ERROR_PROPERTY_READ_ONLY))
+                    sd_bus_error_has_names(&e, SD_BUS_ERROR_UNKNOWN_PROPERTY, SD_BUS_ERROR_PROPERTY_READ_ONLY))
                         return manager_start_scope(
                                         manager,
                                         scope,
@@ -4688,7 +4689,7 @@ int manager_start_scope(
                                         error,
                                         ret_job);
 
-                return r;
+                return sd_bus_error_move(error, &e);
         }
 
         return strdup_job(reply, ret_job);
