@@ -1574,6 +1574,9 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 #         # link to neither of the libs if one is not found
 #         libgcrypt = []
 #         libgpg_error = []
+#         libgcrypt_cflags = []
+# else
+#         libgcrypt_cflags = libgcrypt.partial_dependency(includes: true, compile_args: true)
 # endif
 # conf.set10('HAVE_GCRYPT', have)
 #
@@ -2021,7 +2024,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #                 '-std=gnu11',
 #                 '-fno-stack-protector',
 #                 '-O2',
-#                 '-mkernel=5.2',
 #                 '-mcpu=v3',
 #                 '-mco-re',
 #                 '-gbtf',
@@ -2070,7 +2072,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #
 #         bpf_o_unstripped_cmd += ['-I.']
 #
-#         if not meson.is_cross_build() and bpf_compiler == 'clang'
+#         if not meson.is_cross_build()
 #                 target_triplet_cmd = run_command('gcc', '-dumpmachine', check: false)
 #                 if target_triplet_cmd.returncode() == 0
 #                         target_triplet = target_triplet_cmd.stdout().strip()
@@ -2157,6 +2159,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 #####################################################################
 
+check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
 # elf2efi_py = find_program('tools/elf2efi.py')
@@ -2317,8 +2320,7 @@ libelogind = shared_library(
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
-#         link_with : [libbasic,
-#                      libbasic_gcrypt],
+#         link_with : [libbasic],
 #         link_whole : [libsystemd_static],
 #         dependencies : [librt,
 #                         threads,
@@ -2353,7 +2355,6 @@ install_libelogind_static = static_library(
 #endif // 0
         basic_sources,
 #if 0 /// No gcrypt or compress with elogind
-#         basic_gcrypt_sources,
 #endif // 0
         fundamental_sources,
         include_directories : libelogind_includes,
@@ -2366,7 +2367,7 @@ install_libelogind_static = static_library(
 #         dependencies : [libblkid,
 #                         libcap,
 #                         libdl,
-#                         libgcrypt,
+#                         libgcrypt_cflags,
 #                         liblz4_cflags,
 #                         libmount,
 #                         libopenssl,

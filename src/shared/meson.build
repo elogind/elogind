@@ -435,7 +435,6 @@ libshared = shared_library(
         link_whole : [libshared_static,
                       libbasic,
 #if 0 /// UNNEEDED by elogind
-#                       libbasic_gcrypt,
 #                       libsystemd_static],
 #else // 0
                       libelogind_static],

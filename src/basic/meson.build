@@ -36,6 +36,7 @@
 #         'filesystems.c',
 #         'format-util.c',
 #         'fs-util.c',
+#         'gcrypt-util.c',
 #         'glob-util.c',
 #         'glyph-util.c',
 #         'gunicode.c',
@@ -386,6 +387,7 @@ libbasic = static_library(
         include_directories : basic_includes,
         dependencies : [libcap,
                         libdl,
+                        libgcrypt_cflags,
                         liblz4_cflags,
                         libm,
                         librt,
@@ -396,23 +398,7 @@ libbasic = static_library(
         c_args : ['-fvisibility=default'],
         build_by_default : false)
 
-############################################################
-
 #if 0 /// UNNEEDED by elogind
-# basic_gcrypt_sources = files(
-#         'gcrypt-util.c',
-# )
-#
-# # A convenience library that is separate from libbasic to avoid
-# # unnecessary linking to libgcrypt.
-# libbasic_gcrypt = static_library(
-#         'basic-gcrypt',
-#         basic_gcrypt_sources,
-#         include_directories : basic_includes,
-#         dependencies : [libgcrypt,
-#                         userspace],
-#         c_args : ['-fvisibility=default'],
-#         build_by_default : false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
