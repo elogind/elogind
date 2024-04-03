@@ -1491,6 +1491,8 @@ int userdb_block_nss_systemd(int b) {
         }
 
         call = dlsym(dl, "_nss_elogind_block");
+        log_debug("Loaded '%s' via dlopen()", LIBDIR "/libnss_elogind.so.2");
+
         if (!call)
                 /* If the file is installed but lacks the symbol we expect, things are weird, let's complain */
                 return log_debug_errno(SYNTHETIC_ERRNO(ELIBBAD),
