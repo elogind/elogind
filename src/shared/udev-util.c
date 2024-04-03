@@ -240,16 +240,23 @@ int device_is_renaming(sd_device *dev) {
 }
 #endif // 0
 
-int device_is_processing(sd_device *dev) {
+int device_is_processed(sd_device *dev) {
         int r;
 
         assert(dev);
 
+        /* sd_device_get_is_initialized() only checks if the udev database file exists. However, even if the
+        r = sd_device_get_is_initialized(dev);
+        if (r <= 0)
+                return r;
+
         r = device_get_property_bool(dev, "ID_PROCESSING");
         if (r == -ENOENT)
-                return false; /* defaults to false */
+                return true; /* If the property does not exist, then it means that the device is processed. */
+        if (r < 0)
+                return r;
 
-        return r;
+        return !r;
 }
 
 bool device_for_action(sd_device *dev, sd_device_action_t a) {
