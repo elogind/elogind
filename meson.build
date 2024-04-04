@@ -2004,6 +2004,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #         bpf_gcc_flags = [
 #                 '-std=gnu11',
 #                 '-fno-stack-protector',
+#                 '-fno-ssa-phiopt',
 #                 '-O2',
 #                 '-mcpu=v3',
 #                 '-mco-re',
