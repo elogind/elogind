@@ -104,8 +104,8 @@
     <para>If the <parameter>unset_environment</parameter> parameter is non-zero,
     <function>sd_notify()</function> will unset the <varname>$NOTIFY_SOCKET</varname> environment variable
     before returning (regardless of whether the function call itself succeeded or not). Further calls to
-    <function>sd_notify()</function> will then fail, and the variable is no longer inherited by child
-    processes.</para>
+    <function>sd_notify()</function> will then silently do nothing, and the variable is no longer inherited
+    by child processes.</para>
 
     <para>The <parameter>state</parameter> parameter should contain a newline-separated list of variable
     assignments, similar in style to an environment block. A trailing newline is implied if none is
@@ -532,20 +532,10 @@
     the guest might try to send malicious notifications to the host, driving it to make destructive decisions
     based on them.</para>
 
-    <refsect2>
-      <title>Standalone Implementations</title>
-      <para>Note that, while using this library should be preferred in order to avoid code duplication, it is
-      also possible to reimplement the simple readiness notification protocol without external dependencies,
-      as demonstrated in the following self-contained examples from several languages:</para>
-      <refsect3>
-        <title>C</title>
-        <programlisting><xi:include href="notify-selfcontained-example.c" parse="text"/></programlisting>
-      </refsect3>
-      <refsect3>
-        <title>Python</title>
-        <programlisting><xi:include href="notify-selfcontained-example.py" parse="text"/></programlisting>
-      </refsect3>
-    </refsect2>
+    <para>Note that, while using this library should be preferred in order to avoid code duplication, it is
+    also possible to reimplement the simple readiness notification protocol without external dependencies,
+    as demonstrated in the following self-contained example:
+    <programlisting><xi:include href="notify-selfcontained-example.c" parse="text"/></programlisting></para>
   </refsect1>
 
   <refsect1>
@@ -581,8 +571,8 @@
 
       <programlisting>
 sd_notifyf(0, "READY=1\n"
-              "STATUS=Processing requests…\n"
-              "MAINPID=%lu",
+           "STATUS=Processing requests…\n"
+           "MAINPID=%lu",
            (unsigned long) getpid());</programlisting>
     </example>
 
@@ -593,7 +583,7 @@ sd_notifyf(0, "READY=1\n"
 
       <programlisting>
 sd_notifyf(0, "STATUS=Failed to start up: %s\n"
-              "ERRNO=%i",
+           "ERRNO=%i",
            strerror_r(errnum, (char[1024]){}, 1024),
            errnum);</programlisting>
     </example>
