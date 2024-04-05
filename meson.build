@@ -3016,6 +3016,16 @@ endforeach
 
 #####################################################################
 
+if get_option('integration-tests') != false
+        system_mkosi = custom_target('system_mkosi',
+                build_always_stale : true,
+                output : 'system',
+                console : true,
+                command : ['mkosi', '-C', meson.project_source_root(), '--image=system', '--format=disk', '--output-dir', meson.project_build_root() / '@OUTPUT@', '--without-tests', '-fi', 'build'],
+endif
+
+############################################################
+
 subdir('rules.d')
 #if 0 /// elogind does not need anything in the upstream top test directory
 # subdir('test')
