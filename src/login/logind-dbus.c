@@ -1732,8 +1732,6 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 
 #if 0 /// elogind needs to call this from elogind.c
 static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
-#else
-int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
 #endif // 0
         int k = 0, r, active = _active;
 
@@ -2330,7 +2328,7 @@ static int method_do_shutdown_or_sleep(
 
                         case SLEEP_RESUME_NOT_SUPPORTED:
                                 return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                        "Not running on EFI and resume= is not set. No available method to resume from hibernation");
+                                                        "Not running on EFI and resume= is not set, or noresume is set. No available method to resume from hibernation");
 
                         case SLEEP_NOT_ENOUGH_SWAP_SPACE:
                                 return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
