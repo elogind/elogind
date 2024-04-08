@@ -127,7 +127,7 @@ TEST(load_userns) {
         _cleanup_fclose_ FILE *f = NULL;
         int r;
 
-        r = uid_range_load_userns(&p, NULL, UID_RANGE_USERNS_INSIDE);
+        r = uid_range_load_userns(NULL, UID_RANGE_USERNS_INSIDE, &p);
         if (ERRNO_IS_NEG_NOT_SUPPORTED(r))
                 return;
 
@@ -153,7 +153,7 @@ TEST(load_userns) {
         p = uid_range_free(p);
 
 #if 0 /// UNSUPPORTED by elogind
-        assert_se(uid_range_load_userns(&p, fn, UID_RANGE_USERNS_INSIDE) >= 0);
+        assert_se(uid_range_load_userns(fn, UID_RANGE_USERNS_INSIDE, &p) >= 0);
 
         assert_se(uid_range_contains(p, 0));
         assert_se(uid_range_contains(p, 19));
