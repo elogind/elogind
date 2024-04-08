@@ -373,7 +373,7 @@ TEST(json_parse_file_empty) {
 
         assert_se(fopen_unlocked("/dev/null", "re", &f) >= 0);
         assert_se(json_parse_file(f, "waldo", 0, &v, NULL, NULL) == -ENODATA);
-        assert_se(v == NULL);
+        ASSERT_NULL(v);
 }
 
 TEST(json_parse_file_invalid) {
@@ -382,7 +382,7 @@ TEST(json_parse_file_invalid) {
 
         assert_se(f = fmemopen_unlocked((void*) "kookoo", 6, "r"));
         assert_se(json_parse_file(f, "waldo", 0, &v, NULL, NULL) == -EINVAL);
-        assert_se(v == NULL);
+        ASSERT_NULL(v);
 }
 
 TEST(source) {

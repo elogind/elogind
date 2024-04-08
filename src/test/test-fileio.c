@@ -87,7 +87,7 @@ TEST(parse_env_file) {
         assert_se(streq_ptr(a[10], "eleven=value"));
         assert_se(streq_ptr(a[11], "twelve=\\value"));
         assert_se(streq_ptr(a[12], "thirteen=\\value"));
-        assert_se(a[13] == NULL);
+        ASSERT_NULL(a[13]);
 
         strv_env_clean(a);
 
@@ -137,7 +137,7 @@ TEST(parse_env_file) {
         assert_se(streq(seven, "sevenval#nocomment"));
         assert_se(streq(eight, "eightval #nocomment"));
         assert_se(streq(nine, "nineval"));
-        assert_se(ten == NULL);
+        ASSERT_NULL(ten);
         assert_se(streq(eleven, "value"));
         assert_se(streq(twelve, "\\value"));
         assert_se(streq(thirteen, "\\value"));
@@ -204,7 +204,7 @@ TEST(parse_multiline_env_file) {
         assert_se(streq_ptr(a[0], "one=BAR    VAR\tGAR"));
         assert_se(streq_ptr(a[1], "two=bar    var\tgar"));
         assert_se(streq_ptr(a[2], "tri=bar     var \tgar "));
-        assert_se(a[3] == NULL);
+        ASSERT_NULL(a[3]);
 
         {
                 _cleanup_close_ int fd = mkostemp_safe(p);
@@ -259,7 +259,7 @@ TEST(merge_env_file) {
         assert_se(streq(a[7], "zzz=replacement"));
         assert_se(streq(a[8], "zzzz="));
         assert_se(streq(a[9], "zzzzz="));
-        assert_se(a[10] == NULL);
+        ASSERT_NULL(a[10]);
 
         r = merge_env_file(&a, NULL, t);
         assert_se(r >= 0);
@@ -278,7 +278,7 @@ TEST(merge_env_file) {
         assert_se(streq(a[7], "zzz=replacement"));
         assert_se(streq(a[8], "zzzz="));
         assert_se(streq(a[9], "zzzzz="));
-        assert_se(a[10] == NULL);
+        ASSERT_NULL(a[10]);
 }
 
 TEST(merge_env_file_invalid) {
