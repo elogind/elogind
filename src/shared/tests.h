@@ -257,20 +257,16 @@ static inline int run_test_table(void) {
 
 #define ASSERT_STREQ(expr1, expr2)                                                                              \
         ({                                                                                                      \
-                const char* _expr1 = (expr1);                                                                   \
-                const char* _expr2 = (expr2);                                                                   \
-                if (strcmp(_expr1, _expr2) != 0) {                                                              \
+                const char *_expr1 = (expr1), *_expr2 = (expr2);                                                \
+                if (!streq_ptr(_expr1, _expr2)) {                                                               \
                         log_error("%s:%i: Assertion failed: expected \"%s == %s\", but \"%s != %s\"",           \
-                                  PROJECT_FILE, __LINE__, #expr1, #expr2, _expr1, _expr2);                      \
+                                  PROJECT_FILE, __LINE__, #expr1, #expr2, strnull(_expr1), strnull(_expr2));    \
                         abort();                                                                                \
                 }                                                                                               \
         })
 
 /* DECIMAL_STR_FMT() uses _Generic which cannot be used in string concatenation so we have to format the
  * input into strings first and then format those into the final assertion message. */
-
-
-        })
 
 #define ASSERT_EQ(expr1, expr2)                                                                                 \
         ({                                                                                                      \
@@ -286,6 +282,7 @@ static inline int run_test_table(void) {
                         abort();                                                                                \
                 }                                                                                               \
         })
+
 #define ASSERT_GE(expr1, expr2)                                                                                 \
         ({                                                                                                      \
                 typeof(expr1) _expr1 = (expr1);                                                                 \
@@ -299,6 +296,8 @@ static inline int run_test_table(void) {
                                   PROJECT_FILE, __LINE__, #expr1, #expr2, _sexpr1, _sexpr2);                    \
                         abort();                                                                                \
                 }                                                                                               \
+        })
+
 #define ASSERT_LE(expr1, expr2)                                                                                 \
         ({                                                                                                      \
                 typeof(expr1) _expr1 = (expr1);                                                                 \
