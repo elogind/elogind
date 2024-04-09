@@ -342,13 +342,15 @@ run_target(
 ############################################################
 
 #if 0 /// For elogind it is irrelevant whether all filesystems are listed in filesystems-gperf.gperf or not
-# filesystem_includes = ['linux/magic.h',
-#                        'linux/gfs2_ondisk.h']
+# filesystem_includes = files(
+#         'linux/magic.h',
+#         'missing_magic.h',
+# )
 #
 # check_filesystems = find_program('check-filesystems.sh')
 # r = run_command([check_filesystems, cpp, files('filesystems-gperf.gperf')] + filesystem_includes, check: false)
 # if r.returncode() != 0
-#         warning('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
+#         error('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
 # endif
 #endif // 0
 
