@@ -419,7 +419,7 @@ TEST(fd_reopen) {
         fd1 = open("/proc", O_DIRECTORY|O_PATH|O_CLOEXEC);
         assert_se(fd1 >= 0);
 
-        assert_se(fstat(fd1, &st1) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd1, &st1));
         assert_se(S_ISDIR(st1.st_mode));
 
         fl = fcntl(fd1, F_GETFL);
@@ -434,7 +434,7 @@ TEST(fd_reopen) {
         fd2 = fd_reopen(fd1, O_RDONLY|O_DIRECTORY|O_CLOEXEC);  /* drop the O_PATH */
         assert_se(fd2 >= 0);
 
-        assert_se(fstat(fd2, &st2) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd2, &st2));
         assert_se(S_ISDIR(st2.st_mode));
         assert_se(stat_inode_same(&st1, &st2));
 
@@ -448,7 +448,7 @@ TEST(fd_reopen) {
         fd1 = fd_reopen(fd2, O_DIRECTORY|O_PATH|O_CLOEXEC);  /* reacquire the O_PATH */
         assert_se(fd1 >= 0);
 
-        assert_se(fstat(fd1, &st1) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd1, &st1));
         assert_se(S_ISDIR(st1.st_mode));
         assert_se(stat_inode_same(&st1, &st2));
 
@@ -463,7 +463,7 @@ TEST(fd_reopen) {
         fd1 = open("/proc/version", O_PATH|O_CLOEXEC);
         assert_se(fd1 >= 0);
 
-        assert_se(fstat(fd1, &st1) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd1, &st1));
         assert_se(S_ISREG(st1.st_mode));
 
         fl = fcntl(fd1, F_GETFL);
@@ -475,7 +475,7 @@ TEST(fd_reopen) {
         fd2 = fd_reopen(fd1, O_RDONLY|O_CLOEXEC);  /* drop the O_PATH */
         assert_se(fd2 >= 0);
 
-        assert_se(fstat(fd2, &st2) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd2, &st2));
         assert_se(S_ISREG(st2.st_mode));
         assert_se(stat_inode_same(&st1, &st2));
 
@@ -490,7 +490,7 @@ TEST(fd_reopen) {
         fd1 = fd_reopen(fd2, O_PATH|O_CLOEXEC);  /* reacquire the O_PATH */
         assert_se(fd1 >= 0);
 
-        assert_se(fstat(fd1, &st1) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd1, &st1));
         assert_se(S_ISREG(st1.st_mode));
         assert_se(stat_inode_same(&st1, &st2));
 
@@ -507,12 +507,12 @@ TEST(fd_reopen) {
         /* Validate what happens if we reopen a symlink */
         fd1 = open("/proc/self", O_PATH|O_CLOEXEC|O_NOFOLLOW);
         assert_se(fd1 >= 0);
-        assert_se(fstat(fd1, &st1) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd1, &st1));
         assert_se(S_ISLNK(st1.st_mode));
 
         fd2 = fd_reopen(fd1, O_PATH|O_CLOEXEC);
         assert_se(fd2 >= 0);
-        assert_se(fstat(fd2, &st2) >= 0);
+        ASSERT_OK_ERRNO(fstat(fd2, &st2));
         assert_se(S_ISLNK(st2.st_mode));
         assert_se(stat_inode_same(&st1, &st2));
         fd2 = safe_close(fd2);
