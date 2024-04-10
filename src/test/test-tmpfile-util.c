@@ -107,7 +107,7 @@ static void test_tempfn_xxxxxx_one(const char *p, const char *extra, const char 
                 const char *suffix;
 
                 assert_se(suffix = startswith(s, expect));
-                assert_se(streq(suffix, "XXXXXX"));
+                ASSERT_STREQ(suffix, "XXXXXX");
         }
         assert_se(ret == r);
 }
@@ -287,7 +287,7 @@ TEST(link_tmpfile) {
         assert_se(link_tmpfile(fd, tmp, d, /* flags= */ 0) >= 0);
 
         assert_se(read_one_line_file(d, &line) >= 0);
-        assert_se(streq(line, "foobar"));
+        ASSERT_STREQ(line, "foobar");
 
         fd = safe_close(fd);
         tmp = mfree(tmp);
@@ -302,7 +302,7 @@ TEST(link_tmpfile) {
 
         line = mfree(line);
         assert_se(read_one_line_file(d, &line) >= 0);
-        assert_se(streq(line, "waumiau"));
+        ASSERT_STREQ(line, "waumiau");
 
         assert_se(unlink(d) >= 0);
 }

@@ -24,7 +24,7 @@ static void check_p_d_u(const char *path, int code, const char *result) {
         r = cg_path_decode_unit(path, &unit);
         printf("%s: %s → %s %d expected %s %d\n", __func__, path, unit, r, strnull(result), code);
         assert_se(r == code);
-        assert_se(streq_ptr(unit, result));
+        ASSERT_STREQ(unit, result);
 }
 
 TEST(path_decode_unit) {
@@ -46,7 +46,7 @@ static void check_p_g_u(const char *path, int code, const char *result) {
         r = cg_path_get_unit(path, &unit);
         printf("%s: %s → %s %d expected %s %d\n", __func__, path, unit, r, strnull(result), code);
         assert_se(r == code);
-        assert_se(streq_ptr(unit, result));
+        ASSERT_STREQ(unit, result);
 }
 
 TEST(path_get_unit) {
@@ -70,7 +70,7 @@ static void check_p_g_u_p(const char *path, int code, const char *result) {
         r = cg_path_get_unit_path(path, &unit_path);
         printf("%s: %s → %s %d expected %s %d\n", __func__, path, unit_path, r, strnull(result), code);
         assert_se(r == code);
-        assert_se(streq_ptr(unit_path, result));
+        ASSERT_STREQ(unit_path, result);
 }
 
 TEST(path_get_unit_path) {
@@ -97,7 +97,7 @@ static void check_p_g_u_u(const char *path, int code, const char *result) {
         r = cg_path_get_user_unit(path, &unit);
         printf("%s: %s → %s %d expected %s %d\n", __func__, path, unit, r, strnull(result), code);
         assert_se(r == code);
-        assert_se(streq_ptr(unit, result));
+        ASSERT_STREQ(unit, result);
 }
 
 TEST(path_get_user_unit) {
@@ -121,7 +121,7 @@ static void check_p_g_s(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
 
         assert_se(cg_path_get_session(path, &s) == code);
-        assert_se(streq_ptr(s, result));
+        ASSERT_STREQ(s, result);
 }
 
 TEST(path_get_session) {
@@ -153,7 +153,7 @@ static void check_p_g_slice(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
 
         assert_se(cg_path_get_slice(path, &s) == code);
-        assert_se(streq_ptr(s, result));
+        ASSERT_STREQ(s, result);
 }
 
 TEST(path_get_slice) {
@@ -170,7 +170,7 @@ static void check_p_g_u_slice(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
 
         assert_se(cg_path_get_user_slice(path, &s) == code);
-        assert_se(streq_ptr(s, result));
+        ASSERT_STREQ(s, result);
 }
 
 TEST(path_get_user_slice) {
@@ -255,9 +255,9 @@ static void test_escape_one(const char *s, const char *expected) {
         assert_se(expected);
 
         ASSERT_OK(cg_escape(s, &b));
-        assert_se(streq(b, expected));
+        ASSERT_STREQ(b, expected);
 
-        assert_se(streq(cg_unescape(b), s));
+        ASSERT_STREQ(cg_unescape(b), s);
 
         assert_se(filename_is_valid(b));
         assert_se(!cg_needs_escape(s) || b[0] == '_');
@@ -301,7 +301,7 @@ static void test_slice_to_path_one(const char *unit, const char *path, int error
         log_info("actual: %s / %d", strnull(ret), r);
         log_info("expect: %s / %d", strnull(path), error);
         assert_se(r == error);
-        assert_se(streq_ptr(ret, path));
+        ASSERT_STREQ(ret, path);
 }
 
 TEST(slice_to_path) {
@@ -334,7 +334,7 @@ static void test_shift_path_one(const char *raw, const char *root, const char *s
         const char *s = NULL;
 
         ASSERT_OK(cg_shift_path(raw, root, &s));
-        assert_se(streq(s, shifted));
+        ASSERT_STREQ(s, shifted);
 }
 
 TEST(shift_path) {
