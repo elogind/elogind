@@ -66,7 +66,9 @@ ifeq (YES,$(DEBUG))
     BUILDDIR  := ${BUILDDIR}_debug
     CFLAGS    := -O0 -g3 -ggdb -ftrapv ${envCFLAGS} -fPIE
     LDFLAGS   := -fPIE
-    NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
+    ifeq (NO,$(JUST_PRINT))
+        NINJA_OPT := ${NINJA_OPT} -j 1 -k 1
+    endif
     ifneq (release,$(BUILDMODE))
         BUILDMODE := developer
     endif
@@ -74,6 +76,9 @@ else
     BUILDDIR  := ${BUILDDIR}_release
     CFLAGS    := -fwrapv ${envCFLAGS}
     LDFLAGS   :=
+    ifeq (YES,$(JUST_PRINT))
+        NINJA_OPT := ${NINJA_OPT} -s
+    endif
     ifneq (developer,$(BUILDMODE))
         BUILDMODE := release
     endif
@@ -104,6 +109,10 @@ clean: $(CONFIG)
 	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t cleandead)
 	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) -t clean)
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
+
+cleanall:
+	+(BUILDDIR=$(HERE)/build $(MAKE) clean DEBUG=YES)
+	+(BUILDDIR=$(HERE)/build $(MAKE) clean DEBUG=NO )
 
 full: build
 
