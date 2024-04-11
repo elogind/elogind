@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="clean all and print" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile">
-    <makefile filename="Makefile" target="justprint" workingDirectory="$PROJECT_DIR$" arguments="">
-      <envs />
-    </makefile>
-    <method v="2" />
-  </configuration>
-</component>
