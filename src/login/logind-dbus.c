@@ -1751,7 +1751,7 @@ static int elogind_execute_shutdown_or_sleep(
          */
         forker = strjoina( "e-", handle_action_to_string( a->handle ) );
         t = safe_fork( forker,
-                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO,
+                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG|FORK_CLOSE_ALL_FDS,
                        &m->sleep_fork_pid );
 
         if ( t ) {
@@ -1779,7 +1779,7 @@ static int elogind_execute_shutdown_or_sleep(
          * Note: execute_shutdown_or_sleep() does not send the
          *       signal unless an error occurred. */
         if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
-                (void) send_prepare_for( m, a, false );
+                (void) send_prepare_for( m, a->inhibit_what, false );
 
         log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
