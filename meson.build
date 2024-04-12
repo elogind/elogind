@@ -166,7 +166,11 @@ rootsbindir = rootprefixdir / (split_bin ? 'sbin' : 'bin')
 # rootlibexecdir = rootprefixdir / 'lib/systemd'
 #else // 0
 rootlibexecdir = get_option('rootlibexecdir')
-rootlibexecdir = rootlibexecdir != '' ? rootlibexecdir : join_paths(rootprefixdir, 'lib/elogind')
+if rootlibexecdir != '' and not fs.is_absolute(rootlibexecdir)
+        rootlibexecdir = prefixdir / rootlibexecdir
+elif rootlibexecdir == ''
+        rootlibexecdir = prefixdir / 'lib/elogind'
+endif
 #endif // 0
 
 rootlibdir = get_option('rootlibdir')
