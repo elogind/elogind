@@ -25,3 +25,4 @@
 <!ENTITY DEFAULT_KEYMAP "{{SYSTEMD_DEFAULT_KEYMAP}}">
 #} // 0 -->
 <!ENTITY fedora_latest_version "40">
+<!ENTITY fedora_cloud_release "1.10">
