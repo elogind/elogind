@@ -75,6 +75,38 @@ static int elogind_signal_handler(
 }
 
 
+/* This handler is caught on SIGCHLD and ends the appropriate PIDs if set */
+static int elogind_sigchld_handler(
+                sd_event_source* s,
+                const struct signalfd_siginfo* si,
+                void* userdata ) {
+        Manager* m = userdata;
+        int r, status;
+
+        r = sd_event_get_state( m->event );
+
+        if ( r != SD_EVENT_FINISHED ) {
+                /* Wait for tool PID if set (might have been spawned alone or from sleep/hibernate forker) */
+                if ( m->tool_fork_pid > 0 ) {
+                        waitpid(m->tool_fork_pid, &status, WNOHANG | WUNTRACED);
+                        log_debug_elogind( "tool_fork PID %d waitpid() set status %d", m->tool_fork_pid, status );
+                        if ( WIFEXITED(status) || WIFSIGNALED(status) )
+                                m->tool_fork_pid = 0;
+                }
+
+                /* The sleep forker PID is always "the outer one", so wait for it second. */
+                if ( m->sleep_fork_pid > 0 ) {
+                        waitpid(m->sleep_fork_pid, &status, WNOHANG | WUNTRACED);
+                        log_debug_elogind( "sleep_fork PID %d waitpid() set status %d", m->sleep_fork_pid, status );
+                        if ( WIFEXITED(status) || WIFSIGNALED(status) )
+                                m->sleep_fork_pid = 0;
+                }
+        }
+
+        return 0;
+}
+
+
 static void remove_pid_file( void ) {
         if ( access( ELOGIND_PID_FILE, F_OK ) == 0 ) {
                 int old_errno = errno;
@@ -165,11 +197,11 @@ static int elogind_daemonize( void ) {
         }
 
         if ( r < 0 )
-                return log_error_errno( r, "%s: Failed to fork daemon: %m", program_invocation_short_name );
+                _exit( log_error_errno( r, "%s: Failed to fork daemon: %m", program_invocation_short_name ) );
 
         if ( r )
                 /* Exit immediately! */
-                return r;
+                _exit( EXIT_SUCCESS );
 
         umask( 0022 );
 
@@ -388,6 +420,8 @@ int elogind_manager_new( Manager* m ) {
         m->pin_cgroupfs_fd  = -1;
         m->test_run_flags   = 0;
         m->do_interrupt     = false;
+        m->sleep_fork_pid   = 0;
+        m->tool_fork_pid    = 0;
 
         /* Init poweroff/suspend interruption */
         m->allow_poweroff_interrupts     = false;
@@ -443,6 +477,12 @@ int elogind_manager_startup( Manager* m ) {
         if ( r < 0 ) {
                 if ( e == 0 ) e = r;
                 log_error_errno( r, "Failed to register SIGTERM handler: %m" );
+        }
+
+        r = sd_event_add_signal( m->event, NULL, SIGCHLD, elogind_sigchld_handler, m );
+        if ( r < 0 ) {
+                if ( e == 0 ) e = r;
+                log_error_errno( r, "Failed to register SIGCHLD handler: %m" );
         }
 
         return e;
