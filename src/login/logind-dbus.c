@@ -1814,7 +1814,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         if ( m->allow_poweroff_interrupts )
                 (void) send_prepare_for(m, handle_action_lookup(HANDLE_POWEROFF), true );
 
-        r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+        r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, &m->tool_fork_pid );
 
         if ( r < 0 )
                 return log_error_errno( errno, "Failed to fork run %s: %m", helper );
@@ -1866,7 +1866,7 @@ static int elogind_execute_shutdown_or_sleep(
                 sd_bus_error *error) {
 
         char** argv_utmp = NULL;
-        int t = -1, r = 0;
+        int t = -1, r;
         const char *forker;
 
         assert( m );
@@ -1903,44 +1903,40 @@ static int elogind_execute_shutdown_or_sleep(
          * make it impossible to talk to ourselves.
          */
         forker = strjoina( "e-", handle_action_to_string( a->handle ) );
-        t = safe_fork( forker, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+        t = safe_fork( forker,
+                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO,
+                       &m->sleep_fork_pid );
 
-        if ( t < 0 )
-                return log_error_errno( errno, "Failed to fork %s: %m", forker );
-
-        if ( t == 0 ) {
-                /* This is the forked out child */
-                umask( 0022 );
-
-                log_debug_elogind( "Started '%s'", program_invocation_short_name );
-
-                /* Now perform the requested action */
-                r = elogind_shutdown_or_sleep( m, a->handle );
-
-                /* As elogind cannot rely on a systemd manager to call all
-                 * sleeping processes to wake up, we have to tell them all
-                 * by ourselves.
-                 * Note: execute_shutdown_or_sleep() does not send the
-                 *       signal unless an error occurred. */
-                if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
-                        (void) send_prepare_for( m, a, false );
-
-                log_debug_elogind("Exiting from %s", program_invocation_short_name);
-
-                _exit( r );
+        if ( t ) {
+                /* no more pending actions, whether this failed or not */
+                m->delayed_action = NULL;
+                log_debug_elogind( "Forking off '%s' returned %d and set PID %d", forker, t, m->sleep_fork_pid );
+                return t < 0 ? log_error_errno( t, "Failed to fork %s: %m", forker ) : t;
         }
 
-        /* no more pending actions, whether this failed or not */
-        m->delayed_action = NULL;
+        /* This is the forked out child */
+        umask( 0022 );
 
-        /* As elogind can not rely on a systemd manager to call all
+        log_debug_elogind( "Started '%s' with PID %d", program_invocation_short_name, m->sleep_fork_pid );
+
+        /* Now perform the requested action */
+        r = elogind_shutdown_or_sleep( m, a->handle );
+
+        if ( r ) {
+                log_error_errno( r, "%s: shutdown_or_sleep failed: %m", program_invocation_short_name );
+        }
+
+        /* As elogind cannot rely on a systemd manager to call all
          * sleeping processes to wake up, we have to tell them all
          * by ourselves.
          * Note: execute_shutdown_or_sleep() does not send the
          *       signal unless an error occurred. */
-        (void) send_prepare_for( m, a, false );
+        if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
+                (void) send_prepare_for( m, a, false );
 
-        return 0;
+        log_debug_elogind("Exiting from %s", program_invocation_short_name);
+
+        _exit( EXIT_SUCCESS );
 }
 #endif // 1
 
