@@ -145,7 +145,7 @@ static int execute_external(Manager *m, SleepOperation operation) {
                         int k;
 
                         log_debug_elogind("Calling '%s' to '%s'...", *tool, sleep_operation_to_string(operation));
-                        k = safe_fork( *tool, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, NULL );
+                        k = safe_fork(*tool, FORK_LOG|FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS, &m->tool_fork_pid);
 
                         if ( k < 0 ) {
                                 r = log_error_errno(errno, "Failed to fork run %s: %m", *tool);
@@ -158,6 +158,8 @@ static int execute_external(Manager *m, SleepOperation operation) {
                                 log_error_errno( errno, "Failed to execute %s: %m", *tool );
                                 _exit( EXIT_FAILURE );
                         }
+
+                        log_debug_elogind( "Forking off '%s' returned %d and set PID %d", *tool, k, m->tool_fork_pid );
 
                         return 0;
                 }
