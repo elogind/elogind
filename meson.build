@@ -150,7 +150,11 @@ localstatedir = get_option('localstatedir')
 localstatedir = localstatedir != '' ? localstatedir : '/var'
 
 libexecdir = get_option('libexecdir')
-libexecdir = libexecdir != '' ? libexecdir : prefixdir / 'lib/elogind'
+if libexecdir != '' and not fs.is_absolute(libexecdir)
+        libexecdir = prefixdir / libexecdir
+elif libexecdir == ''
+        libexecdir = prefixdir / 'lib/elogind'
+endif
 #endif // 0
 pkglibdir = libdir / 'elogind'
 
