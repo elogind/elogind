@@ -95,12 +95,11 @@ int manager_parse_config_file(Manager *m) {
         const char* logind_conf = getenv("ELOGIND_CONF_FILE");
 
         if (!logind_conf)
-                logind_conf = PKGSYSCONFDIR "/logind.conf";
+                logind_conf = "logind.conf";
 
-        return config_parse_config_file(
-                        logind_conf, "Login\0",
-                        config_item_perf_lookup, logind_gperf_lookup,
-                        CONFIG_PARSE_WARN, m);
+        return config_parse_config_file(logind_conf, "Login\0",
+                                        config_item_perf_lookup, logind_gperf_lookup,
+                                        CONFIG_PARSE_WARN, m);
 #endif // 0
 }
 
