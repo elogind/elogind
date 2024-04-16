@@ -139,13 +139,18 @@ reconnect:
 #endif // 0
 
 static int on_reboot(int argc, char *argv[], void *userdata) {
+#if 0 /// elogind can be built without libaudit support, causing this line to fail [-Werror=unused-variable]
         Context *c = ASSERT_PTR(userdata);
+#endif // 0
         usec_t t = 0, boottime;
         int r, q = 0;
 
         /* We finished start-up, so let's write the utmp record and send the audit msg. */
 
 #if HAVE_AUDIT
+#if 1 /// elogind can be built without libaudit support, so add variable *c here.
+        Context *c = ASSERT_PTR(userdata);
+#endif // 1
         if (c->audit_fd >= 0)
                 if (audit_log_user_comm_message(c->audit_fd, AUDIT_SYSTEM_BOOT, "", "systemd-update-utmp", NULL, NULL, NULL, 1) < 0 &&
                     errno != EPERM)
