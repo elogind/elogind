@@ -269,6 +269,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
+CONFIG_PARSER_PROTOTYPE(config_parse_timezone);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
