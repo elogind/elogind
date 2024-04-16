@@ -30,6 +30,18 @@ PREFIX     ?= $(ROOTPREFIX)/usr
 SYSCONFDIR ?= $(ROOTPREFIX)/etc
 VERSION    ?= 9999
 
+# Detailed config with sane defaults
+USE_ACL     ?= enabled
+USE_AUDIT   ?= enabled
+USE_EFI     ?= false
+USE_HTML    ?= auto
+USE_MAN     ?= auto
+USE_SELINUX ?= disabled
+USE_SMACK   ?= true
+USE_UTMP    ?= true
+USE_XENCTRL ?= auto
+
+# Tools needed by the wrapper
 CC    ?= $(shell which cc)
 LD    ?= $(shell which ld)
 LN    := $(shell which ln) -s
@@ -163,18 +175,19 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Ddbussystemservicedir="$(PREFIX)"/share/dbus-1/system-services \
 			-Dbashcompletiondir="$(PREFIX)"/share/bash-completion/completions \
 			-Dzshcompletiondir="$(PREFIX)"/share/zsh/site-functions \
-			-Dacl=enabled \
+			-Dacl=$(USE_ACL) \
+			-Daudit=$(USE_AUDIT) \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddbus=enabled \
 			-Ddefault-hierarchy=$(CGDEFAULT) \
-			-Defi=true \
-			-Dhtml=auto \
-			-Dman=auto \
+			-Defi=$(USE_EFI) \
+			-Dhtml=$(USE_HTML) \
+			-Dman=$(USE_MAN) \
 			-Dpam=enabled \
-			-Dselinux=disabled \
-			-Dsmack=true \
-			-Dutmp=true \
-			-Dxenctrl=auto \
+			-Dselinux=$(USE_SELINUX) \
+			-Dsmack=$(USE_SMACK) \
+			-Dutmp=$(USE_UTMP) \
+			-Dxenctrl=$(USE_XENCTRL) \
 			-Dmode=$(BUILDMODE) \
 	)
 
