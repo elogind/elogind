@@ -20,7 +20,6 @@ There are many, and more are constantly added, so we will not enumerate them all
 
 The code that is shared between components is split into a few directories, each with a different purpose:
 
-
 - `src/basic/` and `src/fundamental/` — those directories contain code primitives that are used by all other code.
   `src/fundamental/` is stricter, because it used for EFI and user-space code, while `src/basic/` is only used for user-space code.
   The code in `src/fundamental/` cannot depend on any other code in the tree, and `src/basic/` can depend only on itself and `src/fundamental/`.
@@ -29,6 +28,7 @@ The code that is shared between components is split into a few directories, each
 - `src/libelogind/` implements the `libelogind.so` shared library (also available as static `libelogind.a`).
   This code may use anything in `src/basic/` or `src/fundamental/`.
 - `src/shared/` provides various utilities and code shared between other components that is exposed as the `libelogind-shared-<nnn>.so` shared library.
+
 
 The other subdirectories implement individual components.
 They may depend only on `src/fundamental/` + `src/basic/`, or also on `src/libelogind/`, or also on `src/shared/`.
@@ -99,7 +99,6 @@ Ideally, every module in `src/basic/` and `src/shared/` should have a correspond
 
 ### Fuzzing
 
-
 Fuzzers are a type of unit tests that execute code on an externally-supplied input sample.
 Fuzzers are called `fuzz-*`.
 Fuzzers for `src/basic/` and `src/shared` live under `src/fuzz/`, and those for other parts of the codebase should be located next to the code they test.
@@ -109,10 +108,11 @@ Some of the files are "seed corpora", i.e. files that contain lists of settings 
 
 When adding new input samples under `test/fuzz/*/`, please use some short-but-meaningful names.
 Names of meson tests include the input file name and output looks awkward if they are too long.
+
 Fuzzers are invoked primarily in three ways:
 firstly, each fuzzer is compiled as a normal executable and executed for each of the input samples under `test/fuzz/` as part of the test suite.
 Secondly, fuzzers may be instrumented with sanitizers and invoked as part of the test suite (if `-Dfuzz-tests=true` is configured).
-Thirdly, fuzzers are executed through fuzzing engines that tryto find new "interesting" inputs through coverage feedback and massive parallelization; see the links for oss-fuzz in [Code quality](CODE_QUALITY).
+Thirdly, fuzzers are executed through fuzzing engines that tryto find new "interesting" inputs through coverage feedback and massive parallelization; see the links for oss-fuzz in [Code quality](/CODE_QUALITY).
 For testing and debugging, fuzzers can be executed as any other program, including under `valgrind` or `gdb`.
 
 ## Integration Tests
