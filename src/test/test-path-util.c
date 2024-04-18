@@ -20,8 +20,8 @@
 #include "musl_missing.h"
 
 TEST(print_paths) {
-        log_info("DEFAULT_PATH=%s", DEFAULT_PATH);
-        log_info("DEFAULT_USER_PATH=%s", DEFAULT_USER_PATH);
+        log_info("default system PATH: %s", default_PATH());
+        log_info("default user PATH: %s", default_user_PATH());
 }
 
 TEST(path) {
@@ -1233,18 +1233,18 @@ TEST(empty_or_root) {
 }
 
 TEST(path_startswith_set) {
-
-
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar", "/foo/quux", "/foo/bar", "/zzz"), "");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar", "/foo/quux", "/foo/", "/zzz"), "bar");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar", "/foo/quux", "/foo", "/zzz"), "bar");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar", "/foo/quux", "/", "/zzz"), "foo/bar");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar", "/foo/quux", "", "/zzz"), NULL);
+
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar2", "/foo/quux", "/foo/bar", "/zzz"), NULL);
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar2", "/foo/quux", "/foo/", "/zzz"), "bar2");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar2", "/foo/quux", "/foo", "/zzz"), "bar2");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar2", "/foo/quux", "/", "/zzz"), "foo/bar2");
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo/bar2", "/foo/quux", "", "/zzz"), NULL);
+
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo2/bar", "/foo/quux", "/foo/bar", "/zzz"), NULL);
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo2/bar", "/foo/quux", "/foo/", "/zzz"), NULL);
         ASSERT_STREQ(PATH_STARTSWITH_SET("/foo2/bar", "/foo/quux", "/foo", "/zzz"), NULL);
@@ -1253,18 +1253,18 @@ TEST(path_startswith_set) {
 }
 
 TEST(path_startswith_strv) {
-
-
         ASSERT_STREQ(path_startswith_strv("/foo/bar", STRV_MAKE("/foo/quux", "/foo/bar", "/zzz")), "");
         ASSERT_STREQ(path_startswith_strv("/foo/bar", STRV_MAKE("/foo/quux", "/foo/", "/zzz")), "bar");
         ASSERT_STREQ(path_startswith_strv("/foo/bar", STRV_MAKE("/foo/quux", "/foo", "/zzz")), "bar");
         ASSERT_STREQ(path_startswith_strv("/foo/bar", STRV_MAKE("/foo/quux", "/", "/zzz")), "foo/bar");
         ASSERT_STREQ(path_startswith_strv("/foo/bar", STRV_MAKE("/foo/quux", "", "/zzz")), NULL);
+
         ASSERT_STREQ(path_startswith_strv("/foo/bar2", STRV_MAKE("/foo/quux", "/foo/bar", "/zzz")), NULL);
         ASSERT_STREQ(path_startswith_strv("/foo/bar2", STRV_MAKE("/foo/quux", "/foo/", "/zzz")), "bar2");
         ASSERT_STREQ(path_startswith_strv("/foo/bar2", STRV_MAKE("/foo/quux", "/foo", "/zzz")), "bar2");
         ASSERT_STREQ(path_startswith_strv("/foo/bar2", STRV_MAKE("/foo/quux", "/", "/zzz")), "foo/bar2");
         ASSERT_STREQ(path_startswith_strv("/foo/bar2", STRV_MAKE("/foo/quux", "", "/zzz")), NULL);
+
         ASSERT_STREQ(path_startswith_strv("/foo2/bar", STRV_MAKE("/foo/quux", "/foo/bar", "/zzz")), NULL);
         ASSERT_STREQ(path_startswith_strv("/foo2/bar", STRV_MAKE("/foo/quux", "/foo/", "/zzz")), NULL);
         ASSERT_STREQ(path_startswith_strv("/foo2/bar", STRV_MAKE("/foo/quux", "/foo", "/zzz")), NULL);
