@@ -194,7 +194,7 @@ TEST(inode_type_from_string) {
                 S_IFSOCK,
         };
 
-        FOREACH_ARRAY(m, types, ELEMENTSOF(types))
+        FOREACH_ELEMENT(m, types)
                 assert_se(inode_type_from_string(inode_type_to_string(*m)) == *m);
 }
 
