@@ -3016,12 +3016,28 @@ endforeach
 
 #####################################################################
 
-if get_option('integration-tests') != false
-        system_mkosi = custom_target('system_mkosi',
+mkosi = find_program('mkosi', required : false)
+if mkosi.found()
+        custom_target('mkosi',
                 build_always_stale : true,
-                output : 'system',
+                build_by_default: false,
                 console : true,
-                command : ['mkosi', '-C', meson.project_source_root(), '--image=system', '--format=disk', '--output-dir', meson.project_build_root() / '@OUTPUT@', '--without-tests', '-fi', 'build'],
+                output : '.',
+                command : [
+                        'mkosi',
+                        '--directory', meson.current_source_dir(),
+                        '--output-dir', meson.current_build_dir() / 'mkosi.output',
+                        '--cache-dir', meson.current_build_dir() / 'mkosi.cache',
+                        '--build-dir', meson.current_build_dir() / 'mkosi.builddir',
+                        '--force',
+                        'build'
+                ],
+                depends : public_programs + [
+                        executables_by_name['elogind-journal-remote'],
+                        executables_by_name['elogind-measure'],
+                        ukify,
+                ],
+        )
 endif
 
 ############################################################
