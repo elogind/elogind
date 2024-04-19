@@ -126,6 +126,8 @@ Deprecations and removals:
 
 Features:
 
+  make sure that we can mount them trivially everywhere.
+
 * insert the new pidfs inode number as a third field into PidRef, so that
   PidRef are reasonably serializable without having to pass around fds.
 
