@@ -2415,7 +2415,7 @@ static int inode_data_realize_watch(sd_event *e, struct inode_data *d) {
 
         wd = inotify_add_watch_fd(d->inotify_data->fd, d->fd, combined_mask);
         if (wd < 0)
-                return wd;
+                return -errno;
 
         if (d->wd < 0) {
                 r = hashmap_put(d->inotify_data->wd, INT_TO_PTR(wd), d);
@@ -3282,13 +3282,13 @@ _public_ int sd_event_source_set_child_process_own(sd_event_source *s, int own) 
         return 0;
 }
 
-_public_ int sd_event_source_get_inotify_mask(sd_event_source *s, uint32_t *mask) {
+_public_ int sd_event_source_get_inotify_mask(sd_event_source *s, uint32_t *ret) {
         assert_return(s, -EINVAL);
-        assert_return(mask, -EINVAL);
+        assert_return(ret, -EINVAL);
         assert_return(s->type == SOURCE_INOTIFY, -EDOM);
         assert_return(!event_origin_changed(s->event), -ECHILD);
 
-        *mask = s->inotify.mask;
+        *ret = s->inotify.mask;
         return 0;
 }
 
