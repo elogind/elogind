@@ -25,6 +25,7 @@
 #include "fd-util.h"
 #include "fileio.h"
 #include "fs-util.h"
+#include "logind-dbus.h"
 #include "mount-setup.h"
 #include "musl_missing.h"
 #include "parse-util.h"
@@ -100,6 +101,11 @@ static int elogind_sigchld_handler(
                         log_debug_elogind( "sleep_fork PID %d waitpid() set status %d", m->sleep_fork_pid, status );
                         if ( WIFEXITED(status) || WIFSIGNALED(status) )
                                 m->sleep_fork_pid = 0;
+                        /* Tell people that they now may take a lock again */
+                        if ( m->sleep_fork_action->sleep_operation != _SLEEP_OPERATION_INVALID ) {
+                                (void) send_prepare_for( m, m->sleep_fork_action->inhibit_what, false );
+                                m->sleep_fork_action = NULL; /* All done */
+                        }
                 }
         }
 
@@ -412,12 +418,13 @@ void elogind_manager_free( Manager* m ) {
 int elogind_manager_new( Manager* m ) {
         int r = 0;
 
-        m->cgroups_agent_fd = -1;
-        m->pin_cgroupfs_fd  = -1;
-        m->test_run_flags   = 0;
-        m->do_interrupt     = false;
-        m->sleep_fork_pid   = 0;
-        m->tool_fork_pid    = 0;
+        m->cgroups_agent_fd  = -1;
+        m->pin_cgroupfs_fd   = -1;
+        m->test_run_flags    = 0;
+        m->do_interrupt      = false;
+        m->sleep_fork_pid    = 0;
+        m->tool_fork_pid     = 0;
+        m->sleep_fork_action = NULL;
 
         /* Init poweroff/suspend interruption */
         m->allow_poweroff_interrupts     = false;

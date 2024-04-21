@@ -9,6 +9,10 @@
 #include "logind-user.h"
 #include "logind.h"
 
+#if 1 /// elogind needs to call this from elogind.c
+int send_prepare_for(Manager *m, InhibitWhat w, bool _active);
+#endif // 1
+
 int manager_get_session_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Session **ret);
 int manager_get_user_from_creds(Manager *m, sd_bus_message *message, uid_t uid, sd_bus_error *error, User **ret);
 int manager_get_seat_from_creds(Manager *m, sd_bus_message *message, const char *name, sd_bus_error *error, Seat **ret);

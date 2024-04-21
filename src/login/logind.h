@@ -86,6 +86,9 @@ struct Manager {
         /* elogind might spawn processes to suspend/hibernate, so we need their PIDs to end them properly */
         pid_t sleep_fork_pid; /* for suspend/hibernate fork */
         pid_t tool_fork_pid;  /* for external tool fork */
+
+        /* To wake up sleeping consumers using the right operation, the manager must know what is going on. */
+        const HandleActionData *sleep_fork_action;
 #endif // 0
 
         Seat *seat0;
