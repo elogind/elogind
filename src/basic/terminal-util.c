@@ -1306,7 +1306,7 @@ static bool on_dev_null(void) {
         return cached_on_dev_null;
 }
 
-static bool getenv_terminal_is_dumb(void) {
+bool getenv_terminal_is_dumb(void) {
         const char *e;
 
         e = getenv("TERM");
