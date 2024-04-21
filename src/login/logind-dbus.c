@@ -1730,7 +1730,11 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
         return r;
 }
 
+#if 0 /// elogind needs to call this from elogind.c
 static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
+#else
+int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
+#endif // 0
         int k = 0, r, active = _active;
 
         assert(m);
@@ -1902,6 +1906,7 @@ static int elogind_execute_shutdown_or_sleep(
          * from the shutdown/sleep routines. Doing this in the main thread would
          * make it impossible to talk to ourselves.
          */
+        m->sleep_fork_action = a; /* Remember this for the SIGCHLD handler */
         forker = strjoina( "e-", handle_action_to_string( a->handle ) );
         t = safe_fork( forker,
                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO,
@@ -1925,14 +1930,6 @@ static int elogind_execute_shutdown_or_sleep(
         if ( r ) {
                 log_error_errno( r, "%s: shutdown_or_sleep failed: %m", program_invocation_short_name );
         }
-
-        /* As elogind cannot rely on a systemd manager to call all
-         * sleeping processes to wake up, we have to tell them all
-         * by ourselves.
-         * Note: execute_shutdown_or_sleep() does not send the
-         *       signal unless an error occurred. */
-        if ( a->sleep_operation != _SLEEP_OPERATION_INVALID )
-                (void) send_prepare_for( m, a, false );
 
         log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
