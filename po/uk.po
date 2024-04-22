@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-04 10:09+0100\n"
+"POT-Creation-Date: 2024-04-22 14:31+0100\n"
 "PO-Revision-Date: 2024-03-05 21:36+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -139,21 +139,10 @@ msgstr ""
 # "розпізнавання."
 #
 # #: src/home/org.freedesktop.home1.policy:73
-# msgid "Inhibit automatic lock of a home area"
-# msgstr "Заборонити автоматичне блокування області домівки"
-#
-# #: src/home/org.freedesktop.home1.policy:74
-# msgid ""
-# "Authentication is required to inhibit automatic lock of a user's home area."
-# msgstr ""
-# "Для заборони автоматичного блокування області домівки користувача слід "
-# "пройти розпізнавання."
-#
-# #: src/home/org.freedesktop.home1.policy:83
 # msgid "Activate a home area"
 # msgstr "Активація області домівки"
 #
-# #: src/home/org.freedesktop.home1.policy:84
+# #: src/home/org.freedesktop.home1.policy:74
 # msgid "Authentication is required to activate a user's home area."
 # msgstr "Для активації області домівки користувача слід пройти розпізнавання."
 #
@@ -1056,6 +1045,14 @@ msgstr "Для зміни віртуального термінала слід �
 # #: src/network/org.freedesktop.network1.policy:177
 # msgid "Authentication is required to reconfigure network interface."
 # msgstr "Для зміни налаштувань інтерфейсу мережі слід пройти розпізнавання."
+#
+# #: src/network/org.freedesktop.network1.policy:187
+#
+# #: src/network/org.freedesktop.network1.policy:188
+# msgid ""
+# "Authentication is required to specify whether persistent storage for elogind-"
+# "networkd is available."
+# msgstr ""
 #
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"
