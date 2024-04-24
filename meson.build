@@ -3030,6 +3030,7 @@ if mkosi.found()
                         '--cache-dir', meson.current_build_dir() / 'mkosi.cache',
                         '--build-dir', meson.current_build_dir() / 'mkosi.builddir',
                         '--force',
+                        '--debug',
                         'build'
                 ],
                 depends : public_programs + [
