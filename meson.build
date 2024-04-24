@@ -427,6 +427,7 @@ slow_tests = want_tests != 'false' and get_option('slow-tests')
 #if 0 /// elogind does not utilize fuzzing
 # fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
 #endif // 0
+integration_tests = want_tests != 'false' and get_option('integration-tests')
 install_tests = want_tests != 'false' and get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
@@ -3017,6 +3018,18 @@ endforeach
 #####################################################################
 
 mkosi = find_program('mkosi', required : false)
+if integration_tests and not mkosi.found()
+        error('Could not find mkosi which is required to run the integration tests')
+endif
+
+mkosi_depends = public_programs
+
+foreach executable : ['elogind-journal-remote', 'elogind-measure']
+        if executable in executables_by_name
+                mkosi_depends += [executables_by_name[executable]]
+        endif
+endforeach
+
 if mkosi.found()
         custom_target('mkosi',
                 build_always_stale : true,
@@ -3031,13 +3044,9 @@ if mkosi.found()
                         '--build-dir', meson.current_build_dir() / 'mkosi.builddir',
                         '--force',
                         '--debug',
-                        'build'
+                        'build',
                 ],
-                depends : public_programs + [
-                        executables_by_name['elogind-journal-remote'],
-                        executables_by_name['elogind-measure'],
-                        ukify,
-                ],
+                depends : mkosi_depends,
         )
 endif
 
