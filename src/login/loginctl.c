@@ -759,17 +759,16 @@ static int print_session_status_info(sd_bus *bus, const char *path) {
                         show_journal_by_unit(
                                         stdout,
                                         i.scope,
-                                        NULL,
+                                        /* namespace = */ NULL,
                                         arg_output,
-                                        0,
+                                        /* n_columns = */ 0,
                                         i.timestamp.monotonic,
                                         arg_lines,
-                                        0,
                                         get_output_flags() | OUTPUT_BEGIN_NEWLINE,
                                         SD_JOURNAL_LOCAL_ONLY,
-                                        true,
-                                        NULL);
 #endif // 0
+                                        /* system_unit = */ true,
+                                        /* ellipsized = */ NULL);
         }
 
         return 0;
@@ -867,17 +866,16 @@ static int print_user_status_info(sd_bus *bus, const char *path) {
                         show_journal_by_unit(
                                         stdout,
                                         i.slice,
-                                        NULL,
+                                        /* namespace = */ NULL,
                                         arg_output,
-                                        0,
+                                        /* n_columns = */ 0,
                                         i.timestamp.monotonic,
                                         arg_lines,
-                                        0,
                                         get_output_flags() | OUTPUT_BEGIN_NEWLINE,
                                         SD_JOURNAL_LOCAL_ONLY,
-                                        true,
-                                        NULL);
 #endif // 0
+                                        /* system_unit = */ true,
+                                        /* ellipsized = */ NULL);
         }
 
         return 0;
