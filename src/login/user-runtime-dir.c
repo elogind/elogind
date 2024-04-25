@@ -204,8 +204,7 @@ static int do_umount(const char *runtime_path) {
 static int run(int argc, char *argv[]) {
         int r;
 
-        log_parse_environment();
-        log_open();
+        log_setup();
 
         if (argc != 3)
                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
