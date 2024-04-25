@@ -13,10 +13,10 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
-libsystemd_version = '0.38.0'
 #if 0 /// elogind does not ship libudev
-# libudev_version = '1.7.8'
 #endif // 0
+libelogind_version = '0.39.0'
+libudev_version = '1.7.9'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
