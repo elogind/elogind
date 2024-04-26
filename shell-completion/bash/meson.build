@@ -31,6 +31,7 @@ endif
 #          ['systemd-nspawn',      ''],
 #          ['systemd-path',        ''],
 #          ['systemd-run',         ''],
+#          ['elogind-vpick',       ''],
 #          ['udevadm',             ''],
 #          ['bootctl',             ''],
 #          ['run0',                ''],
