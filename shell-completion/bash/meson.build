@@ -33,6 +33,7 @@ endif
 #          ['systemd-run',         ''],
 #          ['udevadm',             ''],
 #          ['bootctl',             ''],
+#          ['run0',                ''],
 #          ['coredumpctl',         'ENABLE_COREDUMP'],
 #          ['homectl',             'ENABLE_HOMED'],
 #          ['hostnamectl',         'ENABLE_HOSTNAMED'],
