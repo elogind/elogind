@@ -2024,6 +2024,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #                 'riscv32' : ['-D__riscv', '-D__riscv_xlen=32'],
 #                 'riscv64' : ['-D__riscv', '-D__riscv_xlen=64'],
 #                 'x86'     : ['-D__i386__'],
+#                 's390x'   : ['-D__s390__', '-D__s390x__'],
 #
 #                 # For arm, assume hardware fp is available.
 #                 'arm'     : ['-D__arm__', '-D__ARM_PCS_VFP'],
