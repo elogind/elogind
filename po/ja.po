@@ -968,10 +968,15 @@ msgstr "仮想ターミナルを変更するには認証が必要です。"
 # msgstr "ネットワークインターフェイスの再設定には認証が必要です。"
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr "systemd-networkdの永続的ストレージの設定"
+#
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
+# msgstr "systemd-networkdの永続的ストレージを設定するには認証が必要です。"
+#
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"
 # msgstr "ポータブルサービスイメージの読み込み"

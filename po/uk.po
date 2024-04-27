@@ -1047,12 +1047,18 @@ msgstr "Для зміни віртуального термінала слід �
 # msgstr "Для зміни налаштувань інтерфейсу мережі слід пройти розпізнавання."
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr ""
+# "Визначає, чи доступне для systemd-networkd сховище постійного зберігання "
+# "даних."
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
 # msgstr ""
+# "Для визначення того, чи доступне для systemd-networkd сховище постійного "
+# "зберігання даних, слід пройти розпізнавання."
 #
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"

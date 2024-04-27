@@ -1046,10 +1046,12 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # msgstr "É necessária autenticação para reconfigurar a interface de rede."
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
 # msgstr ""
 #

@@ -937,10 +937,12 @@ msgstr "更改虛擬終端需要身份驗證。"
 # msgstr "重新配置網絡接口需要驗證。"
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
 # msgstr ""
 #

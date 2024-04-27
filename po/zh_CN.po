@@ -945,10 +945,12 @@ msgstr "更改虚拟终端需要认证。"
 # msgstr "重新配置网络接口需要认证。"
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
 # msgstr ""
 #

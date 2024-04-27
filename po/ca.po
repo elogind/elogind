@@ -1071,10 +1071,12 @@ msgstr "Es requereix autenticació per aturar el sistema."
 # msgstr "Es requereix autenticació per reiniciar el sistema."
 #
 # #: src/network/org.freedesktop.network1.policy:187
+# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
-# "Authentication is required to specify whether persistent storage for elogind-"
+# "Authentication is required to specify whether persistent storage for systemd-"
 # "networkd is available."
 # msgstr ""
 #
