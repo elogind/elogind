@@ -6,12 +6,13 @@
 
 #include "build-path.h"
 #include "errno-list.h"
+#include "errno-util.h"
 #include "macro.h"
 #include "path-util.h"
 #include "process-util.h"
 #include "unistd.h"
 
-static int get_runpath_from_dynamic(const ElfW(Dyn) *d, const char **ret) {
+static int get_runpath_from_dynamic(const ElfW(Dyn) *d, ElfW(Addr) bias, const char **ret) {
         size_t runpath_index = SIZE_MAX, rpath_index = SIZE_MAX;
         const char *strtab = NULL;
 
@@ -32,7 +33,14 @@ static int get_runpath_from_dynamic(const ElfW(Dyn) *d, const char **ret) {
                         break;
 
                 case DT_STRTAB:
-                        strtab = (const char *) d->d_un.d_val;
+                        /* On MIPS and RISC-V DT_STRTAB records an offset, not a valid address, so it has to be adjusted
+                         * using the bias calculated earlier. */
+                        if (d->d_un.d_val != 0)
+                                strtab = (const char *) ((uintptr_t) d->d_un.d_val
+#if defined(__mips__) || defined(__riscv)
+                                         + bias
+#endif
+                                );
                         break;
                 }
 
@@ -44,7 +52,7 @@ static int get_runpath_from_dynamic(const ElfW(Dyn) *d, const char **ret) {
         if (!strtab)
                 return -ENOTRECOVERABLE;
 
-        /* According to dl.so runpath wins of both runpath and rpath are defined. */
+        /* According to ld.so runpath wins if both runpath and rpath are defined. */
         if (runpath_index != SIZE_MAX) {
                 if (ret)
                         *ret = strtab + runpath_index;
@@ -110,7 +118,7 @@ static int get_runpath(const char **ret) {
         if (!found_dyn)
                 return -ENOTRECOVERABLE;
 
-        return get_runpath_from_dynamic((const ElfW(Dyn)*) (bias + dyn), ret);
+        return get_runpath_from_dynamic((const ElfW(Dyn)*) (bias + dyn), bias, ret);
 }
 
 int get_build_exec_dir(char **ret) {
@@ -184,6 +192,30 @@ static int find_build_dir_binary(const char *fn, char **ret) {
         return 0;
 }
 
+static int find_environment_binary(const char *fn, const char **ret) {
+
+        /* If a path such as /usr/lib/elogind/elogind-foobar is specified, then this will check for an
+         * environment variable SYSTEMD_FOOBAR_PATH and return it if set. */
+
+        _cleanup_free_ char *s = strdup(fn);
+        if (!s)
+                return -ENOMEM;
+
+        ascii_strupper(s);
+        string_replace_char(s, '-', '_');
+
+        if (!strextend(&s, "_PATH"))
+                return -ENOMEM;
+
+        const char *e;
+        e = secure_getenv(s);
+        if (!e)
+                return -ENXIO;
+
+        *ret = e;
+        return 0;
+}
+
 int invoke_callout_binary(const char *path, char *const argv[]) {
         int r;
 
@@ -198,10 +230,45 @@ int invoke_callout_binary(const char *path, char *const argv[]) {
         if (r == O_DIRECTORY) /* Uh? */
                 return -EISDIR;
 
+        const char *e;
+        if (find_environment_binary(fn, &e) >= 0) {
+                /* If there's an explicit environment variable set for this binary, prefer it */
+                execv(e, argv);
+                return -errno; /* The environment variable counts, let's fail otherwise */
+        }
+
         _cleanup_free_ char *np = NULL;
         if (find_build_dir_binary(fn, &np) >= 0)
                 execv(np, argv);
 
         execv(path, argv);
         return -errno;
+}
+
+int pin_callout_binary(const char *path) {
+        int r;
+
+        assert(path);
+
+        /* Similar to invoke_callout_binary(), but pins (i.e. O_PATH opens) the binary instead of executing it. */
+
+        _cleanup_free_ char *fn = NULL;
+        r = path_extract_filename(path, &fn);
+        if (r < 0)
+                return r;
+        if (r == O_DIRECTORY) /* Uh? */
+                return -EISDIR;
+
+        const char *e;
+        if (find_environment_binary(fn, &e) >= 0)
+                return RET_NERRNO(open(e, O_CLOEXEC|O_PATH));
+
+        _cleanup_free_ char *np = NULL;
+        if (find_build_dir_binary(fn, &np) >= 0) {
+                r = RET_NERRNO(open(np, O_CLOEXEC|O_PATH));
+                if (r >= 0)
+                        return r;
+        }
+
+        return RET_NERRNO(open(path, O_CLOEXEC|O_PATH));
 }
