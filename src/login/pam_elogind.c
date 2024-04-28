@@ -939,6 +939,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         assert(handle);
 
+        pam_log_setup();
+
         if (parse_argv(handle,
                        argc, argv,
                        &class_pam,
@@ -1250,6 +1252,8 @@ _public_ PAM_EXTERN int pam_sm_close_session(
         int r;
 
         assert(handle);
+
+        pam_log_setup();
 
         if (parse_argv(handle,
                        argc, argv,
