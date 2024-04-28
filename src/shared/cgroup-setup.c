@@ -611,7 +611,10 @@ int cg_migrate(
                         return ret;
                 }
 
-                while ((r = cg_read_pid(f, &pid)) > 0) {
+                while ((r = cg_read_pid(f, &pid, flags)) > 0) {
+                        /* Throw an error if unmappable PIDs are in output, we can't migrate those. */
+                        if (pid == 0)
+                                return -EREMOTE;
 
                         /* This might do weird stuff if we aren't a
                          * single-threaded program. However, we
