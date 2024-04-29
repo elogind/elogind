@@ -862,11 +862,9 @@ static int mount_in_namespace_legacy(
                 int pidns_fd,
                 int mntns_fd,
                 int root_fd,
-                bool read_only,
-                bool make_file_or_directory,
+                MountInNamespaceFlags flags,
                 const MountOptions *options,
-                const ImagePolicy *image_policy,
-                bool is_image) {
+                const ImagePolicy *image_policy) {
 
         _cleanup_close_pair_ int errno_pipe_fd[2] = EBADF_PAIR;
         char mount_slave[] = "/tmp/propagate.XXXXXX", *mount_tmp, *mount_outside, *p;
@@ -885,7 +883,7 @@ static int mount_in_namespace_legacy(
         assert(pidns_fd >= 0);
         assert(mntns_fd >= 0);
         assert(root_fd >= 0);
-        assert(!options || is_image);
+        assert(!options || (flags & MOUNT_IN_NAMESPACE_IS_IMAGE));
 
         p = strjoina(propagate_path, "/");
         r = laccess(p, F_OK);
@@ -918,7 +916,7 @@ static int mount_in_namespace_legacy(
 
         /* Second, we mount the source file or directory to a directory inside of our MS_SLAVE playground. */
         mount_tmp = strjoina(mount_slave, "/mount");
-        if (is_image)
+        if (flags & MOUNT_IN_NAMESPACE_IS_IMAGE)
                 r = mkdir_p(mount_tmp, 0700);
         else
                 r = make_mount_point_inode_from_stat(chased_src_st, mount_tmp, 0700);
@@ -929,7 +927,7 @@ static int mount_in_namespace_legacy(
 
         mount_tmp_created = true;
 
-        if (is_image)
+        if (flags & MOUNT_IN_NAMESPACE_IS_IMAGE)
                 r = verity_dissect_and_mount(
                                 chased_src_fd,
                                 chased_src_path,
@@ -951,7 +949,7 @@ static int mount_in_namespace_legacy(
         mount_tmp_mounted = true;
 
         /* Third, we remount the new bind mount read-only if requested. */
-        if (read_only) {
+        if (flags & MOUNT_IN_NAMESPACE_READ_ONLY) {
                 r = mount_nofollow_verbose(LOG_DEBUG, NULL, mount_tmp, NULL, MS_BIND|MS_REMOUNT|MS_RDONLY, NULL);
                 if (r < 0)
                         goto finish;
@@ -961,7 +959,7 @@ static int mount_in_namespace_legacy(
          * right-away. */
 
         mount_outside = strjoina(propagate_path, "/XXXXXX");
-        if (is_image || S_ISDIR(chased_src_st->st_mode))
+        if ((flags & MOUNT_IN_NAMESPACE_IS_IMAGE) || S_ISDIR(chased_src_st->st_mode))
                 r = mkdtemp(mount_outside) ? 0 : -errno;
         else {
                 r = mkostemp_safe(mount_outside);
@@ -981,7 +979,7 @@ static int mount_in_namespace_legacy(
         mount_outside_mounted = true;
         mount_tmp_mounted = false;
 
-        if (is_image || S_ISDIR(chased_src_st->st_mode))
+        if ((flags & MOUNT_IN_NAMESPACE_IS_IMAGE) || S_ISDIR(chased_src_st->st_mode))
                 (void) rmdir(mount_tmp);
         else
                 (void) unlink(mount_tmp);
@@ -1007,8 +1005,8 @@ static int mount_in_namespace_legacy(
 
                 errno_pipe_fd[0] = safe_close(errno_pipe_fd[0]);
 
-                if (make_file_or_directory) {
-                        if (!is_image) {
+                if (flags & MOUNT_IN_NAMESPACE_MAKE_FILE_OR_DIRECTORY) {
+                        if (!(flags & MOUNT_IN_NAMESPACE_IS_IMAGE)) {
                                 (void) mkdir_parents(dest, 0755);
                                 (void) make_mount_point_inode_from_stat(chased_src_st, dest, 0700);
                         } else
@@ -1060,7 +1058,7 @@ finish:
         if (mount_outside_mounted)
                 (void) umount_verbose(LOG_DEBUG, mount_outside, UMOUNT_NOFOLLOW);
         if (mount_outside_created) {
-                if (is_image || S_ISDIR(chased_src_st->st_mode))
+                if ((flags & MOUNT_IN_NAMESPACE_IS_IMAGE) || S_ISDIR(chased_src_st->st_mode))
                         (void) rmdir(mount_outside);
                 else
                         (void) unlink(mount_outside);
@@ -1069,7 +1067,7 @@ finish:
         if (mount_tmp_mounted)
                 (void) umount_verbose(LOG_DEBUG, mount_tmp, UMOUNT_NOFOLLOW);
         if (mount_tmp_created) {
-                if (is_image || S_ISDIR(chased_src_st->st_mode))
+                if ((flags & MOUNT_IN_NAMESPACE_IS_IMAGE) || S_ISDIR(chased_src_st->st_mode))
                         (void) rmdir(mount_tmp);
                 else
                         (void) unlink(mount_tmp);
@@ -1089,9 +1087,7 @@ static int mount_in_namespace(
                 const char *incoming_path,
                 const char *src,
                 const char *dest,
-                bool read_only,
-                bool make_file_or_directory,
-                bool is_image,
+                MountInNamespaceFlags flags,
                 const MountOptions *options,
                 const ImagePolicy *image_policy) {
 
@@ -1104,7 +1100,7 @@ static int mount_in_namespace(
         assert(incoming_path);
         assert(src);
         assert(dest);
-        assert(is_image || (!options && !image_policy));
+        assert((flags & MOUNT_IN_NAMESPACE_IS_IMAGE) || (!options && !image_policy));
 
         if (!pidref_is_set(target))
                 return -ESRCH;
@@ -1141,18 +1137,16 @@ static int mount_in_namespace(
                                 pidns_fd,
                                 mntns_fd,
                                 root_fd,
-                                read_only,
-                                make_file_or_directory,
+                                flags,
                                 options,
-                                image_policy,
-                                is_image);
+                                image_policy);
 
         _cleanup_(dissected_image_unrefp) DissectedImage *img = NULL;
         _cleanup_close_ int new_mount_fd = -EBADF;
         _cleanup_close_pair_ int errno_pipe_fd[2] = EBADF_PAIR;
         pid_t child;
 
-        if (is_image) {
+        if (flags & MOUNT_IN_NAMESPACE_IS_IMAGE) {
                 r = verity_dissect_and_mount(
                                 chased_src_fd,
                                 chased_src_path,
@@ -1181,7 +1175,7 @@ static int mount_in_namespace(
                                         "Failed to open mount source '%s': %m",
                                         chased_src_path);
 
-                if (read_only && mount_setattr(new_mount_fd, "", AT_EMPTY_PATH,
+                if ((flags & MOUNT_IN_NAMESPACE_READ_ONLY) && mount_setattr(new_mount_fd, "", AT_EMPTY_PATH,
                                                &(struct mount_attr) {
                                                        .attr_set = MOUNT_ATTR_RDONLY,
                                                }, MOUNT_ATTR_SIZE_VER0) < 0)
@@ -1209,7 +1203,7 @@ static int mount_in_namespace(
         if (r == 0) {
                 errno_pipe_fd[0] = safe_close(errno_pipe_fd[0]);
 
-                if (make_file_or_directory)
+                if (flags & MOUNT_IN_NAMESPACE_MAKE_FILE_OR_DIRECTORY)
                         (void) mkdir_parents(dest, 0755);
 
                 if (img) {
@@ -1217,10 +1211,10 @@ static int mount_in_namespace(
                                 DISSECT_IMAGE_TRY_ATOMIC_MOUNT_EXCHANGE |
                                 DISSECT_IMAGE_ALLOW_USERSPACE_VERITY;
 
-                        if (make_file_or_directory)
+                        if (flags & MOUNT_IN_NAMESPACE_MAKE_FILE_OR_DIRECTORY)
                                 f |= DISSECT_IMAGE_MKDIR;
 
-                        if (read_only)
+                        if (flags & MOUNT_IN_NAMESPACE_READ_ONLY)
                                 f |= DISSECT_IMAGE_READ_ONLY;
 
                         r = dissected_image_mount(
@@ -1231,7 +1225,7 @@ static int mount_in_namespace(
                                         /* userns_fd= */ -EBADF,
                                         f);
                 } else {
-                        if (make_file_or_directory)
+                        if (flags & MOUNT_IN_NAMESPACE_MAKE_FILE_OR_DIRECTORY)
                                 (void) make_mount_point_inode_from_stat(&st, dest, 0700);
 
                         r = mount_exchange_graceful(new_mount_fd, dest, /* mount_beneath= */ true);
@@ -1267,17 +1261,14 @@ int bind_mount_in_namespace(
                 const char *incoming_path,
                 const char *src,
                 const char *dest,
-                bool read_only,
-                bool make_file_or_directory) {
+                MountInNamespaceFlags flags) {
 
         return mount_in_namespace(target,
                                   propagate_path,
                                   incoming_path,
                                   src,
                                   dest,
-                                  read_only,
-                                  make_file_or_directory,
-                                  /* is_image = */ false,
+                                  flags & ~MOUNT_IN_NAMESPACE_IS_IMAGE,
                                   /* options = */ NULL,
                                   /* image_policy = */ NULL);
 }
@@ -1288,8 +1279,7 @@ int mount_image_in_namespace(
                 const char *incoming_path,
                 const char *src,
                 const char *dest,
-                bool read_only,
-                bool make_file_or_directory,
+                MountInNamespaceFlags flags,
                 const MountOptions *options,
                 const ImagePolicy *image_policy) {
 
@@ -1298,9 +1288,7 @@ int mount_image_in_namespace(
                                   incoming_path,
                                   src,
                                   dest,
-                                  read_only,
-                                  make_file_or_directory,
-                                  /* is_image = */ true,
+                                  flags | MOUNT_IN_NAMESPACE_IS_IMAGE,
                                   options,
                                   image_policy);
 }
