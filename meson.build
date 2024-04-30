@@ -2141,7 +2141,9 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 
 ############################################################
 
-check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
+#if 0 /// UNUSED by elogind
+# check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
+#endif // 0
 check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
 # elf2efi_py = find_program('tools/elf2efi.py')
