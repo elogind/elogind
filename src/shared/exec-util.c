@@ -36,7 +36,11 @@
 /* Put this test here for a lack of better place */
 assert_cc(EAGAIN == EWOULDBLOCK);
 
+#if 0 /// elogind is never INIT and therefore never sets SYSTEMD_EXEC_PID
 static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, bool set_systemd_exec_pid) {
+#else // 0
+static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid) {
+#endif // 0
         pid_t _pid;
         int r;
 
@@ -57,11 +61,13 @@ static int do_spawn(const char *path, char *argv[], int stdout_fd, pid_t *pid, b
                                 _exit(EXIT_FAILURE);
                 }
 
+#if 0 /// elogind is never INIT and therefore never sets SYSTEMD_EXEC_PID
                 if (set_systemd_exec_pid) {
-                        r = setenv_elogind_exec_pid(false);
+                        r = setenv_systemd_exec_pid(false);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to set $SYSTEMD_EXEC_PID, ignoring: %m");
                 }
+#endif // 0
 
                 if (!argv) {
                         _argv[0] = (char*) path;
@@ -151,7 +157,11 @@ static int do_execute(
                         log_debug("About to execute %s%s%s", t, argv ? " " : "", argv ? strnull(args) : "");
                 }
 
+#if 0 /// elogind never sets this PID as it is never INIT
                 r = do_spawn(t, argv, fd, &pid, FLAGS_SET(flags, EXEC_DIR_SET_SYSTEMD_EXEC_PID));
+#else // 0
+                r = do_spawn(t, argv, fd, &pid);
+#endif // 0
                 if (r <= 0)
                         continue;
 

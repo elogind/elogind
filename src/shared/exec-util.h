@@ -18,7 +18,9 @@ typedef enum {
         EXEC_DIR_NONE                 = 0,      /* No execdir flags */
         EXEC_DIR_PARALLEL             = 1 << 0, /* Execute scripts in parallel, if possible */
         EXEC_DIR_IGNORE_ERRORS        = 1 << 1, /* Ignore non-zero exit status of scripts */
+#if 0 /// Not only unneeded by elogind, but also dangerous, as elogind is *not* INIT.
         EXEC_DIR_SET_SYSTEMD_EXEC_PID = 1 << 2, /* Set $SYSTEMD_EXEC_PID environment variable */
+#endif // 0
         EXEC_DIR_SKIP_REMAINING       = 1 << 3, /* Ignore remaining executions when one exit with 77. */
 } ExecDirFlags;
 

@@ -992,9 +992,8 @@ int putenv_dup(const char *assignment, bool override) {
         /* This is like putenv(), but uses setenv() so that our memory doesn't become part of environ[]. */
         return RET_NERRNO(setenv(n, e + 1, override));
 }
-#endif // 0
 
-int setenv_elogind_exec_pid(bool update_only) {
+int setenv_systemd_exec_pid(bool update_only) {
         const char *e;
         int r;
 
@@ -1014,7 +1013,6 @@ int setenv_elogind_exec_pid(bool update_only) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int getenv_path_list(const char *name, char ***ret_paths) {
         _cleanup_strv_free_ char **l = NULL;
         const char *e;
@@ -1105,7 +1103,6 @@ int set_full_environment(char **env) {
 
         return 0;
 }
-#endif // 0
 
 int setenvf(const char *name, bool overwrite, const char *valuef, ...) {
         _cleanup_free_ char *value = NULL;
@@ -1128,3 +1125,4 @@ int setenvf(const char *name, bool overwrite, const char *valuef, ...) {
 
         return RET_NERRNO(setenv(name, value, overwrite));
 }
+#endif // 0

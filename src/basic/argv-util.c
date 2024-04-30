@@ -28,9 +28,8 @@ bool invoked_as(char *argv[], const char *token) {
 
         return strstr(last_path_component(argv[0]), token);
 }
-#endif // 0
 
-bool invoked_by_elogind(void) {
+bool invoked_by_systemd(void) {
         int r;
 
         const char *e = getenv("SYSTEMD_EXEC_PID");
@@ -51,6 +50,7 @@ bool invoked_by_elogind(void) {
 
         return getpid_cached() == p;
 }
+#endif // 0
 
 bool argv_looks_like_help(int argc, char **argv) {
         char **l;

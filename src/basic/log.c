@@ -1300,6 +1300,7 @@ static int log_set_ratelimit_kmsg_from_string(const char *e) {
         return 0;
 }
 
+#if 0 /// elogind is not init and never should parse the kernel command line
 static int parse_proc_cmdline_item(const char *key, const char *value, void *data) {
 
         /*
@@ -1364,11 +1365,11 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
-                /* We know that elogind sets the variable correctly. Something else must have set it. */
-        /* Otherwise, parse the commandline if invoked directly by elogind. */
-        return invoked_by_elogind();
-        /* Otherwise, parse the command line if invoked directly by elogind. */
+                /* We know that systemd sets the variable correctly. Something else must have set it. */
+        /* Otherwise, parse the command line if invoked directly by systemd. */
+        return invoked_by_systemd();
 }
+#endif // 0
 
 void log_parse_environment_variables(void) {
         const char *e;
@@ -1405,8 +1406,10 @@ void log_parse_environment_variables(void) {
 void log_parse_environment(void) {
         /* Do not call from library code. */
 
+#if 0 /// elogind is not init and never should parse the kernel command line
         if (should_parse_proc_cmdline())
                 (void) proc_cmdline_parse(parse_proc_cmdline_item, NULL, PROC_CMDLINE_STRIP_RD_PREFIX);
+#endif // 0
 
         log_parse_environment_variables();
 }
