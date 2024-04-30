@@ -2308,9 +2308,7 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
         if (r < 0)
                 return r;
 
-        if (ret_boot_id)
-                *ret_boot_id = o->entry.boot_id;
-        else {
+        if (!ret_boot_id) {
                 sd_id128_t id;
 
                 r = sd_id128_get_boot(&id);
@@ -2323,6 +2321,8 @@ _public_ int sd_journal_get_monotonic_usec(sd_journal *j, uint64_t *ret, sd_id12
 
         if (ret)
                 *ret = le64toh(o->entry.monotonic);
+        if (ret_boot_id)
+                *ret_boot_id = o->entry.boot_id;
 
         return 0;
 #else // 0
