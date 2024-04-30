@@ -550,11 +550,13 @@ TEST(copy_verify_linked) {
         assert_se(fd_2 >= 0);
         assert_se(unlinkat(tfd, "hoge", 0) >= 0);
 
+#if 0 /// tested functions nowhere used in elogind
         assert_se(copy_file_at(fd_1, NULL, tfd, "to_1", 0, 0644, 0) >= 0);
         assert_se(read_file_at_and_streq(tfd, "to_1", "bar bar\n"));
 
         assert_se(copy_file_at(fd_2, NULL, tfd, "to_2", O_EXCL, 0644, COPY_VERIFY_LINKED) == -EIDRM);
         assert_se(faccessat(tfd, "to_2", F_OK, AT_SYMLINK_NOFOLLOW) < 0 && errno == ENOENT);
+#endif // 0
 }
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
