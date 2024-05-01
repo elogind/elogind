@@ -12,7 +12,7 @@
 #include "mkdir.h"
 #include "parse-util.h"
 #include "path-util.h"
-#include "proc-cmdline.h"
+//#include "proc-cmdline.h"
 #include "process-util.h"
 #include "recurse-dir.h"
 #include "stdio-util.h"
@@ -81,7 +81,9 @@ static int cg_any_controller_used_for_v1(void) {
 
 bool cg_is_unified_wanted(void) {
         static thread_local int wanted = -1;
+#if 0 /// UNNEEDED by elogind
         bool b;
+#endif // 0
         const bool is_default = DEFAULT_HIERARCHY == CGROUP_UNIFIED_ALL;
         _cleanup_free_ char *c = NULL;
         int r;
@@ -95,6 +97,7 @@ bool cg_is_unified_wanted(void) {
         if (r >= 0)
                 return (wanted = r >= CGROUP_UNIFIED_ALL);
 
+#if 0 /// elogind is not meant to run on systemd-powered systems
         /* If we were explicitly passed systemd.unified_cgroup_hierarchy, respect that. */
         r = proc_cmdline_get_bool("systemd.unified_cgroup_hierarchy", &b);
         if (r > 0)
@@ -105,6 +108,7 @@ bool cg_is_unified_wanted(void) {
         r = proc_cmdline_get_key("cgroup_no_v1", 0, &c);
         if (r > 0 && streq_ptr(c, "all"))
                 return (wanted = true);
+#endif // 0
 
         /* If any controller is in use as v1, don't use unified. */
         if (cg_any_controller_used_for_v1() > 0)
@@ -131,8 +135,10 @@ bool cg_is_legacy_wanted(void) {
 
 bool cg_is_hybrid_wanted(void) {
         static thread_local int wanted = -1;
+#if 0 /// UNNEEDED by elogind
         int r;
         bool b;
+#endif // 0
         const bool is_default = DEFAULT_HIERARCHY >= CGROUP_UNIFIED_SYSTEMD;
         /* We default to true if the default is "hybrid", obviously, but also when the default is "unified",
          * because if we get called, it means that unified hierarchy was not mounted. */
@@ -145,13 +151,17 @@ bool cg_is_hybrid_wanted(void) {
         if (cg_unified_cached(true) == CGROUP_UNIFIED_ALL)
                 return (wanted = false);
 
+#if 0 /// elogind is not meant to run on systemd-powered systems
         /* Otherwise, let's see what the kernel command line has to say.  Since checking is expensive, cache
          * a non-error result. */
-        r = proc_cmdline_get_bool("elogind.legacy_elogind_cgroup_controller", &b);
+        r = proc_cmdline_get_bool("systemd.legacy_systemd_cgroup_controller", &b);
 
         /* The meaning of the kernel option is reversed wrt. to the return value of this function, hence the
          * negation. */
         return (wanted = r > 0 ? !b : is_default);
+#else
+        return (wanted = is_default);
+#endif // 0
 }
 
 int cg_weight_parse(const char *s, uint64_t *ret) {

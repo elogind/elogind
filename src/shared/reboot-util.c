@@ -6,7 +6,7 @@
 #include "alloc-util.h"
 #include "fileio.h"
 #include "log.h"
-#include "proc-cmdline.h"
+//#include "proc-cmdline.h"
 //#include "raw-reboot.h"
 #include "reboot-util.h"
 #include "string-util.h"

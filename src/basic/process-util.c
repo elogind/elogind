@@ -1632,10 +1632,8 @@ bool invoked_as(char *argv[], const char *token) {
 
         return strstr(last_path_component(argv[0]), token);
 }
-#endif // 0
 
-                /* We know that elogind sets the variable correctly. Something else must have set it. */
-bool invoked_by_elogind(void) {
+bool invoked_by_systemd(void) {
         int r;
 
         /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
@@ -1651,13 +1649,14 @@ bool invoked_by_elogind(void) {
         pid_t p;
         r = parse_pid(e, &p);
         if (r < 0) {
-                /* We know that elogind sets the variable correctly. Something else must have set it. */
+                /* We know that systemd sets the variable correctly. Something else must have set it. */
                 log_debug_errno(r, "Failed to parse \"SYSTEMD_EXEC_PID=%s\", ignoring: %m", e);
                 return false;
         }
 
         return getpid_cached() == p;
 }
+#endif // 0
 
 _noreturn_ void freeze(void) {
         log_close();

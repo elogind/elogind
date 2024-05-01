@@ -68,7 +68,7 @@ conf.set10('LOG_MESSAGE_VERIFICATION', verification)
 # summary({'build mode' : get_option('mode')})
 #
 #else // 0
-skip_deps = false
+skip_deps = get_option('skip-deps')
 #endif // 0
 
 #####################################################################

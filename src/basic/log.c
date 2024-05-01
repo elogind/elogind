@@ -25,7 +25,7 @@
 //#include "missing_syscall.h"
 #include "missing_threads.h"
 #include "parse-util.h"
-#include "proc-cmdline.h"
+//#include "proc-cmdline.h"
 #include "process-util.h"
 #include "ratelimit.h"
 //#include "signal-util.h"
@@ -1184,6 +1184,7 @@ int log_set_max_level_from_string(const char *e) {
         return 0;
 }
 
+#if 0 /// elogind is never PID 1
 static int parse_proc_cmdline_item(const char *key, const char *value, void *data) {
 
         /*
@@ -1224,12 +1225,12 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
                 if (log_show_location_from_string(value ?: "1") < 0)
                         log_warning("Failed to parse log location setting '%s'. Ignoring.", value);
 
-        } else if (proc_cmdline_key_streq(key, "elogind.log_tid")) {
+        } else if (proc_cmdline_key_streq(key, "systemd.log_tid")) {
 
                 if (log_show_tid_from_string(value ?: "1") < 0)
                         log_warning("Failed to parse log tid setting '%s'. Ignoring.", value);
 
-        } else if (proc_cmdline_key_streq(key, "elogind.log_time")) {
+        } else if (proc_cmdline_key_streq(key, "systemd.log_time")) {
 
                 if (log_show_time_from_string(value ?: "1") < 0)
                         log_warning("Failed to parse log time setting '%s'. Ignoring.", value);
@@ -1240,15 +1241,14 @@ static int parse_proc_cmdline_item(const char *key, const char *value, void *dat
 }
 
 static bool should_parse_proc_cmdline(void) {
-#if 0 /// elogind is never PID 1
         /* PID1 always reads the kernel command line. */
         if (getpid_cached() == 1)
                 return true;
 
         /* Otherwise, parse the commandline if invoked directly by systemd. */
-#endif // 0
-        return invoked_by_elogind();
+        return invoked_by_systemd();
 }
+#endif // 0
 
 void log_parse_environment_variables(void) {
         const char *e;
@@ -1281,8 +1281,10 @@ void log_parse_environment_variables(void) {
 void log_parse_environment(void) {
         /* Do not call from library code. */
 
+#if 0 /// elogind is never PID 1
         if (should_parse_proc_cmdline())
                 (void) proc_cmdline_parse(parse_proc_cmdline_item, NULL, PROC_CMDLINE_STRIP_RD_PREFIX);
+#endif // 0
 
         log_parse_environment_variables();
 }

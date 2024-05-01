@@ -211,9 +211,9 @@ int pidfd_get_pid(int fd, pid_t *ret);
 int setpriority_closest(int priority);
 
 bool invoked_as(char *argv[], const char *token);
-#endif // 0
 
-bool invoked_by_elogind(void);
+bool invoked_by_systemd(void);
+#endif // 0
 
 _noreturn_ void freeze(void);
 
