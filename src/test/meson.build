@@ -274,7 +274,9 @@ tests += [
 
         [files('test-umask-util.c')],
 
-        [files('test-proc-cmdline.c')],
+#if 0 /// UNNEEDED in elogind
+#         [files('test-proc-cmdline.c')],
+#endif // 0
 
         [files('test-fd-util.c'),
          [],

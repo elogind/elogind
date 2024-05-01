@@ -403,8 +403,6 @@ basic_sources = files(
         'percent-util.h',
         'prioq.c',
         'prioq.h',
-        'proc-cmdline.c',
-        'proc-cmdline.h',
         'procfs-util.c',
         'procfs-util.h',
         'process-util.c',
