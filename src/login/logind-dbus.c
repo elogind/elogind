@@ -1604,7 +1604,7 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 
 #if 0 /// elogind needs to call this from elogind.c
 static int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
-#else
+#else // 0
 int send_prepare_for(Manager *m, InhibitWhat w, bool _active) {
 #endif // 0
         int active = _active;

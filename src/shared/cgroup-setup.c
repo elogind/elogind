@@ -159,7 +159,7 @@ bool cg_is_hybrid_wanted(void) {
         /* The meaning of the kernel option is reversed wrt. to the return value of this function, hence the
          * negation. */
         return (wanted = r > 0 ? !b : is_default);
-#else
+#else // 0
         return (wanted = is_default);
 #endif // 0
 }
