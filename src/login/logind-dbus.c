@@ -2405,7 +2405,7 @@ static int method_do_shutdown_or_sleep(
 
                         case SLEEP_RESUME_NOT_SUPPORTED:
                                 return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
-                                                        "Not running on EFI and resume= is not set. No available method to resume from hibernation");
+                                                        "Not running on EFI and resume= is not set, or noresume is set. No available method to resume from hibernation");
 
                         case SLEEP_NOT_ENOUGH_SWAP_SPACE:
                                 return sd_bus_error_set(error, BUS_ERROR_SLEEP_VERB_NOT_SUPPORTED,
@@ -3166,6 +3166,9 @@ static int method_set_reboot_parameter(
         r = sd_bus_message_read(message, "s", &arg);
         if (r < 0)
                 return r;
+
+        if (!reboot_parameter_is_valid(arg))
+                return sd_bus_error_setf(error, SD_BUS_ERROR_INVALID_ARGS, "Invalid reboot parameter '%s'.", arg);
 
         r = detect_container();
         if (r < 0)
