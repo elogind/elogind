@@ -423,11 +423,11 @@ userspace_c_ld_args = []
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
-slow_tests = want_tests != 'false' and get_option('slow-tests')
 #if 0 /// elogind does not utilize fuzzing
-# fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
 #endif // 0
-integration_tests = want_tests != 'false' and get_option('integration-tests')
+want_slow_tests = want_tests != 'false' and get_option('slow-tests')
+want_fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
+want_integration_tests = want_tests != 'false' and get_option('integration-tests')
 install_tests = want_tests != 'false' and get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).
@@ -2009,7 +2009,7 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
 conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 
-conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
+conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 
 #####################################################################
 
@@ -3037,7 +3037,7 @@ endforeach
 #####################################################################
 
 mkosi = find_program('mkosi', required : false)
-if integration_tests and not mkosi.found()
+if want_integration_tests and not mkosi.found()
         error('Could not find mkosi which is required to run the integration tests')
 endif
 
@@ -3191,7 +3191,7 @@ endforeach
 #                                 message('Not compiling @0@ because tests is set to false'.format(name))
 #                                 continue
 #                         endif
-#                         if not fuzz_tests
+#                         if not want_fuzz_tests
 #                                 message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
 #                                 continue
 #                         endif
@@ -3549,10 +3549,10 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
         ['trace logging',          conf.get('LOG_TRACE') == 1],
-        ['slow tests',             slow_tests],
 #if 0 /// elogind does not utilize fuzzing
-#         ['fuzz tests',             fuzz_tests],
 #endif // 0
+        ['slow tests',             want_slow_tests],
+        ['fuzz tests',             want_fuzz_tests],
         ['install tests',          install_tests],
 #if 0 /// elogind does not ship any of those
 #         ['link-udev-shared',       get_option('link-udev-shared')],
