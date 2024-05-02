@@ -73,6 +73,13 @@ sd_login_sources = files('sd-login/sd-login.c')
 #if 0 /// elogind has a shorter list, of course...
 # ############################################################
 #
+# sd_json_sources = files(
+#         'sd-json/json-util.c',
+#         'sd-json/sd-json.c',
+# )
+#
+# ############################################################
+#
 # libsystemd_sources = files(
 #         'sd-bus/bus-common-errors.c',
 #         'sd-bus/bus-container.c',
@@ -116,7 +123,7 @@ sd_login_sources = files('sd-login/sd-login.c')
 #         'sd-network/sd-network.c',
 #         'sd-path/sd-path.c',
 #         'sd-resolve/sd-resolve.c',
-# ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
+# ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources + sd_json_sources
 #else // 0
 libelogind_sources = files(
         'sd-bus/bus-common-errors.c',
@@ -170,6 +177,7 @@ libelogind_c_args = ['-fvisibility=default']
 #         c_args : libsystemd_c_args,
 #         link_with : [libbasic],
 #         dependencies : [threads,
+#                         libm,
 #                         librt,
 #                         userspace],
 #         build_by_default : false)

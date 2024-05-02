@@ -5,7 +5,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "json.h"
+#include "sd-json.h"
+
 #include "macro.h"
 #include "pager.h"
 
@@ -177,10 +178,10 @@ const void *table_get(Table *t, TableCell *cell);
 const void *table_get_at(Table *t, size_t row, size_t column);
 #endif // 0
 
-int table_to_json(Table *t, JsonVariant **ret);
-int table_print_json(Table *t, FILE *f, JsonFormatFlags json_flags);
+int table_to_json(Table *t, sd_json_variant **ret);
+int table_print_json(Table *t, FILE *f, sd_json_format_flags_t json_flags);
 
-int table_print_with_pager(Table *t, JsonFormatFlags json_format_flags, PagerFlags pager_flags, bool show_header);
+int table_print_with_pager(Table *t, sd_json_format_flags_t json_format_flags, PagerFlags pager_flags, bool show_header);
 
 int table_set_json_field_name(Table *t, size_t idx, const char *name);
 

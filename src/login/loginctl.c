@@ -48,7 +48,7 @@ static BusPrintPropertyFlags arg_print_flags = 0;
 static bool arg_full = false;
 static PagerFlags arg_pager_flags = 0;
 static bool arg_legend = true;
-static JsonFormatFlags arg_json_format_flags = JSON_FORMAT_OFF;
+static sd_json_format_flags_t arg_json_format_flags = SD_JSON_FORMAT_OFF;
 static const char *arg_kill_whom = NULL;
 static int arg_signal = SIGTERM;
 #if 0 /// UNNEEDED by elogind
@@ -1760,7 +1760,7 @@ static int parse_argv(int argc, char *argv[]) {
 #endif // 1
 
                 case 'j':
-                        arg_json_format_flags = JSON_FORMAT_PRETTY_AUTO|JSON_FORMAT_COLOR_AUTO;
+                        arg_json_format_flags = SD_JSON_FORMAT_PRETTY_AUTO|SD_JSON_FORMAT_COLOR_AUTO;
                         arg_legend = false;
                         break;
 
@@ -1769,7 +1769,7 @@ static int parse_argv(int argc, char *argv[]) {
                         if (r <= 0)
                                 return r;
 
-                        if (!FLAGS_SET(arg_json_format_flags, JSON_FORMAT_OFF))
+                        if (!FLAGS_SET(arg_json_format_flags, SD_JSON_FORMAT_OFF))
                                 arg_legend = false;
 
                         break;
