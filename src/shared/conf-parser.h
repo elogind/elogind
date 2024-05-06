@@ -93,7 +93,6 @@ int config_parse(
                 void *userdata,
                 struct stat *ret_stat);     /* possibly NULL */
 
-
 int config_parse_many(
                 const char* const* conf_files,  /* possibly empty */
                 const char* const* conf_file_dirs,
@@ -270,6 +269,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
 CONFIG_PARSER_PROTOTYPE(config_parse_timezone);
+CONFIG_PARSER_PROTOTYPE(config_parse_calendar);
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,

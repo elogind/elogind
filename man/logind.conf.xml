@@ -446,9 +446,23 @@
         <literal>greeter</literal> or <literal>lock-screen</literal> sessions. Defaults to
         <literal>infinity</literal> (<filename>elogind</filename> is not checking the idle state
         of sessions). For details about the syntax of time spans, see
+        <citerefentry><refentrytitle>systemd.time</refentrytitle><manvolnum>7</manvolnum></citerefentry>.
         </para>
 
         <xi:include href="version-info.xml" xpointer="v252"/></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>DesignatedMaintenanceTime=</varname></term>
+
+        <listitem>
+          <para>
+            Specifies a default calendar event for scheduled shutdowns. So when using e.g. the command
+            <command>shutdown -r</command> to reboot the system without specifying a timeout, logind would
+            use the configured calendar event instead. For details about the syntax of calendar events, see
+          </para>
+
+        <xi:include href="version-info.xml" xpointer="v257"/></listitem>
       </varlistentry>
     </variablelist>
   </refsect1>

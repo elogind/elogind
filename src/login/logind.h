@@ -8,6 +8,7 @@
 #include "sd-device.h"
 #include "sd-event.h"
 
+#include "calendarspec.h"
 #include "conf-parser.h"
 #include "hashmap.h"
 #include "list.h"
@@ -184,6 +185,7 @@ struct Manager {
 #if 1 /// To put nvidia cards to sleep, elogind mus store the users uid to get the right VT information
         uid_t scheduled_sleep_uid;
 #endif // 1
+        CalendarSpec *maintenance_time;
 };
 
 void manager_reset_config(Manager *m);
