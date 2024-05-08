@@ -195,6 +195,7 @@
 #         'varlink-io.elogind.NamespaceResource.c',
 #         'varlink-io.elogind.MountFileSystem.c',
 #         'varlink-io.elogind.Machine.c',
+#         'varlink-io.elogind.Import.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
