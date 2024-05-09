@@ -130,10 +130,6 @@ Features:
   open the inode via O_PATH first, then validate its type, and then convert to
   proper fd via fd_reopen()
 
-* sd-json: before release figure out what to do about
-  SD_JSON_DEBUG+SD_JSON_WARNING. They are probably useless and should be hidden
-  in the public API since we don't expose log_json()
-
 * rough proposed implementation design for remote attestation infra: add a tool
   that generates a quote of local PCRs and NvPCRs, along with synchronous log
   snapshot. use "audit session" logic for that, so that we get read-outs and
@@ -454,10 +450,6 @@ Features:
   - elogind-cryptenroll (to allow UIs to enroll FIDO2 keys and such)
   - kernel-install
   - elogind-mount (with PK so that desktop environments could use it to mount disks)
-
-* in the service manager, pick up ERRNO= + BUSERROR= + VARLINKERROR= error
-  identifiers, and store them along with the exit status of a server and report
-  via "systemctl status".
 
 * enumerate virtiofs devices during boot-up in a generator, and synthesize
   mounts for rootfs, /usr/, /home/, /srv/ and some others from it, depending on
