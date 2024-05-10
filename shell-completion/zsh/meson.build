@@ -41,8 +41,9 @@ endif
 #          ['_systemd-tmpfiles',         'ENABLE_TMPFILES'],
 #          ['_timedatectl',              'ENABLE_TIMEDATED']]
 #else // 0
-items = [['_busctl',                   ''],
-         ['_loginctl',                 '']]
+items = [['_busctl',            ''],
+         ['_loginctl',          ''],
+         ['_elogind-inhibit',   '']]
 #endif // 0
 
 foreach item : items
