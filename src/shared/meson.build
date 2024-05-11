@@ -158,6 +158,7 @@
 #         'service-util.c',
 #         'sleep-config.c',
 #         'smack-util.c',
+#         'smbios11.c',
 #         'socket-label.c',
 #         'socket-netlink.c',
 #         'spawn-ask-password-agent.c',
