@@ -444,7 +444,7 @@ void log_forget_fds(void) {
 #endif // 0
 
 void log_set_max_level(int level) {
-        assert(level == LOG_NULL || (level & LOG_PRIMASK) == level);
+        assert(level == LOG_NULL || LOG_PRI(level) == level);
 
         log_max_level = level;
 
@@ -838,7 +838,7 @@ int log_dispatch_internal(
                 return -ERRNO_VALUE(error);
 
         /* Patch in LOG_DAEMON facility if necessary */
-        if ((level & LOG_FACMASK) == 0)
+        if (LOG_FAC(level) == 0)
                 level |= log_facility;
 
         if (open_when_needed)
@@ -1135,7 +1135,7 @@ int log_struct_internal(
             log_target == LOG_TARGET_NULL)
                 return -ERRNO_VALUE(error);
 
-        if ((level & LOG_FACMASK) == 0)
+        if (LOG_FAC(level) == 0)
                 level |= log_facility;
 
 #if 0 /// elogind does not support logging to systemd-journald
@@ -1241,7 +1241,7 @@ int log_struct_iovec_internal(
             log_target == LOG_TARGET_NULL)
                 return -ERRNO_VALUE(error);
 
-        if ((level & LOG_FACMASK) == 0)
+        if (LOG_FAC(level) == 0)
                 level |= log_facility;
 
         if (IN_SET(log_target, LOG_TARGET_AUTO,

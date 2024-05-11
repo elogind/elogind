@@ -135,8 +135,8 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
         assert_return(format, -EINVAL);
 
 #if 0 /// priority is not needed in elogind
-        xsprintf(p, "PRIORITY=%i", priority & LOG_PRIMASK);
 #endif // 0
+        xsprintf(p, "PRIORITY=%i", LOG_PRI(priority));
 
         va_copy(aq, ap);
         len = vsnprintf(buffer + 8, LINE_MAX, format, aq);
@@ -563,7 +563,7 @@ _public_ int sd_journal_printv_with_location(int priority, const char *file, con
         assert_return(format, -EINVAL);
 
 #if 0 /// As elogind sends to syslog anyway, take a shortcut here
-        xsprintf(p, "PRIORITY=%i", priority & LOG_PRIMASK);
+        xsprintf(p, "PRIORITY=%i", LOG_PRI(priority));
 
         va_copy(aq, ap);
         len = vsnprintf(buffer + 8, LINE_MAX, format, aq);
