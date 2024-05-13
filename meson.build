@@ -1525,9 +1525,6 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 #         have_ident = have and cc.has_function(
 #                 ident,
 #                 prefix : '#include <libcryptsetup.h>',
-#                 # crypt_reencrypt() raises a deprecation warning so make sure -Wno-deprecated-declarations is
-#                 # specified otherwise we fail to detect crypt_reencrypt() if -Werror is used.
-#                 args : '-Wno-deprecated-declarations',
 #                 dependencies : libcryptsetup)
 #         conf.set10('HAVE_' + ident.to_upper(), have_ident)
 # endforeach
@@ -2479,6 +2476,7 @@ libelogind = shared_library(
 #endif // 0
         install_dir : libdir)
 
+alias_target('libelogind', libelogind)
 
 #if 0 /// Do a real elogind masking else, diff always goes haywire here
 # install_libsystemd_static = static_library(
@@ -2512,12 +2510,6 @@ install_libelogind_static = static_library(
 #                         userspace],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
-# if static_libelogind != 'false'
-#         alias_target('libelogind', libelogind, install_libelogind_static)
-# else
-#         alias_target('libelogind', libelogind)
-# endif
-#
 # libudev = shared_library(
 #         'udev',
 #         version : libudev_version,
@@ -2532,6 +2524,8 @@ install_libelogind_static = static_library(
 #         install : true,
 #         install_tag: 'libudev',
 #         install_dir : libdir)
+#
+# alias_target('libudev', libudev)
 #
 # install_libudev_static = static_library(
 #         'udev',
@@ -2562,11 +2556,6 @@ install_libelogind_static = static_library(
 #endif // 0
 
 #if 0 /// elogind depends on external libudev:
-# if static_libudev != 'false'
-#         alias_target('libudev', libudev, install_libudev_static)
-# else
-#         alias_target('libudev', libudev)
-# endif
 #else // 0
 libudev = dependency('libudev', required : true)
 #endif // 0
@@ -2992,8 +2981,6 @@ endforeach
 
 test_dlopen = executables_by_name.get('test-dlopen')
 
-nss_targets = []
-pam_targets = []
 foreach dict : modules
         name = dict.get('name')
         is_nss = name.startswith('nss_')
@@ -3042,11 +3029,6 @@ foreach dict : modules
                 # Unfortunately shared_library insists on creating the symlink…
                 meson.add_install_script(sh, '-c', 'rm $DESTDIR@0@/lib@1@.so'.format(libdir, name),
                                          install_tag : 'nss')
-                nss_targets += lib
-        endif
-
-        if is_pam
-                pam_targets += lib
         endif
 
         if want_tests != 'false' and (is_nss or is_pam)
@@ -3058,14 +3040,6 @@ foreach dict : modules
                      suite : is_nss ? 'nss' : 'pam')
         endif
 endforeach
-
-# We need the actual targets to build aliases
-if nss_targets.length() > 0
-        alias_target('nss', nss_targets)
-endif
-if pam_targets.length() > 0
-        alias_target('pam', pam_targets)
-endif
 
 #####################################################################
 
