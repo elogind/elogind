@@ -1133,7 +1133,7 @@ conf.set_quoted('NOBODY_GROUP_NAME', nobody_group)
 #         name = option.underscorify().to_upper()
 #         val = get_option(option)
 #
-#         # Ensure provided GID argument is numeric, otherwise fall back to default assignment
+#         # Ensure provided GID argument is positive, otherwise fall back to default assignment
 #         conf.set(name, val > 0 ? val : '-')
 #         if val > 0
 #                 static_ugids += '@0@:@1@'.format(option, val)
@@ -3065,21 +3065,31 @@ foreach executable : ['elogind-journal-remote', 'elogind-measure']
 endforeach
 
 if mkosi.found()
+        genkey = custom_target('genkey',
+                output : ['mkosi.key', 'mkosi.crt'],
+                command : [mkosi, '--force', 'genkey'],
+                depends : mkosi_depends,
+        )
+
         custom_target('mkosi',
                 build_always_stale : true,
                 build_by_default: false,
                 console : true,
                 output : '.',
                 command : [
-                        'mkosi',
+                        mkosi,
                         '--directory', meson.current_source_dir(),
                         '--output-dir', meson.current_build_dir() / 'mkosi.output',
                         '--cache-dir', meson.current_build_dir() / 'mkosi.cache',
                         '--build-dir', meson.current_build_dir() / 'mkosi.builddir',
+                        '--secure-boot-key', meson.current_build_dir() / 'mkosi.key',
+                        '--secure-boot-certificate', meson.current_build_dir() / 'mkosi.crt',
+                        '--verity-key', meson.current_build_dir() / 'mkosi.key',
+                        '--verity-certificate', meson.current_build_dir() / 'mkosi.crt',
                         '--force',
                         'build',
                 ],
-                depends : mkosi_depends,
+                depends : mkosi_depends + [genkey],
         )
 endif
 
