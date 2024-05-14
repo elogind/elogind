@@ -226,6 +226,10 @@ libelogind_pc = custom_target(
 #                 'sources' : files('sd-journal/test-journal-enum.c'),
 #                 'timeout' : 360,
 #         },
+#         {
+#                 'sources' : files('sd-event/test-event.c'),
+#                 'timeout' : 120,
+#         }
 # ]
 #endif // 0
 
@@ -239,7 +243,6 @@ simple_tests += files(
         'sd-device/test-device-util.c',
         'sd-device/test-sd-device-monitor.c',
         'sd-device/test-sd-device.c',
-        'sd-event/test-event.c',
 #if 0 /// elogind only stubs tiny parts of journald, none of these would work
 #         'sd-journal/test-journal-flush.c',
 #         'sd-journal/test-journal-interleaving.c',
