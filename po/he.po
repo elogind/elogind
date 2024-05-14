@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: elogind\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-22 14:09+0100\n"
+"POT-Creation-Date: 2024-05-14 17:01+0100\n"
 "PO-Revision-Date: 2023-11-22 00:01+0000\n"
 "Last-Translator: Yaron Shahrabani <sh.yaron@gmail.com>\n"
 "Language-Team: Hebrew <https://translate.fedoraproject.org/projects/systemd/"
@@ -254,40 +254,40 @@ msgstr ""
 # msgid "Too many unsuccessful login attempts for user %s, refusing."
 # msgstr "יותר מדי ניסיונות כניסה כושלים למשתמש %s, יסורב מעתה."
 #
-# #: src/home/pam_systemd_home.c:956
+# #: src/home/pam_systemd_home.c:964
 # msgid "User record is blocked, prohibiting access."
 # msgstr "רשומת המשתמש חסומה, הגישה נמנעת."
 #
-# #: src/home/pam_systemd_home.c:960
+# #: src/home/pam_systemd_home.c:968
 # msgid "User record is not valid yet, prohibiting access."
 # msgstr "רשומת המשתמש לא תקפה עדיין, הגישה נמנעת."
 #
-# #: src/home/pam_systemd_home.c:964
+# #: src/home/pam_systemd_home.c:972
 # msgid "User record is not valid anymore, prohibiting access."
 # msgstr "רשומת המשתמש אינה תקפה עוד, הגישה נמנעת."
 #
-# #: src/home/pam_systemd_home.c:969 src/home/pam_systemd_home.c:1020
+# #: src/home/pam_systemd_home.c:977 src/home/pam_systemd_home.c:1028
 # msgid "User record not valid, prohibiting access."
 # msgstr "רשומת המשתמש אינה תקפה, הגישה נמנעת."
 #
-# #: src/home/pam_systemd_home.c:981
+# #: src/home/pam_systemd_home.c:989
 # #, c-format
 # msgid "Too many logins, try again in %s."
 # msgstr "יותר מדי ניסיונות כניסה, כדאי לנסות שוב בעוד %s."
 #
-# #: src/home/pam_systemd_home.c:992
+# #: src/home/pam_systemd_home.c:1000
 # msgid "Password change required."
 # msgstr "צריך לשנות את הסיסמה."
 #
-# #: src/home/pam_systemd_home.c:996
+# #: src/home/pam_systemd_home.c:1004
 # msgid "Password expired, change required."
 # msgstr "תוקף הסיסמה פג, צריך להחליף."
 #
-# #: src/home/pam_systemd_home.c:1002
+# #: src/home/pam_systemd_home.c:1010
 # msgid "Password is expired, but can't change, refusing login."
 # msgstr "תוקף הסיסמה פג, אך אי אפשר להחליף, הכניסה מסורבת."
 #
-# #: src/home/pam_systemd_home.c:1006
+# #: src/home/pam_systemd_home.c:1014
 # msgid "Password will expire soon, please change."
 # msgstr "תוקף הסיסמה יפוג בקרוב, נא להחליף."
 #
