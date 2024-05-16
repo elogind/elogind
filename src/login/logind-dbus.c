@@ -1132,7 +1132,7 @@ static int method_create_session_pidfd(sd_bus_message *message, void *userdata, 
 
 static int method_release_session(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = ASSERT_PTR(userdata);
-        Session *session;
+        Session *session, *sender_session;
         const char *name;
         int r;
 
@@ -1147,6 +1147,13 @@ static int method_release_session(sd_bus_message *message, void *userdata, sd_bu
                 return r;
 
         log_debug_elogind("Called for session %s (%s)", session->id, strnull(name));
+        r = get_sender_session(m, message, /* consult_display= */ false, error, &sender_session);
+        if (r < 0)
+                return r;
+
+        if (session != sender_session)
+                return sd_bus_error_set(error, BUS_ERROR_NOT_IN_CONTROL, "You are not in control of this session");
+
         r = session_release(session);
         if (r < 0)
                 return r;
@@ -4008,7 +4015,7 @@ static const sd_bus_vtable manager_vtable[] = {
                                 SD_BUS_ARGS("s", session_id),
                                 SD_BUS_NO_RESULT,
                                 method_release_session,
-                                0),
+                                SD_BUS_VTABLE_UNPRIVILEGED),
         SD_BUS_METHOD_WITH_ARGS("ActivateSession",
                                 SD_BUS_ARGS("s", session_id),
                                 SD_BUS_NO_RESULT,
