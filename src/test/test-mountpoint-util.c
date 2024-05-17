@@ -366,9 +366,9 @@ TEST(fstype_can_discard) {
 }
 
 TEST(fstype_can_norecovery) {
-        assert_se(fstype_can_norecovery("ext4"));
-        assert_se(!fstype_can_norecovery("vfat"));
-        assert_se(!fstype_can_norecovery("tmpfs"));
+        assert_se(streq(fstype_norecovery_option("ext4"), "norecovery"));
+        assert_se(!fstype_norecovery_option("vfat"));
+        assert_se(!fstype_norecovery_option("tmpfs"));
 }
 
 TEST(fstype_can_umask) {
