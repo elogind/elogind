@@ -329,34 +329,33 @@ fallback_fstat:
 }
 
 /* flags can be AT_SYMLINK_FOLLOW or 0 */
-int path_is_mount_point(const char *t, const char *root, int flags) {
+int path_is_mount_point_full(const char *path, const char *root, int flags) {
         _cleanup_free_ char *canonical = NULL;
         _cleanup_close_ int fd = -EBADF;
         int r;
 
-        assert(t);
+        assert(path);
         assert((flags & ~AT_SYMLINK_FOLLOW) == 0);
 
-        if (path_equal(t, "/"))
+        if (path_equal(path, "/"))
                 return 1;
 
-        /* we need to resolve symlinks manually, we can't just rely on
-         * fd_is_mount_point() to do that for us; if we have a structure like
-         * /bin -> /usr/bin/ and /usr is a mount point, then the parent that we
+        /* we need to resolve symlinks manually, we can't just rely on fd_is_mount_point() to do that for us;
+         * if we have a structure like /bin -> /usr/bin/ and /usr is a mount point, then the parent that we
          * look at needs to be /usr, not /. */
-        if (flags & AT_SYMLINK_FOLLOW) {
-                r = chase(t, root, CHASE_TRAIL_SLASH, &canonical, NULL);
+        if (FLAGS_SET(flags, AT_SYMLINK_FOLLOW)) {
+                r = chase(path, root, CHASE_TRAIL_SLASH, &canonical, NULL);
                 if (r < 0)
                         return r;
 
-                t = canonical;
+                path = canonical;
         }
 
-        fd = open_parent(t, O_PATH|O_CLOEXEC, 0);
+        fd = open_parent(path, O_PATH|O_CLOEXEC, 0);
         if (fd < 0)
                 return fd;
 
-        return fd_is_mount_point(fd, last_path_component(t), flags);
+        return fd_is_mount_point(fd, last_path_component(path), flags);
 }
 
 int path_get_mnt_id_at_fallback(int dir_fd, const char *path, int *ret) {
@@ -497,16 +496,30 @@ bool fstype_can_discard(const char *fstype) {
         return mount_option_supported(fstype, "discard", NULL) > 0;
 }
 
-bool fstype_can_norecovery(const char *fstype) {
+const char* fstype_norecovery_option(const char *fstype) {
+        int r;
+
         assert(fstype);
 
         /* Use a curated list as first check, to avoid calling fsopen() which might load kmods, which might
          * not be allowed in our MAC context. */
-        if (STR_IN_SET(fstype, "ext3", "ext4", "xfs", "btrfs"))
-                return true;
+        if (STR_IN_SET(fstype, "ext3", "ext4", "xfs"))
+                return "norecovery";
+
+        /* btrfs dropped support for the "norecovery" option in 6.8
+         * (https://github.com/torvalds/linux/commit/a1912f712188291f9d7d434fba155461f1ebef66) and replaced
+         * it with rescue=nologreplay, so we check for the new name first and fall back to checking for the
+         * old name if the new name doesn't work. */
+        if (streq(fstype, "btrfs")) {
+                r = mount_option_supported(fstype, "rescue=nologreplay", NULL);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to check for btrfs rescue=nologreplay option, assuming it is not supported: %m");
+                if (r > 0)
+                        return "rescue=nologreplay";
+        }
 
         /* On new kernels we can just ask the kernel */
-        return mount_option_supported(fstype, "norecovery", NULL) > 0;
+        return mount_option_supported(fstype, "norecovery", NULL) > 0 ? "norecovery" : NULL;
 }
 
 bool fstype_can_umask(const char *fstype) {
