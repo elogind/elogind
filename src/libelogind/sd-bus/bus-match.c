@@ -824,7 +824,7 @@ int bus_match_parse(
 }
 
 #if 0 /// UNNEEDED by elogind
-char *bus_match_to_string(struct bus_match_component *components, size_t n_components) {
+char* bus_match_to_string(struct bus_match_component *components, size_t n_components) {
         _cleanup_(memstream_done) MemStream m = {};
         FILE *f;
         int r;

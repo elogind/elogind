@@ -39,7 +39,7 @@ int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret) {
 }
 #endif // 0
 
-char *format_bytes_full(char *buf, size_t l, uint64_t t, FormatBytesFlag flag) {
+char* format_bytes_full(char *buf, size_t l, uint64_t t, FormatBytesFlag flag) {
         typedef struct {
                 const char *suffix;
                 uint64_t factor;

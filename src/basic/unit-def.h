@@ -281,7 +281,7 @@ typedef enum NotifyAccess {
 } NotifyAccess;
 
 #if 0 /// elogind does not support systemd units
-char *unit_dbus_path_from_name(const char *name);
+char* unit_dbus_path_from_name(const char *name);
 int unit_name_from_dbus_path(const char *path, char **name);
 
 const char* unit_dbus_interface_from_type(UnitType t);
