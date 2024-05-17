@@ -66,5 +66,5 @@ int load_os_release_pairs_with_prefix(const char *root, const char *prefix, char
 int os_release_support_ended(const char *support_end, bool quiet, usec_t *ret_eol);
 
 #if 0 /// UNNEEDED by elogind
-const char *os_release_pretty_name(const char *pretty_name, const char *name);
 #endif // 0
+const char* os_release_pretty_name(const char *pretty_name, const char *name);

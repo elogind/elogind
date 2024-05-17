@@ -6,7 +6,7 @@
 #include "string-util.h"
 
 #if 0 /// UNNEEDED by elogind
-const char *af_to_name(int id);
+const char* af_to_name(int id);
 int af_from_name(const char *name);
 
 static inline const char* af_to_name_short(int id) {

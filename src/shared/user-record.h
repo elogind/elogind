@@ -397,24 +397,24 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(UserRecord*, user_record_unref);
 int user_record_load(UserRecord *h, sd_json_variant *v, UserRecordLoadFlags flags);
 int user_record_build(UserRecord **ret, ...);
 
-const char *user_record_user_name_and_realm(UserRecord *h);
+const char* user_record_user_name_and_realm(UserRecord *h);
 UserStorage user_record_storage(UserRecord *h);
 #if 0 /// UNNEEDED by elogind
-const char *user_record_file_system_type(UserRecord *h);
-const char *user_record_skeleton_directory(UserRecord *h);
+const char* user_record_file_system_type(UserRecord *h);
+const char* user_record_skeleton_directory(UserRecord *h);
 mode_t user_record_access_mode(UserRecord *h);
 #endif // 0
-const char *user_record_home_directory(UserRecord *h);
-const char *user_record_image_path(UserRecord *h);
 #if 0 /// UNNEEDED by elogind
+const char* user_record_home_directory(UserRecord *h);
+const char* user_record_image_path(UserRecord *h);
 unsigned long user_record_mount_flags(UserRecord *h);
-const char *user_record_cifs_user_name(UserRecord *h);
-const char *user_record_shell(UserRecord *h);
-const char *user_record_real_name(UserRecord *h);
+const char* user_record_cifs_user_name(UserRecord *h);
+const char* user_record_shell(UserRecord *h);
+const char* user_record_real_name(UserRecord *h);
 bool user_record_luks_discard(UserRecord *h);
 bool user_record_luks_offline_discard(UserRecord *h);
-const char *user_record_luks_cipher(UserRecord *h);
-const char *user_record_luks_cipher_mode(UserRecord *h);
+const char* user_record_luks_cipher(UserRecord *h);
+const char* user_record_luks_cipher_mode(UserRecord *h);
 uint64_t user_record_luks_volume_key_size(UserRecord *h);
 const char* user_record_luks_pbkdf_type(UserRecord *h);
 uint64_t user_record_luks_pbkdf_force_iterations(UserRecord *h);
@@ -422,7 +422,7 @@ usec_t user_record_luks_pbkdf_time_cost_usec(UserRecord *h);
 uint64_t user_record_luks_pbkdf_memory_cost(UserRecord *h);
 uint64_t user_record_luks_pbkdf_parallel_threads(UserRecord *h);
 uint64_t user_record_luks_sector_size(UserRecord *h);
-const char *user_record_luks_pbkdf_hash_algorithm(UserRecord *h);
+const char* user_record_luks_pbkdf_hash_algorithm(UserRecord *h);
 gid_t user_record_gid(UserRecord *h);
 #endif // 0
 UserDisposition user_record_disposition(UserRecord *h);
@@ -456,11 +456,11 @@ int user_record_test_password_change_required(UserRecord *h);
 #endif // 0
 
 /* The following six are user by group-record.c, that's why we export them here */
-
 int json_dispatch_realm(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata);
 int json_dispatch_gecos(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata);
 int json_dispatch_user_group_list(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata);
 int json_dispatch_user_disposition(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata);
+
 int per_machine_id_match(sd_json_variant *ids, sd_json_dispatch_flags_t flags);
 int per_machine_hostname_match(sd_json_variant *hns, sd_json_dispatch_flags_t flags);
 int per_machine_match(sd_json_variant *entry, sd_json_dispatch_flags_t flags);

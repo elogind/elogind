@@ -171,8 +171,8 @@ bool tty_is_vc_resolve(const char *tty);
 bool tty_is_console(const char *tty) _pure_;
 int vtnr_from_tty(const char *tty);
 #if 0 /// UNNEEDED by elogind
-const char *default_term_for_tty(const char *tty);
 #endif // 0
+const char* default_term_for_tty(const char *tty);
 
 #if 0 /// UNNEEDED by elogind
 int make_console_stdio(void);
@@ -216,15 +216,15 @@ static inline bool colors_enabled(void) {
                 }                                              \
         }
 
-static inline const char *ansi_underline(void) {
+static inline const char* ansi_underline(void) {
         return underline_enabled() ? ANSI_UNDERLINE : "";
 }
 
-static inline const char *ansi_add_underline(void) {
+static inline const char* ansi_add_underline(void) {
         return underline_enabled() ? ANSI_ADD_UNDERLINE : "";
 }
 
-static inline const char *ansi_add_underline_grey(void) {
+static inline const char* ansi_add_underline_grey(void) {
         return underline_enabled() ?
                 (colors_enabled() ? ANSI_ADD_UNDERLINE_GREY : ANSI_ADD_UNDERLINE) : "";
 }

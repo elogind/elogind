@@ -8,7 +8,7 @@
  */
 #define ERRNO_MAX 4095
 
-const char *errno_to_name(int id);
+const char* errno_to_name(int id);
 int errno_from_name(const char *name);
 #if 0 /// UNNEEDED by elogind
 static inline bool errno_is_valid(int n) {

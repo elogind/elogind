@@ -245,6 +245,6 @@ Architecture uname_architecture(void);
 #endif
 
 #if 0 /// UNNEEDED by elogind
-const char *architecture_to_string(Architecture a) _const_;
+const char* architecture_to_string(Architecture a) _const_;
 Architecture architecture_from_string(const char *s) _pure_;
 #endif // 0

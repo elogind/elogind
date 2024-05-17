@@ -102,8 +102,8 @@ bool can_memlock(void);
 
 #if 0 /// UNNEEDED by elogind
 /* Provide a convenient way to check if we're running in CI. */
-const char *ci_environment(void);
 #endif // 0
+const char* ci_environment(void);
 
 typedef struct TestFunc {
         union f {

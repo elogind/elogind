@@ -1826,7 +1826,7 @@ void log_setup(void) {
                 log_show_color(true);
 }
 
-const char *_log_set_prefix(const char *prefix, bool force) {
+const char* _log_set_prefix(const char *prefix, bool force) {
         const char *old = log_prefix;
 
         if (prefix || force)
