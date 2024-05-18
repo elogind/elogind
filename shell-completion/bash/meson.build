@@ -52,6 +52,7 @@ endif
 #          ['systemd-dissect',     'HAVE_BLKID'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],
 #          ['systemd-sysext',      'ENABLE_SYSEXT'],
+#          ['elogind-vmspawn',     'ENABLE_VMSPAWN'],
 #          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0
 items = [['busctl',              ''],
