@@ -854,7 +854,10 @@ static int create_session(
          * which is a special PAM session that avoids creating a logind session. */
         r = manager_get_user_by_pid(m, leader.pid, NULL);
         if (r < 0)
-                return r;
+                return log_debug_errno(
+                                r,
+                                "Failed to check if process " PID_FMT " is already in a session: %m",
+                                leader.pid);
         if (r > 0)
                 return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY,
                                          "Already running in a session or user slice");
