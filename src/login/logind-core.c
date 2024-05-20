@@ -398,10 +398,8 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
         } else {
 #if 0 /// elogind does not support systemd units, but its own session system
                 r = cg_pidref_get_unit(pid, &unit);
-                if (r < 0)
-                        return r;
-
-                s = hashmap_get(m->session_units, unit);
+                if (r >= 0)
+                        s = hashmap_get(m->session_units, unit);
 #else // 0
                 log_debug_elogind("Searching session for PID %d", pid->pid);
                 r = cg_pid_get_session(pid->pid, &session_name);
