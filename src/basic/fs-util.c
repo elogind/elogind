@@ -318,7 +318,10 @@ int fchmod_opath(int fd, mode_t m) {
                 if (errno != ENOENT)
                         return -errno;
 
-                return proc_fd_enoent_errno();
+                if (proc_mounted() == 0)
+                        return -ENOSYS; /* if we have no /proc/, the concept is not implementable */
+
+                return -ENOENT;
         }
 
         return 0;
@@ -341,7 +344,10 @@ int futimens_opath(int fd, const struct timespec ts[2]) {
                 if (errno != ENOENT)
                         return -errno;
 
-                return proc_fd_enoent_errno();
+                if (proc_mounted() == 0)
+                        return -ENOSYS;
+
+                return -ENOENT;
         }
 
         return 0;
@@ -637,11 +643,11 @@ static int tmp_dir_internal(const char *def, const char **ret) {
                 return 0;
         }
 
-        k = is_dir(def, /* follow = */ true);
+        k = is_dir(def, true);
         if (k == 0)
                 k = -ENOTDIR;
         if (k < 0)
-                return RET_GATHER(r, k);
+                return r < 0 ? r : k;
 
         *ret = def;
         return 0;
@@ -685,19 +691,18 @@ int access_fd(int fd, int mode) {
 
         /* Like access() but operates on an already open fd */
 
-        if (faccessat(fd, "", mode, AT_EMPTY_PATH) >= 0)
-                return 0;
-        if (errno != EINVAL)
-                return -errno;
-
-        /* Support for AT_EMPTY_PATH is added rather late (kernel 5.8), so fall back to going through /proc/
-         * if unavailable. */
-
         if (access(FORMAT_PROC_FD_PATH(fd), mode) < 0) {
                 if (errno != ENOENT)
                         return -errno;
 
-                return proc_fd_enoent_errno();
+                /* ENOENT can mean two things: that the fd does not exist or that /proc is not mounted. Let's
+                 * make things debuggable and distinguish the two. */
+
+                if (proc_mounted() == 0)
+                        return -ENOSYS;  /* /proc is not available or not set up properly, we're most likely in some chroot
+                                          * environment. */
+
+                return -EBADF; /* The directory exists, hence it's the fd that doesn't. */
         }
 
         return 0;
@@ -1266,7 +1271,7 @@ int xopenat_lock_full(
 }
 
 int link_fd(int fd, int newdirfd, const char *newpath) {
-        int r, k;
+        int r;
 
         assert(fd >= 0);
         assert(newdirfd >= 0 || newdirfd == AT_FDCWD);
@@ -1279,11 +1284,8 @@ int link_fd(int fd, int newdirfd, const char *newpath) {
 
         /* Fall back to symlinking via AT_EMPTY_PATH as fallback (this requires CAP_DAC_READ_SEARCH and a
          * more recent kernel, but does not require /proc/ mounted) */
-        k = proc_mounted();
-        if (k < 0)
+        if (proc_mounted() != 0)
                 return r;
-        if (k > 0)
-                return -EBADF;
 
         return RET_NERRNO(linkat(fd, "", newdirfd, newpath, AT_EMPTY_PATH));
 }
