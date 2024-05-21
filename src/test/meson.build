@@ -224,7 +224,6 @@ simple_tests += files(
 #if 0 /// UNNEEDED by elogind
 #         'test-secure-bits.c',
 #endif // 0
-        'test-selinux.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-serialize.c',
 #endif // 0
@@ -512,6 +511,10 @@ executables += [
 #                 'conditions' : ['HAVE_SECCOMP'],
 #         },
 #endif // 0
+        test_template + {
+                'sources' : files('test-selinux.c'),
+                'dependencies' : libselinux,
+        },
         test_template + {
                 'sources' : files('test-set-disable-mempool.c'),
                 'dependencies' : threads,

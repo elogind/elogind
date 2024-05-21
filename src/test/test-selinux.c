@@ -55,7 +55,7 @@ static void test_cleanup(void) {
 
 #if 0 /// UNNEEDED by elogind
 static void test_misc(const char* fname) {
-        _cleanup_(mac_selinux_freep) char *label = NULL, *label2 = NULL, *label3 = NULL;
+        _cleanup_freecon_ char *label = NULL, *label2 = NULL, *label3 = NULL;
         int r;
         _cleanup_close_ int fd = -EBADF;
 
