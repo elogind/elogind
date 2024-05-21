@@ -1406,10 +1406,10 @@ msgstr "Za spremembo navideznega terminala je potrebno preverjanje pristnosti."
 # #~ msgstr "Zaviranje samodejnega zaklepanja domačega območja"
 #
 # #, fuzzy
+# #~ msgid ""
+# #~ "Authentication is required to inhibit automatic lock of a user's home "
+# #~ "area."
+# #~ msgstr ""
+# #~ "Preverjanje pristnosti je potrebno za preprečevanje samodejnega "
+# #~ "zaklepanja uporabnikovega domačega območja."
 #endif // 0
-#~ msgid ""
-#~ "Authentication is required to inhibit automatic lock of a user's home "
-#~ "area."
-#~ msgstr ""
-#~ "Preverjanje pristnosti je potrebno za preprečevanje samodejnega "
-#~ "zaklepanja uporabnikovega domačega območja."
