@@ -2435,6 +2435,8 @@ libelogind = shared_library(
         include_directories : libsystemd_includes,
         link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
+#                      # Make sure our library is never deleted from memory, so that our open logging fds don't leak on dlopen/dlclose cycles.
+#                      '-z', 'nodelete',
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
 #         link_with : [libbasic],
 #         link_whole : [libsystemd_static],
