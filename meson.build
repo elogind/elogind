@@ -293,6 +293,7 @@ endif
 # if sshdconfdir == ''
 #         sshdconfdir = sysconfdir / 'ssh/sshd_config.d'
 # endif
+# conf.set10('LINK_SSHD_USERDB_DROPIN', sshdconfdir != 'no' and not sshdconfdir.startswith('/usr/'))
 #
 # sshdprivsepdir = get_option('sshdprivsepdir')
 # conf.set10('CREATE_SSHDPRIVSEPDIR', sshdprivsepdir != 'no' and not sshdprivsepdir.startswith('/usr/'))
