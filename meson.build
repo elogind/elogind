@@ -287,6 +287,7 @@ endif
 # if sshconfdir == ''
 #         sshconfdir = sysconfdir / 'ssh/ssh_config.d'
 # endif
+# conf.set10('LINK_SSH_PROXY_DROPIN', sshconfdir != 'no' and not sshconfdir.startswith('/usr/'))
 #
 # sshdconfdir = get_option('sshdconfdir')
 # if sshdconfdir == ''
@@ -3063,31 +3064,21 @@ foreach executable : ['elogind-journal-remote', 'elogind-measure']
 endforeach
 
 if mkosi.found()
-        genkey = custom_target('genkey',
-                output : ['mkosi.key', 'mkosi.crt'],
-                command : [mkosi, '--force', 'genkey'],
-                depends : mkosi_depends,
-        )
-
         custom_target('mkosi',
                 build_always_stale : true,
                 build_by_default: false,
                 console : true,
                 output : '.',
                 command : [
-                        mkosi,
+                        'mkosi',
                         '--directory', meson.current_source_dir(),
                         '--output-dir', meson.current_build_dir() / 'mkosi.output',
                         '--cache-dir', meson.current_build_dir() / 'mkosi.cache',
                         '--build-dir', meson.current_build_dir() / 'mkosi.builddir',
-                        '--secure-boot-key', meson.current_build_dir() / 'mkosi.key',
-                        '--secure-boot-certificate', meson.current_build_dir() / 'mkosi.crt',
-                        '--verity-key', meson.current_build_dir() / 'mkosi.key',
-                        '--verity-certificate', meson.current_build_dir() / 'mkosi.crt',
                         '--force',
                         'build',
                 ],
-                depends : mkosi_depends + [genkey],
+                depends : mkosi_depends,
         )
 endif
 
