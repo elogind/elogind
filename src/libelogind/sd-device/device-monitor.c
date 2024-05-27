@@ -127,8 +127,8 @@ _public_ int sd_device_monitor_set_receive_buffer_size(sd_device_monitor *m, siz
 
 
 #if 0 /// UNNEEDED by elogind
-int device_monitor_get_fd(sd_device_monitor *m) {
-        assert(m);
+_public_ int sd_device_monitor_get_fd(sd_device_monitor *m) {
+        assert_return(m, -EINVAL);
 
         return m->sock;
 }
@@ -311,7 +311,7 @@ static int device_monitor_event_handler(sd_event_source *s, int fd, uint32_t rev
         _unused_ _cleanup_(log_context_unrefp) LogContext *c = NULL;
         sd_device_monitor *m = ASSERT_PTR(userdata);
 
-        if (device_monitor_receive_device(m, &device) <= 0)
+        if (sd_device_monitor_receive(m, &device) <= 0)
                 return 0;
 
         if (log_context_enabled())
@@ -540,7 +540,7 @@ static bool check_sender_uid(sd_device_monitor *m, uid_t uid) {
         return false;
 }
 
-int device_monitor_receive_device(sd_device_monitor *m, sd_device **ret) {
+_public_ int sd_device_monitor_receive(sd_device_monitor *m, sd_device **ret) {
         _cleanup_(sd_device_unrefp) sd_device *device = NULL;
         _cleanup_free_ uint8_t *buf_alloc = NULL;
         union {
@@ -565,8 +565,8 @@ int device_monitor_receive_device(sd_device_monitor *m, sd_device **ret) {
         bool is_initialized = false;
         int r;
 
-        assert(m);
-        assert(ret);
+        assert_return(m, -EINVAL);
+        assert_return(ret, -EINVAL);
 
         n = next_datagram_size_fd(m->sock);
         if (n < 0) {
