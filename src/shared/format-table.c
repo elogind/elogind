@@ -1740,7 +1740,7 @@ static const char *table_data_format(Table *t, TableData *d, bool avoid_uppercas
                 if (!p)
                         return NULL;
 
-                if (!format_bytes_full(p, FORMAT_BYTES_MAX, d->size, 0))
+                if (!format_bytes_full(p, FORMAT_BYTES_MAX, d->size, FORMAT_BYTES_BELOW_POINT))
                         return table_ersatz_string(t);
 
                 n = strlen(p);
@@ -2662,7 +2662,7 @@ int table_print(Table *t, FILE *f) {
                         }
 
                         fputc('\n', f);
-                        n_subline ++;
+                        n_subline++;
                 } while (more_sublines);
         }
 
