@@ -625,8 +625,16 @@ int fd_get_path(int fd, char **ret) {
                 return safe_getcwd(ret);
 
         r = readlink_malloc(FORMAT_PROC_FD_PATH(fd), ret);
-        if (r == -ENOENT)
-                return proc_fd_enoent_errno();
+        if (r == -ENOENT) {
+                /* ENOENT can mean two things: that the fd does not exist or that /proc is not mounted. Let's make
+                 * things debuggable and distinguish the two. */
+
+                if (proc_mounted() == 0)
+                        return -ENOSYS;  /* /proc is not available or not set up properly, we're most likely in some chroot
+                                          * environment. */
+                return -EBADF; /* The directory exists, hence it's the fd that doesn't. */
+        }
+
         return r;
 }
 
@@ -766,8 +774,7 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
         }
 
         /* Let's assemble fd[] with the fds to install in place of stdin/stdout/stderr */
-        for (int i = 0; i < 3; i++) {
-
+        for (int i = 0; i < 3; i++)
                 if (fd[i] < 0)
                         fd[i] = null_fd;        /* A negative parameter means: connect this one to /dev/null */
                 else if (fd[i] != i && fd[i] < 3) {
@@ -780,20 +787,16 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
 
                         fd[i] = copy_fd[i];
                 }
-        }
 
         /* At this point we now have the fds to use in fd[], and they are all above the stdio range, so that
          * we have freedom to move them around. If the fds already were at the right places then the specific
          * fds are -EBADF. Let's now move them to the right places. This is the point of no return. */
-        for (int i = 0; i < 3; i++) {
-
+        for (int i = 0; i < 3; i++)
                 if (fd[i] == i) {
-
                         /* fd is already in place, but let's make sure O_CLOEXEC is off */
                         r = fd_cloexec(i, false);
                         if (r < 0)
                                 goto finish;
-
                 } else {
                         assert(fd[i] > 2);
 
@@ -802,7 +805,6 @@ int rearrange_stdio(int original_input_fd, int original_output_fd, int original_
                                 goto finish;
                         }
                 }
-        }
 
         r = 0;
 
@@ -825,6 +827,8 @@ finish:
 }
 
 int fd_reopen(int fd, int flags) {
+        int r;
+
         assert(fd >= 0 || fd == AT_FDCWD);
         assert(!FLAGS_SET(flags, O_CREAT));
 
@@ -860,7 +864,13 @@ int fd_reopen(int fd, int flags) {
                 if (errno != ENOENT)
                         return -errno;
 
-                return proc_fd_enoent_errno();
+                r = proc_mounted();
+                if (r == 0)
+                        return -ENOSYS; /* if we have no /proc/, the concept is not implementable */
+
+                return r > 0 ? -EBADF : -ENOENT; /* If /proc/ is definitely around then this means the fd is
+                                                  * not valid, otherwise let's propagate the original
+                                                  * error */
         }
 
         return new_fd;
@@ -1133,17 +1143,3 @@ char *format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, 
 }
 #endif // 0
 
-int proc_fd_enoent_errno(void) {
-        int r;
-
-        /* When ENOENT is returned during the use of FORMAT_PROC_FD_PATH, it can mean two things:
-         * that the fd does not exist or that /proc/ is not mounted.
-         * Let's make things debuggable and figure out the most appropriate errno. */
-
-        r = proc_mounted();
-        if (r == 0)
-                return -ENOSYS;  /* /proc/ is not available or not set up properly, we're most likely
-                                    in some chroot environment. */
-        return r > 0 ? -EBADF : -ENOENT; /* If /proc/ is definitely around then this means the fd is
-                                            not valid, otherwise let's propagate the original ENOENT. */
-}
