@@ -855,14 +855,11 @@ int do_sleep(Manager* m, SleepOperation operation) {
         if (r != 0)
                 (void) unit_freezer_new_freeze(SPECIAL_USER_SLICE, &user_slice_freezer);
         else
-                log_notice("User sessions remain unfrozen on explicit request ($SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0).\n"
-                           "This is not recommended, and might result in unexpected behavior, particularly\n"
-                           "in suspend-then-hibernate operations or setups with encrypted home directories.");
 #endif // 0
-
-#if 1 // Before we can continue, we have to park our manager in the sleep config struct
-        sleep_config->manager = m;
-#endif // 1
+                log_notice("User sessions remain unfrozen on explicit request "
+                           "($SYSTEMD_SLEEP_FREEZE_USER_SESSIONS is set to false). This is not recommended, "
+                           "and might result in unexpected behavior, particularly in suspend-then-hibernate "
+                           "operations or setups with encrypted home directories.");
 
         switch (arg_operation) {
 
