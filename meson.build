@@ -2462,7 +2462,6 @@ libelogind = shared_library(
 #endif // 0
         install_dir : libdir)
 
-alias_target('libelogind', libelogind)
 
 #if 0 /// Do a real elogind masking else, diff always goes haywire here
 # install_libsystemd_static = static_library(
@@ -2498,6 +2497,12 @@ install_libelogind_static = static_library(
 #                         userspace],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
+# if static_libelogind != 'false'
+#         alias_target('libelogind', libelogind, install_libelogind_static)
+# else
+#         alias_target('libelogind', libelogind)
+# endif
+#
 # libudev = shared_library(
 #         'udev',
 #         version : libudev_version,
@@ -2512,8 +2517,6 @@ install_libelogind_static = static_library(
 #         install : true,
 #         install_tag: 'libudev',
 #         install_dir : libdir)
-#
-# alias_target('libudev', libudev)
 #
 # install_libudev_static = static_library(
 #         'udev',
@@ -2546,6 +2549,11 @@ install_libelogind_static = static_library(
 #if 1 /// elogind depends on external libudev:
 libudev = dependency('libudev', required : true)
 #endif // 1
+if static_libudev != 'false'
+        alias_target('libudev', libudev, install_libudev_static)
+else
+        alias_target('libudev', libudev)
+endif
 
 #####################################################################
 
