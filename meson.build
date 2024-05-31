@@ -2981,6 +2981,8 @@ endforeach
 
 test_dlopen = executables_by_name.get('test-dlopen')
 
+nss_targets = []
+pam_targets = []
 foreach dict : modules
         name = dict.get('name')
         is_nss = name.startswith('nss_')
@@ -3029,6 +3031,11 @@ foreach dict : modules
                 # Unfortunately shared_library insists on creating the symlink…
                 meson.add_install_script(sh, '-c', 'rm $DESTDIR@0@/lib@1@.so'.format(libdir, name),
                                          install_tag : 'nss')
+                nss_targets += lib
+        endif
+
+        if is_pam
+                pam_targets += lib
         endif
 
         if want_tests != 'false' and (is_nss or is_pam)
@@ -3040,6 +3047,14 @@ foreach dict : modules
                      suite : is_nss ? 'nss' : 'pam')
         endif
 endforeach
+
+# We need the actual targets to build aliases
+if nss_targets.length() > 0
+        alias_target('nss', nss_targets)
+endif
+if pam_targets.length() > 0
+        alias_target('pam', pam_targets)
+endif
 
 #####################################################################
 
