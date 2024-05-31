@@ -881,10 +881,13 @@ int do_sleep(Manager* m, SleepOperation operation) {
 
                 break;
 
-        default:
+        case SLEEP_SUSPEND:
+        case SLEEP_HIBERNATE:
                 r = execute(sleep_config, arg_operation, NULL);
                 break;
 
+        default:
+                assert_not_reached();
         }
 
 #if 0 /// elogind does not support user slices
