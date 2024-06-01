@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: elogind\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-14 17:01+0100\n"
+"POT-Creation-Date: 2024-06-01 15:13+0900\n"
 "PO-Revision-Date: 2024-05-12 07:35+0000\n"
 "Last-Translator: Scrambled 777 <weblate.scrambled777@simplelogin.com>\n"
 "Language-Team: Hindi <https://translate.fedoraproject.org/projects/systemd/"
@@ -967,7 +967,10 @@ msgstr "आभासी टर्मिनल को बदलने के ल�
 # msgstr "नेटवर्क अंतराफलक को पुन: विन्यस्त करने के लिए प्रमाणीकरण आवश्यक है।"
 #
 # #: src/network/org.freedesktop.network1.policy:187
-# msgid "Specify whether persistent storage for systemd-networkd is available."
+# #, fuzzy
+# #| msgid ""
+# #| "Specify whether persistent storage for systemd-networkd is available."
+# msgid "Specify whether persistent storage for systemd-networkd is available"
 # msgstr "निर्दिष्ट करें कि क्या systemd-networkd के लिए सतत भंडारण उपलब्ध है।"
 #
 # #: src/network/org.freedesktop.network1.policy:188
@@ -1104,7 +1107,7 @@ msgstr "आभासी टर्मिनल को बदलने के ल�
 # "'$(unit)'."
 # msgstr "'$(unit)' से जुड़ी फाइलों और निर्देशिकाओं को हटाने के लिए प्रमाणीकरण आवश्यक है।"
 #
-# #: src/core/dbus-unit.c:743
+# #: src/core/dbus-unit.c:741
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr "'$(unit)' यूनिट की प्रक्रियाओं को जमाने या पिघलाने के लिए प्रमाणीकरण आवश्यक है।"

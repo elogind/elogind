@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-14 17:01+0100\n"
+"POT-Creation-Date: 2024-06-01 15:13+0900\n"
 "PO-Revision-Date: 2024-01-16 14:35+0000\n"
 "Last-Translator: A S Alam <aalam@users.noreply.translate.fedoraproject.org>\n"
 "Language-Team: Punjabi <https://translate.fedoraproject.org/projects/systemd/"
@@ -931,7 +931,7 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # msgstr "ਨੈੱਟਵਰਕ ਇੰਟਰਫੇਸ ਦੀ ਮੁੜ-ਸੰਰਚਨਾ ਕਰਨ ਥਈ ਪਰਮਾਣਕਿਤਾ ਚਾਹੀਦੀ ਹੈ।"
 #
 # #: src/network/org.freedesktop.network1.policy:187
-# msgid "Specify whether persistent storage for systemd-networkd is available."
+# msgid "Specify whether persistent storage for systemd-networkd is available"
 # msgstr ""
 #
 # #: src/network/org.freedesktop.network1.policy:188
@@ -1062,7 +1062,7 @@ msgstr "ਵਰਚੁਅਲ ਟਰਮੀਨਲ ਨੂੰ ਬਦਲਣ ਲਈ ਪ�
 # "'$(unit)'."
 # msgstr ""
 #
-# #: src/core/dbus-unit.c:743
+# #: src/core/dbus-unit.c:741
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
