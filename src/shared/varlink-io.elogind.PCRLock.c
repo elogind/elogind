@@ -3,7 +3,8 @@
 #include "varlink-io.elogind.PCRLock.h"
 
 static VARLINK_DEFINE_METHOD(
-                ReadEventLog);
+                ReadEventLog,
+                VARLINK_DEFINE_OUTPUT(record, VARLINK_OBJECT, 0));
 
 static VARLINK_DEFINE_METHOD(
                 MakePolicy,
