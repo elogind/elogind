@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-01 15:13+0900\n"
-"PO-Revision-Date: 2024-04-24 05:36+0000\n"
+"PO-Revision-Date: 2024-06-03 00:35+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "elogind/main/ka/>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5.5\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -1004,12 +1004,9 @@ msgstr "ვირტუალური ტერმინალის შეც�
 # msgstr "ქსელური ინტერფეისის თავიდან მოსარგებად საჭიროა ავთენტიკაცია."
 #
 # #: src/network/org.freedesktop.network1.policy:187
-# #, fuzzy
-# #| msgid ""
-# #| "Specify whether persistent storage for systemd-networkd is available."
 # msgid "Specify whether persistent storage for systemd-networkd is available"
 # msgstr ""
-# "მიუთითეთ, ხელმისაწვდომია თუ არა არადროებითი საცავი systemd-networkd-სთვის."
+# "მიუთითეთ, ხელმისაწვდომია თუ არა არადროებითი საცავი systemd-networkd-სთვის"
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
