@@ -58,6 +58,7 @@
 #         'lock-util.c',
 #         'log.c',
 #         'login-util.c',
+#         'keyring-util.c',
 #         'memfd-util.c',
 #         'memory-util.c',
 #         'mempool.c',
@@ -350,7 +351,7 @@ run_target(
 # check_filesystems = find_program('check-filesystems.sh')
 # r = run_command([check_filesystems, cpp, files('filesystems-gperf.gperf')] + filesystem_includes, check: false)
 # if r.returncode() != 0
-#         error('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
+#         warning('Unknown filesystems defined in kernel headers:\n\n' + r.stdout())
 # endif
 #endif // 0
 
