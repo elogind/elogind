@@ -31,8 +31,10 @@
       <member><filename>/etc/elogind/logind.conf.d/*.conf</filename></member>
       <member><filename>/run/systemd/logind.conf</filename></member>
       <member><filename>/usr/lib/elogind/logind.conf</filename></member>
+      <member><filename>/usr/local/lib/elogind/logind.conf</filename></member>
       <member><filename>/run/systemd/logind.conf.d/*.conf</filename></member>
       <member><filename>/usr/lib/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/local/lib/elogind/logind.conf.d/*.conf</filename></member>
     </simplelist></para>
     --><!-- else // 0 -->
     <para><filename>/etc/elogind/logind.conf</filename></para>
