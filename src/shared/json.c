@@ -4795,14 +4795,14 @@ int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size) {
         if (!json_variant_is_string(v))
                 return -EINVAL;
 
-        return unbase64mem(json_variant_string(v), SIZE_MAX, ret, ret_size);
+        return unbase64mem_full(json_variant_string(v), SIZE_MAX, /* secure= */ json_variant_is_sensitive(v), ret, ret_size);
 }
 
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size) {
         if (!json_variant_is_string(v))
                 return -EINVAL;
 
-        return unhexmem(json_variant_string(v), SIZE_MAX, ret, ret_size);
+        return unhexmem_full(json_variant_string(v), SIZE_MAX, /* secure= */ json_variant_is_sensitive(v), ret, ret_size);
 }
 #endif // 0
 
