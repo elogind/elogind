@@ -227,7 +227,7 @@ int chaseat(int dir_fd, const char *path, ChaseFlags flags, char **ret_path, int
          * regardless of whether it is absolute or not. If we get AT_FDCWD, follow regular openat()
          * semantics, if the path is relative, resolve against the current working directory. Otherwise,
          * resolve against root. */
-        fd = openat(dir_fd, done ? done : ".", O_CLOEXEC|O_DIRECTORY|O_PATH);
+        fd = openat(dir_fd, done ?: ".", O_CLOEXEC|O_DIRECTORY|O_PATH);
         if (fd < 0)
                 return -errno;
 
