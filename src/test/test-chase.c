@@ -236,6 +236,12 @@ TEST(chase) {
         assert_se(streq(result, "/test-chase.fsldajfl"));
         result = mfree(result);
 
+        r = chase("/.path/with/dot", temp, CHASE_PREFIX_ROOT|CHASE_NONEXISTENT, &result, NULL);
+        assert_se(r == 0);
+        q = strjoina(temp, "/.path/with/dot");
+        assert_se(streq(result, q));
+        result = mfree(result);
+
         r = chase("/etc/machine-id/foo", NULL, 0, &result, NULL);
 #if 1 /// elogind supports setups, where the machine-id is in the dbus default path
         if (!IN_SET(r, -ENOTDIR, -ENOENT)) {
