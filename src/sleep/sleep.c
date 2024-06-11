@@ -852,7 +852,7 @@ int do_sleep(Manager* m, SleepOperation operation) {
         /* Freeze the user sessions */
         r = getenv_bool("SYSTEMD_SLEEP_FREEZE_USER_SESSIONS");
         if (r < 0 && r != -ENXIO)
-                log_warning_errno(r, "Cannot parse value of $SYSTEMD_SLEEP_FREEZE_USER_SESSIONS, ignoring.");
+                log_warning_errno(r, "Cannot parse value of $SYSTEMD_SLEEP_FREEZE_USER_SESSIONS, ignoring: %m");
         if (r != 0)
                 (void) unit_freezer_new_freeze(SPECIAL_USER_SLICE, &user_slice_freezer);
         else
