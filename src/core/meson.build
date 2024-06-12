@@ -151,6 +151,7 @@ libcore_sources = files(
 # systemd_sources = files(
 #         'main.c',
 #         'crash-handler.c',
+#         'clock-warp.c',
 # )
 #
 # elogind_executor_sources = files(
