@@ -14,9 +14,8 @@
 
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(char*, freecon, NULL);
 #else
-static inline char* freeconp(char **p) {
+static inline void freeconp(char **p) {
         assert(*p == NULL);
-        return NULL;
 }
 #endif
 
@@ -59,4 +58,3 @@ void mac_selinux_create_socket_clear(void);
 
 int mac_selinux_bind(int fd, const struct sockaddr *addr, socklen_t addrlen);
 #endif // 0
-
