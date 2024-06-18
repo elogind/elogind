@@ -97,7 +97,7 @@ void sd_json_variant_unref_many(sd_json_variant **array, size_t n);
 
 _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_json_variant, sd_json_variant_unref);
 
-const char *sd_json_variant_string(sd_json_variant *v);
+const char* sd_json_variant_string(sd_json_variant *v);
 int64_t sd_json_variant_integer(sd_json_variant *v);
 uint64_t sd_json_variant_unsigned(sd_json_variant *v);
 double sd_json_variant_real(sd_json_variant *v);
@@ -158,6 +158,8 @@ int sd_json_variant_filter(sd_json_variant **v, char **to_remove);
 
 int sd_json_variant_set_field(sd_json_variant **v, const char *field, sd_json_variant *value);
 int sd_json_variant_set_fieldb(sd_json_variant **v, const char *field, ...);
+#define sd_json_variant_set_fieldbo(v, field, ...)                      \
+        sd_json_variant_set_fieldb((v), (field), SD_JSON_BUILD_OBJECT(__VA_ARGS__))
 int sd_json_variant_set_field_string(sd_json_variant **v, const char *field, const char *value);
 int sd_json_variant_set_field_integer(sd_json_variant **v, const char *field, int64_t value);
 int sd_json_variant_set_field_unsigned(sd_json_variant **v, const char *field, uint64_t value);
@@ -168,10 +170,14 @@ sd_json_variant* sd_json_variant_find(sd_json_variant *haystack, sd_json_variant
 
 int sd_json_variant_append_array(sd_json_variant **v, sd_json_variant *element);
 int sd_json_variant_append_arrayb(sd_json_variant **v, ...);
+#define sd_json_variant_append_arraybo(v, ...)                          \
+        sd_json_variant_append_arrayb((v), SD_JSON_BUILD_OBJECT(__VA_ARGS__))
 int sd_json_variant_append_array_nodup(sd_json_variant **v, sd_json_variant *element);
 
 int sd_json_variant_merge_object(sd_json_variant **v, sd_json_variant *m);
 int sd_json_variant_merge_objectb(sd_json_variant **v, ...);
+#define sd_json_variant_merge_objectbo(v, ...)                          \
+        sd_json_variant_merge_objectb((v), SD_JSON_BUILD_OBJECT(__VA_ARGS__))
 
 int sd_json_variant_sort(sd_json_variant **v);
 int sd_json_variant_normalize(sd_json_variant **v);
@@ -267,6 +273,8 @@ typedef int (*sd_json_build_callback_t)(sd_json_variant **ret, const char *name,
 #define SD_JSON_BUILD_PAIR_CALLBACK(name, c, u) SD_JSON_BUILD_PAIR(name, SD_JSON_BUILD_CALLBACK(c, u))
 
 int sd_json_build(sd_json_variant **ret, ...);
+#define sd_json_buildo(ret, ...)                        \
+        sd_json_build((ret), SD_JSON_BUILD_OBJECT(__VA_ARGS__))
 int sd_json_buildv(sd_json_variant **ret, va_list ap);
 
 /* A bitmask of flags used by the dispatch logic. Note that this is a combined bit mask, that is generated from the bit
@@ -329,7 +337,7 @@ int sd_json_variant_strv(sd_json_variant *v, char ***ret);
 int sd_json_variant_unbase64(sd_json_variant *v, void **ret, size_t *ret_size);
 int sd_json_variant_unhex(sd_json_variant *v, void **ret, size_t *ret_size);
 
-const char *sd_json_variant_type_to_string(sd_json_variant_type_t t);
+const char* sd_json_variant_type_to_string(sd_json_variant_type_t t);
 sd_json_variant_type_t sd_json_variant_type_from_string(const char *s);
 
 _SD_END_DECLARATIONS;
