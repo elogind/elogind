@@ -130,6 +130,10 @@ Features:
   open the inode via O_PATH first, then validate its type, and then convert to
   proper fd via fd_reopen()
 
+* sd-json: before release figure out what to do about
+  SD_JSON_DEBUG+SD_JSON_WARNING. They are probably useless and should be hidden
+  in the public API since we don't expose log_json()
+
 * rough proposed implementation design for remote attestation infra: add a tool
   that generates a quote of local PCRs and NvPCRs, along with synchronous log
   snapshot. use "audit session" logic for that, so that we get read-outs and
@@ -153,10 +157,6 @@ Features:
 * measure information about all DDIs as we activate them to an NvPCR. We
   probably should measure the dm-verity root hash from the kernel side, but
   DDI meta info from userspace.
-
-* consider reworking json_build() to imply a top-level JSON_BUILD_OBJECT(),
-  since that's what we want in 99% of cases. Then provide json_build_any() or
-  so that can build other variant types top-level too.
 
 * rework tpm2_parse_pcr_argument_to_mask() to refuse literal hash value
   specifications. They are currently parsed but ignored. We should refuse them
