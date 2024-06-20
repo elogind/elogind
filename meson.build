@@ -2018,6 +2018,7 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', slow_tests)
 #                 '-ffile-prefix-map=',
 #                 '-fdebug-prefix-map=',
 #                 '-fmacro-prefix-map=',
+#                 '--sysroot=',
 #         ]
 #
 #         foreach opt : c_args
