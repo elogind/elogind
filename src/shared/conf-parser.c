@@ -9,7 +9,6 @@
 
 #include "alloc-util.h"
 #include "chase.h"
-#include "calendarspec.h"
 #include "conf-files.h"
 #include "conf-parser.h"
 //#include "constants.h"
@@ -172,7 +171,7 @@ static int next_assignment(
 
 /* Parse a single logical line */
 static int parse_line(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *sections,
@@ -876,7 +875,7 @@ DEFINE_PARSER(mode, mode_t, parse_mode);
 DEFINE_PARSER(pid, pid_t, parse_pid);
 
 int config_parse_iec_size(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -908,7 +907,7 @@ int config_parse_iec_size(
 }
 
 int config_parse_si_uint64(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -935,7 +934,7 @@ int config_parse_si_uint64(
 #endif // 0
 
 int config_parse_iec_uint64(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -962,7 +961,7 @@ int config_parse_iec_uint64(
 
 #if 0 /// UNNEEDED by elogind
 int config_parse_iec_uint64_infinity(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -987,7 +986,7 @@ int config_parse_iec_uint64_infinity(
 #endif // 0
 
 int config_parse_bool(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -1049,7 +1048,7 @@ int config_parse_id128(
 #endif // 0
 
 int config_parse_tristate(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -1652,7 +1651,7 @@ int config_parse_rlimit(
 }
 
 int config_parse_permille(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -1683,7 +1682,7 @@ int config_parse_permille(
 }
 
 int config_parse_vlanprotocol(
-                const char* unit,
+                const char *unit,
                 const char *filename,
                 unsigned line,
                 const char *section,
@@ -1994,41 +1993,6 @@ int config_parse_unsigned_bounded(
                 return 0;
         else
                 return r;
-}
-
-int config_parse_calendar(
-                const char *unit,
-                const char *filename,
-                unsigned line,
-                const char *section,
-                unsigned section_line,
-                const char *lvalue,
-                int ltype,
-                const char *rvalue,
-                void *data,
-                void *userdata) {
-
-        CalendarSpec **cr = data;
-        _cleanup_(calendar_spec_freep) CalendarSpec *c = NULL;
-        int r;
-
-        assert(filename);
-        assert(lvalue);
-        assert(rvalue);
-        assert(data);
-
-        if (isempty(rvalue)) {
-                *cr = calendar_spec_free(*cr);
-                return 0;
-        }
-
-        r = calendar_spec_from_string(rvalue, &c);
-        if (r < 0)
-                log_syntax(unit, LOG_WARNING, filename, line, r, "Failed to parse calendar specification, ignoring: %s", rvalue);
-        else
-                *cr = TAKE_PTR(c);
-
-        return 0;
 }
 
 DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent, "Failed to parse percent value");
