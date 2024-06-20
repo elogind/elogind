@@ -312,13 +312,17 @@ TEST(build) {
         b = sd_json_variant_unref(b);
 
 #if 0 /// UNNEEDED by elogind
-        assert_se(sd_json_build(&a, SD_JSON_BUILD_OBJECT(SD_JSON_BUILD_PAIR("one", SD_JSON_BUILD_INTEGER(7)),
-                                                   SD_JSON_BUILD_PAIR("two", SD_JSON_BUILD_REAL(2.0)),
-                                                   SD_JSON_BUILD_PAIR("three", SD_JSON_BUILD_INTEGER(0)))) >= 0);
+        assert_se(sd_json_buildo(&a,
+                                 SD_JSON_BUILD_PAIR("one", SD_JSON_BUILD_INTEGER(7)),
+                                 SD_JSON_BUILD_PAIR("two", SD_JSON_BUILD_REAL(2.0)),
+                                 SD_JSON_BUILD_PAIR("four", JSON_BUILD_STRING_UNDERSCORIFY("foo-bar-baz")),
+                                 SD_JSON_BUILD_PAIR("three", SD_JSON_BUILD_INTEGER(0))) >= 0);
 
-        assert_se(sd_json_build(&b, SD_JSON_BUILD_OBJECT(SD_JSON_BUILD_PAIR("two", SD_JSON_BUILD_INTEGER(2)),
-                                                   SD_JSON_BUILD_PAIR("three", SD_JSON_BUILD_REAL(0)),
-                                                   SD_JSON_BUILD_PAIR("one", SD_JSON_BUILD_REAL(7)))) >= 0);
+        assert_se(sd_json_buildo(&b,
+                                 SD_JSON_BUILD_PAIR("two", SD_JSON_BUILD_INTEGER(2)),
+                                 SD_JSON_BUILD_PAIR("four", SD_JSON_BUILD_STRING("foo_bar_baz")),
+                                 SD_JSON_BUILD_PAIR("three", SD_JSON_BUILD_REAL(0)),
+                                 SD_JSON_BUILD_PAIR("one", SD_JSON_BUILD_REAL(7))) >= 0);
 
         assert_se(sd_json_variant_equal(a, b));
 
