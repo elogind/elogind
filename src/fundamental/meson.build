@@ -7,6 +7,7 @@ fundamental_sources = files(
 #if 0 /// Nowhere used in elogind
 #         'efivars-fundamental.c',
 #endif // 0
+        'iovec-util-fundamental.h',
         'sha256-fundamental.c',
         'string-util-fundamental.c',
 #if 0 /// Nowhere used in elogind
