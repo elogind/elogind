@@ -609,6 +609,7 @@ decl_headers = '''
 #include <uchar.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
+#include <sched.h>
 '''
 
 foreach decl : ['char16_t',
@@ -616,6 +617,7 @@ foreach decl : ['char16_t',
                 'struct mount_attr',
                 'struct statx',
                 'struct dirent64',
+                'struct sched_attr',
                ]
 
         # We get -1 if the size cannot be determined
@@ -666,6 +668,7 @@ foreach ident : [
 #endif // 1
         ['ioprio_get',        '''#include <sched.h>'''],      # no known header declares ioprio_get
         ['ioprio_set',        '''#include <sched.h>'''],      # no known header declares ioprio_set
+        ['sched_setattr',     '''#include <sched.h>'''],      # no known header declares sched_setattr
         ['name_to_handle_at', '''#include <sys/types.h>
                                  #include <sys/stat.h>
                                  #include <fcntl.h>'''],
