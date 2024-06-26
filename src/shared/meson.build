@@ -70,7 +70,6 @@
 #         'exit-status.c',
 #         'extension-util.c',
 #         'fdset.c',
-#         'fido2-util.c',
 #         'fileio-label.c',
 #         'find-esp.c',
 #         'firewall-util-nft.c',
@@ -142,6 +141,7 @@
 #         'pe-binary.c',
 #         'pkcs11-util.c',
 #         'plymouth-util.c',
+#         'polkit-agent.c',
 #         'pretty-print.c',
 #         'capsule-util.c',
 #         'ptyfwd.c',
@@ -162,7 +162,6 @@
 #         'socket-label.c',
 #         'socket-netlink.c',
 #         'spawn-ask-password-agent.c',
-#         'spawn-polkit-agent.c',
 #         'specifier.c',
 #         'switch-root.c',
 #         'tmpfile-util-label.c',
@@ -195,7 +194,6 @@
 #         'varlink-io.elogind.NamespaceResource.c',
 #         'varlink-io.elogind.MountFileSystem.c',
 #         'varlink-io.elogind.Machine.c',
-#         'varlink-io.elogind.Import.c',
 #         'varlink-org.varlink.service.c',
 #         'verb-log-control.c',
 #         'verbs.c',
@@ -371,7 +369,7 @@ endif
 # fname = 'ethtool-link-mode.h'
 # ethtool_link_mode_h = custom_target(
 #         fname,
-#         input : ['ethtool-link-mode.py', '../basic/linux/ethtool.h'],
+#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
 #         output : fname,
 #         command : [python, '@INPUT0@', '--header', cpp, '@INPUT1@'],
 #         capture : true)
@@ -380,7 +378,7 @@ endif
 # fname = 'ethtool-link-mode.xml'
 # ethtool_link_mode_xml = custom_target(
 #         fname,
-#         input : ['ethtool-link-mode.py', '../basic/linux/ethtool.h'],
+#         input : ['ethtool-link-mode.py', 'linux/ethtool.h'],
 #         output : fname,
 #         command : [python, '@INPUT0@', '--xml', cpp, '@INPUT1@'],
 #         capture : true)

@@ -12,10 +12,10 @@
 #include "argv-util.h"
 #include "hashmap.h"
 #include "pager.h"
+#include "polkit-agent.h"
 #include "selinux-util.h"
 #include "signal-util.h"
-//#include "spawn-ask-password-agent.h"
-#include "spawn-polkit-agent.h"
+#include "spawn-ask-password-agent.h"
 #include "static-destruct.h"
 
 #if 1 /// elogind has no password agent, so do nothing.
