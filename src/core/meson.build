@@ -163,6 +163,17 @@ libcore_sources = files(
 #         'exec-invoke.c',
 # )
 #
+# executor_libs = get_option('link-executor-shared') ? \
+#         [
+#                 libcore,
+#                 libshared,
+#         ] : [
+#                 libcore_static,
+#                 libshared_static,
+#                 libbasic_static,
+#                 libelogind_static,
+#         ]
+#
 # executables += [
 #         libexec_template + {
 #                 'name' : 'elogind',
@@ -180,10 +191,7 @@ libcore_sources = files(
 #                 'public' : true,
 #                 'sources' : elogind_executor_sources,
 #                 'include_directories' : core_includes,
-#                 'link_with' : [
-#                         libcore,
-#                         libshared,
-#                 ],
+#                 'link_with' : executor_libs,
 #                 'dependencies' : [
 #                         libapparmor,
 #                         libpam,
