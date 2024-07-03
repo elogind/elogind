@@ -117,17 +117,13 @@ libcore_sources = files(
 #
 # libcore_name = 'systemd-core-@0@'.format(shared_lib_tag)
 #
-# libcore = shared_library(
+# libcore_static = static_library(
 #         libcore_name,
 #         libcore_sources,
 #         load_fragment_gperf_c,
 #         load_fragment_gperf_nulstr_c,
 #         include_directories : includes,
 #         c_args : ['-fvisibility=default'],
-#         link_args : ['-shared',
-#                      '-Wl,--version-script=' + libshared_sym_path],
-#         link_depends : libshared_sym_path,
-#         link_with : libshared,
 #         dependencies : [libacl,
 #                         libapparmor,
 #                         libaudit,
@@ -142,6 +138,16 @@ libcore_sources = files(
 #                         libselinux,
 #                         threads,
 #                         userspace],
+#         build_by_default : false)
+#
+# libcore = shared_library(
+#         libcore_name,
+#         c_args : ['-fvisibility=default'],
+#         link_args : ['-shared',
+#                      '-Wl,--version-script=' + libshared_sym_path],
+#         link_depends : libshared_sym_path,
+#         link_whole: libcore_static,
+#         link_with : libshared,
 #         install : true,
 #         install_dir : pkglibdir)
 #
