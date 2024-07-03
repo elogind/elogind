@@ -80,6 +80,7 @@ typedef enum TableDataType {
         TABLE_SET_URL,
 #endif // 0
         TABLE_SET_UPPERCASE,
+        TABLE_SET_JSON_FIELD_NAME,
 
         _TABLE_DATA_TYPE_INVALID = -EINVAL,
 } TableDataType;
