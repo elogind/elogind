@@ -437,8 +437,8 @@ libshared = shared_library(
                      '-Wl,--version-script=' + libshared_sym_path],
         link_depends : libshared_sym_path,
         link_whole : [libshared_static,
-                      libbasic,
 #if 0 /// UNNEEDED by elogind
+#                       libbasic_static,
 #                       libsystemd_static],
 #else // 0
                       libelogind_static],
