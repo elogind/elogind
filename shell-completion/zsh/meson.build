@@ -22,6 +22,7 @@ endif
 #          ['_systemd',                  ''],
 #          ['_systemd-path',             ''],
 #          ['_systemd-run',              ''],
+#          ['_run0',                     ''],
 #          ['_udevadm',                  ''],
 #          ['_kernel-install',           'ENABLE_KERNEL_INSTALL'],
 #          ['_sd_hosts_or_user_at_host', ''],
