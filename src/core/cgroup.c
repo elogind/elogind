@@ -4045,8 +4045,12 @@ static int unit_check_cgroup_events(Unit *u) {
         /* Disregard freezer state changes due to operations not initiated by us.
          * See: https://github.com/systemd/systemd/pull/13512/files#r416469963 and
          *      https://github.com/systemd/systemd/pull/13512#issuecomment-573007207 */
-        if (values[1] && IN_SET(u->freezer_state, FREEZER_FREEZING, FREEZER_FREEZING_BY_PARENT, FREEZER_THAWING))
-                unit_freezer_complete(u, streq(values[1], "0") ? FREEZER_RUNNING : FREEZER_FROZEN);
+        if (values[1] && IN_SET(u->freezer_state, FREEZER_FREEZING, FREEZER_FREEZING_BY_PARENT, FREEZER_THAWING)) {
+                if (streq(values[1], "0"))
+                        unit_thawed(u);
+                else
+                        unit_frozen(u);
+        }
 
         free(values[0]);
         free(values[1]);
@@ -4298,7 +4302,7 @@ int manager_setup_cgroup(Manager *m) {
 
                 /* 6. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);
-                m->pin_cgroupfs_fd = open(path, O_RDONLY|O_CLOEXEC|O_DIRECTORY|O_NOCTTY|O_NONBLOCK);
+                m->pin_cgroupfs_fd = open(path, O_PATH|O_CLOEXEC|O_DIRECTORY);
                 if (m->pin_cgroupfs_fd < 0)
                         return log_error_errno(errno, "Failed to open pin file: %m");
 
@@ -5173,35 +5177,35 @@ static int unit_cgroup_freezer_kernel_state(Unit *u, FreezerState *ret) {
 
 int unit_cgroup_freezer_action(Unit *u, FreezerAction action) {
         _cleanup_free_ char *path = NULL;
-        FreezerState current, next, objective;
+        FreezerState target, current, next;
         int r;
 
         assert(u);
-        assert(action >= 0);
-        assert(action < _FREEZER_ACTION_MAX);
+        assert(IN_SET(action, FREEZER_FREEZE, FREEZER_PARENT_FREEZE,
+                              FREEZER_THAW, FREEZER_PARENT_THAW));
 
         if (!cg_freezer_supported())
                 return 0;
 
-        unit_next_freezer_state(u, action, &next, &objective);
+        unit_next_freezer_state(u, action, &next, &target);
 
         CGroupRuntime *crt = unit_get_cgroup_runtime(u);
-        if (!crt || !crt->cgroup_path)
+        if (!crt || !crt->cgroup_path) {
                 /* No realized cgroup = nothing to freeze */
-                goto skip;
+                u->freezer_state = freezer_state_finish(next);
+                return 0;
+        }
 
         r = unit_cgroup_freezer_kernel_state(u, &current);
         if (r < 0)
                 return r;
 
-        if (current == objective)
-                goto skip;
-
-        if (next == freezer_state_finish(next)) {
-                /* We're directly transitioning into a finished state, which in theory means that
-                 * the cgroup's current state already matches the objective and thus we'd return 0.
-                 * But, reality shows otherwise (such case would have been handled by current == objective
-                 * branch above). This indicates that our freezer_state tracking has diverged
+        if (current == target)
+                next = freezer_state_finish(next);
+        else if (IN_SET(next, FREEZER_FROZEN, FREEZER_FROZEN_BY_PARENT, FREEZER_RUNNING)) {
+                /* We're transitioning into a finished state, which implies that the cgroup's
+                 * current state already matches the target and thus we'd return 0. But, reality
+                 * shows otherwise. This indicates that our freezer_state tracking has diverged
                  * from the real state of the cgroup, which can happen if someone meddles with the
                  * cgroup from underneath us. This really shouldn't happen during normal operation,
                  * though. So, let's warn about it and fix up the state to be valid */
@@ -5215,24 +5219,22 @@ int unit_cgroup_freezer_action(Unit *u, FreezerAction action) {
                         next = FREEZER_FREEZING_BY_PARENT;
                 else if (next == FREEZER_RUNNING)
                         next = FREEZER_THAWING;
-                else
-                        assert_not_reached();
         }
 
         r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, crt->cgroup_path, "cgroup.freeze", &path);
         if (r < 0)
                 return r;
 
-        r = write_string_file(path, one_zero(objective == FREEZER_FROZEN), WRITE_STRING_FILE_DISABLE_BUFFER);
+        log_unit_debug(u, "Unit freezer state was %s, now %s.",
+                       freezer_state_to_string(u->freezer_state),
+                       freezer_state_to_string(next));
+
+        r = write_string_file(path, one_zero(target == FREEZER_FROZEN), WRITE_STRING_FILE_DISABLE_BUFFER);
         if (r < 0)
                 return r;
 
-        unit_set_freezer_state(u, next);
-        return 1; /* Wait for cgroup event before replying */
-
-skip:
-        unit_set_freezer_state(u, freezer_state_finish(next));
-        return 0;
+        u->freezer_state = next;
+        return target != current;
 }
 
 int unit_get_cpuset(Unit *u, CPUSet *cpus, const char *name) {
