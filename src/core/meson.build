@@ -2,7 +2,6 @@
 
 #if 0 /// elogind has only two of the parts here in it...
 # libcore_sources = files(
-#         'apparmor-setup.c',
 #         'audit-fd.c',
 #         'automount.c',
 #         'bpf-devices.c',
@@ -40,11 +39,9 @@
 #         'execute.c',
 #         'execute-serialize.c',
 #         'generator-setup.c',
-#         'ima-setup.c',
 #         'import-creds.c',
 #         'job.c',
 #         'kill.c',
-#         'kmod-setup.c',
 #         'load-dropin.c',
 #         'load-fragment.c',
 #         'manager-dump.c',
@@ -55,11 +52,9 @@
 #         'path.c',
 #         'scope.c',
 #         'selinux-access.c',
-#         'selinux-setup.c',
 #         'service.c',
 #         'show-status.c',
 #         'slice.c',
-#         'smack-setup.c',
 #         'socket.c',
 #         'swap.c',
 #         'taint.c',
@@ -126,11 +121,9 @@ libcore_sources = files(
 #         include_directories : includes,
 #         c_args : ['-fvisibility=default'],
 #         dependencies : [libacl,
-#                         libapparmor,
 #                         libaudit,
 #                         libblkid,
 #                         libdl,
-#                         libkmod_cflags,
 #                         libm,
 #                         libmount,
 #                         libpam,
@@ -158,6 +151,11 @@ libcore_sources = files(
 #         'main.c',
 #         'crash-handler.c',
 #         'clock-warp.c',
+#         'kmod-setup.c',
+#         'apparmor-setup.c',
+#         'ima-setup.c',
+#         'selinux-setup.c',
+#         'smack-setup.c',
 # )
 #
 # elogind_executor_sources = files(
@@ -186,7 +184,12 @@ libcore_sources = files(
 #                         libcore,
 #                         libshared,
 #                 ],
-#                 'dependencies' : libseccomp,
+#                 'dependencies' : [
+#                         libapparmor,
+#                         libkmod_cflags,
+#                         libseccomp,
+#                         libselinux,
+#                 ],
 #         },
 #         libexec_template + {
 #                 'name' : 'elogind-executor',
