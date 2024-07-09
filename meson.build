@@ -1650,6 +1650,10 @@ conf.set10('HAVE_GCRYPT', have)
 # conf.set10('HAVE_DWELF_ELF_E_MACHINE_STRING',
 #            libdw.found() and cc.has_function('dwelf_elf_e_machine_string', dependencies : libdw))
 #
+# # New in elfutils 0.192
+# conf.set10('HAVE_DWFL_SET_SYSROOT',
+#            libdw.found() and cc.has_function('dwfl_set_sysroot', dependencies : libdw))
+#
 # libz = dependency('zlib',
 #                   required : get_option('zlib'))
 # conf.set10('HAVE_ZLIB', libz.found())
