@@ -662,7 +662,7 @@ int vtnr_from_tty(const char *tty) {
 }
 
 #if 0 /// UNNEEDED by elogind
- int resolve_dev_console(char **ret) {
+int resolve_dev_console(char **ret) {
         _cleanup_free_ char *active = NULL;
         char *tty;
         int r;
