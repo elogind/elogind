@@ -37,8 +37,9 @@
 #include "path-util.h"
 //#include "proc-cmdline.h"
 #include "process-util.h"
-//#include "socket-util.h"
-//#include "stat-util.h"
+#include "signal-util.h"
+#include "socket-util.h"
+#include "stat-util.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
@@ -406,11 +407,6 @@ int acquire_terminal(
         }
 
         for (;;) {
-                struct sigaction sa_old, sa_new = {
-                        .sa_handler = SIG_IGN,
-                        .sa_flags = SA_RESTART,
-                };
-
                 if (notify >= 0) {
                         r = flush_fd(notify);
                         if (r < 0)
@@ -424,13 +420,14 @@ int acquire_terminal(
                         return fd;
 
                 /* Temporarily ignore SIGHUP, so that we don't get SIGHUP'ed if we already own the tty. */
-                assert_se(sigaction(SIGHUP, &sa_new, &sa_old) == 0);
+                struct sigaction sa_old;
+                assert_se(sigaction(SIGHUP, &sigaction_ignore, &sa_old) >= 0);
 
                 /* First, try to get the tty */
                 r = RET_NERRNO(ioctl(fd, TIOCSCTTY, (flags & ~ACQUIRE_TERMINAL_PERMISSIVE) == ACQUIRE_TERMINAL_FORCE));
 
                 /* Reset signal handler to old value */
-                assert_se(sigaction(SIGHUP, &sa_old, NULL) == 0);
+                assert_se(sigaction(SIGHUP, &sa_old, NULL) >= 0);
 
                 /* Success? Exit the loop now! */
                 if (r >= 0)
@@ -499,13 +496,7 @@ int acquire_terminal(
 }
 
 int release_terminal(void) {
-        static const struct sigaction sa_new = {
-                .sa_handler = SIG_IGN,
-                .sa_flags = SA_RESTART,
-        };
-
         _cleanup_close_ int fd = -EBADF;
-        struct sigaction sa_old;
         int r;
 
         fd = open("/dev/tty", O_RDWR|O_NOCTTY|O_CLOEXEC|O_NONBLOCK);
@@ -514,11 +505,12 @@ int release_terminal(void) {
 
         /* Temporarily ignore SIGHUP, so that we don't get SIGHUP'ed
          * by our own TIOCNOTTY */
-        assert_se(sigaction(SIGHUP, &sa_new, &sa_old) == 0);
+        struct sigaction sa_old;
+        assert_se(sigaction(SIGHUP, &sigaction_ignore, &sa_old) >= 0);
 
         r = RET_NERRNO(ioctl(fd, TIOCNOTTY));
 
-        assert_se(sigaction(SIGHUP, &sa_old, NULL) == 0);
+        assert_se(sigaction(SIGHUP, &sa_old, NULL) >= 0);
 
         return r;
 }
