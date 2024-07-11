@@ -97,10 +97,7 @@
 
 bool isatty_safe(int fd);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-int terminal_reset_ioctl(int fd, bool switch_to_text);
-int terminal_reset_ansi_seq(int fd);
+/// elogind empty mask removed (UNNEEDED by elogind)
 int terminal_reset_defensive(int fd, bool switch_to_text);
 
 int terminal_set_cursor_position(int fd, unsigned row, unsigned column);
