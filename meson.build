@@ -13,6 +13,13 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
+project_major_version = meson.project_version().split('.')[0].split('~')[0]
+if meson.project_version().contains('.')
+        project_minor_version = meson.project_version().split('.')[-1].split('~')[0]
+else
+        project_minor_version = '0'
+endif
+
 libsystemd_version = '0.39.0'
 libudev_version = '1.7.9'
 
@@ -23,7 +30,7 @@ conf = configuration_data()
 support_url = 'https://github.com/elogind/elogind'
 conf.set_quoted('PROJECT_URL', support_url)
 #endif // 0
-conf.set('PROJECT_VERSION', meson.project_version().split('~')[0],
+conf.set('PROJECT_VERSION', project_major_version,
          description : 'Numerical project version (used where a simple number is expected)')
 conf.set_quoted('PROJECT_VERSION_FULL', meson.project_version(), description : 'Full project version')
 
@@ -2353,7 +2360,7 @@ version_h = vcs_tag(
 
 shared_lib_tag = get_option('shared-lib-tag')
 if shared_lib_tag == ''
-        shared_lib_tag = meson.project_version().split('~')[0]
+        shared_lib_tag = project_major_version
 endif
 
 #####################################################################
@@ -2424,7 +2431,8 @@ basic_includes = include_directories(
 #         'src/libelogind/sd-json',
 #         'src/libsystemd/sd-netlink',
 #         'src/libsystemd/sd-network',
-#         'src/libsystemd/sd-resolve')]
+#         'src/libelogind/sd-resolve',
+#         'src/libelogind/sd-varlink')]
 #else // 0
 libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-bus',
@@ -3223,17 +3231,11 @@ foreach exec : public_programs
                      args : exec.full_path(),
                      depends: exec)
 
-                version = meson.project_version()
-                if name == 'udevadm'
-                        # For compatibility reasons we can't use the full version in udevadm.
-                        version = version.split('~')[0]
-                endif
-
                 test('check-version-' + name,
                      check_version,
                      suite : 'dist',
                      args : [exec.full_path(),
-                             version],
+                             project_major_version],
                      depends: exec)
         endif
 endforeach
