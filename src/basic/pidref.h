@@ -42,7 +42,7 @@ static inline int pidref_set_self(PidRef *pidref) {
 bool pidref_is_self(const PidRef *pidref);
 
 void pidref_done(PidRef *pidref);
-PidRef *pidref_free(PidRef *pidref);
+PidRef* pidref_free(PidRef *pidref);
 DEFINE_TRIVIAL_CLEANUP_FUNC(PidRef*, pidref_free);
 
 #if 0 /// UNNEEDED by elogind
