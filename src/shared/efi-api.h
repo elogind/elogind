@@ -71,9 +71,6 @@ static inline bool efi_has_tpm2(void) {
 #endif
 
 #if 0 /// UNNEEDED by elogind
-static inline char *efi_tilt_backslashes(char *s) {
-        return string_replace_char(s, '\\', '/');
-}
 #endif // 0
 
 sd_id128_t efi_guid_to_id128(const void *guid);
