@@ -662,10 +662,8 @@ static int enumerator_add_parent_devices(
                         continue;
 
                 r = device_enumerator_add_device(enumerator, device);
-                if (r < 0)
+                if (r <= 0) /* r == 0 means the device already exists, then no need to go further up. */
                         return r;
-                if (r == 0) /* Exists already? Then no need to go further up. */
-                        return 0;
         }
 }
 
@@ -709,13 +707,11 @@ static int enumerator_scan_dir_and_add_devices(
 
         dir = opendir(path);
         if (!dir) {
-                bool ignore = errno == ENOENT;
+                /* This is necessarily racey, so ignore missing directories */
+                if (errno == ENOENT)
+                        return 0;
 
-                /* this is necessarily racey, so ignore missing directories */
-                log_debug_errno(errno,
-                                "sd-device-enumerator: Failed to open directory %s%s: %m",
-                                path, ignore ? ", ignoring" : "");
-                return ignore ? 0 : -errno;
+                return log_debug_errno(errno, "sd-device-enumerator: Failed to open directory '%s': %m", path);
         }
 
         FOREACH_DIRENT_ALL(de, dir, return -errno) {
@@ -775,12 +771,10 @@ static int enumerator_scan_dir(
 
         dir = opendir(path);
         if (!dir) {
-                bool ignore = errno == ENOENT;
+                if (errno == ENOENT)
+                        return 0;
 
-                log_debug_errno(errno,
-                                "sd-device-enumerator: Failed to open directory %s%s: %m",
-                                path, ignore ? ", ignoring" : "");
-                return ignore ? 0 : -errno;
+                return log_debug_errno(errno, "sd-device-enumerator: Failed to open directory '%s': %m", path);
         }
 
         FOREACH_DIRENT_ALL(de, dir, return -errno) {
@@ -812,12 +806,10 @@ static int enumerator_scan_devices_tag(sd_device_enumerator *enumerator, const c
 
         dir = opendir(path);
         if (!dir) {
-                bool ignore = errno == ENOENT;
+                if (errno == ENOENT)
+                        return 0;
 
-                log_debug_errno(errno,
-                                "sd-device-enumerator: Failed to open directory %s%s: %m",
-                                path, ignore ? ", ignoring" : "");
-                return ignore ? 0 : -errno;
+                return log_debug_errno(errno, "sd-device-enumerator: Failed to open directory '%s': %m", path);
         }
 
         /* TODO: filter away subsystems? */
@@ -900,12 +892,10 @@ static int parent_crawl_children(sd_device_enumerator *enumerator, const char *p
 
         dir = opendir(path);
         if (!dir) {
-                bool ignore = errno == ENOENT;
+                if (errno == ENOENT)
+                        return 0;
 
-                log_debug_errno(errno,
-                                "sd-device-enumerator: Failed to open directory %s%s: %m",
-                                path, ignore ? ", ignoring" : "");
-                return ignore ? 0 : -errno;
+                return log_debug_errno(errno, "sd-device-enumerator: Failed to open directory '%s': %m", path);
         }
 
         FOREACH_DIRENT_ALL(de, dir, return -errno) {
