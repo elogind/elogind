@@ -587,9 +587,9 @@ static int terminal_reset_ansi_seq(int fd) {
                             "\033]104\007" /* reset colors */
                             "\033[?7h",    /* enable line-wrapping */
                             SIZE_MAX,
-                            50 * USEC_PER_MSEC);
+                            100 * USEC_PER_MSEC);
         if (k < 0)
-                log_debug_errno(k, "Failed to write to terminal: %m");
+                log_debug_errno(k, "Failed to reset terminal through ANSI sequences: %m");
 
         if (r > 0) {
                 r = fd_nonblock(fd, false);
@@ -1578,7 +1578,6 @@ int terminal_set_cursor_position(int fd, unsigned row, unsigned column) {
         return loop_write(fd, cursor_position, SIZE_MAX);
 }
 #endif // 0
-
 
 int terminal_reset_defensive(int fd, bool switch_to_text) {
         int r = 0;
