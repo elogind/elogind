@@ -23,6 +23,7 @@ endif
 #          ['_systemd-path',             ''],
 #          ['_systemd-run',              ''],
 #          ['_udevadm',                  ''],
+#          ['_varlinkctl',               ''],
 #          ['_kernel-install',           'ENABLE_KERNEL_INSTALL'],
 #          ['_sd_hosts_or_user_at_host', ''],
 #          ['_sd_outputmodes',           ''],
