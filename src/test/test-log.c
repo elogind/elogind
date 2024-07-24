@@ -9,11 +9,6 @@
 #include "string-util.h"
 #include "util.h"
 
-assert_cc(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(EINVAL)));
-assert_cc(!IS_SYNTHETIC_ERRNO(EINVAL));
-assert_cc(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(0)));
-assert_cc(!IS_SYNTHETIC_ERRNO(0));
-
 #define X10(x) x x x x x x x x x x
 #define X100(x) X10(X10(x))
 #define X1000(x) X100(X10(x))
@@ -71,6 +66,15 @@ static void test_log_syntax(void) {
 }
 
 int main(int argc, char* argv[]) {
+        assert_se(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(EINVAL)));
+        assert_se(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(-EINVAL)));
+        assert_cc(!IS_SYNTHETIC_ERRNO(EINVAL));
+        assert_cc(!IS_SYNTHETIC_ERRNO(-EINVAL));
+        assert_se(IS_SYNTHETIC_ERRNO(SYNTHETIC_ERRNO(0)));
+        assert_cc(!IS_SYNTHETIC_ERRNO(0));
+        assert_se(ERRNO_VALUE(EINVAL) == EINVAL);
+        assert_se(ERRNO_VALUE(SYNTHETIC_ERRNO(-EINVAL)) == EINVAL);
+
         test_file();
 
         assert_se(log_info_errno(SYNTHETIC_ERRNO(EUCLEAN), "foo") == -EUCLEAN);

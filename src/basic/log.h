@@ -36,9 +36,8 @@ typedef enum LogTarget{
  * used a regular log level. */
 #define LOG_NULL (LOG_EMERG - 1)
 
-/* Note to readers: << and >> have lower precedence (are evaluated earlier) than & and | */
-#define SYNTHETIC_ERRNO(num)                (1 << 30 | (num))
-#define IS_SYNTHETIC_ERRNO(val)             ((val) >> 30 & 1)
+#define SYNTHETIC_ERRNO(num)                (abs(num) | (1 << 30))
+#define IS_SYNTHETIC_ERRNO(val)             (((val) >> 30) == 1)
 #define ERRNO_VALUE(val)                    (abs(val) & ~(1 << 30))
 
 #if 0 /// UNNEEDED by elogind
