@@ -104,10 +104,10 @@ TEST(id128) {
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_ERROR(id128_read_fd(fd, ID128_FORMAT_PLAIN, &id2), EUCLEAN);
 
-
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_OK(id128_read_fd(fd, ID128_FORMAT_UUID, &id2));
         ASSERT_EQ_ID128(id, id2);
+
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_OK(id128_read_fd(fd, ID128_FORMAT_ANY, &id2));
         ASSERT_EQ_ID128(id, id2);
@@ -122,10 +122,10 @@ TEST(id128) {
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET) == 0);
         ASSERT_ERROR(id128_read_fd(fd, ID128_FORMAT_UUID, &id2), EUCLEAN);
 
-
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_OK(id128_read_fd(fd, ID128_FORMAT_PLAIN, &id2));
         ASSERT_EQ_ID128(id, id2);
+
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_OK(id128_read_fd(fd, ID128_FORMAT_ANY, &id2));
         ASSERT_EQ_ID128(id, id2);
@@ -184,6 +184,7 @@ TEST(id128) {
         ASSERT_OK_ERRNO(lseek(fd, 0, SEEK_SET));
         ASSERT_ERROR(id128_read_fd(fd, ID128_FORMAT_ANY, NULL), EUCLEAN);
 
+        /* build/elogind-id128 -a f03daaeb1c334b43a732172944bf772e show 51df0b4bc3b04c9780e299b98ca373b8 */
         ASSERT_OK(sd_id128_get_app_specific(SD_ID128_MAKE(51,df,0b,4b,c3,b0,4c,97,80,e2,99,b9,8c,a3,73,b8),
                                             SD_ID128_MAKE(f0,3d,aa,eb,1c,33,4b,43,a7,32,17,29,44,bf,77,2e), &id));
         ASSERT_EQ_ID128(id, SD_ID128_MAKE(1d,ee,59,54,e7,5c,4d,6f,b9,6c,c6,c0,4c,a1,8a,86));
@@ -357,10 +358,10 @@ TEST(ID128_REFUSE_NULL) {
         tfd = mkdtemp_open(NULL, O_PATH, &t);
         ASSERT_OK(tfd);
 
-
         ASSERT_ERROR(id128_write_at(tfd, "zero-id", ID128_FORMAT_PLAIN | ID128_REFUSE_NULL, (sd_id128_t) {}), ENOMEDIUM);
         ASSERT_OK_ERRNO(unlinkat(tfd, "zero-id", 0));
         ASSERT_OK(id128_write_at(tfd, "zero-id", ID128_FORMAT_PLAIN, (sd_id128_t) {}));
+
         ASSERT_OK(sd_id128_randomize(&id));
         ASSERT_NE_ID128(id, SD_ID128_NULL);
         ASSERT_OK(id128_read_at(tfd, "zero-id", ID128_FORMAT_PLAIN, &id));
