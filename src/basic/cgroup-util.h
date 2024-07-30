@@ -325,8 +325,6 @@ bool cg_controller_is_valid(const char *p);
 #if 0 /// UNNEEDED by elogind
 int cg_slice_to_path(const char *unit, char **ret);
 
-typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
-
 int cg_mask_supported(CGroupMask *ret);
 #endif // 0
 int cg_mask_supported_subtree(const char *root, CGroupMask *ret);
