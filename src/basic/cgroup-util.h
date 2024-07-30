@@ -278,8 +278,6 @@ int cg_get_xattr_malloc(const char *path, const char *name, char **ret);
 int cg_get_xattr_bool(const char *path, const char *name);
 int cg_remove_xattr(const char *path, const char *name);
 
-int cg_install_release_agent(const char *controller, const char *agent);
-int cg_uninstall_release_agent(const char *controller);
 #endif // 0
 
 int cg_is_empty(const char *controller, const char *path);
