@@ -380,8 +380,8 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
         if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
                 r = cg_attach(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, pid);
 #if 0 /// elogind supports other controllers
-                if (r < 0)
                         log_warning_errno(r, "Failed to attach "PID_FMT" to compat elogind cgroup '%s', ignoring: %m", pid, path);
+                if (r < 0)
 #else // 0
                 if (r < 0)
                         log_warning_errno(r, "Failed to attach "PID_FMT" to compat %s cgroup %s: %m", pid, CGROUP_CONTROLLER_NAME, path);
@@ -552,20 +552,16 @@ static int access_callback(
                 const struct statx *sx,
                 void *userdata) {
 
-        struct access_callback_data *d = ASSERT_PTR(userdata);
-
         if (!IN_SET(event, RECURSE_DIR_ENTER, RECURSE_DIR_ENTRY))
                 return RECURSE_DIR_CONTINUE;
 
+        struct access_callback_data *d = ASSERT_PTR(userdata);
+
+        assert(path);
         assert(inode_fd >= 0);
 
-        /* fchown() doesn't support O_PATH fds, hence we use the /proc/self/fd/ trick */
-        if (chown(FORMAT_PROC_FD_PATH(inode_fd), d->uid, d->gid) < 0) {
-                log_debug_errno(errno, "Failed to change ownership of '%s', ignoring: %m", ASSERT_PTR(path));
-
-                if (d->error == 0) /* Return last error to caller */
-                        d->error = errno;
-        }
+        if (fchownat(inode_fd, "", d->uid, d->gid, AT_EMPTY_PATH) < 0)
+                RET_GATHER(d->error, log_debug_errno(errno, "Failed to change ownership of '%s', ignoring: %m", path));
 
         return RECURSE_DIR_CONTINUE;
 }
@@ -613,7 +609,8 @@ int cg_set_access_recursive(
         if (r < 0)
                 return r;
 
-        return -d.error;
+        assert(d.error <= 0);
+        return d.error;
 }
 #endif // 0
 
