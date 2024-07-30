@@ -298,36 +298,11 @@ int cg_read_subgroup(DIR *d, char **ret) {
         return 0;
 }
 
-int cg_rmdir(const char *controller, const char *path) {
-        _cleanup_free_ char *p = NULL;
-        int r;
-
-        r = cg_get_path(controller, path, NULL, &p);
-        if (r < 0)
-                return r;
-
-        r = rmdir(p);
-        if (r < 0 && errno != ENOENT)
-                return -errno;
-
-        r = cg_hybrid_unified();
-        if (r <= 0)
-                return r;
-
-        if (streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
-                r = cg_rmdir(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path);
 #if 0 /// elogind supports other controllers
-                if (r < 0)
-                        log_warning_errno(r, "Failed to remove compat systemd cgroup %s: %m", path);
 #else // 0
                 if (r < 0)
                         log_warning_errno(r, "Failed to remove compat %s cgroup %s: %m", CGROUP_CONTROLLER_NAME, path);
 #endif // 0
-        }
-
-        return 0;
-}
-
 static int cg_kill_items(
                 const char *path,
                 int sig,
@@ -542,12 +517,6 @@ int cg_kill_recursive(
                         if (r != 0 && ret >= 0)
                                 ret = r;
                 }
-        }
-
-        if (FLAGS_SET(flags, CGROUP_REMOVE)) {
-                r = cg_rmdir(SYSTEMD_CGROUP_CONTROLLER, path);
-                if (!IN_SET(r, -ENOENT, -EBUSY))
-                        RET_GATHER(ret, log_debug_errno(r, "Failed to remove cgroup '%s': %m", path));
         }
 
         return ret;
