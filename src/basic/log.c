@@ -776,7 +776,7 @@ static int write_to_journal(
         if (journal_fd < 0)
                 return 0;
 
-        iovec_len = MIN(6 + _log_context_num_fields * 2, IOVEC_MAX);
+        iovec_len = MIN(6 + _log_context_num_fields * 3, IOVEC_MAX);
         iovec = newa(struct iovec, iovec_len);
 
         log_do_header(header, sizeof(header), level, error, file, line, func, object_field, object, extra_field, extra);
@@ -1134,7 +1134,7 @@ int log_struct_internal(
                         int r;
                         bool fallback = false;
 
-                        iovec_len = MIN(17 + _log_context_num_fields * 2, IOVEC_MAX);
+                        iovec_len = MIN(17 + _log_context_num_fields * 3, IOVEC_MAX);
                         iovec = newa(struct iovec, iovec_len);
 
                         /* If the journal is available do structured logging.
@@ -1233,7 +1233,7 @@ int log_struct_iovec_internal(
                 struct iovec *iovec;
                 size_t n = 0, iovec_len;
 
-                iovec_len = MIN(1 + n_input_iovec * 2 + _log_context_num_fields * 2, IOVEC_MAX);
+                iovec_len = MIN(1 + n_input_iovec * 2 + _log_context_num_fields * 3, IOVEC_MAX);
                 iovec = newa(struct iovec, iovec_len);
 
                 log_do_header(header, sizeof(header), level, error, file, line, func, NULL, NULL, NULL, NULL);
