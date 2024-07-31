@@ -436,9 +436,10 @@ void log_forget_fds(void) {
 }
 #endif // 0
 
-void log_set_max_level(int level) {
+int log_set_max_level(int level) {
         assert(level == LOG_NULL || (level & LOG_PRIMASK) == level);
 
+        int old = log_max_level;
         log_max_level = level;
 
         /* Also propagate max log level to libc's syslog(), just in case some other component loaded into our
@@ -451,6 +452,8 @@ void log_set_max_level(int level) {
 
         /* Ensure that our own LOG_NULL define maps sanely to the log mask */
         assert_cc(LOG_UPTO(LOG_NULL) == 0);
+
+        return old;
 }
 
 void log_set_facility(int facility) {
@@ -1365,7 +1368,6 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
-                /* We know that systemd sets the variable correctly. Something else must have set it. */
         /* Otherwise, parse the command line if invoked directly by systemd. */
         return invoked_by_systemd();
 }
