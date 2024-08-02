@@ -72,8 +72,6 @@ static SD_VARLINK_DEFINE_METHOD(
 
 static SD_VARLINK_DEFINE_METHOD(
                 Pull,
-                io_elogind_Import,
-                "io.elogind.Import",
                 SD_VARLINK_FIELD_COMMENT("The remote URL to download from"),
                 SD_VARLINK_DEFINE_INPUT(remote, SD_VARLINK_STRING, 0),
                 SD_VARLINK_FIELD_COMMENT("The local image name to download to"),
@@ -82,7 +80,7 @@ static SD_VARLINK_DEFINE_METHOD(
                 SD_VARLINK_DEFINE_INPUT_BY_TYPE(type, RemoteType, 0),
                 SD_VARLINK_FIELD_COMMENT("The image class"),
                 SD_VARLINK_DEFINE_INPUT_BY_TYPE(class, ImageClass, 0),
-                SD_VARLINK_FIELD_COMMENT("The whether and how thoroughly to verify the download before installing it locally. Defauts to 'signature'."),
+                SD_VARLINK_FIELD_COMMENT("The whether and how thoroughly to verify the download before installing it locally. Defaults to 'signature'."),
                 SD_VARLINK_DEFINE_INPUT_BY_TYPE(verify, ImageVerify, SD_VARLINK_NULLABLE),
                 SD_VARLINK_FIELD_COMMENT("If true, an existing image by the local name is deleted. Defaults to false."),
                 SD_VARLINK_DEFINE_INPUT(force, SD_VARLINK_BOOL, SD_VARLINK_NULLABLE),
@@ -105,6 +103,8 @@ static SD_VARLINK_DEFINE_ERROR(TransferFailed);
 static SD_VARLINK_DEFINE_ERROR(NoTransfers);
 
 SD_VARLINK_DEFINE_INTERFACE(
+                io_elogind_Import,
+                "io.elogind.Import",
                 SD_VARLINK_SYMBOL_COMMENT("Describes the class of images"),
                 &vl_type_ImageClass,
                 SD_VARLINK_SYMBOL_COMMENT("Describes the type of a images to transfer"),
