@@ -3,19 +3,21 @@
 # Greek translation for elogind.
 # Dimitris Spingos <dmtrs32@gmail.com>, 2014.
 # Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>, 2014.
+# Dimitrys Meliates <demetresmeliates+fedora@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-06-01 15:13+0900\n"
-"PO-Revision-Date: 2014-04-29 09:17+0300\n"
-"Last-Translator: Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>\n"
-"Language-Team: team@lists.gnome.gr\n"
+"PO-Revision-Date: 2024-08-04 03:41+0000\n"
+"Last-Translator: Dimitrys Meliates <demetresmeliates+fedora@gmail.com>\n"
+"Language-Team: Greek <https://translate.fedoraproject.org/projects/elogind/"
+"main/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -26,112 +28,105 @@ msgstr ""
 # msgid ""
 # "Authentication is required to send the entered passphrase back to the system."
 # msgstr ""
-# "Απαιτείται πιστοποίηση για αποστολή του εισερχόμενου συνθηματικού πίσω στο "
+# "Απαιτείται ταυτοποίηση για αποστολή του εισερχόμενου συνθηματικού πίσω στο "
 # "σύστημα."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:33
 # msgid "Manage system services or other units"
-# msgstr ""
+# msgstr "Διαχείριση υπηρεσιών συστήματος ή άλλων μονάδων"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:34
-# #, fuzzy
 # msgid "Authentication is required to manage system services or other units."
 # msgstr ""
-# "Απαιτείται πιστοποίηση για να προσπελάσετε τον διαχειριστή συστήματος και "
-# "υπηρεσιών."
+# "Απαιτείται ταυτοποίηση για τη διαχείριση υπηρεσιών συστήματος ή άλλων "
+# "μονάδων."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:43
 # msgid "Manage system service or unit files"
-# msgstr ""
+# msgstr "Διαχείριση υπηρεσιών συστήματος ή αρχείων μονάδας"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:44
-# #, fuzzy
 # msgid "Authentication is required to manage system service or unit files."
 # msgstr ""
-# "Απαιτείται πιστοποίηση για να προσπελάσετε τον διαχειριστή συστήματος και "
-# "υπηρεσιών."
+# "Απαιτείται ταυτοποίηση για τη διαχείριση υπηρεσιών συστήματος ή αρχείων "
+# "μονάδων."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:54
-# #, fuzzy
 # msgid "Set or unset system and service manager environment variables"
-# msgstr "Προνομιούχος πρόσβαση διαχειριστή συστήματος και υπηρεσίας"
+# msgstr ""
+# "Ορισμός ή κατάργηση μεταβλητών περιβάλλοντος συστήματος και διαχειριστή "
+# "υπηρεσιών"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:55
-# #, fuzzy
 # msgid ""
 # "Authentication is required to set or unset system and service manager "
 # "environment variables."
 # msgstr ""
-# "Απαιτείται πιστοποίηση για να προσπελάσετε τον διαχειριστή συστήματος και "
-# "υπηρεσιών."
+# "Απαιτείται ταυτοποίηση για τη ρύθμιση ή κατάργηση μεταβλητών περιβάλλοντος "
+# "συστήματος και διαχειριστή υπηρεσιών."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
-# #, fuzzy
 # msgid "Reload the systemd state"
-# msgstr "Επανεκκίνηση του συστήματος"
+# msgstr "Επαναφόρτωση κατάστασης elogind"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
-# #, fuzzy
 # msgid "Authentication is required to reload the systemd state."
-# msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
+# msgstr "Απαιτείται ταυτοποίηση για την επαναφόρτωση της κατάστασης elogind."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:74
 # msgid "Dump the systemd state without rate limits"
-# msgstr ""
+# msgstr "Απόρριψη κατάστασης elogind χωρίς όρια ρυθμού"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
-# #, fuzzy
 # msgid ""
 # "Authentication is required to dump the systemd state without rate limits."
-# msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
+# msgstr ""
+# "Απαιτείται ταυτοποίηση για την απόρριψη κατάστασης elogind χωρίς όρια ρυθμού."
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
-# msgstr ""
+# msgstr "Δημιουργία αρχικής περιοχής"
 #
 # #: src/home/org.freedesktop.home1.policy:14
-# #, fuzzy
 # msgid "Authentication is required to create a user's home area."
-# msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
+# msgstr "Απαιτείται ταυτοποίηση για τη δημιουργία αρχικής περιοχής ενός χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:23
 # msgid "Remove a home area"
-# msgstr ""
+# msgstr "Αφαίρεση αρχικής περιοχής"
 #
 # #: src/home/org.freedesktop.home1.policy:24
-# #, fuzzy
 # msgid "Authentication is required to remove a user's home area."
-# msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
+# msgstr "Απαιτείται ταυτοποίηση για την αφαίρεση αρχικής περιοχής ενός χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:33
 # msgid "Check credentials of a home area"
-# msgstr ""
+# msgstr "Ελέγξτε τα πιστοποιητικά μιας αρχικής περιοχής"
 #
 # #: src/home/org.freedesktop.home1.policy:34
-# #, fuzzy
 # msgid ""
 # "Authentication is required to check credentials against a user's home area."
 # msgstr ""
-# "Απαιτείται πιστοποίηση για προσάρτηση μιας συσκευής σε έναν σταθμό εργασίας."
+# "Απαιτείται ταυτοποίηση για τον έλεγχο πιστοποιητικών έναντι της αρχικής "
+# "περιοχής του χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:43
 # msgid "Update a home area"
-# msgstr ""
+# msgstr "Ενημέρωση αρχικής περιοχής"
 #
 # #: src/home/org.freedesktop.home1.policy:44
-# #, fuzzy
 # msgid "Authentication is required to update a user's home area."
-# msgstr ""
-# "Απαιτείται πιστοποίηση για προσάρτηση μιας συσκευής σε έναν σταθμό εργασίας."
+# msgstr "Απαιτείται ταυτοποίηση για την ενημέρωση αρχικής περιοχής ενός χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:53
 # msgid "Resize a home area"
-# msgstr ""
+# msgstr "Αλλαγή μεγέθους αρχικής περιοχής"
 #
 # #: src/home/org.freedesktop.home1.policy:54
-# #, fuzzy
 # msgid "Authentication is required to resize a user's home area."
-# msgstr "Απαιτείται πιστοποίηση για να ορίσετε τοπικά όνομα οικοδεσπότη."
+# msgstr ""
+# "Απαιτείται ταυτοποίηση για την αλλαγή του μεγέθους αρχικής περιοχής ενός "
+# "χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:63
 # msgid "Change password of a home area"
