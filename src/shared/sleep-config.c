@@ -124,7 +124,8 @@ int parse_sleep_config(SleepConfig **ret) {
                 return log_oom();
 
         *sc = (SleepConfig) {
-                .hibernate_delay_usec = USEC_INFINITY,
+                .hibernate_delay_usec  = USEC_INFINITY,
+                .hibernate_on_ac_power = true,
         };
 
         const ConfigTableItem items[] = {
@@ -154,6 +155,7 @@ int parse_sleep_config(SleepConfig **ret) {
                 { "Sleep", "MemorySleepMode",           config_parse_sleep_mode,  0,               &sc->mem_modes               },
 
                 { "Sleep", "HibernateDelaySec",         config_parse_sec,         0,               &sc->hibernate_delay_usec    },
+                { "Sleep", "HibernateOnACPower",        config_parse_bool,        0,               &sc->hibernate_on_ac_power   },
                 { "Sleep", "SuspendEstimationSec",      config_parse_sec,         0,               &sc->suspend_estimation_usec },
                 {}
         };
@@ -206,7 +208,6 @@ int parse_sleep_config(SleepConfig **ret) {
         sleep_config_validate_state_and_mode(sc);
 
         *ret = TAKE_PTR(sc);
-
         return 0;
 }
 
@@ -244,18 +245,20 @@ int sleep_mode_supported(const char *path, char * const *modes) {
         _cleanup_free_ char *supported_sysfs = NULL;
         int r;
 
+        assert(path);
+
         /* Unlike state, kernel has its own default choice if not configured */
         if (strv_isempty(modes)) {
-                log_debug("No sleep mode configured, using kernel default.");
+                log_debug("No sleep mode configured, using kernel default for %s.", path);
                 return true;
         }
 
-        if (access("/sys/power/disk", W_OK) < 0)
-                return log_debug_errno(errno, "/sys/power/disk is not writable: %m");
+        if (access(path, W_OK) < 0)
+                return log_debug_errno(errno, "%s is not writable: %m", path);
 
-        r = read_one_line_file("/sys/power/disk", &supported_sysfs);
+        r = read_one_line_file(path, &supported_sysfs);
         if (r < 0)
-                return log_debug_errno(r, "Failed to read /sys/power/disk: %m");
+                return log_debug_errno(r, "Failed to read %s: %m", path);
 
         for (const char *p = supported_sysfs;;) {
                 _cleanup_free_ char *word = NULL;
@@ -264,7 +267,7 @@ int sleep_mode_supported(const char *path, char * const *modes) {
 
                 r = extract_first_word(&p, &word, NULL, 0);
                 if (r < 0)
-                        return log_debug_errno(r, "Failed to parse /sys/power/disk: %m");
+                        return log_debug_errno(r, "Failed to parse %s: %m", path);
                 if (r == 0)
                         break;
 
@@ -277,14 +280,15 @@ int sleep_mode_supported(const char *path, char * const *modes) {
                 }
 
                 if (strv_contains(modes, mode)) {
-                        log_debug("Disk sleep mode '%s' is supported by kernel.", mode);
+                        log_debug("Sleep mode '%s' is supported by kernel (%s).", mode, path);
                         return true;
                 }
         }
 
         if (DEBUG_LOGGING) {
                 _cleanup_free_ char *joined = strv_join(modes, " ");
-                log_debug("None of the configured hibernation power modes are supported by kernel: %s", strnull(joined));
+                log_debug("None of the configured modes are supported by kernel (%s): %s",
+                          path, strnull(joined));
         }
         return false;
 }

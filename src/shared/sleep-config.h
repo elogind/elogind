@@ -33,6 +33,7 @@ typedef struct SleepConfig {
         char **mem_modes;                           /* /sys/power/mem_sleep */
 
         usec_t hibernate_delay_usec;
+        bool hibernate_on_ac_power;
         usec_t suspend_estimation_usec;
 #if 1 /// Extra configuration needed by elogind
         /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or SYSTEM_POWEROFF_PATH that fail, the ongoing
