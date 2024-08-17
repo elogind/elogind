@@ -29,7 +29,6 @@
 #include "pretty-print.h"
 #include "process-util.h"
 #include "rlimit-util.h"
-#include "sigbus.h"
 #include "signal-util.h"
 #include "string-table.h"
 #include "strv.h"
@@ -1904,14 +1903,11 @@ static int run(int argc, char *argv[]) {
         elogind_set_program_name(argv[0]);
         log_setup();
 
-        /* The journal merging logic potentially needs a lot of fds. */
-        (void) rlimit_nofile_bump(HIGH_RLIMIT_NOFILE);
-
-        sigbus_install();
-
         r = parse_argv(argc, argv);
         if (r <= 0)
                 return r;
+
+        journal_browse_prepare();
 
         r = bus_connect_transport(arg_transport, arg_host, RUNTIME_SCOPE_SYSTEM, &bus);
         if (r < 0)
