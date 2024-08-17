@@ -257,7 +257,6 @@ bool strv_fnmatch_full(char* const* patterns, const char *s, int flags, size_t *
 static inline bool strv_fnmatch(char* const* patterns, const char *s) {
         return strv_fnmatch_full(patterns, s, 0, NULL);
 }
-
 static inline bool strv_fnmatch_or_empty(char* const* patterns, const char *s, int flags) {
         assert(s);
         return strv_isempty(patterns) ||
@@ -285,3 +284,4 @@ int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const 
 #define string_strv_ordered_hashmap_put(h, k, v) _string_strv_ordered_hashmap_put(h, k, v  HASHMAP_DEBUG_SRC_ARGS)
 #endif // 0
 
+int strv_rebreak_lines(char **l, size_t width, char ***ret);
