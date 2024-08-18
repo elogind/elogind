@@ -53,6 +53,7 @@ int write_tmpfile(char *pattern, const char *contents);
 #endif // 0
 
 bool have_namespaces(void);
+bool userns_has_single_user(void);
 
 #if 0 /// UNNEEDED by elogind
 /* We use the small but non-trivial limit here */
