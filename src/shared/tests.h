@@ -50,6 +50,7 @@ void test_setup_logging(int level);
 int write_tmpfile(char *pattern, const char *contents);
 
 bool have_namespaces(void);
+bool userns_has_single_user(void);
 
 #if 0 /// UNNEEDED by elogind
 /* We use the small but non-trivial limit here */

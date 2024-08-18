@@ -35,6 +35,7 @@
 #include "strv.h"
 #include "tests.h"
 #include "tmpfile-util.h"
+#include "uid-range.h"
 
 #if 0 /// UNNEEDED by elogind
 char* setup_fake_runtime_dir(void) {
@@ -175,6 +176,20 @@ bool have_namespaces(void) {
 }
 
 #if 0 /// UNNEEDED by elogind
+bool userns_has_single_user(void) {
+        _cleanup_(uid_range_freep) UidRange *uidrange = NULL;
+
+        /* Check if we're in a user namespace with only a single user mapped in. We special case this
+         * scenario in a few tests because it's the only kind of namespace that can be created unprivileged
+         * and as such happens more often than not, so we make sure to deal with it so that all tests pass
+         * in such environments. */
+
+        if (uid_range_load_userns(&uidrange, NULL) < 0)
+                return false;
+
+        return uidrange->n_entries == 1 && uidrange->entries[0].nr == 1;
+}
+
 bool can_memlock(void) {
         /* Let's see if we can mlock() a larger blob of memory. BPF programs are charged against
          * RLIMIT_MEMLOCK, hence let's first make sure we can lock memory at all, and skip the test if we
