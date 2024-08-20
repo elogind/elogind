@@ -7,6 +7,7 @@
 #include "json-util.h"
 #include "string-util.h"
 #include "strv.h"
+#include "terminal-util.h"
 #include "tests.h"
 #include "time-util.h"
 
@@ -584,7 +585,7 @@ TEST(table) {
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1 
-        if (isatty(STDOUT_FILENO))
+        if (isatty_safe(STDOUT_FILENO))
                 assert_se(streq(formatted,
                                 "no   a long f… no   a long f… a long fi…\n"
                                 "no   fäää      no   fäää      fäää\n"
