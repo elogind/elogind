@@ -83,7 +83,7 @@ struct trie_value_entry2_f {
 } _packed_;
 
 #if 0 /// elogind does not ship hwdb.bin, that is UDEVs job
-#define hwdb_bin_paths                          \
+#define HWDB_BIN_PATHS                          \
         "/etc/systemd/hwdb/hwdb.bin\0"          \
         "/etc/udev/hwdb.bin\0"                  \
         "/usr/lib/systemd/hwdb/hwdb.bin\0"      \
