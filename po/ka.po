@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-08-23 15:33+0200\n"
-"PO-Revision-Date: 2024-06-03 00:35+0000\n"
+"PO-Revision-Date: 2024-08-24 10:36+0000\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <https://translate.fedoraproject.org/projects/"
 "elogind/main/ka/>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.5.5\n"
+"X-Generator: Weblate 5.7\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -359,38 +359,35 @@ msgstr ""
 # msgstr "დისკის ასლის ფაილის შემოტანა"
 #
 # #: src/import/org.freedesktop.import1.policy:23
-# #, fuzzy
 # msgid "Authentication is required to import an image."
-# msgstr "დისკის ასლის შემოსატანად აუცილებელია ავთენტიკაცია"
+# msgstr "დისკის ასლის ფაილის შემოსატანად ავთენტიკაციაა საჭირო."
 #
 # #: src/import/org.freedesktop.import1.policy:32
 # msgid "Export a disk image"
 # msgstr "დისკის ასლის ფაილის გატანა"
 #
 # #: src/import/org.freedesktop.import1.policy:33
-# #, fuzzy
 # msgid "Authentication is required to export disk image."
-# msgstr "დისკის ასლის ფაილის გასატანად აუცილებელია ავთენტიკაცია"
+# msgstr "დისკის ასლის ფაილის გასატანად აუცილებელია ავთენტიკაცია."
 #
 # #: src/import/org.freedesktop.import1.policy:42
 # msgid "Download a disk image"
 # msgstr "დისკის ასლის ფაილის გადმოწერა"
 #
 # #: src/import/org.freedesktop.import1.policy:43
-# #, fuzzy
 # msgid "Authentication is required to download a disk image."
-# msgstr "დისკის ასლის ფაილის გადმოსაწერად აუცილებელია ავთენტიკაცია"
+# msgstr "დისკის ასლის ფაილის გადმოსაწერად აუცილებელია ავთენტიკაცია."
 #
 # #: src/import/org.freedesktop.import1.policy:52
 # msgid "Cancel transfer of a disk image"
 # msgstr "დისკის ასლის ფაილის გადაცემის გაუქმება"
 #
 # #: src/import/org.freedesktop.import1.policy:53
-# #, fuzzy
 # msgid ""
 # "Authentication is required to cancel the ongoing transfer of a disk image."
 # msgstr ""
-# "დისკის ასლის ფაილის მიმდინარე გადაცემის გასაუქმებლად აუცილებელია ავთენტიკაცია"
+# "დისკის ასლის ფაილის მიმდინარე გადაცემის გასაუქმებლად აუცილებელია "
+# "ავთენტიკაცია."
 #
 # #: src/locale/org.freedesktop.locale1.policy:22
 # msgid "Set system locale"
@@ -787,9 +784,8 @@ msgid "Set a wall message"
 msgstr "კედლის შეტყობინების დაყენება"
 
 #: src/login/org.freedesktop.login1.policy:397
-#, fuzzy
 msgid "Authentication is required to set a wall message."
-msgstr "კედლის შეტყობინების დაყენებას ავთენტიკაცია სჭირდება"
+msgstr "კედლის შეტყობინების დაყენებას ავთენტიკაცია სჭირდება."
 
 #: src/login/org.freedesktop.login1.policy:406
 msgid "Change Session"
@@ -861,17 +857,14 @@ msgstr "ვირტუალური ტერმინალის შეც�
 # "სჭირდება."
 #
 # #: src/machine/org.freedesktop.machine1.policy:95
-# #, fuzzy
 # msgid "Create a local virtual machine or container"
-# msgstr "ლოკალური ვირტუალური მანქანებისა და კონტეინერების მართვა"
+# msgstr "ლოკალური ვირტუალური მანქანის ან კონტეინერის შექმნა"
 #
 # #: src/machine/org.freedesktop.machine1.policy:96
-# #, fuzzy
 # msgid ""
 # "Authentication is required to create a local virtual machine or container."
 # msgstr ""
-# "ლოკალური ვირტუალური მანქანებისა და კონტეინერების მართვას ავთენტიკაცია "
-# "სჭირდება."
+# "ლოკალური ვირტუალური მანქანის ან კონტეინერის შექმნას ავთენტიკაცია სჭირდება."
 #
 # #: src/machine/org.freedesktop.machine1.policy:106
 # msgid "Manage local virtual machine and container images"
@@ -1067,18 +1060,16 @@ msgstr "ვირტუალური ტერმინალის შეც�
 # msgstr "DNS-SD სერვისის რეგისტრაცია"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:23
-# #, fuzzy
 # msgid "Authentication is required to register a DNS-SD service."
-# msgstr "DNS-SD სერვისის რეგისტრაციისთვის საჭიროა ავთენტიკაცია"
+# msgstr "DNS-SD სერვისის რეგისტრაციისთვის საჭიროა ავთენტიკაცია."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:33
 # msgid "Unregister a DNS-SD service"
 # msgstr "DNS-SD სერვისის მოცილება"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:34
-# #, fuzzy
 # msgid "Authentication is required to unregister a DNS-SD service."
-# msgstr "DNS-SD სერვისის მოსაცილებლადს აჭიროა ავთენტიკაცია"
+# msgstr "DNS-SD სერვისის რეგისტრაციის მოსახსნელად საჭიროა ავთენტიკაცია."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:132
 # msgid "Revert name resolution settings"
@@ -1090,86 +1081,79 @@ msgstr "ვირტუალური ტერმინალის შეც�
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:143
 # msgid "Subscribe query results"
-# msgstr ""
+# msgstr "მოთხოვნის შედეგების გამოწერა"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:144
-# #, fuzzy
 # msgid "Authentication is required to subscribe query results."
-# msgstr "სისტემის შეჩერებას ავთენტიკაცია სჭირდება."
+# msgstr "მოთხოვნის შედეგების გამოსაწერად ავთენტიკაციაა საჭირო."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:154
 # msgid "Dump cache"
-# msgstr ""
+# msgstr "კეშის დამპი"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:155
-# #, fuzzy
 # msgid "Authentication is required to dump cache."
-# msgstr "დომენის დაყენებას ავთენტიკაცია სჭირდება."
+# msgstr "კეშის დამპს ავთენტიკაცია სჭირდება."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:165
 # msgid "Dump server state"
-# msgstr ""
+# msgstr "სერვერის მდგომარეობის დამპი"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:166
-# #, fuzzy
 # msgid "Authentication is required to dump server state."
-# msgstr "NTP სერვერის დაყენებას ავთენტიკაცია სჭირდება."
+# msgstr "სერვერის მდგომარეობის დამპს ავთენტიკაცია სჭირდება."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:176
 # msgid "Dump statistics"
-# msgstr ""
+# msgstr "სტატისტიკის დამპი"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:177
-# #, fuzzy
 # msgid "Authentication is required to dump statistics."
-# msgstr "დომენის დაყენებას ავთენტიკაცია სჭირდება."
+# msgstr "სტატისტიკის დამპს ავთენტიკაცია სჭირდება."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:187
 # msgid "Reset statistics"
-# msgstr ""
+# msgstr "სტატისტიკის ჩამოყრა"
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:188
-# #, fuzzy
 # msgid "Authentication is required to reset statistics."
-# msgstr "NTP პარამეტრების დაბრუნებისთვის საჭიროა ავთენტიკაცია."
+# msgstr "სტატისტიკის ჩამოსაყრელად ავთენტიკაცია აუცილებელია."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:35
 # msgid "Check for system updates"
-# msgstr ""
+# msgstr "სისტემის განახლებების შემოწმება"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:36
-# #, fuzzy
 # msgid "Authentication is required to check for system updates."
-# msgstr "სისტემური დროის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr "სისტემური განახლებების შესამოწმებლად საჭიროა ავთენტიკაცია."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:45
 # msgid "Install system updates"
-# msgstr ""
+# msgstr "სისტემური განახლებების დაყენება"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:46
-# #, fuzzy
 # msgid "Authentication is required to install system updates."
-# msgstr "სისტემური დროის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr "სისტემური განახლებების დასაყენებლად საჭიროა ავთენტიკაცია."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:55
 # msgid "Install specific system version"
-# msgstr ""
+# msgstr "მითითებული სისტემის ვერსიის დაყენება"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:56
-# #, fuzzy
 # msgid ""
 # "Authentication is required to update the system to a specific (possibly old) "
 # "version."
-# msgstr "სისტემური დროის სარტყლის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr ""
+# "მითითებული (ალბათ, ძველი) სისტემის ვერსიამდე განახლებისთვის ავთენტიკაციაა "
+# "საჭირო."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:65
 # msgid "Cleanup old system updates"
-# msgstr ""
+# msgstr "ძველი სისტემის განახლებების გასუფთავება"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:66
-# #, fuzzy
 # msgid "Authentication is required to cleanup old system updates."
-# msgstr "სისტემური დროის დასაყენებლად საჭიროა ავთენტიკაცია."
+# msgstr "ძველი სისტემური განახლებების გასუფთავებას ავთენტიკაცია სჭირდება."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
