@@ -338,7 +338,7 @@ typedef enum ConfigParseStringFlags {
                 }                                                       \
                                                                         \
                 *i = r;                                                 \
-                return 0;                                               \
+                return 1;                                               \
         }
 
 #define DEFINE_CONFIG_PARSE_PTR(function, parser, type, msg)            \
@@ -355,7 +355,7 @@ typedef enum ConfigParseStringFlags {
                         log_syntax(unit, LOG_WARNING, filename, line, r, \
                                    msg ", ignoring: %s", rvalue);       \
                                                                         \
-                return 0;                                               \
+                return 1;                                               \
         }
 
 #define DEFINE_CONFIG_PARSE_ENUM_FULL(function, from_string, type, msg) \
@@ -375,7 +375,7 @@ typedef enum ConfigParseStringFlags {
                 }                                                       \
                                                                         \
                 *i = x;                                                 \
-                return 0;                                               \
+                return 1;                                               \
         }
 
 #define DEFINE_CONFIG_PARSE_ENUM(function, name, type, msg)             \
@@ -392,7 +392,7 @@ typedef enum ConfigParseStringFlags {
                                                                         \
                 if (isempty(rvalue)) {                                  \
                         *i = default_value;                             \
-                        return 0;                                       \
+                        return 1;                                       \
                 }                                                       \
                                                                         \
                 x = name##_from_string(rvalue);                         \
@@ -403,7 +403,7 @@ typedef enum ConfigParseStringFlags {
                 }                                                       \
                                                                         \
                 *i = x;                                                 \
-                return 0;                                               \
+                return 1;                                               \
         }
 
 #define DEFINE_CONFIG_PARSE_ENUMV(function, name, type, invalid, msg)          \
@@ -466,7 +466,8 @@ typedef enum ConfigParseStringFlags {
                         *(xs + i) = invalid;                                   \
                 }                                                              \
                                                                                \
-                return free_and_replace(*enums, xs);                           \
+                free_and_replace(*enums, xs);                                  \
+                return 1;                                                      \
         }
 
 int config_parse_unsigned_bounded(

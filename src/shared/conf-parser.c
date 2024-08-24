@@ -9,6 +9,7 @@
 
 #include "alloc-util.h"
 #include "chase.h"
+#include "calendarspec.h"
 #include "conf-files.h"
 #include "conf-parser.h"
 //#include "constants.h"
@@ -1014,7 +1015,7 @@ int config_parse_bool(
         }
 
         *b = k;
-        return 0;
+        return 1; /* set */
 }
 
 #if 0 /// UNNEEDED by elogind
@@ -1467,7 +1468,7 @@ int config_parse_ifname(
 
         if (isempty(rvalue)) {
                 *s = mfree(*s);
-                return 0;
+                return 1;
         }
 
         if (!ifname_valid(rvalue)) {
@@ -1479,7 +1480,7 @@ int config_parse_ifname(
         if (r < 0)
                 return log_oom();
 
-        return 0;
+        return 1;
 }
 
 int config_parse_ifnames(
@@ -1993,6 +1994,41 @@ int config_parse_unsigned_bounded(
                 return 0;
         else
                 return r;
+}
+
+int config_parse_calendar(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        CalendarSpec **cr = data;
+        _cleanup_(calendar_spec_freep) CalendarSpec *c = NULL;
+        int r;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+        assert(data);
+
+        if (isempty(rvalue)) {
+                *cr = calendar_spec_free(*cr);
+                return 0;
+        }
+
+        r = calendar_spec_from_string(rvalue, &c);
+        if (r < 0)
+                log_syntax(unit, LOG_WARNING, filename, line, r, "Failed to parse calendar specification, ignoring: %s", rvalue);
+        else
+                *cr = TAKE_PTR(c);
+
+        return 0;
 }
 
 DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent, "Failed to parse percent value");
