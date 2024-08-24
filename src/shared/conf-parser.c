@@ -1019,6 +1019,35 @@ int config_parse_bool(
 }
 
 #if 0 /// UNNEEDED by elogind
+int config_parse_uint32_flag(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        uint32_t *flags = ASSERT_PTR(data);
+        int r;
+
+        assert(ltype != 0);
+
+        r = isempty(rvalue) ? 0 : parse_boolean(rvalue);
+        if (r < 0) {
+                log_syntax(unit, LOG_WARNING, filename, line, r,
+                           "Failed to parse %s=%s. Ignoring assignment: %m",
+                           lvalue, rvalue);
+                return 0;
+        }
+
+        SET_FLAG(*flags, ltype, r);
+        return 1;
+}
+
 int config_parse_id128(
                 const char *unit,
                 const char *filename,
