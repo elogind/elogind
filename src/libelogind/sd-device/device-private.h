@@ -30,7 +30,6 @@ static inline int device_get_sysattr_unsigned(sd_device *device, const char *sys
 }
 int device_get_sysattr_u32(sd_device *device, const char *sysattr, uint32_t *ret_value);
 int device_get_sysattr_bool(sd_device *device, const char *sysattr);
-int device_get_device_id(sd_device *device, const char **ret);
 
 #if 0 /// UNNEEDED by elogind
 int device_get_devlink_priority(sd_device *device, int *ret);
