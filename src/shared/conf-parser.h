@@ -285,6 +285,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_iec_uint64_infinity);
 CONFIG_PARSER_PROTOTYPE(config_parse_bool);
 #if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_uint32_flag);
+CONFIG_PARSER_PROTOTYPE(config_parse_uint32_invert_flag);
 CONFIG_PARSER_PROTOTYPE(config_parse_id128);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
