@@ -41,7 +41,6 @@ static inline void iovec_done_erase(struct iovec *iovec) {
 }
 #endif // 0
 
-
 #if 0 /// UNNEEDED by elogind
 
 char* set_iovec_string_field(struct iovec *iovec, size_t *n_iovec, const char *field, const char *value);
@@ -78,3 +77,5 @@ static inline struct iovec *iovec_memdup(const struct iovec *source, struct iove
 
         return ret;
 }
+
+struct iovec* iovec_append(struct iovec *iovec, const struct iovec *append);
