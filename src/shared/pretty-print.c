@@ -466,7 +466,7 @@ bool shall_tint_background(void) {
         return cache != 0;
 }
 
-void draw_progress_bar_unbuffered(const char *prefix, double percentage) {
+void draw_progress_bar_impl(const char *prefix, double percentage) {
         fputc('\r', stderr);
         if (prefix) {
                 fputs(prefix, stderr);
@@ -522,7 +522,7 @@ void draw_progress_bar_unbuffered(const char *prefix, double percentage) {
 
 }
 
-void clear_progress_bar_unbuffered(const char *prefix) {
+void clear_progress_bar_impl(const char *prefix) {
         fputc('\r', stderr);
 
         if (terminal_is_dumb())
@@ -544,7 +544,7 @@ void draw_progress_bar(const char *prefix, double percentage) {
         char buffer[LONG_LINE_MAX];
         setvbuf(stderr, buffer, _IOFBF, sizeof(buffer));
 
-        draw_progress_bar_unbuffered(prefix, percentage);
+        draw_progress_bar_impl(prefix, percentage);
 
         fflush(stderr);
 
@@ -556,7 +556,7 @@ void clear_progress_bar(const char *prefix) {
         char buffer[LONG_LINE_MAX];
         setvbuf(stderr, buffer, _IOFBF, sizeof(buffer));
 
-        clear_progress_bar_unbuffered(prefix);
+        clear_progress_bar_impl(prefix);
 
         fflush(stderr);
 
