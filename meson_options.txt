@@ -273,6 +273,8 @@ option('pamconfdir', type : 'string',
 # option('libcryptsetup-plugins-dir', type : 'string',
 #        description : 'directory for libcryptsetup plugins')
 #endif // 0
+option('shellprofiledir', type : 'string',
+       description : 'directory for Shell profile drop-ins ["no" disables]')
 option('docdir', type : 'string',
        description : 'documentation directory')
 option('install-sysconfdir', type : 'combo', choices : ['true', 'no-samples', 'false'], value : 'true',

@@ -230,7 +230,7 @@ modprobedir = prefixdir / 'lib/modprobe.d'
 #
 # configfiledir = get_option('configfiledir')
 # if configfiledir == ''
-#         configfiledir= sysconfdir
+#         configfiledir = sysconfdir
 # endif
 # pkgconfigfiledir = configfiledir / 'systemd'
 #
@@ -309,6 +309,13 @@ endif
 #         libcryptsetup_plugins_dir = libdir / 'cryptsetup'
 # endif
 #
+# shellprofiledir = get_option('shellprofiledir')
+# if shellprofiledir == ''
+#         shellprofiledir = sysconfdir / 'profile.d'
+# endif
+# conf.set10('LINK_SHELL_EXTRA_DROPIN', shellprofiledir != 'no' and not shellprofiledir.startswith('/usr/'))
+# conf.set('SHELLPROFILEDIR', shellprofiledir, description : 'shell profile directory')
+#
 # memory_accounting_default = get_option('memory-accounting-default')
 # status_unit_format_default = get_option('status-unit-format-default')
 # if status_unit_format_default == 'auto'
@@ -348,6 +355,7 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SSHCONFDIR',                                 sshconfdir)
 # conf.set_quoted('SSHDCONFDIR',                                sshdconfdir)
+# conf.set_quoted('SHELLPROFILEDIR',                            shellprofiledir)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
 # conf.set_quoted('SYSTEMCTL_BINARY_PATH',                      bindir / 'systemctl')
@@ -3163,6 +3171,7 @@ subdir('man')
 # subdir('network')
 # subdir('presets')
 #endif // 0
+subdir('profile.d')
 subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind
@@ -3413,6 +3422,7 @@ summary({
 #         'ssh server privilege separation directory' : sshdprivsepdir,
 #         'ssh client configuration directory' : sshconfdir,
 #         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
+#         'Shell profile directory' :         shellprofiledir,
 #         'RPM macros directory' :            rpmmacrosdir,
 #         'modprobe.d directory' :            modprobedir,
 #endif // 0
