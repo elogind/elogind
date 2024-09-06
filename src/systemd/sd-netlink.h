@@ -52,7 +52,7 @@ sd_netlink *sd_netlink_unref(sd_netlink *nl);
 int sd_netlink_send(sd_netlink *nl, sd_netlink_message *message, uint32_t *serial);
 #if 0 /** UNNEEDED by elogind */
 int sd_netlink_call_async(sd_netlink *nl, sd_netlink_slot **ret_slot, sd_netlink_message *message,
-                          sd_netlink_message_handler_t callback, sd_netlink_destroy_t destoy_callback,
+                          sd_netlink_message_handler_t callback, sd_netlink_destroy_t destroy_callback,
                           void *userdata, uint64_t usec, const char *description);
 #endif /** 0 */
 int sd_netlink_call(sd_netlink *nl, sd_netlink_message *message, uint64_t timeout,
