@@ -234,7 +234,7 @@ basic_sources += missing_syscall_def_h
 # arphrd_list_txt = custom_target(
 #         'arphrd-list.txt',
 #         output : 'arphrd-list.txt',
-#         command : [generate_arphrd_list, cpp, config_h],
+#         command : [generate_arphrd_list, cpp, files('linux/if_arp.h'), config_h],
 #         capture : true)
 #endif // 0
 
