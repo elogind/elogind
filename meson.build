@@ -923,7 +923,6 @@ foreach header : ['crypt.h',
                   'linux/ioprio.h',
                   'linux/memfd.h',
                   'linux/time_types.h',
-                  'linux/vm_sockets.h',
 #if 1 /// elogind also needs to check printf.h
                   'printf.h',
 #endif // 1
