@@ -23,6 +23,7 @@
 int asynchronous_sync(pid_t *ret_pid);
 #endif // 0
 
+int asynchronous_fsync(int fd, pid_t *ret_pid);
 int asynchronous_close(int fd);
 #if 0 /// UNNEEDED by elogind
 int asynchronous_rm_rf(const char *p, RemoveFlags flags);
