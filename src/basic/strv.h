@@ -20,7 +20,7 @@ char* strv_find_prefix(char * const *l, const char *name) _pure_;
 #endif // 0
 char* strv_find_startswith(char * const *l, const char *name) _pure_;
 #if 0 /// UNNEEDED by elogind
-char* strv_find_closest(char * const *l, const char *name) _pure_;
+char* strv_find_closest_by_levenshtein(char * const *l, const char *name) _pure_;
 /* Given two vectors, the first a list of keys and the second a list of key-value pairs, returns the value
  * of the first key from the first vector that is found in the second vector. */
 char* strv_find_first_field(char * const *needles, char * const *haystack) _pure_;
@@ -277,7 +277,6 @@ int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
 #define strv_free_and_replace(a, b)             \
         free_and_replace_full(a, b, strv_free)
 
-extern const struct hash_ops string_strv_hash_ops;
 #if 0 /// UNNEEDED by elogind
 int _string_strv_hashmap_put(Hashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
 int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
