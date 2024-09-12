@@ -2,7 +2,6 @@
 #pragma once
 
 #include <inttypes.h>
-#include <net/if.h>
 #include <stdbool.h>
 
 #include "cgroup-util.h"
@@ -72,33 +71,12 @@ assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #endif
 
 typedef enum {
-        FORMAT_IFNAME_IFINDEX              = 1 << 0,
-        FORMAT_IFNAME_IFINDEX_WITH_PERCENT = (1 << 1) | FORMAT_IFNAME_IFINDEX,
-} FormatIfnameFlag;
-
-int format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NAMESIZE]);
 #if 0 /// UNNEEDED by elogind
-int format_ifname_full_alloc(int ifindex, FormatIfnameFlag flag, char **ret);
 #endif // 0
 
-static inline int format_ifname(int ifindex, char buf[static IF_NAMESIZE]) {
-        return format_ifname_full(ifindex, 0, buf);
-}
 #if 0 /// UNNEEDED by elogind
-static inline int format_ifname_alloc(int ifindex, char **ret) {
-        return format_ifname_full_alloc(ifindex, 0, ret);
-}
 #endif // 0
 
-static inline char* _format_ifname_full(int ifindex, FormatIfnameFlag flag, char buf[static IF_NAMESIZE]) {
-        (void) format_ifname_full(ifindex, flag, buf);
-        return buf;
-}
-
-#define FORMAT_IFNAME_FULL(index, flag) _format_ifname_full(index, flag, (char[IF_NAMESIZE]){})
-#define FORMAT_IFNAME(index) _format_ifname_full(index, 0, (char[IF_NAMESIZE]){})
-
-typedef enum {
         FORMAT_BYTES_USE_IEC     = 1 << 0,
         FORMAT_BYTES_BELOW_POINT = 1 << 1,
         FORMAT_BYTES_TRAILING_B  = 1 << 2,
