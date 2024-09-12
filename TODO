@@ -894,9 +894,6 @@ Features:
   similar behind it, instead of http.
 
 
-* in UKIs: add way to define allowlist of additional words that can be added to
-  the kernel cmdline even in SecureBoot mode
-
 * we probably needs .pcrpkeyrd or so as additional PE section in UKIs,
   which contains a separate public key for PCR values that only apply in the
   initrd, i.e. in the boot phase "enter-initrd". Then, consumers in userspace
@@ -1191,9 +1188,6 @@ Features:
   appropriate qemu cmdline. That way qemu payloads could talk sd_notify()
   directly to host service manager.
 
-* sd-device has an API to create an sd_device object from a device id, but has
-  no api to query the device id
-
 * sd-device should return the devnum type (i.e. 'b' or 'c') via some API for an
   sd_device object, so that data passed into sd_device_new_from_devnum() can
   also be queried.
@@ -1237,14 +1231,6 @@ Features:
 * elogind-dissect: show available versions inside of a disk image, i.e. if
   multiple versions are around of the same resource, show which ones. (in other
   words: show partition labels).
-
-* maybe add a generator that reads /proc/cmdline, looks for
-  elogind.pull-raw-portable=, elogind-pull-raw-sysext= and similar switches
-  that take a URL as parameter. It then generates service units for
-  elogind-pull calls that download these URLs if not installed yet. Use case:
-  invoke a VM or nspawn container in a way it automatically deploys/runs these
-  images as OS payloads. i.e. have a generic OS image you can point to any
-  payload you like, which is then downloaded, securely verified and run.
 
 * elogind-dissect: add --cat switch for dumping files such as /etc/os-release
 
@@ -1628,7 +1614,8 @@ Features:
   zero and is not open anymore, while the latter happens when a file is
   unlinked from any dir.
 
-* port systemctl, busctl, … over to format-table.[ch]'s table formatters
+* systemctl, machinectl, loginctl: port "status" commands over to
+  format-table.c's vertical output logic.
 
 * pid1: lock image configured with RootDirectory=/RootImage= using the usual nspawn semantics while the unit is up
 
@@ -1652,9 +1639,6 @@ Features:
   options so that it is possible to move user session scopes and machines to a
   different slice too by default. Use case: people who want to put resources on
   the entire system, with the exception of one specific service. See:
-* maybe rework get_user_creds() to query the user database if $SHELL is used
-  for root, but only then.
-
 * calenderspec: add support for week numbers and day numbers within a
   year. This would allow us to define "bi-weekly" triggers safely.
 
@@ -2083,15 +2067,8 @@ Features:
   - follow PropertiesChanged state more closely, to deal with quick logouts and
     relogins
   - (optionally?) spawn seat-manager@$SEAT.service whenever a seat shows up that as CanGraphical set
-  - expose details of boot entries on the bus. In particular, it should be possible
-    to query the list of boot entry titles that bootctl / sd-boot would show.
-    Currently we only expose their identifiers.
 
 * move multiseat vid/pid matches from logind udev rule to hwdb
-
-* logind: rework pam_logind to also do a bus call in case of invocation from
-  user@.service, which returns the XDG_RUNTIME_DIR value, and make this
-  behaviour selectable via pam module option.
 
 * delay activation of logind until somebody logs in, or when /dev/tty0 pulls it
   in or lingering is on (so that containers don't bother with it until PAM is used). also exit-on-idle
@@ -2206,9 +2183,7 @@ Features:
   should probably honour that same limit (JOURNAL_FILES_MAX) when vacuuming to
   ensure we never generate more files than we can actually view.
 
-* maybe add a tool that displays most recent journal logs as QR code to scan
-  off screen and run it automatically on boot failures, emergency logs and
-  such. Use DRM APIs directly, see
+* bsod: maybe use graphical mode. Use DRM APIs directly, see
   https://github.com/dvdhrm/docs/blob/master/drm-howto/modeset.c for an example
   for doing that.
 
@@ -2262,7 +2237,7 @@ Features:
   - GNOME's side for forget key on suspend (requires rework so that lock screen runs outside of uid)
   - update LUKS password on login if we find there's a password that unlocks the JSON record but not the LUKS device.
   - create on activate?
-  - properties: icon url?, preferred session type?, administrator bool (which translates to 'wheel' membership)?, address?, telephone?, vcard?, samba stuff?, parental controls?
+  - properties: icon url?, administrator bool (which translates to 'wheel' membership)?, address?, telephone?, vcard?, samba stuff?, parental controls?
   - communicate clearly when usb stick is safe to remove. probably involves
     beefing up logind to make pam session close hook synchronous and wait until
     elogind --user is shut down.
