@@ -454,6 +454,8 @@ option('polkit', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 
 # option('ima', type : 'boolean',
 #        description : 'IMA support')
 #endif // 0
+option('ipe', type : 'boolean',
+       description : 'IPE support')
 
 option('acl', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'libacl support')

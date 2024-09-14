@@ -47,6 +47,12 @@ const char* const elogind_features =
 #endif
 #endif // 0
 
+#if ENABLE_IMA
+        " +IPE"
+#else
+        " -IPE"
+#endif
+
 #if ENABLE_SMACK
         " +SMACK"
 #else

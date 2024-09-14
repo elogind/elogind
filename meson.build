@@ -1981,6 +1981,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'hwdb',
 #                 'idn',
 #                 'ima',
+#                 'ipe',
 #                 'initrd',
 #                 'kernel-install',
 #                 'ldconfig',
