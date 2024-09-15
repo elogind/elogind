@@ -226,6 +226,12 @@ const char* const elogind_features =
         " -BPF_FRAMEWORK"
 #endif
 
+#if HAVE_VMLINUX_H
+        " +BTF"
+#else
+        " -BTF"
+#endif
+
 #if HAVE_XKBCOMMON
         " +XKBCOMMON"
 #else
@@ -257,6 +263,7 @@ const char* const elogind_features =
 
 static char *elogind_features_with_color(void) {
         const char *p = elogind_features;
+static char* elogind_features_with_color(void) {
         _cleanup_free_ char *ret = NULL;
         int r;
 
