@@ -2456,6 +2456,7 @@ basic_includes = include_directories(
 #         'src/libsystemd/sd-network',
 #         'src/libelogind/sd-resolve',
 #         'src/libelogind/sd-varlink')]
+#         'src/libelogind/sd-path',
 #else // 0
 libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-bus',
