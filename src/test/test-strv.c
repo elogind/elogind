@@ -1147,4 +1147,89 @@ TEST(strv_extend_many) {
         assert_se(strv_equal(l, STRV_MAKE("foo", "bar", "waldo", "quux", "1", "2", "3", "4", "yes", "no")));
 }
 
+TEST(strv_rebreak_lines) {
+        _cleanup_strv_free_ char **l = NULL;
+
+        assert_se(strv_rebreak_lines(NULL, SIZE_MAX, &l) >= 0);
+        assert_se(strv_equal(l, NULL));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE(""), SIZE_MAX, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("", ""), SIZE_MAX, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("", "")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("foo"), SIZE_MAX, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("foo")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("foo", "bar"), SIZE_MAX, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("foo", "bar")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("Foo fOo foO FOo", "bar Bar bAr baR BAr"), 10, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("Foo fOo", "foO FOo", "bar Bar", "bAr baR", "BAr")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("           foo               ",
+                                               "             foo bar               waldo quux         "),
+                                     10, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("           foo",
+                                          "             foo",
+                                          "bar",
+                                          "waldo quux")));
+        l = strv_free(l);
+
+        assert_se(strv_rebreak_lines(STRV_MAKE("            ",
+                                               "\tfoo bar\t",
+                                               "FOO\tBAR"),
+                                     10, &l) >= 0);
+        assert_se(strv_equal(l, STRV_MAKE("",
+                                          "\tfoo",
+                                          "bar",
+                                          "FOO",
+                                          "BAR")));
+        l = strv_free(l);
+
+        /* Now make sure that breaking the lines a 2nd time does not modify the output anymore */
+        for (size_t i = 1; i < 100; i++) {
+                _cleanup_strv_free_ char **a = NULL, **b = NULL;
+
+                assert_se(strv_rebreak_lines(STRV_MAKE("foobar waldo waldo quux piep\tschnurz    pimm"), i, &a) >= 0);
+                assert_se(strv_rebreak_lines(a, i, &b) >= 0);
+
+                assert_se(strv_equal(a, b));
+        }
+}
+
+TEST(strv_find_closest) {
+        char **l = STRV_MAKE("aaa", "aaaa", "bbb", "ccc");
+
+        /* prefix match */
+        ASSERT_STREQ(strv_find_closest(l, "a"),    "aaa");
+        ASSERT_STREQ(strv_find_closest(l, "aa"),   "aaa");
+        ASSERT_STREQ(strv_find_closest(l, "aaa"),  "aaa");
+        ASSERT_STREQ(strv_find_closest(l, "aaaa"), "aaaa");
+        ASSERT_STREQ(strv_find_closest(l, "b"),    "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "bb"),   "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "bbb"),  "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "c"),    "ccc");
+        ASSERT_STREQ(strv_find_closest(l, "cc"),   "ccc");
+        ASSERT_STREQ(strv_find_closest(l, "ccc"),  "ccc");
+
+        /* levenshtein match */
+        ASSERT_STREQ(strv_find_closest(l, "aab"),  "aaa");
+        ASSERT_STREQ(strv_find_closest(l, "abb"),  "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "cbc"),  "ccc");
+        ASSERT_STREQ(strv_find_closest(l, "aax"),  "aaa");
+        ASSERT_STREQ(strv_find_closest(l, "bbbb"), "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "cbbb"), "bbb");
+        ASSERT_STREQ(strv_find_closest(l, "bbbx"), "bbb");
+
+        ASSERT_NULL(strv_find_closest(l, "sfajosajfosdjaofjdsaf"));
+}
+
 DEFINE_TEST_MAIN(LOG_INFO);
