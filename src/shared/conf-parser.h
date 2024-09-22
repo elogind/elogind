@@ -322,6 +322,7 @@ CONFIG_PARSER_PROTOTYPE(config_parse_ether_addr);
 CONFIG_PARSER_PROTOTYPE(config_parse_ether_addrs);
 CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_non_null);
 CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_data);
+CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_prefix);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
 CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
 #endif // 0
