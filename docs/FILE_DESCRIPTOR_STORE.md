@@ -206,6 +206,6 @@ service.
 The
 [`elogind-run`](https://www.freedesktop.org/software/elogind/man/elogind-run.html)
 tool may be used to quickly start a testing binary or similar as a service. Use
-`-p FileDescriptorStore=4711` to enable the fdstore from `elogind-run`'s
+`-p FileDescriptorStoreMax=4711` to enable the fdstore from `elogind-run`'s
 command line. By using the `-t` switch you can even interactively communicate
 via processes spawned that way, via the TTY.
