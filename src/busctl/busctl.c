@@ -17,6 +17,7 @@
 #include "capsule-util.h"
 #include "escape.h"
 #include "fd-util.h"
+#include "fdset.h"
 #include "fileio.h"
 #include "format-table.h"
 #include "glyph-util.h"
@@ -153,7 +154,7 @@ static int acquire_bus(bool set_monitor, sd_bus **ret) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return bus_log_connect_error(r, arg_transport, arg_runtime_scope);
+                return bus_log_connect_error(r, arg_transport);
 
         *ret = TAKE_PTR(bus);
 
@@ -1485,12 +1486,13 @@ static int status(int argc, char **argv, void *userdata) {
         return 0;
 }
 
-static int message_append_cmdline(sd_bus_message *m, const char *signature, char ***x) {
+static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSet **passed_fdset, char ***x) {
         char **p;
         int r;
 
         assert(m);
         assert(signature);
+        assert(passed_fdset);
         assert(x);
 
         p = *x;
@@ -1639,7 +1641,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
                                         return bus_log_create_error(r);
 
                                 for (unsigned i = 0; i < n; i++) {
-                                        r = message_append_cmdline(m, s, &p);
+                                        r = message_append_cmdline(m, s, passed_fdset, &p);
                                         if (r < 0)
                                                 return r;
                                 }
@@ -1656,7 +1658,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
                         if (r < 0)
                                 return bus_log_create_error(r);
 
-                        r = message_append_cmdline(m, v, &p);
+                        r = message_append_cmdline(m, v, passed_fdset, &p);
                         if (r < 0)
                                 return r;
 
@@ -1688,7 +1690,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
                                 if (r < 0)
                                         return bus_log_create_error(r);
 
-                                r = message_append_cmdline(m, s, &p);
+                                r = message_append_cmdline(m, s, passed_fdset, &p);
                                 if (r < 0)
                                         return r;
                         }
@@ -1699,9 +1701,25 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, char
                         break;
                 }
 
-                case SD_BUS_TYPE_UNIX_FD:
-                        return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
-                                               "UNIX file descriptor not supported as type.");
+                case SD_BUS_TYPE_UNIX_FD: {
+                        int fd;
+
+                        fd = parse_fd(v);
+                        if (fd < 0)
+                                return log_error_errno(fd, "Failed to parse '%s' as a file descriptor: %m", v);
+
+                        if (!*passed_fdset) {
+                                r = fdset_new_fill(/* filter_cloexec= */ 0, passed_fdset);
+                                if (r < 0)
+                                        return log_error_errno(r, "Failed to create fd set: %m");
+                        }
+
+                        if (!fdset_contains(*passed_fdset, fd))
+                                return log_error_errno(SYNTHETIC_ERRNO(EBADF), "Failed to find file descriptor '%s' among passed file descriptors.", v);
+
+                        r = sd_bus_message_append_basic(m, t, &fd);
+                        break;
+                }
 
                 default:
                         return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
@@ -2057,6 +2075,7 @@ static int call(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL, *reply = NULL;
+        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         int r;
 
         r = acquire_bus(false, &bus);
@@ -2093,7 +2112,7 @@ static int call(int argc, char **argv, void *userdata) {
 
                 p = argv+6;
 
-                r = message_append_cmdline(m, argv[5], &p);
+                r = message_append_cmdline(m, argv[5], &passed_fdset, &p);
                 if (r < 0)
                         return r;
 
@@ -2159,6 +2178,7 @@ static int call(int argc, char **argv, void *userdata) {
 static int emit_signal(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
+        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         int r;
 
         r = acquire_bus(false, &bus);
@@ -2184,7 +2204,7 @@ static int emit_signal(int argc, char **argv, void *userdata) {
 
                 p = argv+5;
 
-                r = message_append_cmdline(m, argv[4], &p);
+                r = message_append_cmdline(m, argv[4], &passed_fdset, &p);
                 if (r < 0)
                         return r;
 
@@ -2269,10 +2289,109 @@ static int get_property(int argc, char **argv, void *userdata) {
         return 0;
 }
 
+static int on_bus_signal_impl(sd_bus_message *msg) {
+        int r;
+
+        assert(msg);
+
+        r = sd_bus_message_is_empty(msg);
+        if (r < 0)
+                return bus_log_parse_error(r);
+
+        if (r > 0 || arg_quiet)
+                return 0;
+
+        if (!FLAGS_SET(arg_json_format_flags, SD_JSON_FORMAT_OFF)) {
+                _cleanup_(sd_json_variant_unrefp) sd_json_variant *v = NULL;
+
+                if (arg_json_format_flags & (SD_JSON_FORMAT_PRETTY|SD_JSON_FORMAT_PRETTY_AUTO))
+                        pager_open(arg_pager_flags);
+
+                r = json_transform_message(msg, &v);
+                if (r < 0)
+                        return r;
+
+                sd_json_variant_dump(v, arg_json_format_flags, NULL, NULL);
+
+        } else if (arg_verbose) {
+                pager_open(arg_pager_flags);
+
+                r = sd_bus_message_dump(msg, stdout, 0);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to dump dbus message: %m\n");
+        } else {
+
+                fputs(sd_bus_message_get_signature(msg, true), stdout);
+                fputc(' ', stdout);
+
+                r = format_cmdline(msg, stdout, false);
+                if (r < 0)
+                        return bus_log_parse_error(r);
+
+                fputc('\n', stdout);
+        }
+
+        return 0;
+}
+
+static int on_bus_signal(sd_bus_message *msg, void *userdata, sd_bus_error *ret_error) {
+        sd_event *e = sd_bus_get_event(sd_bus_message_get_bus(ASSERT_PTR(msg)));
+        return sd_event_exit(e, on_bus_signal_impl(msg));
+}
+
+static int wait_signal(int argc, char **argv, void *userdata) {
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        _cleanup_(sd_event_unrefp) sd_event *e = NULL;
+        _cleanup_(sd_event_source_unrefp) sd_event_source *timer = NULL;
+        int argn = 1, r;
+
+        const char *sender = argc == 5 ? argv[argn++] : NULL;
+        const char *path = argv[argn++];
+        const char *interface = argv[argn++];
+        const char *member = argv[argn++];
+
+        if (sender && !service_name_is_valid(sender))
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Invalid service name: %s", sender);
+        if (!object_path_is_valid(path))
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Invalid object path: %s", path);
+        if (!interface_name_is_valid(interface))
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Invalid interface name: %s", interface);
+        if (!member_name_is_valid(member))
+                return log_error_errno(SYNTHETIC_ERRNO(EINVAL), "Invalid member name: %s", member);
+
+        r = acquire_bus(/* set_monitor= */ false, &bus);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_match_signal(bus, NULL, sender, path, interface, member, on_bus_signal, NULL);
+        if (r < 0)
+                return log_error_errno(r, "Failed to match signal %s on interface %s: %m", member, interface);
+
+        r = sd_event_new(&e);
+        if (r < 0)
+                return log_error_errno(r, "Failed to allocate event loop: %m\n");
+
+        r = sd_bus_attach_event(bus, e, SD_EVENT_PRIORITY_NORMAL);
+        if (r < 0)
+                return log_error_errno(r, "Failed to attach bus event: %m\n");
+
+        if (arg_timeout) {
+                r = sd_event_add_time_relative(e, &timer, CLOCK_MONOTONIC, arg_timeout, 0, NULL, NULL);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to schedule timeout: %m\n");
+        }
+
+        /* The match is installed and we're ready to observe the signal */
+        sd_notify(/* unset_environment= */ false, "READY=1");
+
+        return sd_event_loop(e);
+}
+
 static int set_property(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         char **p;
         int r;
 
@@ -2294,7 +2413,7 @@ static int set_property(int argc, char **argv, void *userdata) {
                 return bus_log_create_error(r);
 
         p = argv + 6;
-        r = message_append_cmdline(m, argv[5], &p);
+        r = message_append_cmdline(m, argv[5], &passed_fdset, &p);
         if (r < 0)
                 return r;
 
@@ -2339,6 +2458,8 @@ static int help(void) {
                "                           Call a method\n"
                "  emit OBJECT INTERFACE SIGNAL [SIGNATURE [ARGUMENT...]]\n"
                "                           Emit a signal\n"
+               "  wait OBJECT INTERFACE SIGNAL\n"
+               "                           Wait for a signal\n"
                "  get-property SERVICE OBJECT INTERFACE PROPERTY...\n"
                "                           Get property value\n"
                "  set-property SERVICE OBJECT INTERFACE PROPERTY SIGNATURE ARGUMENT...\n"
@@ -2651,6 +2772,7 @@ static int busctl_main(int argc, char *argv[]) {
                 { "introspect",   3,        4,        0,            introspect     },
                 { "call",         5,        VERB_ANY, 0,            call           },
                 { "emit",         4,        VERB_ANY, 0,            emit_signal    },
+                { "wait",         4,        5,        0,            wait_signal    },
                 { "get-property", 5,        VERB_ANY, 0,            get_property   },
                 { "set-property", 6,        VERB_ANY, 0,            set_property   },
                 { "help",         VERB_ANY, VERB_ANY, 0,            verb_help      },
