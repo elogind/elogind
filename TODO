@@ -37,7 +37,6 @@ External:
   - how to make changes to sysctl and sysfs attributes
   - remote access
   - how to pass throw-away units to elogind, or dynamically change properties of existing units
-  - testing with Harald's awesome test kit
   - auto-restart
   - how to develop against journal browsing APIs
   - the journal HTTP iface
@@ -125,6 +124,28 @@ Deprecations and removals:
   trigger"'s waiting logic, since we can then rely on uuid-tagged uevents
 
 Features:
+
+* get rid of compat with libidn.so.11 (retain only for libidn.so.12)
+
+* get rid of compat with libbpf.so.0 (retainly only for libbpf.so.1)
+
+* define a generic "report" varlink interface, which services can implement to
+  provide health/statistics data about themselves. then define a dir somewhere
+  in /run/ where components can bind such sockets. Then make journald, logind,
+  and pid1 itself implement this and expose various stats on things there. Then
+  issue parallel calls to these interfaces from the elogind-report tool,
+  combine into one json document, and include measurment logs and tpm
+  quote. tpm quote should proctect the json doc via the nonce field
+  studd. Allow shipping this off elsewhere for analyze.
+
+* sd-varlink: maybe add flag(s) to mark methods accepti/require "more" calls in
+  introspection structures already now, even if IDL doesn't know a construct to
+  advertise this. But do enforce it when validating incoming method calls, so
+  that we definitely have the data around and valid. For now, generate an IDL
+  comment based on this info.
+
+* The bind(AF_UNSPEC) construct (for resetting sockets to their initial state)
+  should be blocked in many cases because it punches holes in many sandboxes.
 
 * find a nice way to opt-in into auto-masking SIGCHLD on first
   sd_event_add_child(), and then get rid of many more explicit sigprocmask()
@@ -572,6 +593,8 @@ Features:
 
 * measure some string via pcrphase whenever we end up booting into emergency
   mode.
+
+* similar, measure some string via pcrphase whenver we resume from hibernate
 
 * homed: add a basic form of secrets management to homed, that stores
   secrets in $HOME somewhere, is protected by the accounts own authentication
@@ -2099,9 +2122,13 @@ Features:
     full, make sure to write how many messages are lost as first thing
     to syslog when it works again.
   - journald: allow per-priority and per-service retention times when rotating/vacuuming
-  - journald: make use of uid-range.h to managed uid ranges to split
+  - journald: make use of uid-range.h to manage uid ranges to split
     journals in.
-  - journalctl: add the ability to look for the most recent process of a binary. journalctl /usr/bin/X11 --pid=-1 or so...
+  - journalctl: add the ability to look for the most recent process of a binary.
+                journalctl /usr/bin/X11 --invocation=-1
+  - systemctl: change 'status' to show logs for the last invocation, not a fixed
+    number of lines
+  - systemctl: expand --wait to show logs for the invocation with a new switch
   - improve journalctl performance by loading journal files
     lazily. Encode just enough information in the file name, so that we
     do not have to open it to know that it is not interesting for us, for
