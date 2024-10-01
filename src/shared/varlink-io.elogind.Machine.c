@@ -6,8 +6,6 @@
 
 static SD_VARLINK_DEFINE_METHOD(
                 Register,
-                io_elogind_Machine,
-                "io.elogind.Machine",
                 SD_VARLINK_DEFINE_INPUT(name,              SD_VARLINK_STRING, 0),
                 SD_VARLINK_DEFINE_INPUT(id,                SD_VARLINK_STRING, SD_VARLINK_NULLABLE),
                 SD_VARLINK_DEFINE_INPUT(service,           SD_VARLINK_STRING, SD_VARLINK_NULLABLE),
@@ -30,8 +28,9 @@ static SD_VARLINK_DEFINE_STRUCT_TYPE(
                 SD_VARLINK_FIELD_COMMENT("Timestamp in µs in the CLOCK_MONOTONIC clock"),
                 SD_VARLINK_DEFINE_FIELD(monotonic, SD_VARLINK_INT, SD_VARLINK_NULLABLE));
 
-static SD_VARLINK_DEFINE_METHOD(
+static SD_VARLINK_DEFINE_METHOD_FULL(
                 List,
+                SD_VARLINK_SUPPORTS_MORE,
                 SD_VARLINK_FIELD_COMMENT("If non-null the name of a running machine to report details on. If null/unspecified enumerates all running machines."),
                 SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, SD_VARLINK_NULLABLE),
                 SD_VARLINK_FIELD_COMMENT("Name of the machine"),
@@ -59,6 +58,8 @@ static SD_VARLINK_DEFINE_ERROR(NoSuchMachine);
 static SD_VARLINK_DEFINE_ERROR(MachineExists);
 
 SD_VARLINK_DEFINE_INTERFACE(
+                io_elogind_Machine,
+                "io.elogind.Machine",
                 SD_VARLINK_SYMBOL_COMMENT("A timestamp object consisting of both CLOCK_REALTIME and CLOCK_MONOTONIC timestamps"),
                 &vl_type_Timestamp,
                 &vl_method_Register,
