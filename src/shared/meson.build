@@ -145,6 +145,7 @@
 #         'pkcs11-util.c',
 #         'plymouth-util.c',
 #         'polkit-agent.c',
+#         'portable-util.c',
 #         'pretty-print.c',
 #         'capsule-util.c',
 #         'ptyfwd.c',
