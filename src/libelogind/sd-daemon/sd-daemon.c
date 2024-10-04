@@ -620,18 +620,19 @@ _public_ int sd_notifyf(int unset_environment, const char *format, ...) {
 }
 
 _public_ int sd_booted(void) {
-        /* We test whether the runtime unit file directory has been
-         * created. This takes place in mount-setup.c, so is
-         * guaranteed to happen very early during boot. */
+        int r;
 
 #if 0 /// elogind is always used without systemd running the show. (Well, it should...)
-        if (laccess("/run/systemd/system/", F_OK) >= 0)
-                return true;
+        /* We test whether the runtime unit file directory has been created. This takes place in mount-setup.c,
+         * so is guaranteed to happen very early during boot. */
 
-        if (errno == ENOENT)
+        r = laccess("/run/systemd/system/", F_OK);
+        if (r >= 0)
+                return true;
+        if (r == -ENOENT)
                 return false;
 
-        return -errno;
+        return r;
 #else // 0
         return 0;
 #endif // 0
