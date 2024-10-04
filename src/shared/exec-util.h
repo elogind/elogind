@@ -22,6 +22,7 @@ typedef enum {
         EXEC_DIR_SET_SYSTEMD_EXEC_PID = 1 << 2, /* Set $SYSTEMD_EXEC_PID environment variable */
 #endif // 0
         EXEC_DIR_SKIP_REMAINING       = 1 << 3, /* Ignore remaining executions when one exit with 77. */
+        EXEC_DIR_WARN_WORLD_WRITABLE  = 1 << 4, /* Warn if world writable files are found */
 } ExecDirFlags;
 
 typedef enum ExecCommandFlags {
