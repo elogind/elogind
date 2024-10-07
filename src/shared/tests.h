@@ -339,7 +339,6 @@ static inline int run_test_table(void) {
                 }                                                                                               \
         })
 
-
 #define ASSERT_FAIL(expr)                                                                                       \
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
@@ -542,7 +541,6 @@ static inline int run_test_table(void) {
                         abort();                                                                                \
                 }                                                                                               \
         })
-
 
 #define ASSERT_EQ_ID128(expr1, expr2)                                                                           \
         ({                                                                                                      \

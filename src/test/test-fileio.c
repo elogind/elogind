@@ -1159,5 +1159,4 @@ TEST(fdopen_independent) {
         f = safe_fclose(f);
 }
 
-
 DEFINE_TEST_MAIN(LOG_DEBUG);
