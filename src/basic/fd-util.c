@@ -516,6 +516,16 @@ int pack_fds(int fds[], size_t n_fds) {
 }
 
 #if 0 /// UNNEEDED by elogind
+int fd_validate(int fd) {
+        if (fd < 0)
+                return -EBADF;
+
+        if (fcntl(fd, F_GETFD) < 0)
+                return -errno;
+
+        return 0;
+}
+
 int same_fd(int a, int b) {
         struct stat sta, stb;
         pid_t pid;
