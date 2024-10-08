@@ -17,7 +17,6 @@
 #include "capsule-util.h"
 #include "escape.h"
 #include "fd-util.h"
-#include "fdset.h"
 #include "fileio.h"
 #include "format-table.h"
 #include "glyph-util.h"
@@ -154,7 +153,7 @@ static int acquire_bus(bool set_monitor, sd_bus **ret) {
 
         r = sd_bus_start(bus);
         if (r < 0)
-                return bus_log_connect_error(r, arg_transport);
+                return bus_log_connect_error(r, arg_transport, arg_runtime_scope);
 
         *ret = TAKE_PTR(bus);
 
@@ -1486,13 +1485,12 @@ static int status(int argc, char **argv, void *userdata) {
         return 0;
 }
 
-static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSet **passed_fdset, char ***x) {
+static int message_append_cmdline(sd_bus_message *m, const char *signature, char ***x) {
         char **p;
         int r;
 
         assert(m);
         assert(signature);
-        assert(passed_fdset);
         assert(x);
 
         p = *x;
@@ -1641,7 +1639,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSe
                                         return bus_log_create_error(r);
 
                                 for (unsigned i = 0; i < n; i++) {
-                                        r = message_append_cmdline(m, s, passed_fdset, &p);
+                                        r = message_append_cmdline(m, s, &p);
                                         if (r < 0)
                                                 return r;
                                 }
@@ -1658,7 +1656,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSe
                         if (r < 0)
                                 return bus_log_create_error(r);
 
-                        r = message_append_cmdline(m, v, passed_fdset, &p);
+                        r = message_append_cmdline(m, v, &p);
                         if (r < 0)
                                 return r;
 
@@ -1690,7 +1688,7 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSe
                                 if (r < 0)
                                         return bus_log_create_error(r);
 
-                                r = message_append_cmdline(m, s, passed_fdset, &p);
+                                r = message_append_cmdline(m, s, &p);
                                 if (r < 0)
                                         return r;
                         }
@@ -1701,25 +1699,9 @@ static int message_append_cmdline(sd_bus_message *m, const char *signature, FDSe
                         break;
                 }
 
-                case SD_BUS_TYPE_UNIX_FD: {
-                        int fd;
-
-                        fd = parse_fd(v);
-                        if (fd < 0)
-                                return log_error_errno(fd, "Failed to parse '%s' as a file descriptor: %m", v);
-
-                        if (!*passed_fdset) {
-                                r = fdset_new_fill(/* filter_cloexec= */ 0, passed_fdset);
-                                if (r < 0)
-                                        return log_error_errno(r, "Failed to create fd set: %m");
-                        }
-
-                        if (!fdset_contains(*passed_fdset, fd))
-                                return log_error_errno(SYNTHETIC_ERRNO(EBADF), "Failed to find file descriptor '%s' among passed file descriptors.", v);
-
-                        r = sd_bus_message_append_basic(m, t, &fd);
-                        break;
-                }
+                case SD_BUS_TYPE_UNIX_FD:
+                        return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                               "UNIX file descriptor not supported as type.");
 
                 default:
                         return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
@@ -2075,7 +2057,6 @@ static int call(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL, *reply = NULL;
-        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         int r;
 
         r = acquire_bus(false, &bus);
@@ -2112,7 +2093,7 @@ static int call(int argc, char **argv, void *userdata) {
 
                 p = argv+6;
 
-                r = message_append_cmdline(m, argv[5], &passed_fdset, &p);
+                r = message_append_cmdline(m, argv[5], &p);
                 if (r < 0)
                         return r;
 
@@ -2178,7 +2159,6 @@ static int call(int argc, char **argv, void *userdata) {
 static int emit_signal(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
-        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         int r;
 
         r = acquire_bus(false, &bus);
@@ -2204,7 +2184,7 @@ static int emit_signal(int argc, char **argv, void *userdata) {
 
                 p = argv+5;
 
-                r = message_append_cmdline(m, argv[4], &passed_fdset, &p);
+                r = message_append_cmdline(m, argv[4], &p);
                 if (r < 0)
                         return r;
 
@@ -2293,7 +2273,6 @@ static int set_property(int argc, char **argv, void *userdata) {
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        _cleanup_fdset_free_ FDSet *passed_fdset = NULL;
         char **p;
         int r;
 
@@ -2315,7 +2294,7 @@ static int set_property(int argc, char **argv, void *userdata) {
                 return bus_log_create_error(r);
 
         p = argv + 6;
-        r = message_append_cmdline(m, argv[5], &passed_fdset, &p);
+        r = message_append_cmdline(m, argv[5], &p);
         if (r < 0)
                 return r;
 
