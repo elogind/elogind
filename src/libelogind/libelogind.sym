@@ -868,6 +868,7 @@ global:
         sd_json_dispatch_uint32;
         sd_json_dispatch_uint64;
         sd_json_dispatch_uint8;
+        sd_json_dispatch_signal;
         sd_json_dispatch_unsupported;
         sd_json_dispatch_variant;
         sd_json_dispatch_variant_noref;
@@ -1050,5 +1051,7 @@ global:
         sd_device_get_driver_subsystem;
         sd_device_monitor_is_running;
         sd_device_monitor_get_fd;
+        sd_device_monitor_get_events;
+        sd_device_monitor_get_timeout;
         sd_device_monitor_receive;
 } LIBSYSTEMD_256;
