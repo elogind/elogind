@@ -234,12 +234,6 @@ int bus_connect_system_systemd(sd_bus **ret_bus) {
 
         assert(ret_bus);
 
-        if (geteuid() != 0)
-                return sd_bus_default_system(ret_bus);
-
-        /* If we are root then let's talk directly to the system
-         * instance, instead of going via the bus */
-
         r = sd_bus_new(&bus);
         if (r < 0)
                 return r;
@@ -532,6 +526,11 @@ int bus_connect_transport_elogind(
                                                        "System has not been booted with systemd as init system (PID 1). Can't operate.");
                         return bus_connect_system_elogind(ret_bus);
 
+                        if (geteuid() == 0)
+                                /* If we are root then let's talk directly to the system
+                                 * instance, instead of going via the bus. */
+
+                        return sd_bus_default_system(ret_bus);
                 default:
                         assert_not_reached();
                 }
