@@ -196,6 +196,7 @@
 #         'varlink-io.elogind.MountFileSystem.c',
 #         'varlink-io.elogind.Machine.c',
 #         'varlink-io.elogind.Import.c',
+#         'varlink-idl-common.c',
 #         'varlink-serialize.c',
 #         'verb-log-control.c',
 #         'verbs.c',

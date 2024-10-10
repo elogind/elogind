@@ -4,13 +4,7 @@
 #include "sd-varlink-idl.h"
 
 #include "bus-polkit.h"
-
-#define VARLINK_DEFINE_MACHINE_LOOKUP_AND_POLKIT_INPUT_FIELDS                                                                                  \
-        SD_VARLINK_FIELD_COMMENT("If non-null the name of a machine."),                                                                        \
-        SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, SD_VARLINK_NULLABLE),                                                                 \
-        SD_VARLINK_FIELD_COMMENT("If non-null the PID of a machine. Special value 0 means to take pid of the machine the caller is part of."), \
-        SD_VARLINK_DEFINE_INPUT(pid, SD_VARLINK_INT, SD_VARLINK_NULLABLE),                                                                     \
-        VARLINK_DEFINE_POLKIT_INPUT
+#include "varlink-idl-common.h"
 
 static SD_VARLINK_DEFINE_METHOD(
                 Register,
@@ -28,24 +22,20 @@ static SD_VARLINK_DEFINE_METHOD(
                 SD_VARLINK_DEFINE_INPUT(allocateUnit,      SD_VARLINK_BOOL,   SD_VARLINK_NULLABLE),
                 VARLINK_DEFINE_POLKIT_INPUT);
 
-static SD_VARLINK_DEFINE_STRUCT_TYPE(
-                Timestamp,
-                SD_VARLINK_FIELD_COMMENT("Timestamp in µs in the CLOCK_REALTIME clock (wallclock)"),
-                SD_VARLINK_DEFINE_FIELD(realtime, SD_VARLINK_INT, SD_VARLINK_NULLABLE),
-                SD_VARLINK_FIELD_COMMENT("Timestamp in µs in the CLOCK_MONOTONIC clock"),
-                SD_VARLINK_DEFINE_FIELD(monotonic, SD_VARLINK_INT, SD_VARLINK_NULLABLE));
-
 static SD_VARLINK_DEFINE_METHOD(
                 Unregister,
-                VARLINK_DEFINE_MACHINE_LOOKUP_AND_POLKIT_INPUT_FIELDS);
+                SD_VARLINK_FIELD_COMMENT("The name of a machine to unregister."),
+                SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, 0));
 
 static SD_VARLINK_DEFINE_METHOD(
                 Terminate,
-                VARLINK_DEFINE_MACHINE_LOOKUP_AND_POLKIT_INPUT_FIELDS);
+                SD_VARLINK_FIELD_COMMENT("The name of a machine to terminate."),
+                SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, 0));
 
 static SD_VARLINK_DEFINE_METHOD(
                 Kill,
-                VARLINK_DEFINE_MACHINE_LOOKUP_AND_POLKIT_INPUT_FIELDS,
+                SD_VARLINK_FIELD_COMMENT("The name of a machine to send signal to."),
+                SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, 0),
                 SD_VARLINK_FIELD_COMMENT("Identifier that specifies what precisely to send the signal to (either 'leader' or 'all')."),
                 SD_VARLINK_DEFINE_INPUT(whom, SD_VARLINK_STRING, SD_VARLINK_NULLABLE),
                 SD_VARLINK_FIELD_COMMENT("Numeric UNIX signal integer."),
@@ -54,7 +44,10 @@ static SD_VARLINK_DEFINE_METHOD(
 static SD_VARLINK_DEFINE_METHOD_FULL(
                 List,
                 SD_VARLINK_SUPPORTS_MORE,
-                VARLINK_DEFINE_MACHINE_LOOKUP_AND_POLKIT_INPUT_FIELDS,
+                SD_VARLINK_FIELD_COMMENT("If non-null the name of a running machine to report details on. If both 'name' and 'pid' are null/unspecified enumerates all running machines."),
+                SD_VARLINK_DEFINE_INPUT(name, SD_VARLINK_STRING, SD_VARLINK_NULLABLE),
+                SD_VARLINK_FIELD_COMMENT("If non-null the PID of a running machine to report details on."),
+                SD_VARLINK_DEFINE_INPUT(pid, SD_VARLINK_INT, SD_VARLINK_NULLABLE),
                 SD_VARLINK_FIELD_COMMENT("Name of the machine"),
                 SD_VARLINK_DEFINE_OUTPUT(name, SD_VARLINK_STRING, 0),
                 SD_VARLINK_FIELD_COMMENT("128bit ID identifying this machine, formatted in hexadecimal"),
