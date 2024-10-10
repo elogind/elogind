@@ -637,10 +637,10 @@ decl_headers = '''
 # endif // _GNU_SOURCE
 #endif // 1
 #include <dirent.h>
-#include <uchar.h>
+#include <sched.h>
 #include <sys/mount.h>
 #include <sys/stat.h>
-#include <sched.h>
+#include <uchar.h>
 '''
 
 foreach decl : ['char16_t',
