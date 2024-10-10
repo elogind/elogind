@@ -158,7 +158,6 @@ int sd_rtnl_message_get_family(sd_netlink_message *m, int *ret);
 
 #endif /** 0 */
 
-/// elogind empty mask removed ()
 #if 0 /** UNNEEDED by elogind */
 int sd_rtnl_message_new_addr(sd_netlink *nl, sd_netlink_message **ret, uint16_t msg_type, int ifindex, int family);
 int sd_rtnl_message_new_addr_update(sd_netlink *nl, sd_netlink_message **ret, int ifindex, int family);
@@ -176,6 +175,7 @@ int sd_rtnl_message_new_link(sd_netlink *nl, sd_netlink_message **ret, uint16_t 
 /* struct ifinfomsg */
 int sd_rtnl_message_link_get_ifindex(sd_netlink_message *m, int *ret); /* ifi_index */
 int sd_rtnl_message_link_set_family(sd_netlink_message *m, int family); /* ifi_family */
+int sd_rtnl_message_link_get_family(sd_netlink_message *m, int *ret);
 int sd_rtnl_message_link_set_type(sd_netlink_message *m, uint16_t type); /* ifi_type */
 int sd_rtnl_message_link_get_type(sd_netlink_message *m, uint16_t *ret);
 int sd_rtnl_message_link_set_flags(sd_netlink_message *m, uint32_t flags, uint32_t change); /* ifi_flags and ifi_change */
@@ -223,6 +223,7 @@ int sd_rtnl_message_addrlabel_get_prefixlen(sd_netlink_message *m, uint8_t *ret)
 
 int sd_rtnl_message_new_routing_policy_rule(sd_netlink *rtnl, sd_netlink_message **ret, uint16_t nlmsg_type, int family);
 /* struct fib_rule_hdr */
+int sd_rtnl_message_routing_policy_rule_get_family(sd_netlink_message *m, int *ret); /* family */
 int sd_rtnl_message_routing_policy_rule_set_dst_prefixlen(sd_netlink_message *m, uint8_t prefixlen); /* dst_len */
 int sd_rtnl_message_routing_policy_rule_get_dst_prefixlen(sd_netlink_message *m, uint8_t *ret);
 int sd_rtnl_message_routing_policy_rule_set_src_prefixlen(sd_netlink_message *m, uint8_t prefixlen); /* src_len*/
