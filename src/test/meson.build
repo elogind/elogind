@@ -228,6 +228,7 @@ simple_tests += files(
 #         'test-serialize.c',
 #endif // 0
         'test-set.c',
+        'test-sha1.c',
         'test-sha256.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-sigbus.c',
