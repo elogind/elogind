@@ -18,6 +18,8 @@
 #include "string-util.h"
 #include "tmpfile-util.h"
 #include "tests.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 static int method_foobar(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
         log_info("Got Foobar() call.");
