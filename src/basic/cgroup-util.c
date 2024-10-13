@@ -40,6 +40,7 @@
 //#include "xattr-util.h"
 /// Additional includes needed by elogind
 #include "env-file.h"
+#include "musl_missing.h"
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **ret, const char *item) {
         _cleanup_free_ char *fs = NULL;
