@@ -42,6 +42,7 @@
 /// Additional includes needed by elogind
 #include "cgroup-setup.h"
 #include "extract-word.h"
+#include "musl_missing.h"
 
 #define RELEASE_USEC (20*USEC_PER_SEC)
 

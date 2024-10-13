@@ -16,6 +16,8 @@
 #include "strv.h"
 #include "tests.h"
 #include "tmpfile-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 TEST(print_paths) {
         log_info("DEFAULT_PATH=%s", DEFAULT_PATH);

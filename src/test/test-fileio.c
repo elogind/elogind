@@ -25,6 +25,8 @@
 #include "strv.h"
 #include "tests.h"
 #include "tmpfile-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 #if 0 /// elogind does not need load_/write_/merge_env_file()
 TEST(parse_env_file) {
