@@ -15,6 +15,7 @@
 #include "format-util.h"
 #include "macro.h"
 #include "namespace-util.h"
+#include "pidref.h"
 #include "time-util.h"
 
 #define procfs_file_alloca(pid, field)                                  \
@@ -170,7 +171,7 @@ static inline bool sched_priority_is_valid(int i) {
 }
 #endif // 0
 
-#define PID_AUTOMATIC ((pid_t) INT_MIN) /* special value indicating "acquire pid from connection peer */
+#define PID_AUTOMATIC ((pid_t) INT_MIN) /* special value indicating "acquire pid from connection peer" */
 #define PID_INVALID   ((pid_t) 0)       /* default value for "invalid pid" */
 
 static inline bool pid_is_valid(pid_t p) {
