@@ -197,6 +197,7 @@
 #         'varlink-io.elogind.Machine.c',
 #         'varlink-io.elogind.Import.c',
 #         'varlink-idl-common.c',
+#         'varlink-io.elogind.MachineImage.c',
 #         'varlink-serialize.c',
 #         'verb-log-control.c',
 #         'verbs.c',
