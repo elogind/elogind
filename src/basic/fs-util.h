@@ -73,7 +73,10 @@ static inline int touch(const char *path) {
 }
 
 #if 0 /// UNNEEDED by elogind
-int symlink_idempotent(const char *from, const char *to, bool make_relative);
+int symlinkat_idempotent(const char *from, int atfd, const char *to, bool make_relative);
+static inline int symlink_idempotent(const char *from, const char *to, bool make_relative) {
+        return symlinkat_idempotent(from, AT_FDCWD, to, make_relative);
+}
 
 int symlinkat_atomic_full(const char *from, int atfd, const char *to, bool make_relative);
 static inline int symlink_atomic(const char *from, const char *to) {
