@@ -108,6 +108,7 @@ int lock_dev_console(void);
 int make_console_stdio(void);
 #endif // 0
 
+int getenv_columns(void);
 int fd_columns(int fd);
 unsigned columns(void);
 int fd_lines(int fd);
