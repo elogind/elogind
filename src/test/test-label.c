@@ -43,7 +43,7 @@ static int pre_labelling_func(int dir_fd, const char *path, mode_t mode) {
         return 0;
 }
 
-static int post_labelling_func(int dir_fd, const char *path) {
+static int post_labelling_func(int dir_fd, const char *path, bool created) {
        int r;
 
         /* assume label policies that restrict certain labels */
@@ -66,7 +66,7 @@ static int get_dir_fd(const char *dir_path, mode_t mode) {
         assert(dir_path);
         dir_fd = RET_NERRNO(open_mkdir_at(AT_FDCWD, dir_path, O_CLOEXEC, mode));
         if (dir_fd < 0)
-                return log_error_errno(dir_fd, "Error occured while opening directory =>: %m");
+                return log_error_errno(dir_fd, "Error occurred while opening directory =>: %m");
 
         return dir_fd;
 }
@@ -91,7 +91,7 @@ static int labelling_op(int dir_fd, const char *text, const char *path, mode_t m
         /* Write data to the file*/
         count = RET_NERRNO(write(write_fd, text, strlen(text)));
         if (count < 0)
-                return log_error_errno(count, "Error occured while opening file for writing =>: %m");
+                return log_error_errno(count, "Error occurred while opening file for writing =>: %m");
         return 0;
 }
 
@@ -140,17 +140,17 @@ TEST(label_ops_post) {
         text1 = "Add initial texts to file for testing label operations to file1\n";
 
         assert(labelling_op(fd, text1, "file1.txt", 0644) == 0);
-        assert_se(label_ops_post(fd, "file1.txt") == 0);
+        assert_se(label_ops_post(fd, "file1.txt", true) == 0);
         assert_se(strlen(text1) == (size_t)buf.st_size);
         text2 = "Add text2 data to file2\n";
 
         assert(labelling_op(fd, text2, "file2.txt", 0644) == 0);
-        assert_se(label_ops_post(fd, "file2.txt") == 0);
+        assert_se(label_ops_post(fd, "file2.txt", true) == 0);
         assert_se(strlen(text2) == (size_t)buf.st_size);
-        assert_se(label_ops_post(fd, "file3.txt") == -ENOENT);
-        assert_se(label_ops_post(fd, "/abcd") == -ENOENT);
-        assert_se(label_ops_post(fd, "/restricted_directory") == -EACCES);
-        assert_se(label_ops_post(fd, "") == -EINVAL);
+        assert_se(label_ops_post(fd, "file3.txt", true) == -ENOENT);
+        assert_se(label_ops_post(fd, "/abcd", true) == -ENOENT);
+        assert_se(label_ops_post(fd, "/restricted_directory", true) == -EACCES);
+        assert_se(label_ops_post(fd, "", true) == -EINVAL);
 }
 
 DEFINE_TEST_MAIN(LOG_INFO)
