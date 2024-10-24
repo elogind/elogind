@@ -1984,7 +1984,7 @@ int posix_spawn_wrapper(const char *path, char *const *argv, char *const *envp, 
         if (r != 0)
                 return -r; /* These functions return a positive errno on failure */
         /* Set all signals to SIG_DFL */
-        r = posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGMASK|POSIX_SPAWN_SETSIGDEF);
+        r = posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGMASK);
         if (r != 0)
                 goto fail;
         r = posix_spawnattr_setsigmask(&attr, &mask);
