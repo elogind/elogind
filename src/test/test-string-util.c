@@ -82,10 +82,10 @@ TEST(free_and_strndup) {
         _cleanup_free_ char *t = NULL;
         const char *prev_expected = t;
 
-        for (unsigned i = 0; i < ELEMENTSOF(cases); i++) {
+        FOREACH_ELEMENT(c, cases) {
                 test_free_and_strndup_one(&t,
-                                          cases[i].src, cases[i].len, cases[i].expected,
-                                          !streq_ptr(cases[i].expected, prev_expected));
+                                          c->src, c->len, c->expected,
+                                          !streq_ptr(c->expected, prev_expected));
                 prev_expected = t;
         }
 }
@@ -167,36 +167,28 @@ TEST(ascii_strcasecmp_nn) {
 TEST(cellescape) {
         char buf[40];
 
-
-
-
-
-
-
-
-
-
-
-
-
         ASSERT_STREQ(cellescape(buf, 1, ""), "");
         ASSERT_STREQ(cellescape(buf, 1, "1"), "");
         ASSERT_STREQ(cellescape(buf, 1, "12"), "");
+
         ASSERT_STREQ(cellescape(buf, 2, ""), "");
         ASSERT_STREQ(cellescape(buf, 2, "1"), "1");
         ASSERT_STREQ(cellescape(buf, 2, "12"), ".");
         ASSERT_STREQ(cellescape(buf, 2, "123"), ".");
+
         ASSERT_STREQ(cellescape(buf, 3, ""), "");
         ASSERT_STREQ(cellescape(buf, 3, "1"), "1");
         ASSERT_STREQ(cellescape(buf, 3, "12"), "12");
         ASSERT_STREQ(cellescape(buf, 3, "123"), "..");
         ASSERT_STREQ(cellescape(buf, 3, "1234"), "..");
+
         ASSERT_STREQ(cellescape(buf, 4, ""), "");
         ASSERT_STREQ(cellescape(buf, 4, "1"), "1");
         ASSERT_STREQ(cellescape(buf, 4, "12"), "12");
         ASSERT_STREQ(cellescape(buf, 4, "123"), "123");
         ASSERT_STREQ(cellescape(buf, 4, "1234"), is_locale_utf8() ? "…" : "...");
         ASSERT_STREQ(cellescape(buf, 4, "12345"), is_locale_utf8() ? "…" : "...");
+
         ASSERT_STREQ(cellescape(buf, 5, ""), "");
         ASSERT_STREQ(cellescape(buf, 5, "1"), "1");
         ASSERT_STREQ(cellescape(buf, 5, "12"), "12");
@@ -204,26 +196,31 @@ TEST(cellescape) {
         ASSERT_STREQ(cellescape(buf, 5, "1234"), "1234");
         ASSERT_STREQ(cellescape(buf, 5, "12345"), is_locale_utf8() ? "1…" : "1...");
         ASSERT_STREQ(cellescape(buf, 5, "123456"), is_locale_utf8() ? "1…" : "1...");
+
         ASSERT_STREQ(cellescape(buf, 1, "\020"), "");
         ASSERT_STREQ(cellescape(buf, 2, "\020"), ".");
         ASSERT_STREQ(cellescape(buf, 3, "\020"), "..");
         ASSERT_STREQ(cellescape(buf, 4, "\020"), is_locale_utf8() ? "…" : "...");
         ASSERT_STREQ(cellescape(buf, 5, "\020"), "\\020");
+
         ASSERT_STREQ(cellescape(buf, 5, "1234\020"), is_locale_utf8() ? "1…" : "1...");
         ASSERT_STREQ(cellescape(buf, 6, "1234\020"), is_locale_utf8() ? "12…" : "12...");
         ASSERT_STREQ(cellescape(buf, 7, "1234\020"), is_locale_utf8() ? "123…" : "123...");
         ASSERT_STREQ(cellescape(buf, 8, "1234\020"), is_locale_utf8() ? "1234…" : "1234...");
         ASSERT_STREQ(cellescape(buf, 9, "1234\020"), "1234\\020");
+
         ASSERT_STREQ(cellescape(buf, 1, "\t\n"), "");
         ASSERT_STREQ(cellescape(buf, 2, "\t\n"), ".");
         ASSERT_STREQ(cellescape(buf, 3, "\t\n"), "..");
         ASSERT_STREQ(cellescape(buf, 4, "\t\n"), is_locale_utf8() ? "…" : "...");
         ASSERT_STREQ(cellescape(buf, 5, "\t\n"), "\\t\\n");
+
         ASSERT_STREQ(cellescape(buf, 5, "1234\t\n"), is_locale_utf8() ? "1…" : "1...");
         ASSERT_STREQ(cellescape(buf, 6, "1234\t\n"), is_locale_utf8() ? "12…" : "12...");
         ASSERT_STREQ(cellescape(buf, 7, "1234\t\n"), is_locale_utf8() ? "123…" : "123...");
         ASSERT_STREQ(cellescape(buf, 8, "1234\t\n"), is_locale_utf8() ? "1234…" : "1234...");
         ASSERT_STREQ(cellescape(buf, 9, "1234\t\n"), "1234\\t\\n");
+
         ASSERT_STREQ(cellescape(buf, 4, "x\t\020\n"), is_locale_utf8() ? "…" : "...");
         ASSERT_STREQ(cellescape(buf, 5, "x\t\020\n"), is_locale_utf8() ? "x…" : "x...");
         ASSERT_STREQ(cellescape(buf, 6, "x\t\020\n"), is_locale_utf8() ? "x…" : "x...");
@@ -231,11 +228,14 @@ TEST(cellescape) {
         ASSERT_STREQ(cellescape(buf, 8, "x\t\020\n"), is_locale_utf8() ? "x\\t…" : "x\\t...");
         ASSERT_STREQ(cellescape(buf, 9, "x\t\020\n"), is_locale_utf8() ? "x\\t…" : "x\\t...");
         ASSERT_STREQ(cellescape(buf, 10, "x\t\020\n"), "x\\t\\020\\n");
+
         ASSERT_STREQ(cellescape(buf, 6, "1\011"), "1\\t");
         ASSERT_STREQ(cellescape(buf, 6, "1\020"), "1\\020");
         ASSERT_STREQ(cellescape(buf, 6, "1\020x"), is_locale_utf8() ? "1…" : "1...");
+
         ASSERT_STREQ(cellescape(buf, 40, "1\020"), "1\\020");
         ASSERT_STREQ(cellescape(buf, 40, "1\020x"), "1\\020x");
+
         ASSERT_STREQ(cellescape(buf, 40, "\a\b\f\n\r\t\v\\\"'"), "\\a\\b\\f\\n\\r\\t\\v\\\\\\\"\\'");
         ASSERT_STREQ(cellescape(buf, 6, "\a\b\f\n\r\t\v\\\"'"), is_locale_utf8() ? "\\a…" : "\\a...");
         ASSERT_STREQ(cellescape(buf, 7, "\a\b\f\n\r\t\v\\\"'"), is_locale_utf8() ? "\\a…" : "\\a...");
