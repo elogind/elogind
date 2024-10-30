@@ -1925,6 +1925,20 @@ endif
 #         error_message : 'fdisk and openssl required').allowed()
 # conf.set10('ENABLE_SYSUPDATE', have)
 #
+# have2 = get_option('sysupdated')
+# if have2 == 'enabled'
+#         if have
+#                 have2 = true
+#         else
+#                 error('sysupdated requires sysupdate to be enabled')
+#         endif
+# elif have2 == 'auto'
+#         have2 = have and conf.get('BUILD_MODE_DEVELOPER') == 1
+# else
+#         have2 = false
+# endif
+# conf.set10('ENABLE_SYSUPDATED', have2)
+#
 # conf.set10('ENABLE_STORAGETM', get_option('storagetm'))
 #
 # have = get_option('importd').require(
@@ -3592,6 +3606,7 @@ foreach tuple : [
 #         ['sysext'],
 #         ['systemd-analyze',        conf.get('ENABLE_ANALYZE') == 1],
 #         ['sysupdate'],
+#         ['sysupdated'],
 #         ['sysusers'],
 #         ['storagetm'],
 #         ['timedated'],
