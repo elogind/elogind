@@ -480,6 +480,12 @@ static int pid_notify_with_fds_internal(
         if (n_fds > 0 && !fds)
                 return -EINVAL;
 
+        /* Let's make sure the multiplications below don't overflow, and also return a recognizable error in
+         * case the caller tries to send more fds than the kernel limit. The kernel would return EINVAL which
+         * is not too useful I'd say. */
+        if (n_fds > SCM_MAX_FD)
+                return -E2BIG;
+
         e = getenv("NOTIFY_SOCKET");
         if (!e)
                 return 0;
