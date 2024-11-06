@@ -20,8 +20,8 @@ else
         project_minor_version = '0'
 endif
 
-libsystemd_version = '0.39.0'
-libudev_version = '1.7.9'
+libelogind_version = '0.40.0'
+libudev_version = '1.7.10'
 
 conf = configuration_data()
 #if 0 /// Set elogind Package PROJECT_URL
