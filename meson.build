@@ -2824,6 +2824,7 @@ subdir('src/login')
 #if 0 /// UNNEEDED by elogind
 # subdir('src/machine')
 # subdir('src/machine-id-setup')
+# subdir('src/measure')
 # subdir('src/mountfsd')
 # subdir('src/modules-load')
 # subdir('src/mount')
