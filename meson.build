@@ -2774,8 +2774,8 @@ subdir('src/update-utmp')
 # subdir('src/battery-check')
 # subdir('src/binfmt')
 # subdir('src/bless-boot')
-# subdir('src/boot/efi')
 #endif // 0
+subdir('src/boot')
 subdir('src/bootctl')
 subdir('src/busctl')
 
