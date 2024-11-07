@@ -2773,6 +2773,7 @@ subdir('src/update-utmp')
 # subdir('src/backlight')
 # subdir('src/battery-check')
 # subdir('src/binfmt')
+# subdir('src/bless-boot')
 # subdir('src/boot')
 # subdir('src/boot/efi')
 #endif // 0
