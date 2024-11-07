@@ -2776,6 +2776,7 @@ subdir('src/update-utmp')
 # subdir('src/boot')
 # subdir('src/boot/efi')
 #endif // 0
+subdir('src/bootctl')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
