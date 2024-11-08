@@ -3536,6 +3536,7 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['AppArmor'],
 #         ['IMA'],
+#         ['IPE'],
 #         ['PAM'],
 #         ['SECCOMP'],
 #endif // 0
@@ -3546,6 +3547,7 @@ foreach tuple : [
 #         ['elfutils'],
 #         ['gcrypt'],
 #         ['gnutls'],
+#         ['libarchive'],
 #         ['libbpf'],
 #         ['libcryptsetup'],
 #         ['libcryptsetup-plugins'],
@@ -3593,7 +3595,9 @@ foreach tuple : [
 #         ['localed'],
 #         ['logind'],
 #         ['machined'],
+#         ['mountfsd'],
 #         ['networkd'],
+#         ['nsresourced'],
 #         ['nss-myhostname'],
 #         ['nss-mymachines'],
 #         ['nss-resolve'],
