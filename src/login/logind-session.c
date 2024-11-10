@@ -1465,10 +1465,20 @@ int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
 #if 0 /// Without direct cgroup support, elogind can not kill sessions
-        if (!s->scope)
-                return -ESRCH;
+        switch (who) {
 
-        return manager_kill_unit(s->manager, s->scope, who, signo, NULL);
+        case KILL_ALL:
+                if (!s->scope)
+                        return -ESRCH;
+
+                return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, NULL);
+
+        case KILL_LEADER:
+                return pidref_kill(&s->leader, signo);
+
+        default:
+                assert_not_reached();
+        }
 #else // 0
         if (who == KILL_LEADER) {
                 if (s->leader.pid <= 0)
