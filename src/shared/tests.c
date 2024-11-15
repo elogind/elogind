@@ -170,7 +170,6 @@ bool have_namespaces(void) {
         assert_not_reached();
 }
 
-#if 0 /// UNNEEDED by elogind
 bool userns_has_single_user(void) {
         _cleanup_(uid_range_freep) UidRange *uidrange = NULL;
 
@@ -185,6 +184,7 @@ bool userns_has_single_user(void) {
         return uidrange->n_entries == 1 && uidrange->entries[0].nr == 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool can_memlock(void) {
         /* Let's see if we can mlock() a larger blob of memory. BPF programs are charged against
          * RLIMIT_MEMLOCK, hence let's first make sure we can lock memory at all, and skip the test if we
