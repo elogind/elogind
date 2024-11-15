@@ -284,7 +284,6 @@ char *utf8_escape_non_printable_full(const char *str, size_t console_width, bool
         return str_realloc(p);
 }
 
-#if 0 /// UNNEEDED by elogind
 char *ascii_is_valid(const char *str) {
         /* Check whether the string consists of valid ASCII bytes,
          * i.e values between 0 and 127, inclusive. */
@@ -297,7 +296,6 @@ char *ascii_is_valid(const char *str) {
 
         return (char*) str;
 }
-#endif // 0
 
 char *ascii_is_valid_n(const char *str, size_t len) {
         /* Very similar to ascii_is_valid(), but checks exactly len
