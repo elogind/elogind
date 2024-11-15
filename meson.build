@@ -2800,6 +2800,7 @@ subdir('src/cgroups-agent')
 # subdir('src/fstab-generator')
 # subdir('src/getty-generator')
 # subdir('src/gpt-auto-generator')
+# subdir('src/growfs')
 # subdir('src/hibernate-resume')
 # subdir('src/home')
 # subdir('src/hostname')
@@ -2837,7 +2838,6 @@ subdir('src/login')
 # subdir('src/nss-resolve')
 # subdir('src/nss-systemd')
 # subdir('src/oom')
-# subdir('src/partition')
 # subdir('src/path')
 # subdir('src/pcrextend')
 # subdir('src/pcrlock')
@@ -2847,6 +2847,7 @@ subdir('src/login')
 # subdir('src/random-seed')
 # subdir('src/rc-local-generator')
 # subdir('src/remount-fs')
+# subdir('src/repart')
 # subdir('src/reply-password')
 # subdir('src/resolve')
 # subdir('src/rfkill')
@@ -3128,6 +3129,14 @@ endif
 #####################################################################
 
 #if 0 /// UNNEEDED by elogind
+# ukify_depends = []
+#
+# foreach executable : ['elogind-measure', 'elogind-sbsign', 'elogind-keyutil']
+#         if executable in executables_by_name
+#                 ukify_depends += [executables_by_name[executable]]
+#         endif
+# endforeach
+#
 # ukify = custom_target(
 #         'ukify',
 #         input : 'src/ukify/ukify.py',
@@ -3135,6 +3144,7 @@ endif
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
 #         install : want_ukify,
 #         install_mode : 'rwxr-xr-x',
+#         depends : ukify_depends,
 #         install_dir : bindir)
 # if want_ukify
 #         public_programs += ukify
@@ -3155,7 +3165,7 @@ endif
 
 mkosi_depends = public_programs
 
-foreach executable : ['elogind-journal-remote', 'elogind-measure', 'elogind-sbsign', 'elogind-keyutil']
+foreach executable : ['elogind-journal-remote', 'elogind-sbsign', 'elogind-keyutil']
         if executable in executables_by_name
                 mkosi_depends += [executables_by_name[executable]]
         endif
@@ -3537,6 +3547,7 @@ foreach tuple : [
 #if 0 /// UNNEEDED by elogind
 #         ['AppArmor'],
 #         ['IMA'],
+#         ['IPE'],
 #         ['PAM'],
 #         ['SECCOMP'],
 #endif // 0
@@ -3547,6 +3558,7 @@ foreach tuple : [
 #         ['elfutils'],
 #         ['gcrypt'],
 #         ['gnutls'],
+#         ['libarchive'],
 #         ['libbpf'],
 #         ['libcryptsetup'],
 #         ['libcryptsetup-plugins'],
@@ -3594,7 +3606,9 @@ foreach tuple : [
 #         ['localed'],
 #         ['logind'],
 #         ['machined'],
+#         ['mountfsd'],
 #         ['networkd'],
+#         ['nsresourced'],
 #         ['nss-myhostname'],
 #         ['nss-mymachines'],
 #         ['nss-resolve'],
