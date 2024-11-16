@@ -187,6 +187,8 @@ struct Manager {
         uid_t scheduled_sleep_uid;
 #endif // 1
         CalendarSpec *maintenance_time;
+
+        dual_timestamp init_ts;
 };
 
 void manager_reset_config(Manager *m);
