@@ -45,7 +45,7 @@ static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] 
 #if 0 /// elogind supports suspend modes (deep s2idle) so we need defaults, too
         /* Not used by SLEEP_SUSPEND */
 #else // 0
-        [SLEEP_SUSPEND]      = STRV_MAKE("s2idle", "deep"),
+        [SLEEP_SUSPEND]      = STRV_MAKE("deep", "s2idle"),
 #endif // 0
         [SLEEP_HIBERNATE]    = STRV_MAKE("platform", "shutdown"),
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("suspend"),
