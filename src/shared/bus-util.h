@@ -72,6 +72,7 @@ int bus_path_decode_unique(const char *path, const char *prefix, char **ret_send
 
 int bus_track_add_name_many(sd_bus_track *t, char **l);
 #endif // 0
+int bus_track_to_strv(sd_bus_track *t, char ***ret);
 
 int bus_open_system_watch_bind_with_description(sd_bus **ret, const char *description);
 #if 0 /// UNNEEDED by elogind
