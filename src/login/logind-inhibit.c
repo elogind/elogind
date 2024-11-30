@@ -26,6 +26,8 @@
 #include "string-util.h"
 #include "tmpfile-util.h"
 #include "user-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 static void inhibitor_remove_fifo(Inhibitor *i);
 

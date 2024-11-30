@@ -16,6 +16,7 @@
 #include "string-util.h"
 #include "tests.h"
 /// Addition includes needed by elogind
+#include "musl_missing.h"
 #include "virt.h"
 #include "tmpfile-util.h"
 
