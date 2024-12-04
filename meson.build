@@ -1838,7 +1838,7 @@ endif
 #         endif
 # endif
 #
-# dmi_arches = ['x86', 'x86_64', 'aarch64', 'arm', 'ia64', 'loongarch64', 'mips']
+# dmi_arches = ['x86', 'x86_64', 'aarch64', 'arm', 'ia64', 'loongarch64', 'mips', 'riscv64']
 # conf.set10('HAVE_DMI', host_machine.cpu_family() in dmi_arches)
 #
 # # We support one or the other. If gcrypt is available, we assume it's there to
