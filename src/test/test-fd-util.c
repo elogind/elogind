@@ -351,6 +351,8 @@ TEST(close_all_fds) {
                         test_close_all_fds_inner();
                 _exit(EXIT_SUCCESS);
         }
+        if (ERRNO_IS_PRIVILEGE(r))
+                return (void) log_tests_skipped("Lacking privileges for test in namespace with /proc/ overmounted");
         assert_se(r >= 0);
 
 #if 0 /// seccomptools are not needed by elogind
