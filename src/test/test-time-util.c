@@ -400,7 +400,7 @@ TEST(format_timestamp) {
 static void test_format_timestamp_impl(usec_t x) {
         bool success, override;
         const char *xx, *yy;
-        usec_t y;
+        usec_t y, x_sec, y_sec;
 
         xx = FORMAT_TIMESTAMP(x);
         assert_se(xx);
@@ -408,19 +408,23 @@ static void test_format_timestamp_impl(usec_t x) {
         yy = FORMAT_TIMESTAMP(y);
         assert_se(yy);
 
-        success = (x / USEC_PER_SEC == y / USEC_PER_SEC) && streq(xx, yy);
         /* Workaround for https://github.com/elogind/elogind/issues/28472
+        x_sec = x / USEC_PER_SEC;
+        y_sec = y / USEC_PER_SEC;
+        success = (x_sec == y_sec) && streq(xx, yy);
          * and https://github.com/systemd/systemd/pull/35471. */
         override = !success &&
                    (STRPTR_IN_SET(tzname[0], "CAT", "EAT", "WET") ||
                     STRPTR_IN_SET(tzname[1], "CAT", "EAT", "WET")) &&
-                   DIV_ROUND_UP(x > y ? x - y : y - x, USEC_PER_SEC) == 3600; /* 1 hour, ignore fractional second */
+                   (x_sec > y_sec ? x_sec - y_sec : y_sec - x_sec) == 3600; /* 1 hour, ignore fractional second */
         log_full(success ? LOG_DEBUG : override ? LOG_WARNING : LOG_ERR,
                  "@" USEC_FMT " → %s → @" USEC_FMT " → %s%s",
                  x, xx, y, yy,
                  override ? ", ignoring." : "");
         if (!override) {
-                assert_se(x / USEC_PER_SEC == y / USEC_PER_SEC);
+                if (!success)
+                        log_warning("tzname[0]=\"%s\", tzname[1]=\"%s\"", tzname[0], tzname[1]);
+                assert_se(x_sec == y_sec);
                 assert_se(streq(xx, yy));
         }
 }
