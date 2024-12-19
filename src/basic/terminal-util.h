@@ -42,6 +42,8 @@
 bool isatty_safe(int fd);
 
 #if 0 /// UNNEEDED by elogind
+int terminal_reset_ioctl(int fd, bool switch_to_text);
+int terminal_reset_ansi_seq(int fd);
 int terminal_reset_defensive(int fd, bool switch_to_text);
 int terminal_reset_defensive_locked(int fd, bool switch_to_text);
 #endif // 0
@@ -112,7 +114,6 @@ int vtnr_from_tty(const char *tty);
 const char* default_term_for_tty(const char *tty);
 
 #if 0 /// UNNEEDED by elogind
-void reset_dev_console_fd(int fd, bool switch_to_text);
 int lock_dev_console(void);
 int make_console_stdio(void);
 #endif // 0
