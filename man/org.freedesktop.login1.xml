@@ -1485,7 +1485,7 @@ node /org/freedesktop/login1/session/1 {
       have direct access to the device node. <filename>elogind</filename> only requires you to be the
       <!-- // 0 -->
       active session controller (see <function>TakeControl()</function>). Also note that any device can only
-      be requested once. As long as you don't release it, further <function>TakeDevice()</function> calls
+      be requested once. As long as you do not release it, further <function>TakeDevice()</function> calls
       will fail.</para>
 
       <para><function>ReleaseDevice()</function> releases a device again (see
@@ -1545,7 +1545,7 @@ node /org/freedesktop/login1/session/1 {
       <function>PauseDeviceComplete()</function>. This synchronous pausing mechanism is used for
       backwards-compatibility to VTs and <filename>elogind</filename> is free to not make use of
       <!-- // 0 -->
-      it. It is also free to send a forced <function>PauseDevice()</function> if you don't respond in a timely
+      it. It is also free to send a forced <function>PauseDevice()</function> if you do not respond in a timely
       manner (or for any other reason). <function>gone</function> means the device was unplugged from the
       system and you will no longer get any notifications about it. There is no need to call
       <function>ReleaseDevice()</function>. You may call <function>TakeDevice()</function> again if a new
