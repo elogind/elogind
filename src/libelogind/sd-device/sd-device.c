@@ -405,7 +405,6 @@ static int device_new_from_path_join(
         int r;
 
         assert(device);
-        assert(subsystem);
         assert(sysname);
 
         p = path_join(a, b, c, d);
@@ -490,13 +489,13 @@ _public_ int sd_device_new_from_subsystem_sysname(
 
         if (streq(subsystem, "subsystem")) {
                 FOREACH_STRING(s, "/sys/bus/", "/sys/class/") {
-                        r = device_new_from_path_join(&device, subsystem, NULL, sysname, s, name, NULL, NULL);
+                        r = device_new_from_path_join(&device, subsystem, /* driver_subsystem = */ NULL, sysname, s, name, NULL, NULL);
                         if (r < 0)
                                 return r;
                 }
 
         } else if (streq(subsystem, "module")) {
-                r = device_new_from_path_join(&device, subsystem, NULL, sysname, "/sys/module/", name, NULL, NULL);
+                r = device_new_from_path_join(&device, subsystem, /* driver_subsystem = */ NULL, sysname, "/sys/module/", name, NULL, NULL);
                 if (r < 0)
                         return r;
 
@@ -518,15 +517,17 @@ _public_ int sd_device_new_from_subsystem_sysname(
                 }
         }
 
-        r = device_new_from_path_join(&device, subsystem, NULL, sysname, "/sys/bus/", subsystem, "/devices/", name);
+        r = device_new_from_path_join(&device, subsystem, /* driver_subsystem = */ NULL, sysname, "/sys/bus/", subsystem, "/devices/", name);
         if (r < 0)
                 return r;
 
-        r = device_new_from_path_join(&device, subsystem, NULL, sysname, "/sys/class/", subsystem, name, NULL);
+        r = device_new_from_path_join(&device, subsystem, /* driver_subsystem = */ NULL, sysname, "/sys/class/", subsystem, name, NULL);
         if (r < 0)
                 return r;
 
-        r = device_new_from_path_join(&device, subsystem, NULL, sysname, "/sys/firmware/", subsystem, name, NULL);
+        /* Note that devices under /sys/firmware/ (e.g. /sys/firmware/devicetree/base/) do not have
+         * subsystem. Hence, pass NULL for subsystem. See issue #35861. */
+        r = device_new_from_path_join(&device, /* subsystem = */ NULL, /* driver_subsystem = */ NULL, sysname, "/sys/firmware/", subsystem, name, NULL);
         if (r < 0)
                 return r;
 
