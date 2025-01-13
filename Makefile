@@ -16,7 +16,7 @@ DEBUG      ?= NO
 # Set this to yes to not build, but to show all build commands ninja would issue
 JUST_PRINT ?= NO
 
-HERE := $(shell pwd -P)
+HERE := ${CURDIR}
 
 BASIC_OPT  := --buildtype release
 BUILDDIR   ?= $(HERE)/build
@@ -114,6 +114,7 @@ ifeq (,$(CGDEFAULT))
     CGDEFAULT := unified
 endif
 
+# -----------------------------------------------------------------------------
 all: build
 
 build: $(CONFIG)
