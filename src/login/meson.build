@@ -210,3 +210,10 @@ if enable_logind
         install_data('org.freedesktop.login1.policy',
                      install_dir : polkitpolicydir)
 endif
+
+#if 1 /// elogind comes with a first drop-in representing its defaults
+if install_sysconfdir_samples
+        install_data('10-elogind.conf',
+                     install_dir : pkgconfigfiledir / 'logind.conf.d' )
+endif
+#endif // 1
