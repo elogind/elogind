@@ -2111,15 +2111,16 @@ int bus_manager_shutdown_or_sleep_now_or_later(
                                         a->target, load_state);
 #endif // 0
 
-#if 1 /// elogind allows hook scripts to interrupt sleep/shutdown, only signal if no cancellation is possible.
+#if 0 /// elogind allows hook scripts to interrupt sleep/shutdown, only signal if no cancellation is possible.
+        /* Tell everybody to prepare for shutdown/sleep */
+        (void) send_prepare_for(m, a, true);
+#else // 0
         if ( ( (INHIBIT_SHUTDOWN == a->inhibit_what) && !m->allow_poweroff_interrupts) ||
              ( (INHIBIT_SLEEP    == a->inhibit_what) && !m->allow_suspend_interrupts ) ) {
-#endif // 1
-        /* Tell everybody to prepare for shutdown/sleep */
-#if 1 /// close if() needed by elogind
+                /* Tell everybody to prepare for shutdown/sleep */
+                (void) send_prepare_for(m, a, true);
         }
-#endif // 1
-        (void) send_prepare_for(m, a, true);
+#endif // 0
 
         delayed =
                 m->inhibit_delay_max > 0 &&

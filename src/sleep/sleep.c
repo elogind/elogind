@@ -521,7 +521,9 @@ static int execute(
         }
 
         /* If this was successful and hook scripts were allowed to interrupt, we have
-         * to signal everybody that a sleep is imminent, now. */
+         * to signal everybody that a sleep is imminent, now.
+         * Note: send_prepare_for() can not be used from here, so we do it by hand.
+         */
         if ( m->allow_suspend_interrupts )
                 (void) sd_bus_emit_signal(m->bus,
                                 "/org/freedesktop/login1",
