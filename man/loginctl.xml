@@ -379,7 +379,7 @@
           <term><command>suspend-then-hibernate</command></term>
 
           <listitem>
-            <para>Suspend the system and hibernate it after the delay specified in <filename>logind.conf</filename>.
+            <para>Suspend the system and hibernate it after the delay specified in <filename>/etc/elogind/sleep.conf</filename>.
             This will tell all processes registered via dbus to prepare for suspend-then-hibernate. This command is
             asynchronous, and will return after the hybrid sleep operation is successfully enqueued. It will not wait
             for the sleep/wake-up or hibernate/thaw cycle to complete.</para>
@@ -422,7 +422,7 @@
             <para>Whether the executables in these directories run successfully or not is of no concern to elogind.
             If you want the scripts to cause the action to be cancelled if one fails, you can set
             <literal>AllowPowerOffInterrupts</literal> and/or <literal>AllowSuspendInterrupts</literal> to
-            <literal>yes</literal> in <filename>/etc/elogind/logind.conf</filename>.
+            <literal>yes</literal> in <filename>/etc/elogind/sleep.conf</filename>.
             For this to work the executables in question must print an error message to <literal>STDOUT</literal> that
             begins with either of these keywords: <literal>CANCELLED</literal>, <literal>CRITICAL</literal>,
             <literal>ERROR</literal> or <literal>FAILED</literal>. If you want any of these words in a message without
@@ -438,7 +438,7 @@
             <para>By default an interrupt of a power off or a suspend is broadcasted. If you do not whish these
               broadcasts to happen, change <literal>BroadcastPowerOffInterrupts</literal> and/or
               <literal>BroadcastSuspendInterrupts</literal> to <literal>no</literal> in
-              <filename>/etc/elogind/logind.conf</filename>.</para>
+              <filename>/etc/elogind/sleep.conf</filename>.</para>
           </listitem>
         </varlistentry>
       </variablelist>
