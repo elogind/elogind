@@ -39,7 +39,11 @@ void manager_reset_config(Manager *m) {
         m->n_autovts = 6;
         m->reserve_vt = 6;
 #endif // 0
+#if 0 /// elogind must not remove IPC items by default (See https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=949698)
         m->remove_ipc = true;
+#else // 0
+        m->remove_ipc = false;
+#endif // 0
         m->inhibit_delay_max = 5 * USEC_PER_SEC;
 #if 0 /// elogind does not start a user service manager, the delay is unneeded.
         m->user_stop_delay = 10 * USEC_PER_SEC;
