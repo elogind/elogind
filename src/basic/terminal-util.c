@@ -1487,12 +1487,14 @@ int vt_restore(int fd) {
                         q = -errno;
         }
 
+#if 0 /// elogind doesn't allocate VTs and shouldn't change those setup by login(1).
         r = fchmod_and_chown(fd, TTY_MODE, 0, GID_INVALID);
         if (r < 0) {
                 log_debug_errno(r, "Failed to chmod()/chown() VT, ignoring: %m");
                 if (q >= 0)
                         q = r;
         }
+#endif // 0
 
         return q;
 }
