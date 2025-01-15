@@ -89,7 +89,7 @@ else
     CFLAGS    := -fwrapv ${envCFLAGS}
     LDFLAGS   :=
     ifeq (YES,$(JUST_PRINT))
-        NINJA_OPT := ${NINJA_OPT} -s
+        NINJA_OPT := ${NINJA_OPT}
     endif
     ifneq (developer,$(BUILDMODE))
         BUILDMODE := release
