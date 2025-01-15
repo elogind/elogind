@@ -1450,10 +1450,11 @@ SessionState session_get_state(Session *s) {
 
 #if 0 /// elogind does not support systemd scope_jobs
         if (s->scope_job || (!pidref_is_set(&s->leader) && s->fifo_fd < 0))
-#else // 0
-        if (s->fifo_fd < 0)
-#endif // 0
                 return SESSION_OPENING;
+#else // 0
+        if (!pidref_is_set(&s->leader) && s->fifo_fd < 0)
+                return SESSION_OPENING;
+#endif // 0
 
         if (session_is_active(s))
                 return SESSION_ACTIVE;
