@@ -13,8 +13,6 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
-#if 0 /// elogind does not ship libudev
-#endif // 0
 libelogind_version = '0.39.0'
 libudev_version = '1.7.9'
 
