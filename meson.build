@@ -2021,10 +2021,10 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 # conf.set10('ENABLE_NSS', enable_nss)
 #
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
+#
+# conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
+# conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 #endif // 0
-
-conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
-conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 
