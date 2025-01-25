@@ -269,29 +269,41 @@ update_man_rules = custom_target(
 
 ############################################################
 
+#if 0 /// elogind has a much shorter list
+# simple_examples = files(
+#         'event-quick-child.c',
+#         'hwdb-usb-device.c',
+#         'id128-app-specific.c',
+#         'inotify-watch-tmp.c',
+#         'journal-enumerate-fields.c',
+#         'journal-iterate-foreach.c',
+#         'journal-iterate-poll.c',
+#         'journal-iterate-unique.c',
+#         'journal-iterate-wait.c',
+#         'journal-stream-fd.c',
+#         'logcontrol-example.c',
+#         'notify-selfcontained-example.c',
+#         'path-documents.c',
+#         'print-unit-path-call-method.c',
+#         'print-unit-path.c',
+#         'sd-bus-container-append.c',
+#         'sd-bus-container-read.c',
+#         'sd_bus_error-example.c',
+#         'sd_bus_service_reconnect.c',
+#         'send-unit-files-changed.c',
+#         'vtable-example.c',
+# )
+#else // 0
 simple_examples = files(
         'event-quick-child.c',
-        'hwdb-usb-device.c',
-        'id128-app-specific.c',
-        'inotify-watch-tmp.c',
-        'journal-enumerate-fields.c',
-        'journal-iterate-foreach.c',
-        'journal-iterate-poll.c',
-        'journal-iterate-unique.c',
-        'journal-iterate-wait.c',
-        'journal-stream-fd.c',
-        'logcontrol-example.c',
         'notify-selfcontained-example.c',
-        'path-documents.c',
-        'print-unit-path-call-method.c',
-        'print-unit-path.c',
         'sd-bus-container-append.c',
         'sd-bus-container-read.c',
         'sd_bus_error-example.c',
         'sd_bus_service_reconnect.c',
-        'send-unit-files-changed.c',
         'vtable-example.c',
 )
+#endif // 0
 
 examples = []
 foreach example : simple_examples
