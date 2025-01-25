@@ -1745,6 +1745,7 @@ conf.set10('HAVE_ZLIB', false)
 conf.set10('HAVE_ZSTD', false)
 conf.set10('HAVE_COMPRESSION', false)
 conf.set10('HAVE_XKBCOMMON', false)
+conf.set10('HAVE_LIBARCHIVE', false)
 #endif // 0
 
 #if 0 /// UNNEEDED by elogind
