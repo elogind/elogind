@@ -9,7 +9,7 @@
 #include "fs-util.h"
 #include "tests.h"
 #include "tmpfile-util.h"
-#include "uid-alloc-range.h"
+#include "uid-classification.h"
 
 static void test_read_login_defs_one(const char *path) {
         log_info("/* %s(\"%s\") */", __func__, path ?: "<custom>");
@@ -79,7 +79,6 @@ TEST(uid_is_system) {
         log_info("uid_is_system("UID_FMT") = %s", uid, yes_no(uid_is_system(uid)));
 }
 
-#if 0 /// UNSUPPORTED by elogind
 TEST(gid_is_system) {
         gid_t gid = 0;
         log_info("gid_is_system("GID_FMT") = %s", gid, yes_no(gid_is_system(gid)));
@@ -90,6 +89,5 @@ TEST(gid_is_system) {
         gid = getgid();
         log_info("gid_is_system("GID_FMT") = %s", gid, yes_no(gid_is_system(gid)));
 }
-#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
