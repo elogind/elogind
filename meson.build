@@ -2559,14 +2559,15 @@ install_libelogind_static = static_library(
         c_args : libelogind_c_args)
 #endif // 0
 
-#if 1 /// elogind depends on external libudev:
+#if 0 /// elogind depends on external libudev:
+# if static_libudev != 'false'
+#         alias_target('libudev', libudev, install_libudev_static)
+# else
+#         alias_target('libudev', libudev)
+# endif
+#else // 0
 libudev = dependency('libudev', required : true)
-#endif // 1
-if static_libudev != 'false'
-        alias_target('libudev', libudev, install_libudev_static)
-else
-        alias_target('libudev', libudev)
-endif
+#endif // 0
 
 #####################################################################
 
