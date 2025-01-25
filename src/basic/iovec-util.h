@@ -56,12 +56,14 @@ static inline void iovec_done_erase(struct iovec *iovec) {
         iovec->iov_base = erase_and_free(iovec->iov_base);
         iovec->iov_len = 0;
 }
+#endif // 0
 
 static inline bool iovec_is_set(const struct iovec *iovec) {
         /* Checks if the iovec points to a non-empty chunk of memory */
         return iovec && iovec->iov_len > 0 && iovec->iov_base;
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline bool iovec_is_valid(const struct iovec *iovec) {
         /* Checks if the iovec is either NULL, empty or points to a valid bit of memory */
         return !iovec || (iovec->iov_base || iovec->iov_len == 0);
