@@ -428,8 +428,8 @@ want_slow_tests = want_tests != 'false' and get_option('slow-tests')
 # want_fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
 # want_integration_tests = want_tests != 'false' and get_option('integration-tests')
 #else // 0
-want_fuzz_tests = 'false'
-want_integration_tests = 'false'
+want_fuzz_tests = false
+want_integration_tests = false
 #endif // 0
 install_tests = want_tests != 'false' and get_option('install-tests')
 
@@ -1471,6 +1471,7 @@ conf.set10('HAVE_BLKID', false)
 conf.set10('HAVE_BLKID_PROBE_SET_HINT', false)
 libkmod = []
 conf.set10('HAVE_KMOD', false)
+libkmod_cflags = []
 #endif // 0
 
 libxenctrl = dependency('xencontrol',
