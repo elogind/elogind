@@ -423,11 +423,14 @@ userspace_c_ld_args = []
 meson_build_sh = find_program('tools/meson-build.sh')
 
 want_tests = get_option('tests')
-#if 0 /// elogind does not utilize fuzzing
-#endif // 0
 want_slow_tests = want_tests != 'false' and get_option('slow-tests')
-want_fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
-want_integration_tests = want_tests != 'false' and get_option('integration-tests')
+#if 0 /// elogind does not utilize fuzzing and can not do integration tests
+# want_fuzz_tests = want_tests != 'false' and get_option('fuzz-tests')
+# want_integration_tests = want_tests != 'false' and get_option('integration-tests')
+#else // 0
+want_fuzz_tests = 'false'
+want_integration_tests = 'false'
+#endif // 0
 install_tests = want_tests != 'false' and get_option('install-tests')
 
 #if 0 /// elogind does not support fuzz stress testing (, yet).

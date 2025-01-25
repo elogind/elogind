@@ -577,8 +577,10 @@ option('install-tests', type : 'boolean', value : false,
        description : 'install test executables')
 option('log-message-verification', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'do fake printf() calls to verify format strings')
-option('integration-tests', type : 'boolean', value : false,
-       description : 'run the integration tests')
+#if 0 /// elogind can not do integration tests of systemd programs
+# option('integration-tests', type : 'boolean', value : false,
+#        description : 'run the integration tests')
+#endif // 0
 
 option('ok-color', type : 'combo',
        choices : ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan',
@@ -618,5 +620,7 @@ option('urlify', type : 'boolean', value : true,
 #        description : 'path to vmlinux.h to use')
 #endif // 0
 
-option('default-mountfsd-trusted-directories', type : 'boolean', value: false,
-       description : 'controls whether mountfsd should apply a relaxed policy on DDIs in system DDI directories')
+#if 0 /// Nowhere used by elogind
+# option('default-mountfsd-trusted-directories', type : 'boolean', value: false,
+#        description : 'controls whether mountfsd should apply a relaxed policy on DDIs in system DDI directories')
+#endif // 0
