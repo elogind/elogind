@@ -128,8 +128,6 @@ User *user_free(User *u) {
                 free(u->service_manager_unit);
         }
 
-#if 0 /// elogind does not need the systemd runtime_dir_service
-#endif // 0
         if (u->runtime_dir_unit) {
                 (void) hashmap_remove_value(u->manager->user_units, u->runtime_dir_unit, u);
                 free(u->runtime_dir_job);
@@ -143,8 +141,6 @@ User *user_free(User *u) {
 
         (void) hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
-/// elogind empty mask removed (elogind does not support services and service jobs.)
-/// elogind empty mask removed (elogind does not need the systemd runtime_dir_service)
         free(u->runtime_path);
         free(u->state_file);
 

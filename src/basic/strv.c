@@ -600,7 +600,6 @@ int strv_extend_with_size(char ***l, size_t *n, const char *value) {
         return strv_consume_with_size(l, n, v);
 }
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int strv_extend_many_internal(char ***l, const char *value, ...) {
         va_list ap;
         size_t n, m;

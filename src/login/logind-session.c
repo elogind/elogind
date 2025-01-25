@@ -493,10 +493,11 @@ int session_load(Session *s) {
         assert(s);
 
         r = parse_env_file(NULL, s->state_file,
-/// elogind empty mask removed (elogind does not support systemd scope_jobs)
                            "REMOTE",          &remote,
                            "SCOPE",           &s->scope,
+#if 0 ///elogind does not support systemd scope_jobs
                            "SCOPE_JOB",       &s->scope_job,
+#endif // 0
                            "FIFO",            &s->fifo_path,
                            "SEAT",            &seat,
                            "TTY",             &s->tty,
