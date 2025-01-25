@@ -281,18 +281,13 @@ option('configfiledir', type : 'string', value : '',
 option('fallback-hostname', type : 'string', value : 'localhost',
        description : 'the hostname used if none configured')
 option('default-hierarchy', type : 'combo',
-#if 0 /// elogind interprets this a bit different
-#else // 0
-       description : '''Wanted cgroup hierarchy if elogind has to be a cgroup controller:
-                "legacy"  assumes tmpfs mounted on /sys/fs/cgroup and cgroup on its subfolders.
-                "hybrid"  assumes cgroups version 2 mounted on /sys/fs/cgroup/unified. /sys/fs/cgroup is legacy, then.
-                "unified" assumes cgroups version 2 on /sys/fs/cgroup''')
+       choices : ['legacy', 'hybrid', 'unified'], deprecated : true,
+       description : '''This option is deprecated and will be removed in a future release''')
+#if 1 /// elogind needs to know the name of the cgroup controller of the system
 option('cgroup-controller', type : 'string',
        description : 'Name of the cgroup controller to use')
-#endif // 0
+#endif // 1
 #if 0 /// UNNEEDED by elogind
-#        choices : ['legacy', 'hybrid', 'unified'], deprecated : true,
-#        description : '''This option is deprecated and will be removed in a future release''')
 # option('extra-net-naming-schemes', type : 'string',
 #        description : 'comma-separated list of extra net.naming_scheme= definitions')
 # option('default-net-naming-scheme', type : 'string', value : 'latest',
