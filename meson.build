@@ -13,7 +13,7 @@ project('elogind', 'c',
         meson_version : '>= 0.60.0',
        )
 
-libelogind_version = '0.39.0'
+libsystemd_version = '0.39.0'
 libudev_version = '1.7.9'
 
 conf = configuration_data()
@@ -1586,16 +1586,20 @@ conf.set10('HAVE_PAM', libpam.found() and libpam_misc.found())
 # endif
 #
 # have = libgcrypt.found() and libgpg_error.found()
-# if not have
-#         # link to neither of the libs if one is not found
-#         libgcrypt = []
-#         libgpg_error = []
-#         libgcrypt_cflags = []
-# else
-#         libgcrypt_cflags = libgcrypt.partial_dependency(includes: true, compile_args: true)
-# endif
-# conf.set10('HAVE_GCRYPT', have)
-#
+#else // 0
+have = false
+#endif // 0
+if not have
+        # link to neither of the libs if one is not found
+        libgcrypt = []
+        libgpg_error = []
+        libgcrypt_cflags = []
+else
+        libgcrypt_cflags = libgcrypt.partial_dependency(includes: true, compile_args: true)
+endif
+conf.set10('HAVE_GCRYPT', have)
+
+#if 0 /// UNNEDED by elogind
 # libgnutls = dependency('gnutls',
 #                        version : '>= 3.1.4',
 #                        required : get_option('gnutls'))
@@ -1713,8 +1717,11 @@ libdw = []
 libz = []
 libbzip2 = []
 libxz = []
+libxz_cflags = []
 liblz4 = []
+liblz4_cflags = []
 libzstd = []
+libzstd_cflags = []
 libxkbcommon = []
 conf.set10('HAVE_LIBCRYPTSETUP', false)
 conf.set10('HAVE_LIBCRYPTSETUP_PLUGINS', false)
@@ -2422,6 +2429,7 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-journal',
         'src/sleep',
         'src/update-utmp')]
+libsystemd_includes = libelogind_includes
 #endif // 0
 
 includes = [libelogind_includes, include_directories('src/shared')]
@@ -2480,8 +2488,6 @@ install_libelogind_static = static_library(
         libelogind_sources,
 #endif // 0
         basic_sources,
-#if 0 /// No gcrypt or compress with elogind
-#endif // 0
         fundamental_sources,
         include_directories : libelogind_includes,
         build_by_default : static_libelogind != 'false',

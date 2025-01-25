@@ -400,9 +400,3 @@ libbasic = static_library(
                         userspace],
         c_args : ['-fvisibility=default'],
         build_by_default : false)
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
