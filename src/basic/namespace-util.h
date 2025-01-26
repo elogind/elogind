@@ -36,10 +36,10 @@ int fd_is_ns(int fd, unsigned long nsflag);
 #endif // 0
 
 int detach_mount_namespace(void);
+#if 0 /// UNNEEDED by elogind
 int detach_mount_namespace_harder(uid_t target_uid, gid_t target_gid);
 int detach_mount_namespace_userns(int userns_fd);
 
-#if 0 /// UNNEEDED by elogind
 static inline bool userns_shift_range_valid(uid_t shift, uid_t range) {
         /* Checks that the specified userns range makes sense, i.e. contains at least one UID, and the end
          * doesn't overflow uid_t. */
@@ -61,10 +61,10 @@ int userns_acquire(const char *uid_map, const char *gid_map);
 int netns_acquire(void);
 
 int in_same_namespace(pid_t pid1, pid_t pid2, NamespaceType type);
-#endif // 0
 
 int parse_userns_uid_range(const char *s, uid_t *ret_uid_shift, uid_t *ret_uid_range);
 
 int namespace_open_by_type(NamespaceType type);
 
 int is_our_namespace(int fd, NamespaceType type);
+#endif // 0

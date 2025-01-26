@@ -34,6 +34,7 @@ const struct namespace_info namespace_info[] = {
 
 #define pid_namespace_path(pid, type) procfs_file_alloca(pid, namespace_info[type].proc_path)
 
+#if 0 /// UNNEEDED by elogind
 static NamespaceType clone_flag_to_namespace_type(unsigned long clone_flag) {
         for (NamespaceType t = 0; t < _NAMESPACE_TYPE_MAX; t++)
                 if (((namespace_info[t].clone_flag ^ clone_flag) & (CLONE_NEWCGROUP|CLONE_NEWIPC|CLONE_NEWNET|CLONE_NEWNS|CLONE_NEWPID|CLONE_NEWUSER|CLONE_NEWUTS|CLONE_NEWTIME)) == 0)
@@ -41,6 +42,7 @@ static NamespaceType clone_flag_to_namespace_type(unsigned long clone_flag) {
 
         return _NAMESPACE_TYPE_INVALID;
 }
+#endif // 0
 
 int namespace_open(
                 pid_t pid,
@@ -399,7 +401,6 @@ int in_same_namespace(pid_t pid1, pid_t pid2, NamespaceType type) {
 
         return stat_inode_same(&ns_st1, &ns_st2);
 }
-#endif // 0
 
 int parse_userns_uid_range(const char *s, uid_t *ret_uid_shift, uid_t *ret_uid_range) {
         _cleanup_free_ char *buffer = NULL;
@@ -485,3 +486,4 @@ int is_our_namespace(int fd, NamespaceType request_type) {
 
         return stat_inode_same(&st_ours, &st_fd);
 }
+#endif // 0
