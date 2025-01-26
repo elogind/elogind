@@ -65,7 +65,7 @@ static int do_spawn(
         if (r == 0) {
                 char *_argv[2];
 
-                if (set_systemd_exec_pid) {
+                if (set_elogind_exec_pid) {
                         r = setenv_elogind_exec_pid(false);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to set $SYSTEMD_EXEC_PID, ignoring: %m");
