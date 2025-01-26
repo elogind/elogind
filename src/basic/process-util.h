@@ -83,10 +83,10 @@ typedef enum WaitFlags {
 int wait_for_terminate_and_check(const char *name, pid_t pid, WaitFlags flags);
 #if 0 /// UNNEEDED by elogind
 int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout);
+#endif // 0
 
 void sigkill_wait(pid_t pid);
 void sigkill_waitp(pid_t *pid);
-#endif // 0
 void sigterm_wait(pid_t pid);
 void sigkill_nowait(pid_t pid);
 #if 0 /// UNNEEDED by elogind

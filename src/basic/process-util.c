@@ -978,6 +978,7 @@ int wait_for_terminate_with_timeout(pid_t pid, usec_t timeout) {
 
         return -EPROTO;
 }
+#endif // 0
 
 void sigkill_wait(pid_t pid) {
         assert(pid > 1);
@@ -996,7 +997,6 @@ void sigkill_waitp(pid_t *pid) {
 
         sigkill_wait(*pid);
 }
-#endif // 0
 
 void sigterm_wait(pid_t pid) {
         assert(pid > 1);
