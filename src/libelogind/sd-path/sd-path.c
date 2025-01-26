@@ -532,8 +532,8 @@ static int search_from_environment(
 #  define ARRAY_SBIN_BIN(x) x "bin"
 #endif
 
-#if 0 /// UNNEEDED by elogind
 static int get_search(uint64_t type, char ***ret) {
+#if 0 /// UNNEEDED by elogind
         int r;
 #endif // 0
 
@@ -661,8 +661,8 @@ static int get_search(uint64_t type, char ***ret) {
         }
 
         case SD_PATH_SYSTEMD_SEARCH_NETWORK:
-#endif // 0
                 return strv_from_nulstr(ret, NETWORK_DIRS_NULSTR);
+#endif // 0
 
         }
 
