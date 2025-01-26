@@ -25,7 +25,6 @@
 #include "stat-util.h"
 //#include "string-util.h"
 
-#if 0 /// UNNEEDED by elogind
 static int verify_stat_at(
                 int fd,
                 const char *path,
@@ -47,7 +46,6 @@ static int verify_stat_at(
         r = verify_func(&st);
         return verify ? r : r >= 0;
 }
-#endif // 0
 
 int stat_verify_regular(const struct stat *st) {
         assert(st);
@@ -67,7 +65,6 @@ int stat_verify_regular(const struct stat *st) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int verify_regular_at(int fd, const char *path, bool follow) {
         return verify_stat_at(fd, path, follow, stat_verify_regular, true);
 }
@@ -76,7 +73,6 @@ int fd_verify_regular(int fd) {
         assert(fd >= 0);
         return verify_regular_at(fd, NULL, false);
 }
-#endif // 0
 
 int stat_verify_directory(const struct stat *st) {
         assert(st);
