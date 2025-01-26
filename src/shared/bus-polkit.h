@@ -20,6 +20,7 @@ static inline int bus_verify_polkit_async(sd_bus_message *call, const char *acti
         return bus_verify_polkit_async_full(call, action, details, UID_INVALID, 0, registry, error);
 }
 
+#if 0 /// UNNEEDED by elogind
 int varlink_verify_polkit_async_full(Varlink *link, sd_bus *bus, const char *action, const char **details, uid_t good_user, PolkitFlags flags, Hashmap **registry);
 static inline int varlink_verify_polkit_async(Varlink *link, sd_bus *bus, const char *action, const char **details, Hashmap **registry) {
         return varlink_verify_polkit_async_full(link, bus, action, details, UID_INVALID, 0, registry);
@@ -34,3 +35,4 @@ static inline int varlink_verify_polkit_async(Varlink *link, sd_bus *bus, const 
         }
 
 bool varlink_has_polkit_action(Varlink *link, const char *action, const char **details, Hashmap **registry);
+#endif // 0

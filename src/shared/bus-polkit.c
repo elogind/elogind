@@ -625,6 +625,7 @@ int bus_verify_polkit_async_full(
 #endif
 }
 
+#if 0 /// UNNEEDED by elogind
 static int varlink_check_good_user(Varlink *link, uid_t good_user) {
         int r;
 
@@ -655,8 +656,10 @@ static int varlink_check_peer_privilege(Varlink *link) {
         return peer_uid == our_uid ||
                 (our_uid != 0 && peer_uid == 0);
 }
+#endif // 0
 
 #if ENABLE_POLKIT
+#if 0 /// UNNEEDED by elogind
 static int bus_message_new_polkit_auth_call_for_varlink(
                 sd_bus *bus,
                 Varlink *link,
@@ -743,8 +746,10 @@ static bool varlink_allow_interactive_authentication(Varlink *link) {
 
         return false;
 }
+#endif // 0
 #endif
 
+#if 0 /// UNNEEDED by elogind
 int varlink_verify_polkit_async_full(
                 Varlink *link,
                 sd_bus *bus,
@@ -881,3 +886,4 @@ bool varlink_has_polkit_action(Varlink *link, const char *action, const char **d
         return false;
 #endif
 }
+#endif // 0
