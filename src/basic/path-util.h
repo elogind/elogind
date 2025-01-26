@@ -32,14 +32,12 @@ static inline const char* default_user_PATH(void) {
 #endif
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline bool is_path(const char *p) {
         if (!p) /* A NULL pointer is definitely not a path */
                 return false;
 
         return strchr(p, '/');
 }
-#endif // 0
 
 static inline bool path_is_absolute(const char *p) {
         if (!p) /* A NULL pointer is definitely not an absolute path */

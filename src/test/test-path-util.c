@@ -50,7 +50,6 @@ TEST(path) {
         assert_se(!path_equal(NULL, "a"));
 }
 
-#if 0 /// is_path() is nowhere used in elogind and thus masked
 TEST(is_path) {
         assert_se(!is_path("foo"));
         assert_se(!is_path("dos.ext"));
@@ -94,7 +93,6 @@ TEST(is_path) {
         assert_se( is_path("/sys/../"));
         assert_se( is_path("/usr/../dev/sda"));
 }
-#endif // 0
 
 #if 0 /// is_device_path() is nowhere used in elogind and thus masked
 TEST(is_device_path) {
