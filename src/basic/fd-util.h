@@ -82,9 +82,9 @@ int get_max_fd(void);
 int close_all_fds(const int except[], size_t n_except);
 int close_all_fds_without_malloc(const int except[], size_t n_except);
 
-#if 0 /// UNNEEDED by elogind
 int pack_fds(int fds[], size_t n);
 
+#if 0 /// UNNEEDED by elogind
 int same_fd(int a, int b);
 #endif // 0
 

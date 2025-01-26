@@ -471,7 +471,6 @@ int close_all_fds(const int except[], size_t n_except) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int pack_fds(int fds[], size_t n_fds) {
         if (n_fds <= 0)
                 return 0;
@@ -519,6 +518,7 @@ int pack_fds(int fds[], size_t n_fds) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int same_fd(int a, int b) {
         struct stat sta, stb;
         pid_t pid;
