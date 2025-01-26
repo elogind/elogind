@@ -116,7 +116,6 @@ bool uid_is_system(uid_t uid) {
         return uid <= defs->system_uid_max;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool gid_is_system(gid_t gid) {
         const UGIDAllocationRange *defs;
         assert_se(defs = acquire_ugid_allocation_range());
@@ -124,6 +123,7 @@ bool gid_is_system(gid_t gid) {
         return gid <= defs->system_gid_max;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool uid_for_system_journal(uid_t uid) {
 
         /* Returns true if the specified UID shall get its data stored in the system journal. */

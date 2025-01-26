@@ -5,9 +5,9 @@
 #include <sys/types.h>
 
 bool uid_is_system(uid_t uid);
-#if 0 /// UNNEEDED by elogind
 bool gid_is_system(gid_t gid);
 
+#if 0 /// UNNEEDED by elogind
 static inline bool uid_is_dynamic(uid_t uid) {
         return DYNAMIC_UID_MIN <= uid && uid <= DYNAMIC_UID_MAX;
 }
