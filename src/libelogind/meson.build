@@ -145,6 +145,15 @@ libelogind_sources = files(
         'sd-device/device-util.c',
         'sd-device/sd-device.c',
         'sd-hwdb/sd-hwdb.c',
+        'sd-netlink/netlink-genl.c',
+        'sd-netlink/netlink-message-rtnl.c',
+        'sd-netlink/netlink-message.c',
+        'sd-netlink/netlink-slot.c',
+        'sd-netlink/netlink-socket.c',
+        'sd-netlink/netlink-types-genl.c',
+        'sd-netlink/netlink-types.c',
+        'sd-netlink/netlink-util.c',
+        'sd-netlink/sd-netlink.c',
         'sd-path/sd-path.c',
 ) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0

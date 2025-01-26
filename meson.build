@@ -2429,6 +2429,7 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-hwdb',
         'src/libelogind/sd-id128',
         'src/libelogind/sd-journal',
+        'src/libelogind/sd-netlink',
         'src/sleep',
         'src/update-utmp')]
 libsystemd_includes = libelogind_includes

@@ -23,7 +23,7 @@
 #include "id128-util.h"
 #include "macro.h"
 #include "missing_magic.h"
-//#include "netlink-util.h"
+#include "netlink-util.h"
 #include "parse-util.h"
 #include "path-util.h"
 #include "set.h"

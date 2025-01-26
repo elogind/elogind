@@ -24,7 +24,7 @@
 /* Not all systems have dbus hierarchy in /run (as preferred by systemd) */
 #if VARRUN_IS_SYMLINK
   #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/run/dbus/system_bus_socket"
-#else // 0
+#else // VARRUN_IS_SYMLINK
   #define DEFAULT_SYSTEM_BUS_ADDRESS "unix:path=/var/run/dbus/system_bus_socket"
 #endif // VARRUN_IS_SYMLINK
 #endif // 0
