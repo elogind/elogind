@@ -24,27 +24,27 @@
 //#include "fs-util.h"
 //#include "hashmap.h"
 //#include "hostname-util.h"
-//#include "id128-util.h"
+#include "id128-util.h"
 //#include "inotify-util.h"
 //#include "io-util.h"
 #include "journal-def.h"
-// #include "journal-file.h"
+//#include "journal-file.h"
 #include "journal-internal.h"
-// #include "list.h"
+//#include "list.h"
 //#include "lookup3.h"
 #include "nulstr-util.h"
 #include "origin-id.h"
 #include "path-util.h"
 #include "prioq.h"
 #include "process-util.h"
-#include "replace-var.h"
+//#include "replace-var.h"
 #include "sort-util.h"
 #include "stat-util.h"
 #include "stdio-util.h"
-#include "string-util.h"
-#include "strv.h"
-#include "syslog-util.h"
-#include "uid-classification.h"
+//#include "string-util.h"
+//#include "strv.h"
+//#include "syslog-util.h"
+//#include "uid-classification.h"
 
 #if 0 /// UNNEEDED by elogind
 #define JOURNAL_FILES_RECHECK_USEC (2 * USEC_PER_SEC)
@@ -463,6 +463,7 @@ _public_ void sd_journal_flush_matches(sd_journal *j) {
 #endif // 0
 }
 
+#if 0 /// UNNEEDED by elogind
 static int newest_by_boot_id_compare(const NewestByBootId *a, const NewestByBootId *b) {
         return id128_compare_func(&a->boot_id, &b->boot_id);
 }
@@ -553,7 +554,6 @@ static int journal_file_reshuffle_newest_by_boot_id(sd_journal *j, JournalFile *
                 typesafe_qsort(j->newest_by_boot_id, j->n_newest_by_boot_id, newest_by_boot_id_compare);
         }
 
-#if 0 /// UNNEEDED by elogind
         return 0;
 }
 
@@ -2596,10 +2596,9 @@ _public_ void sd_journal_close(sd_journal *j) {
         free(j->fields_buffer);
         free(j);
 #endif // 0
-
-#if 0 /// UNNEEDED by elogind
 }
 
+#if 0 /// UNNEEDED by elogind
 static int journal_file_read_tail_timestamp(sd_journal *j, JournalFile *f) {
         uint64_t offset, mo, rt;
         sd_id128_t id;
