@@ -228,8 +228,8 @@ static inline const char* empty_to_root(const char *path) {
         return isempty(path) ? "/" : path;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool path_strv_contains(char * const *l, const char *path);
+#if 0 /// UNNEEDED by elogind
 bool prefixed_path_strv_contains(char * const *l, const char *path);
 
 int path_glob_can_match(const char *pattern, const char *prefix, char **ret);
