@@ -119,6 +119,7 @@ int is_symlink(const char *path) {
         assert(!isempty(path));
         return verify_stat_at(AT_FDCWD, path, false, stat_verify_symlink, false);
 }
+#endif // 0
 
 int stat_verify_linked(const struct stat *st) {
         assert(st);
@@ -134,6 +135,7 @@ int fd_verify_linked(int fd) {
         return verify_stat_at(fd, NULL, false, stat_verify_linked, true);
 }
 
+#if 0 /// UNNEEDED by elogind
 int stat_verify_device_node(const struct stat *st) {
         assert(st);
 

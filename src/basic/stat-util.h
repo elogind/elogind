@@ -29,10 +29,12 @@ int is_dir(const char *path, bool follow);
 #if 0 /// UNNEEDED by elogind
 int stat_verify_symlink(const struct stat *st);
 int is_symlink(const char *path);
+#endif // 0
 
 int stat_verify_linked(const struct stat *st);
 int fd_verify_linked(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int stat_verify_device_node(const struct stat *st);
 int is_device_node(const char *path);
 
