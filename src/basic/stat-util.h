@@ -19,16 +19,16 @@
 int stat_verify_regular(const struct stat *st);
 int verify_regular_at(int fd, const char *path, bool follow);
 int fd_verify_regular(int fd);
+#endif // 0
 
 int stat_verify_directory(const struct stat *st);
+#if 0 /// UNNEEDED by elogind
 int fd_verify_directory(int fd);
 int is_dir_at(int fd, const char *path, bool follow);
 int is_dir(const char *path, bool follow);
 
 int stat_verify_symlink(const struct stat *st);
 int is_symlink(const char *path);
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 
 int stat_verify_linked(const struct stat *st);
 int fd_verify_linked(int fd);

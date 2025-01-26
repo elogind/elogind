@@ -76,6 +76,7 @@ int fd_verify_regular(int fd) {
         assert(fd >= 0);
         return verify_regular_at(fd, NULL, false);
 }
+#endif // 0
 
 int stat_verify_directory(const struct stat *st) {
         assert(st);
@@ -89,6 +90,7 @@ int stat_verify_directory(const struct stat *st) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int fd_verify_directory(int fd) {
         assert(fd >= 0);
         return verify_stat_at(fd, NULL, false, stat_verify_directory, true);

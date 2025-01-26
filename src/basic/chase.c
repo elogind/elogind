@@ -227,7 +227,7 @@ int chaseat(int dir_fd, const char *path, ChaseFlags flags, char **ret_path, int
          * regardless of whether it is absolute or not. If we get AT_FDCWD, follow regular openat()
          * semantics, if the path is relative, resolve against the current working directory. Otherwise,
          * resolve against root. */
-        fd = openat(dir_fd, done ?: ".", O_CLOEXEC|O_DIRECTORY|O_PATH);
+        fd = openat(dir_fd, done ? done : ".", O_CLOEXEC|O_DIRECTORY|O_PATH);
         if (fd < 0)
                 return -errno;
 
@@ -1022,7 +1022,6 @@ int chase_and_opendirat(int dir_fd, const char *path, ChaseFlags chase_flags, ch
         return 0;
 }
 
-#if 0 /// UNNEEDED in elogind
 int chase_and_statat(int dir_fd, const char *path, ChaseFlags chase_flags, char **ret_path, struct stat *ret_stat) {
         _cleanup_close_ int path_fd = -EBADF;
         _cleanup_free_ char *p = NULL;
@@ -1052,6 +1051,7 @@ int chase_and_statat(int dir_fd, const char *path, ChaseFlags chase_flags, char 
         return 0;
 }
 
+#if 0 /// UNNEEDED in elogind
 int chase_and_accessat(int dir_fd, const char *path, ChaseFlags chase_flags, int access_mode, char **ret_path) {
         _cleanup_close_ int path_fd = -EBADF;
         _cleanup_free_ char *p = NULL;

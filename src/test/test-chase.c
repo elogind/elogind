@@ -653,12 +653,10 @@ TEST(chaseat) {
 
         /* Test chase_and_statat() */
 
-#if 0 /// UNSUPPORTED in elogind
         ASSERT_OK(chase_and_statat(tfd, "o/p", 0, &result, &st));
         ASSERT_OK(stat_verify_directory(&st));
         ASSERT_STREQ(result, "o/p");
         result = mfree(result);
-#endif // 0
 
         /* Test chase_and_accessat() */
 
