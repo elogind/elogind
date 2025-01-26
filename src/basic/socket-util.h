@@ -327,7 +327,6 @@ static inline int setsockopt_int(int fd, int level, int optname, int value) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline int getsockopt_int(int fd, int level, int optname, int *ret) {
         int v;
         socklen_t sl = sizeof(v);
@@ -341,6 +340,7 @@ static inline int getsockopt_int(int fd, int level, int optname, int *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_bind_to_ifname(int fd, const char *ifname);
 int socket_bind_to_ifindex(int fd, int ifindex);
 #endif // 0
