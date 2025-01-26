@@ -51,8 +51,8 @@ static inline int chattr_path(const char *path, unsigned value, unsigned mask, u
         return chattr_full(AT_FDCWD, path, value, mask, previous, NULL, 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 int read_attr_fd(int fd, unsigned *ret);
+#if 0 /// UNNEEDED by elogind
 int read_attr_path(const char *p, unsigned *ret);
 
 /* Combination of chattr flags, that should be appropriate for secrets stored on disk: Secure Remove +
