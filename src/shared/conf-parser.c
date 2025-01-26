@@ -484,6 +484,7 @@ int hashmap_put_stats_by_path(Hashmap **stats_by_path, const char *path, const s
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int config_parse_many_files(
                 const char *root,
                 const char* const* conf_files,
@@ -599,8 +600,6 @@ static int config_parse_many_files(
         return 0;
 }
 
-
-#if 0 /// UNNEEDED by elogind
 /* Parse each config file in the directories specified as strv. */
 int config_parse_many(
                 const char* const* conf_files,
