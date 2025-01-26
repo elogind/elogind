@@ -15,7 +15,6 @@ int _ordered_set_ensure_allocated(OrderedSet **s, const struct hash_ops *ops  HA
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int _ordered_set_ensure_put(OrderedSet **s, const struct hash_ops *ops, void *p  HASHMAP_DEBUG_PARAMS) {
         int r;
 
@@ -25,7 +24,6 @@ int _ordered_set_ensure_put(OrderedSet **s, const struct hash_ops *ops, void *p 
 
         return ordered_set_put(*s, p);
 }
-#endif // 0
 
 int ordered_set_consume(OrderedSet *s, void *p) {
         int r;

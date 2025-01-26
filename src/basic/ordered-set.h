@@ -15,10 +15,10 @@ static inline OrderedSet* _ordered_set_new(const struct hash_ops *ops  HASHMAP_D
 int _ordered_set_ensure_allocated(OrderedSet **s, const struct hash_ops *ops  HASHMAP_DEBUG_PARAMS);
 #define ordered_set_ensure_allocated(s, ops) _ordered_set_ensure_allocated(s, ops  HASHMAP_DEBUG_SRC_ARGS)
 
-#if 0 /// UNNEEDED by elogind
 int _ordered_set_ensure_put(OrderedSet **s, const struct hash_ops *ops, void *p  HASHMAP_DEBUG_PARAMS);
 #define ordered_set_ensure_put(s, hash_ops, key) _ordered_set_ensure_put(s, hash_ops, key  HASHMAP_DEBUG_SRC_ARGS)
 
+#if 0 /// UNNEEDED by elogind
 static inline void ordered_set_clear(OrderedSet *s) {
         return ordered_hashmap_clear((OrderedHashmap*) s);
 }
@@ -48,11 +48,9 @@ static inline void *ordered_set_get(OrderedSet *s, const void *p) {
         return ordered_hashmap_get((OrderedHashmap*) s, p);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline unsigned ordered_set_size(OrderedSet *s) {
         return ordered_hashmap_size((OrderedHashmap*) s);
 }
-#endif // 0
 
 static inline bool ordered_set_isempty(OrderedSet *s) {
         return ordered_hashmap_isempty((OrderedHashmap*) s);
@@ -62,11 +60,11 @@ static inline bool ordered_set_iterate(OrderedSet *s, Iterator *i, void **value)
         return ordered_hashmap_iterate((OrderedHashmap*) s, i, value, NULL);
 }
 
-#if 0 /// UNNEEDED by elogind
 static inline void* ordered_set_remove(OrderedSet *s, void *p) {
         return ordered_hashmap_remove((OrderedHashmap*) s, p);
 }
 
+#if 0 /// UNNEEDED by elogind
 static inline void* ordered_set_first(OrderedSet *s) {
         return ordered_hashmap_first((OrderedHashmap*) s);
 }
