@@ -135,8 +135,8 @@ _public_ int sd_journal_printv(int priority, const char *format, va_list ap) {
         assert_return(format, -EINVAL);
 
 #if 0 /// priority is not needed in elogind
-#endif // 0
         xsprintf(p, "PRIORITY=%i", LOG_PRI(priority));
+#endif // 0
 
         va_copy(aq, ap);
         len = vsnprintf(buffer + 8, LINE_MAX, format, aq);
@@ -469,13 +469,13 @@ _public_ int sd_journal_perror(const char *message) {
 #endif // 0
 }
 
-#if 0 /// elogind is not journald and can not stream fds in the latter.
 _public_ int sd_journal_stream_fd_with_namespace(
                 const char *name_space,
                 const char *identifier,
                 int priority,
                 int level_prefix) {
 
+#if 0 /// elogind is not journald and can not stream fds in the latter.
         _cleanup_close_ int fd = -EBADF;
         const char *path;
         int r;
@@ -527,13 +527,13 @@ _public_ int sd_journal_stream_fd_with_namespace(
                 return r;
 
         return TAKE_FD(fd);
+#else // 0
+        return -ENOSYS;
+#endif // 0
 }
 
 _public_ int sd_journal_stream_fd(const char *identifier, int priority, int level_prefix) {
         return sd_journal_stream_fd_with_namespace(NULL, identifier, priority, level_prefix);
-#else // 0
-        return -ENOSYS;
-#endif // 0
 }
 
 _public_ int sd_journal_print_with_location(int priority, const char *file, const char *line, const char *func, const char *format, ...) {
