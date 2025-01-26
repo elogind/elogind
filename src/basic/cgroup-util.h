@@ -191,7 +191,9 @@ typedef enum CGroupUnified {
  */
 
 int cg_path_open(const char *controller, const char *path);
+#if 0 /// elogind does not open cgroup IDs anywhere
 int cg_cgroupid_open(int fsfd, uint64_t id);
+#endif // 0
 
 typedef enum CGroupFlags {
         CGROUP_SIGCONT            = 1 << 0,
@@ -285,10 +287,10 @@ int cg_is_empty_recursive(const char *controller, const char *path);
 
 int cg_get_root_path(char **path);
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not open cgroup IDs anywhere
 int cg_path_get_cgroupid(const char *path, uint64_t *ret);
-#endif // 0
 int cg_fd_get_cgroupid(int fd, uint64_t *ret);
+#endif // 0
 int cg_path_get_session(const char *path, char **ret_session);
 int cg_path_get_owner_uid(const char *path, uid_t *ret_uid);
 int cg_path_get_unit(const char *path, char **ret_unit);

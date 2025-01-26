@@ -171,6 +171,7 @@ TEST(id) {
         assert_se(fd_get_path(fd, &p) >= 0);
         assert_se(path_equal(p, "/sys/fs/cgroup"));
 
+#if 0 /// elogind does not open cgroup IDs anywhere
         assert_se(cg_fd_get_cgroupid(fd, &id) >= 0);
 
         fd2 = cg_cgroupid_open(fd, id);
@@ -189,6 +190,7 @@ TEST(id) {
 
                 assert_se(inode_same_at(fd, NULL, fd2, NULL, AT_EMPTY_PATH) > 0);
         }
+#endif // 0
 }
 
 DEFINE_TEST_MAIN(LOG_DEBUG);

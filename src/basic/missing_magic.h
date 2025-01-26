@@ -105,5 +105,5 @@ assert_cc(NTFS3_SUPER_MAGIC == 0x7366746e);
 #ifndef BCACHEFS_SUPER_MAGIC
 #  define BCACHEFS_SUPER_MAGIC 0xca451a4e
 #else
-assert_cc(BCACHEFS_SUPER_MAGIC == 0xca451a4e)
+assert_cc(BCACHEFS_SUPER_MAGIC == 0xca451a4e);
 #endif

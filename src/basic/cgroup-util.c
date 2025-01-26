@@ -54,6 +54,7 @@ int cg_path_open(const char *controller, const char *path) {
         return RET_NERRNO(open(fs, O_DIRECTORY|O_CLOEXEC));
 }
 
+#if 0 /// elogind does not open cgroup IDs anywhere
 int cg_cgroupid_open(int cgroupfs_fd, uint64_t id) {
         _cleanup_close_ int fsfd = -EBADF;
 
@@ -74,6 +75,7 @@ int cg_cgroupid_open(int cgroupfs_fd, uint64_t id) {
 
         return fd;
 }
+#endif // 0
 
 static int cg_enumerate_items(const char *controller, const char *path, FILE **ret, const char *item) {
         _cleanup_free_ char *fs = NULL;
@@ -1521,7 +1523,6 @@ int cg_path_get_cgroupid(const char *path, uint64_t *ret) {
         *ret = CG_FILE_HANDLE_CGROUPID(fh);
         return 0;
 }
-#endif // 0
 
 int cg_fd_get_cgroupid(int fd, uint64_t *ret) {
         cg_file_handle fh = CG_FILE_HANDLE_INIT;
@@ -1536,6 +1537,7 @@ int cg_fd_get_cgroupid(int fd, uint64_t *ret) {
         *ret = CG_FILE_HANDLE_CGROUPID(fh);
         return 0;
 }
+#endif // 0
 
 int cg_path_get_session(const char *path, char **ret_session) {
 #if 0 /// UNNEEDED by elogind
@@ -1585,7 +1587,7 @@ int cg_path_get_session(const char *path, char **ret_session) {
                 return -ENXIO;
 #endif // 0
 
-                log_debug_elogind("found session: \"%s\"", start);
+        log_debug_elogind("found session: \"%s\"", start);
 
         if (!ret_session)
                 return 0;
