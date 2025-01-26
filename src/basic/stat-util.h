@@ -15,9 +15,7 @@
 #include "siphash24.h"
 #include "time-util.h"
 
-#if 0 /// UNNEEDED by elogind
 int stat_verify_regular(const struct stat *st);
-#endif // 0
 int verify_regular_at(int fd, const char *path, bool follow);
 int fd_verify_regular(int fd);
 
