@@ -44,9 +44,11 @@
 #include "time-util.h"
 #include "utf8.h"
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(config_file_hash_ops_fclose,
                                               char, path_hash_func, path_compare,
                                               FILE, safe_fclose);
+#endif // 0
 
 int config_item_table_lookup(
                 const void *table,
