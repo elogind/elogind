@@ -95,6 +95,7 @@ int fd_verify_directory(int fd) {
         assert(fd >= 0);
         return verify_stat_at(fd, NULL, false, stat_verify_directory, true);
 }
+#endif // 0
 
 int is_dir_at(int fd, const char *path, bool follow) {
         return verify_stat_at(fd, path, follow, stat_verify_directory, false);
@@ -105,6 +106,7 @@ int is_dir(const char *path, bool follow) {
         return is_dir_at(AT_FDCWD, path, follow);
 }
 
+#if 0 /// UNNEEDED by elogind
 int stat_verify_symlink(const struct stat *st) {
         assert(st);
 
