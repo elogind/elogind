@@ -37,6 +37,7 @@ typedef struct SleepConfig {
         usec_t suspend_estimation_usec;
 } SleepConfig;
 #else // 0
+#include "logind.h"
 typedef struct Manager SleepConfig;
 #endif // 0
 
@@ -47,6 +48,7 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, sleep_config_free);
 
 int parse_sleep_config(SleepConfig **sleep_config);
 
+#ifdef ELOGIND_MANAGER_DECLARED
 static inline bool SLEEP_NEEDS_MEM_SLEEP(const SleepConfig *sc, SleepOperation operation) {
         assert(sc);
         assert(operation >= 0 && operation < _SLEEP_OPERATION_CONFIG_MAX);
@@ -58,6 +60,7 @@ static inline bool SLEEP_NEEDS_MEM_SLEEP(const SleepConfig *sc, SleepOperation o
         return strv_contains(sc->states[operation], "mem") ||
                strv_contains(sc->modes[operation], "suspend");
 }
+#endif // ELOGIND_MANAGER_DECLARED
 
 typedef enum SleepSupport {
         SLEEP_SUPPORTED,

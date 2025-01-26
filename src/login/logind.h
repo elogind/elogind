@@ -254,3 +254,9 @@ int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata);
 
 int manager_read_efi_boot_loader_entries(Manager *m);
+
+#if 1 /// elogind has a circular dependency in sleep-config.h, so declare we are set here
+#ifndef ELOGIND_MANAGER_DECLARED
+#define ELOGIND_MANAGER_DECLARED 1
+#endif
+#endif // 1
