@@ -31,7 +31,6 @@ static inline int open_tmpfile_linkable(const char *target, int flags, char **re
 }
 #if 0 /// UNNEEDED by elogind
 int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE **ret_file);
-#endif // 0
 
 typedef enum LinkTmpfileFlags {
         LINK_TMPFILE_REPLACE = 1 << 0,
@@ -43,6 +42,7 @@ static inline int link_tmpfile(int fd, const char *path, const char *target, Lin
         return link_tmpfile_at(fd, AT_FDCWD, path, target, flags);
 }
 int flink_tmpfile(FILE *f, const char *path, const char *target, LinkTmpfileFlags flags);
+#endif // 0
 
 int mkdtemp_malloc(const char *template, char **ret);
 int mkdtemp_open(const char *template, int flags, char **ret);

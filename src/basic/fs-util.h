@@ -173,4 +173,6 @@ static inline int xopenat_lock(int dir_fd, const char *path, int open_flags, Loc
 
 int link_fd(int fd, int newdirfd, const char *newpath);
 
+#if 0 /// UNNEEDED by elogind
 int linkat_replace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath);
+#endif // 0

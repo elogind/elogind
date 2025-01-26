@@ -1278,6 +1278,7 @@ int link_fd(int fd, int newdirfd, const char *newpath) {
         return RET_NERRNO(linkat(fd, "", newdirfd, newpath, AT_EMPTY_PATH));
 }
 
+#if 0 /// UNNEEDED by elogind
 int linkat_replace(int olddirfd, const char *oldpath, int newdirfd, const char *newpath) {
         _cleanup_close_ int old_fd = -EBADF;
         int r;
@@ -1353,3 +1354,4 @@ int linkat_replace(int olddirfd, const char *oldpath, int newdirfd, const char *
 
         return 0;
 }
+#endif // 0

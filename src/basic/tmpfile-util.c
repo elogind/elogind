@@ -332,7 +332,6 @@ int fopen_tmpfile_linkable(const char *target, int flags, char **ret_path, FILE 
         *ret_file = TAKE_PTR(f);
         return 0;
 }
-#endif // 0
 
 int link_tmpfile_at(int fd, int dir_fd, const char *path, const char *target, LinkTmpfileFlags flags) {
         int r;
@@ -371,7 +370,6 @@ int link_tmpfile_at(int fd, int dir_fd, const char *path, const char *target, Li
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int flink_tmpfile(FILE *f, const char *path, const char *target, LinkTmpfileFlags flags) {
         int fd, r;
 

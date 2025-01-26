@@ -762,6 +762,7 @@ TEST(xopenat_lock_full) {
         assert_se(xopenat_lock_full(tfd, "def", O_DIRECTORY, 0, 0755, LOCK_POSIX, LOCK_EX) == -EBADF);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(linkat_replace) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
         _cleanup_close_ int tfd = -EBADF;
@@ -791,6 +792,7 @@ TEST(linkat_replace) {
         assert_se(inode_same_at(fd2, NULL, fd2_check, NULL, AT_EMPTY_PATH) == 0);
         assert_se(inode_same_at(fd1, NULL, fd2_check, NULL, AT_EMPTY_PATH) > 0);
 }
+#endif // 0
 
 static int intro(void) {
         arg_test_dir = saved_argv[1];

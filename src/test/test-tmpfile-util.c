@@ -281,11 +281,12 @@ TEST(link_tmpfile) {
         assert_se(fd >= 0);
         assert_se(write(fd, "foobar\n", 7) == 7);
 
+#if 0 /// link_tmpfile*() are not used by elogind
         assert_se(touch(d) >= 0);
         assert_se(link_tmpfile(fd, tmp, d, /* flags= */ 0) == -EEXIST);
         assert_se(unlink(d) >= 0);
         assert_se(link_tmpfile(fd, tmp, d, /* flags= */ 0) >= 0);
-
+#endif // 0
         assert_se(read_one_line_file(d, &line) >= 0);
         ASSERT_STREQ(line, "foobar");
 
