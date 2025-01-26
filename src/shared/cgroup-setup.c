@@ -18,7 +18,7 @@
 #include "stdio-util.h"
 #include "string-util.h"
 #include "user-util.h"
-//#include "virt.h"
+#include "virt.h"
 
 static int cg_any_controller_used_for_v1(void) {
         _cleanup_free_ char *buf = NULL;
@@ -93,8 +93,8 @@ bool cg_is_unified_wanted(void) {
                 return (wanted = r >= CGROUP_UNIFIED_ALL);
 
         /* If we were explicitly passed systemd.unified_cgroup_hierarchy, respect that. */
-        r = proc_cmdline_get_bool("elogind.unified_cgroup_hierarchy", /* flags = */ 0, &b);
         bool b;
+        r = proc_cmdline_get_bool("elogind.unified_cgroup_hierarchy", /* flags = */ 0, &b);
         if (r > 0)
                 return (wanted = b);
 
@@ -138,11 +138,11 @@ bool cg_is_hybrid_wanted(void) {
                 return (wanted = false);
 
         /* Otherwise, let's see what the kernel command line has to say.  Since checking is expensive, cache
-        r = proc_cmdline_get_bool("elogind.legacy_elogind_cgroup_controller", /* flags = */ 0, &b);
          * a non-error result.
          * The meaning of the kernel option is reversed wrt. to the return value of this function, hence the
          * negation. */
         bool b;
+        r = proc_cmdline_get_bool("elogind.legacy_elogind_cgroup_controller", /* flags = */ 0, &b);
         if (r > 0)
                 return (wanted = !b);
 
