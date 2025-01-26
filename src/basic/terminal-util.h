@@ -93,9 +93,11 @@
 /* Push/pop a window title off the stack of window titles */
 #define ANSI_WINDOW_TITLE_PUSH "\x1b[22;2t"
 #define ANSI_WINDOW_TITLE_POP "\x1b[23;2t"
+#endif // 0
 
 bool isatty_safe(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int reset_terminal_fd(int fd, bool switch_to_text);
 int reset_terminal(const char *name);
 int set_terminal_cursor_position(int fd, unsigned int row, unsigned int column);
