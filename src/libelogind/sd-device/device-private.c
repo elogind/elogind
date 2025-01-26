@@ -18,8 +18,8 @@
 //#include "mkdir.h"
 #include "nulstr-util.h"
 #include "parse-util.h"
-//#include "path-util.h"
-// #include "set.h"
+#include "path-util.h"
+//#include "set.h"
 #include "stdio-util.h"
 #include "string-table.h"
 #include "string-util.h"
@@ -799,6 +799,7 @@ void device_set_db_persist(sd_device *device) {
 
         device->db_persist = true;
 }
+#endif // 0
 
 static int device_get_db_path(sd_device *device, char **ret) {
         const char *id;
@@ -820,6 +821,7 @@ static int device_get_db_path(sd_device *device, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int device_has_db(sd_device *device) {
         _cleanup_free_ char *path = NULL;
         int r;
