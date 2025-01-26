@@ -152,6 +152,7 @@ basic_sources = files(
         'inotify-util.c',
         'io-util.c',
         'iovec-util.c',
+        'keyring-util.c',
         'label.c',
         'limits-util.c',
         'locale-util.c',
