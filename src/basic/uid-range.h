@@ -18,8 +18,8 @@ typedef struct UIDRange {
 UIDRange *uid_range_free(UIDRange *range);
 DEFINE_TRIVIAL_CLEANUP_FUNC(UIDRange*, uid_range_free);
 
-#if 0 /// UNNEEDED by elogind
 int uid_range_add_internal(UIDRange **range, uid_t start, uid_t nr, bool coalesce);
+#if 0 /// UNNEEDED by elogind
 static inline int uid_range_add(UIDRange **range, uid_t start, uid_t nr) {
         return uid_range_add_internal(range, start, nr, true);
 }
