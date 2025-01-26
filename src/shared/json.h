@@ -541,7 +541,6 @@ int json_log_internal(JsonVariant *variant, int level, int error, const char *fi
 #if 0 /// UNNEEDED by elogind
 int json_variant_unbase64(JsonVariant *v, void **ret, size_t *ret_size);
 int json_variant_unhex(JsonVariant *v, void **ret, size_t *ret_size);
-#endif // 0
 
 static inline int json_variant_unbase64_iovec(JsonVariant *v, struct iovec *ret) {
         return json_variant_unbase64(v, ret ? &ret->iov_base : NULL, ret ? &ret->iov_len : NULL);
@@ -550,6 +549,7 @@ static inline int json_variant_unbase64_iovec(JsonVariant *v, struct iovec *ret)
 static inline int json_variant_unhex_iovec(JsonVariant *v, struct iovec *ret) {
         return json_variant_unhex(v, ret ? &ret->iov_base : NULL, ret ? &ret->iov_len : NULL);
 }
+#endif // 0
 
 const char *json_variant_type_to_string(JsonVariantType t);
 JsonVariantType json_variant_type_from_string(const char *s);
