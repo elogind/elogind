@@ -5089,7 +5089,6 @@ int json_dispatch_unbase64_iovec(const char *name, JsonVariant *variant, JsonDis
         iov->iov_len = sz;
         return 0;
 }
-#endif // 0
 
 int json_dispatch_byte_array_iovec(const char *name, JsonVariant *variant, JsonDispatchFlags flags, void *userdata) {
         _cleanup_free_ uint8_t *buffer = NULL;
@@ -5147,6 +5146,7 @@ int json_dispatch_in_addr(const char *name, JsonVariant *variant, JsonDispatchFl
         memcpy(address, iov.iov_base, iov.iov_len);
         return 0;
 }
+#endif // 0
 
 static int json_cmp_strings(const void *x, const void *y) {
         JsonVariant *const *a = x, *const *b = y;
