@@ -17,13 +17,13 @@ static int help(const char *program_path, const char *service, const char *descr
         if (r < 0)
                 return log_oom();
 
-#if 1 /// elogind allows to be daemonized
-               "  -D --daemon               Daemonize as a background service\n"
-#endif // 1
         printf("%1$s [OPTIONS...]\n"
                "\n%5$s%7$s%6$s\n"
                "\nThis program takes no positional arguments.\n"
                "\n%3$sOptions:%4$s\n"
+#if 1 /// elogind allows to be daemonized
+               "  -D --daemon               Daemonize as a background service\n"
+#endif // 1
                "  -h --help                 Show this help\n"
                "     --version              Show package version\n"
                "%8$s"
