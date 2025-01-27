@@ -31,12 +31,12 @@ int conf_files_list_with_replacement(
                 const char *replacement,
                 char ***files,
                 char **replace_file);
+#endif // 0
 int conf_files_list_dropins(
                 char ***ret,
                 const char *dropin_dirname,
                 const char *root,
                 const char * const *dirs);
-#endif // 0
 
 typedef int parse_line_t(
                 const char *fname,
