@@ -974,7 +974,6 @@ int getpeergroups(int fd, gid_t **ret) {
         return (int) n;
 }
 
-#if 0 /// UNNEEDED by elogind
 int getpeerpidfd(int fd) {
         socklen_t n = sizeof(int);
         int pidfd = -EBADF;
@@ -990,6 +989,7 @@ int getpeerpidfd(int fd) {
         return pidfd;
 }
 
+#if 0 /// UNNEEDED by elogind
 ssize_t send_many_fds_iov_sa(
                 int transport_fd,
                 int *fds_array, size_t n_fds_array,

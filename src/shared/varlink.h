@@ -6,7 +6,7 @@
 #include "json.h"
 #include "pidref.h"
 //#include "time-util.h"
-//#include "varlink-idl.h"
+#include "varlink-idl.h"
 
 /* A minimal Varlink implementation. We only implement the minimal, obvious bits here though. No validation,
  * no introspection, no name service, just the stuff actually needed.
@@ -136,10 +136,12 @@ int varlink_observeb(Varlink *v, const char *method, ...);
 /* Enqueue a final reply */
 int varlink_reply(Varlink *v, JsonVariant *parameters);
 int varlink_replyb(Varlink *v, ...);
+#endif // 0
 
 /* Enqueue a (final) error */
 int varlink_error(Varlink *v, const char *error_id, JsonVariant *parameters);
 int varlink_errorb(Varlink *v, const char *error_id, ...);
+#if 0 /// UNNEEDED by elogind
 int varlink_error_invalid_parameter(Varlink *v, JsonVariant *parameters);
 int varlink_error_invalid_parameter_name(Varlink *v, const char *name);
 #endif // 0
@@ -164,8 +166,10 @@ int varlink_dispatch(Varlink *v, JsonVariant *parameters, const JsonDispatch tab
 /* Write outgoing fds into the socket (to be associated with the next enqueued message) */
 int varlink_push_fd(Varlink *v, int fd);
 int varlink_push_dup_fd(Varlink *v, int fd);
+#endif // 0
 int varlink_reset_fds(Varlink *v);
 
+#if 0 /// UNNEEDED by elogind
 /* Read incoming fds from the socket (associated with the currently handled message) */
 int varlink_peek_fd(Varlink *v, size_t i);
 int varlink_peek_dup_fd(Varlink *v, size_t i);
@@ -179,13 +183,11 @@ int varlink_bind_reply(Varlink *v, VarlinkReply reply);
 
 void* varlink_set_userdata(Varlink *v, void *userdata);
 void* varlink_get_userdata(Varlink *v);
-#endif // 0
 
 int varlink_get_peer_uid(Varlink *v, uid_t *ret);
-#if 0 /// UNNEEDED by elogind
 int varlink_get_peer_gid(Varlink *v, gid_t *ret);
-int varlink_get_peer_pid(Varlink *v, pid_t *ret);
 #endif // 0
+int varlink_get_peer_pid(Varlink *v, pid_t *ret);
 int varlink_get_peer_pidref(Varlink *v, PidRef *ret);
 
 #if 0 /// UNNEEDED by elogind
@@ -265,10 +267,12 @@ DEFINE_TRIVIAL_CLEANUP_FUNC(VarlinkServer *, varlink_server_unref);
 #define VARLINK_ERROR_DISCONNECTED "io.systemd.Disconnected"
 #define VARLINK_ERROR_TIMEOUT "io.systemd.TimedOut"
 #define VARLINK_ERROR_PROTOCOL "io.systemd.Protocol"
+#endif // 0
 
 /* This one we invented, and use for generically propagating system errors (errno) to clients */
 #define VARLINK_ERROR_SYSTEM "io.systemd.System"
 
+#if 0 /// UNNEEDED by elogind
 /* This one we invented and is a weaker version of "org.varlink.service.PermissionDenied", and indicates that if user would allow interactive auth, we might allow access */
 #define VARLINK_ERROR_INTERACTIVE_AUTHENTICATION_REQUIRED "io.systemd.InteractiveAuthenticationRequired"
 

@@ -291,11 +291,13 @@ DEFINE_PRIVATE_STRING_TABLE_LOOKUP_TO_STRING(varlink_state, VarlinkState);
 #if 0 /// UNNEEDED by elogind
 static int varlink_format_queue(Varlink *v);
 static void varlink_server_test_exit_on_idle(VarlinkServer *s);
+#endif // 0
 
 static const char *varlink_description(Varlink *v) {
         return (v ? v->description : NULL) ?: "varlink";
 }
 
+#if 0 /// UNNEEDED by elogind
 static const char *varlink_server_description(VarlinkServer *s) {
         return (s ? s->description : NULL) ?: "varlink";
 }
@@ -309,6 +311,7 @@ static VarlinkJsonQueueItem *varlink_json_queue_item_free(VarlinkJsonQueueItem *
 
         return mfree(q);
 }
+#endif // 0
 
 static VarlinkJsonQueueItem *varlink_json_queue_item_new(JsonVariant *m, const int fds[], size_t n_fds) {
         VarlinkJsonQueueItem *q;
@@ -346,6 +349,7 @@ static void varlink_set_state(Varlink *v, VarlinkState state) {
         v->state = state;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int varlink_new(Varlink **ret) {
         Varlink *v;
 
@@ -686,6 +690,7 @@ static void varlink_detach_event_sources(Varlink *v) {
         v->quit_event_source = sd_event_source_disable_unref(v->quit_event_source);
         v->defer_event_source = sd_event_source_disable_unref(v->defer_event_source);
 }
+#endif // 0
 
 static void varlink_clear_current(Varlink *v) {
         assert(v);
@@ -701,6 +706,7 @@ static void varlink_clear_current(Varlink *v) {
         v->n_input_fds = 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static void varlink_clear(Varlink *v) {
         assert(v);
 
@@ -1150,6 +1156,7 @@ static int varlink_dispatch_disconnect(Varlink *v) {
 
         return 1;
 }
+#endif // 0
 
 static int varlink_sanitize_parameters(JsonVariant **v) {
         int r;
@@ -1176,6 +1183,7 @@ static int varlink_sanitize_parameters(JsonVariant **v) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int varlink_dispatch_reply(Varlink *v) {
         _cleanup_(json_variant_unrefp) JsonVariant *parameters = NULL;
         VarlinkReplyFlags flags = 0;
@@ -1881,6 +1889,7 @@ Varlink* varlink_flush_close_unref(Varlink *v) {
         (void) varlink_flush(v);
         return varlink_close_unref(v);
 }
+#endif // 0
 
 static int varlink_format_json(Varlink *v, JsonVariant *m) {
         _cleanup_(erase_and_freep) char *text = NULL;
@@ -1968,6 +1977,7 @@ static int varlink_enqueue_json(Varlink *v, JsonVariant *m) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int varlink_format_queue(Varlink *v) {
         int r;
 
@@ -2542,6 +2552,7 @@ int varlink_replyb(Varlink *v, ...) {
 
         return varlink_reply(v, parameters);
 }
+#endif // 0
 
 int varlink_error(Varlink *v, const char *error_id, JsonVariant *parameters) {
         _cleanup_(json_variant_unrefp) JsonVariant *m = NULL;
@@ -2618,6 +2629,7 @@ int varlink_errorb(Varlink *v, const char *error_id, ...) {
         return varlink_error(v, error_id, parameters);
 }
 
+#if 0 /// UNNEEDED by elogind
 int varlink_error_invalid_parameter(Varlink *v, JsonVariant *parameters) {
         int r;
 
@@ -2784,6 +2796,7 @@ void* varlink_get_userdata(Varlink *v) {
 
         return v->userdata;
 }
+#endif // 0
 
 static int varlink_acquire_ucred(Varlink *v) {
         int r;
@@ -2800,8 +2813,8 @@ static int varlink_acquire_ucred(Varlink *v) {
         v->ucred_acquired = true;
         return 0;
 }
-#endif // 0
 
+#if 0 /// UNNEEDED by elogind
 int varlink_get_peer_uid(Varlink *v, uid_t *ret) {
         int r;
 
@@ -2819,7 +2832,6 @@ int varlink_get_peer_uid(Varlink *v, uid_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int varlink_get_peer_gid(Varlink *v, gid_t *ret) {
         int r;
 
@@ -2836,6 +2848,7 @@ int varlink_get_peer_gid(Varlink *v, gid_t *ret) {
         *ret = v->ucred.gid;
         return 0;
 }
+#endif // 0
 
 int varlink_get_peer_pid(Varlink *v, pid_t *ret) {
         int r;
@@ -2866,7 +2879,6 @@ static int varlink_acquire_pidfd(Varlink *v) {
 
         return 0;
 }
-#endif // 0
 
 int varlink_get_peer_pidref(Varlink *v, PidRef *ret) {
         int r;
@@ -3122,6 +3134,7 @@ int varlink_push_dup_fd(Varlink *v, int fd) {
         TAKE_FD(dp);
         return r;
 }
+#endif // 0
 
 int varlink_reset_fds(Varlink *v) {
         assert_return(v, -EINVAL);
@@ -3135,6 +3148,7 @@ int varlink_reset_fds(Varlink *v) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int varlink_peek_fd(Varlink *v, size_t i) {
         assert_return(v, -EINVAL);
 

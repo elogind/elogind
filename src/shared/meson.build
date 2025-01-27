@@ -266,6 +266,7 @@ shared_sources = files(
         'user-record.c',
         'userdb.c',
         'varlink.c',
+        'varlink-idl.c',
         'verbs.c',
         'wall.c',
         'xml.c',
