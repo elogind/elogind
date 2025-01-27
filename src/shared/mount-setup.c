@@ -495,6 +495,7 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 static const MountPoint cgroupv1_mount_table[] = {
         { "tmpfs",       "/sys/fs/cgroup",            "tmpfs",      "mode=0755" TMPFS_LIMITS_SYS_FS_CGROUP,     MS_NOSUID|MS_NOEXEC|MS_NODEV|MS_STRICTATIME,
           cg_is_legacy_wanted, MNT_FATAL|MNT_IN_CONTAINER },
@@ -618,3 +619,4 @@ int mount_cgroup_legacy_controllers(bool loaded_policy) {
 
         return 1;
 }
+#endif // 0
