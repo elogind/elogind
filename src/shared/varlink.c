@@ -301,6 +301,7 @@ static const char *varlink_description(Varlink *v) {
 static const char *varlink_server_description(VarlinkServer *s) {
         return (s ? s->description : NULL) ?: "varlink";
 }
+#endif // 0
 
 static VarlinkJsonQueueItem *varlink_json_queue_item_free(VarlinkJsonQueueItem *q) {
         if (!q)
@@ -311,7 +312,6 @@ static VarlinkJsonQueueItem *varlink_json_queue_item_free(VarlinkJsonQueueItem *
 
         return mfree(q);
 }
-#endif // 0
 
 static VarlinkJsonQueueItem *varlink_json_queue_item_new(JsonVariant *m, const int fds[], size_t n_fds) {
         VarlinkJsonQueueItem *q;
@@ -681,6 +681,7 @@ int varlink_connect_fd(Varlink **ret, int fd) {
         *ret = v;
         return 0;
 }
+#endif // 0
 
 static void varlink_detach_event_sources(Varlink *v) {
         assert(v);
@@ -690,7 +691,6 @@ static void varlink_detach_event_sources(Varlink *v) {
         v->quit_event_source = sd_event_source_disable_unref(v->quit_event_source);
         v->defer_event_source = sd_event_source_disable_unref(v->defer_event_source);
 }
-#endif // 0
 
 static void varlink_clear_current(Varlink *v) {
         assert(v);
@@ -706,7 +706,6 @@ static void varlink_clear_current(Varlink *v) {
         v->n_input_fds = 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static void varlink_clear(Varlink *v) {
         assert(v);
 
@@ -759,6 +758,7 @@ static Varlink* varlink_destroy(Varlink *v) {
 
 DEFINE_TRIVIAL_REF_UNREF_FUNC(Varlink, varlink, varlink_destroy);
 
+#if 0 /// UNNEEDED by elogind
 static int varlink_test_disconnect(Varlink *v) {
         assert(v);
 
