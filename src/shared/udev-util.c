@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "alloc-util.h"
-#include "device-nodes.h"
+//#include "device-nodes.h"
 #include "device-private.h"
 #include "device-util.h"
 #include "env-file.h"
@@ -246,6 +246,10 @@ int device_is_processed(sd_device *dev) {
         assert(dev);
 
         /* sd_device_get_is_initialized() only checks if the udev database file exists. However, even if the
+         * database file exist, systemd-udevd may be still processing the device, e.g. when the udev rules
+         * for the device have RUN tokens. See issue #30056. Hence, to check if the device is really
+         * processed by systemd-udevd, we also need to read ID_PROCESSING property. */
+
         r = sd_device_get_is_initialized(dev);
         if (r <= 0)
                 return r;
