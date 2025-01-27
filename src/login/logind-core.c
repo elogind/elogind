@@ -93,23 +93,12 @@ void manager_reset_config(Manager *m) {
 int manager_parse_config_file(Manager *m) {
         assert(m);
 
-#if 0 /// elogind parses its own config file
         return config_parse_standard_file_with_dropins(
                         "elogind/logind.conf",
                         "Login\0",
                         config_item_perf_lookup, logind_gperf_lookup,
                         CONFIG_PARSE_WARN,
                         /* userdata= */ m);
-#else // 0
-        const char* logind_conf = getenv("ELOGIND_CONF_FILE");
-
-        if (!logind_conf)
-                logind_conf = "logind.conf";
-
-        return config_parse_config_file(logind_conf, "Login\0",
-                                        config_item_perf_lookup, logind_gperf_lookup,
-                                        CONFIG_PARSE_WARN, m);
-#endif // 0
 }
 
 int manager_add_device(Manager *m, const char *sysfs, bool master, Device **ret_device) {
