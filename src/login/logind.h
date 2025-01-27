@@ -116,7 +116,8 @@ struct Manager {
         /* Suspension and hibernation can be disabled in sleep.conf. */
         bool allow[_SLEEP_OPERATION_MAX];
         char **modes[_SLEEP_OPERATION_MAX];
-        char **states[_SLEEP_OPERATION_MAX];
+        char **states[_SLEEP_OPERATION_MAX];    /* Power mode after writing hibernation image (/sys/power/disk) */
+        char **mem_modes;                       /* /sys/power/mem_sleep */
         usec_t hibernate_delay_usec;
         usec_t suspend_estimation_usec;
 
