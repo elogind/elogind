@@ -225,6 +225,7 @@ shared_sources = files(
         'capsule-util.c',
         'cgroup-setup.c',
         'clean-ipc.c',
+        'color-util.c',
         'common-signal.c',
         'conf-parser.c',
         'copy.c',

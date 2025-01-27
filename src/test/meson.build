@@ -72,7 +72,9 @@ simple_tests += files(
         'test-chase.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-clock.c',
-#         'test-color-util.c',
+#endif // 0
+        'test-color-util.c',
+#if 0 /// UNNEEDED by elogind
 #         'test-compare-operator.c',
 #         'test-condition.c',
 #endif // 0
