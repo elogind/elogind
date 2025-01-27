@@ -771,6 +771,7 @@ char* startswith_strv(const char *s, char * const *l) {
 
         return NULL;
 }
+#endif // 0
 
 char* endswith_strv(const char *s, char * const *l) {
         STRV_FOREACH(i, l) {
@@ -782,6 +783,7 @@ char* endswith_strv(const char *s, char * const *l) {
         return NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 char** strv_reverse(char **l) {
         size_t n;
 
