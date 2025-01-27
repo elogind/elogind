@@ -86,8 +86,8 @@ static const Color colors[] = {
         { "highlight", ansi_highlight },
 #if 0 /// UNNEEDED by elogind
         { "black", ansi_black },
-        { "red", ansi_red },
 #endif // 0
+        { "red", ansi_red },
         { "green", ansi_green },
 #if 0 /// UNNEEDED by elogind
         { "yellow", ansi_yellow },

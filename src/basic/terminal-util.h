@@ -251,8 +251,8 @@ DEFINE_ANSI_FUNC(normal,            NORMAL);
 DEFINE_ANSI_FUNC(highlight,         HIGHLIGHT);
 #if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(black,             BLACK);
-DEFINE_ANSI_FUNC(red,               RED);
 #endif // 0
+DEFINE_ANSI_FUNC(red,               RED);
 DEFINE_ANSI_FUNC(green,             GREEN);
 #if 0 /// UNNEEDED by elogind
 DEFINE_ANSI_FUNC(yellow,            YELLOW);
