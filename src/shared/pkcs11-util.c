@@ -2,19 +2,17 @@
 
 #include <fcntl.h>
 
-#if 0 /// UNNEEDED by elogind
-#include "ask-password-api.h"
-#include "dlfcn-util.h"
-#include "env-util.h"
-#include "escape.h"
-#include "fd-util.h"
-#include "format-table.h"
-#include "io-util.h"
-#include "memory-util.h"
+//#include "ask-password-api.h"
+//#include "dlfcn-util.h"
+//#include "env-util.h"
+//#include "escape.h"
+//#include "fd-util.h"
+//#include "format-table.h"
+//#include "io-util.h"
+//#include "memory-util.h"
 #if HAVE_OPENSSL
 #include "openssl-util.h"
 #endif
-#endif // 0
 #include "pkcs11-util.h"
 #include "random-util.h"
 #include "string-util.h"

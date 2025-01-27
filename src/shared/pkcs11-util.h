@@ -14,8 +14,8 @@
 #endif
 #endif // 0
 
-#include "ask-password-api.h"
-#include "dlfcn-util.h"
+//#include "ask-password-api.h"
+//#include "dlfcn-util.h"
 #include "macro.h"
 #include "time-util.h"
 
