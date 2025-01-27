@@ -94,7 +94,6 @@ int config_parse(
                 struct stat *ret_stat);     /* possibly NULL */
 
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_many(
                 const char* const* conf_files,  /* possibly empty */
                 const char* const* conf_file_dirs,
@@ -138,6 +137,7 @@ static inline int config_parse_standard_file_with_dropins(
                         /* ret_dropin_files= */ NULL);
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_get_stats_by_path(
                 const char *suffix,
                 const char *root,

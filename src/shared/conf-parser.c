@@ -44,11 +44,9 @@
 #include "time-util.h"
 #include "utf8.h"
 
-#if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(config_file_hash_ops_fclose,
                                               char, path_hash_func, path_compare,
                                               FILE, safe_fclose);
-#endif // 0
 
 int config_item_table_lookup(
                 const void *table,
@@ -486,7 +484,6 @@ int hashmap_put_stats_by_path(Hashmap **stats_by_path, const char *path, const s
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int config_parse_many_files(
                 const char *root,
                 const char* const* conf_files,
@@ -681,6 +678,7 @@ int config_parse_standard_file_with_dropins_full(
                         ret_dropin_files);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int dropins_get_stats_by_path(
                 const char* conf_file,
                 const char* const* conf_file_dirs,
