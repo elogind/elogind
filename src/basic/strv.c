@@ -246,7 +246,6 @@ rollback:
         return -ENOMEM;
 }
 
-#if 0 /// UNNEEDED by elogind
 int strv_extend_strv_biconcat(char ***a, const char *prefix, const char* const *b, const char *suffix) {
         int r;
 
@@ -264,7 +263,6 @@ int strv_extend_strv_biconcat(char ***a, const char *prefix, const char* const *
 
         return 0;
 }
-#endif // 0
 
 int strv_split_newlines_full(char ***ret, const char *s, ExtractFlags flags) {
         _cleanup_strv_free_ char **l = NULL;

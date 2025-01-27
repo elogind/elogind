@@ -536,7 +536,6 @@ TEST(strv_sort) {
         ASSERT_STREQ(input_table[4], "durian");
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(strv_extend_strv_biconcat) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL;
 
@@ -568,7 +567,6 @@ TEST(strv_extend_strv_concat) {
         ASSERT_STREQ(a[2], "with_suffix");
         ASSERT_STREQ(a[3], "suffix_suffix");
 }
-#endif // 0
 
 TEST(strv_extend_strv) {
         _cleanup_strv_free_ char **a = NULL, **b = NULL, **n = NULL;
