@@ -77,9 +77,11 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support runtime dir units.
         r = unit_name_build("user-runtime-dir", lu, ".service", &u->runtime_dir_unit);
         if (r < 0)
                 return r;
+#endif // 0
 
         r = unit_name_build("user", lu, ".service", &u->service_manager_unit);
         if (r < 0)
@@ -93,9 +95,11 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support runtime dir units.
         r = hashmap_put(m->user_units, u->runtime_dir_unit, u);
         if (r < 0)
                 return r;
+#endif // 0
 
         r = hashmap_put(m->user_units, u->service_manager_unit, u);
         if (r < 0)
@@ -124,11 +128,13 @@ User *user_free(User *u) {
                 free(u->service_manager_unit);
         }
 
+#if 0 /// elogind does not support runtime dir and service jobs.
         if (u->runtime_dir_unit) {
                 (void) hashmap_remove_value(u->manager->user_units, u->runtime_dir_unit, u);
                 free(u->runtime_dir_job);
                 free(u->runtime_dir_unit);
         }
+#endif // 0
 
         if (u->slice) {
                 (void) hashmap_remove_value(u->manager->user_units, u->slice, u);
@@ -325,10 +331,10 @@ int user_load(User *u) {
         assert(u);
 
         r = parse_env_file(NULL, u->state_file,
-#if 0 /// elogind does not support service jobs.
-#endif // 0
+#if 0 /// elogind does not support runtime dir and service jobs.
                            "RUNTIME_DIR_JOB",        &u->runtime_dir_job,
                            "SERVICE_JOB",            &u->service_manager_job,
+#endif // 0
                            "STOPPING",               &stopping,
                            "REALTIME",               &realtime,
                            "MONOTONIC",              &monotonic,
@@ -345,8 +351,10 @@ int user_load(User *u) {
                         log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
                 else {
                         u->stopping = r;
+#if 0 /// elogind does not support runtime dir and service jobs.
                         if (u->stopping && !u->runtime_dir_job)
                                 log_debug("User '%s' is stopping, but no job is being tracked.", u->user_record->user_name);
+#endif // 0
                 }
         }
 
@@ -837,7 +845,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
 #endif // 0
                 return false;
 
-#if 0 /// elogind neither supports service nor slice jobs
+#if 0 /// elogind does not support runtime dir and service jobs.
         /* Check if our job is still pending */
         const char *j;
         FOREACH_ARGUMENT(j, u->runtime_dir_job, u->service_manager_job) {
@@ -880,7 +888,7 @@ UserState user_get_state(User *u) {
         if (u->stopping)
                 return USER_CLOSING;
 
-#if 0 /// elogind neither supports service nor slice jobs.
+#if 0 /// elogind does not support runtime dir and service jobs.
         if (!u->started || u->runtime_dir_job)
 #else // 0
         if (!u->started)
