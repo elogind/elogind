@@ -44,10 +44,6 @@ typedef struct SleepConfig {
         /* Allow elogind to put Nvidia cards to sleep */
         bool handle_nvidia_sleep;
 
-        /* To allow elogind to put nvidia cards to sleep on suspend/hibernate, we store the users uid to get
-         * the right VT information */
-        uid_t scheduled_sleep_uid;
-
         /* Allow users to set programs which do the suspend/hibernation */
         char **suspend_by_using;
         char **hibernate_by_using;

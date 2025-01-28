@@ -180,6 +180,10 @@ struct Manager {
 
         char *efi_loader_entry_one_shot;
         struct stat efi_loader_entry_one_shot_stat;
+
+#if 1 /// To put nvidia cards to sleep, elogind mus store the users uid to get the right VT information
+        uid_t scheduled_sleep_uid;
+#endif // 1
 };
 
 void manager_reset_config(Manager *m);
