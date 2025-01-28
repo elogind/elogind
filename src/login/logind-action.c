@@ -186,9 +186,13 @@ HandleAction handle_action_sleep_select(Manager *m) {
                 if (sleep_supported(a->sleep_operation) <= 0)
                         continue;
 
+#if 0 /// elogind does not need to load units. If the action is valid, we can do it.
                 (void) unit_load_state(m->bus, a->target, &load_state);
                 if (streq_ptr(load_state, "loaded"))
                         return *i;
+#else // 0
+                return *i;
+#endif // 0
         }
 
         return _HANDLE_ACTION_INVALID;
