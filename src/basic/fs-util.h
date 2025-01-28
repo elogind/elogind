@@ -96,7 +96,6 @@ int var_tmp_dir(const char **ret);
 
 int unlink_or_warn(const char *filename);
 
-#if 0 /// UNNEEDED by elogind
 /* Useful for usage with _cleanup_(), removes a directory and frees the pointer */
 static inline char *rmdir_and_free(char *p) {
         PROTECT_ERRNO;
@@ -108,7 +107,6 @@ static inline char *rmdir_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, rmdir_and_free);
-#endif // 0
 
 static inline char* unlink_and_free(char *p) {
         if (!p)

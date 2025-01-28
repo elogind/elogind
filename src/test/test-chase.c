@@ -470,9 +470,7 @@ TEST(chaseat) {
         _cleanup_free_ char *result = NULL;
         _cleanup_closedir_ DIR *dir = NULL;
         _cleanup_fclose_ FILE *f = NULL;
-#if 0 /// UNNEEDED by elogind
         struct stat st;
-#endif // 0
         const char *p;
 
         ASSERT_OK((tfd = mkdtemp_open(NULL, 0, &t)));

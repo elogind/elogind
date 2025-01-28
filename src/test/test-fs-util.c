@@ -142,7 +142,6 @@ TEST(dot_or_dot_dot) {
         assert_se(!dot_or_dot_dot("..foo"));
 }
 
-#if 0 /// Uses functions that elogind does not need
 TEST(access_fd) {
         _cleanup_(rmdir_and_freep) char *p = NULL;
         _cleanup_close_ int fd = -EBADF;
@@ -269,6 +268,7 @@ TEST(touch_file) {
         assert_se(timespec_load(&st.st_mtim) == test_mtime);
 }
 
+#if 0 /// Uses functions that elogind does not need
 TEST(unlinkat_deallocate) {
         _cleanup_free_ char *p = NULL;
         _cleanup_close_ int fd = -EBADF;
