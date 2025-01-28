@@ -761,7 +761,6 @@ int strv_extendf(char ***l, const char *format, ...) {
         return strv_consume(l, x);
 }
 
-#if 0 /// UNNEEDED by elogind
 char* startswith_strv(const char *s, char * const *l) {
         STRV_FOREACH(i, l) {
                 char *found = startswith(s, *i);
@@ -771,7 +770,6 @@ char* startswith_strv(const char *s, char * const *l) {
 
         return NULL;
 }
-#endif // 0
 
 char* endswith_strv(const char *s, char * const *l) {
         STRV_FOREACH(i, l) {
