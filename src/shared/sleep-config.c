@@ -158,6 +158,19 @@ int parse_sleep_config(SleepConfig **ret) {
                 {}
         };
 
+#if 1 /// Initialize extra values used by elogind with sane defaults
+        /* Init poweroff/suspend interruption */
+        sc->allow_poweroff_interrupts     = false;
+        sc->broadcast_poweroff_interrupts = true;
+        sc->allow_suspend_interrupts      = false;
+        sc->broadcast_suspend_interrupts  = true;
+        sc->callback_failed               = false;
+        sc->callback_must_succeed         = false;
+
+        /* allow manipulating Nvidia cards */
+        sc->handle_nvidia_sleep = false;
+#endif // 1
+
         (void) config_parse_standard_file_with_dropins(
                         "elogind/sleep.conf",
                         "Sleep\0",
