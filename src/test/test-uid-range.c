@@ -14,8 +14,8 @@
 #include "virt.h"
 
 TEST(uid_range) {
-#if 0 /// UNNEEDED by elogind
         _cleanup_(uid_range_freep) UIDRange *p = NULL;
+#if 0 /// UNNEEDED by elogind
         uid_t search;
 #endif // 0
 
@@ -115,10 +115,10 @@ TEST(uid_range) {
         assert_se(uid_range_size(p) == 1983);
         assert_se(p->entries[0].start == 20);
         assert_se(p->entries[0].nr == 1983);
-#endif // 0
 
         assert_se(uid_range_add_str(&q, "2001") >= 0);
         assert_se(uid_range_equal(p, q));
+#endif // 0
 }
 
 TEST(load_userns) {
