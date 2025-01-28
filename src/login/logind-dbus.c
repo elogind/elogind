@@ -1887,7 +1887,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         /* If this was successful and hook scripts were allowed to interrupt, we have
          * to signal everybody that a shutdown is imminent, now. */
         if ( sleep_config->allow_poweroff_interrupts )
-                (void) send_prepare_for(sleep_config, handle_action_lookup(HANDLE_POWEROFF), true );
+                (void) send_prepare_for(m, handle_action_lookup(HANDLE_POWEROFF), true );
         r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, &m->tool_fork_pid );
 
         if ( r < 0 )
