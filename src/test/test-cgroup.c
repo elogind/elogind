@@ -47,10 +47,6 @@ TEST(cg_create) {
         int r;
 
         r = cg_unified_cached(false);
-#if 0 /// If elogind is built in a minimal container, cg_unified_cached() might return -ENOENT.
-#else // 0
-        if (r == -ENOMEDIUM || r == -ENOENT) {
-#endif // 0
         if (IN_SET(r, -ENOMEDIUM, -ENOENT)) {
                 log_tests_skipped("cgroupfs is not mounted");
                 return;
@@ -148,6 +144,7 @@ TEST(cg_create) {
         assert_se(cg_rmdir(SYSTEMD_CGROUP_CONTROLLER, test_a) == 0);
 }
 
+#if 0 /// elogind does not open cgroup IDs anywhere
 TEST(id) {
         _cleanup_free_ char *p = NULL, *p2 = NULL;
         _cleanup_close_ int fd = -EBADF, fd2 = -EBADF;
@@ -171,7 +168,6 @@ TEST(id) {
         assert_se(fd_get_path(fd, &p) >= 0);
         assert_se(path_equal(p, "/sys/fs/cgroup"));
 
-#if 0 /// elogind does not open cgroup IDs anywhere
         assert_se(cg_fd_get_cgroupid(fd, &id) >= 0);
 
         fd2 = cg_cgroupid_open(fd, id);
@@ -190,7 +186,7 @@ TEST(id) {
 
                 assert_se(inode_same_at(fd, NULL, fd2, NULL, AT_EMPTY_PATH) > 0);
         }
-#endif // 0
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
