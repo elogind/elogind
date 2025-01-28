@@ -38,7 +38,7 @@
 #include "signal-util.h"
 #include "strv.h"
 #include "terminal-util.h"
-//#include "udev-util.h"
+#include "udev-util.h"
 /// Additional includes needed by elogind
 #include "elogind.h"
 #include "musl_missing.h"
@@ -73,7 +73,6 @@ static int manager_new(Manager **ret) {
                 .idle_action_not_before_usec = now(CLOCK_MONOTONIC),
                 .scheduled_shutdown_action = _HANDLE_ACTION_INVALID,
 
-#if 0 /// elogind does not support session units
                 .devices = hashmap_new(&device_hash_ops),
                 .seats = hashmap_new(&seat_hash_ops),
                 .sessions = hashmap_new(&session_hash_ops),
@@ -82,9 +81,12 @@ static int manager_new(Manager **ret) {
                 .buttons = hashmap_new(&button_hash_ops),
 
                 .user_units = hashmap_new(&string_hash_ops),
+#if 0 /// elogind does not support session units
                 .session_units = hashmap_new(&string_hash_ops),
+#endif // 0
         };
 
+#if 0 /// elogind does not support session units
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units || !m->session_units)
 #else // 0
         if (!m->devices || !m->seats || !m->sessions || !m->users || !m->inhibitors || !m->buttons || !m->user_units)
