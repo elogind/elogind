@@ -2185,8 +2185,12 @@ int bus_manager_shutdown_or_sleep_now_or_later(
         /* Tell everybody to prepare for shutdown/sleep */
         (void) send_prepare_for(m, a, true);
 #else // 0
-        if ( ( (INHIBIT_SHUTDOWN == a->inhibit_what) && !m->allow_poweroff_interrupts) ||
-             ( (INHIBIT_SLEEP    == a->inhibit_what) && !m->allow_suspend_interrupts ) ) {
+        _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
+        r = parse_sleep_config(&sleep_config);
+        if (r < 0)
+                return r;
+        if ( ( (INHIBIT_SHUTDOWN == a->inhibit_what) && !sleep_config->allow_poweroff_interrupts) ||
+             ( (INHIBIT_SLEEP    == a->inhibit_what) && !sleep_config->allow_suspend_interrupts ) ) {
                 /* Tell everybody to prepare for shutdown/sleep */
                 (void) send_prepare_for(m, a, true);
         }
