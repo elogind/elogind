@@ -273,7 +273,6 @@ static int handle_action_sleep_execute(
         assert(m);
         assert(HANDLE_ACTION_IS_SLEEP(handle));
 
-#if 0 /// elogind stores the sleep configuration in its Manager
         if (handle == HANDLE_SLEEP) {
                 HandleAction a;
 
@@ -286,25 +285,9 @@ static int handle_action_sleep_execute(
         }
 
         bool supported = handle_action_sleep_supported(handle);
-#else // 0
-        if (handle == HANDLE_SUSPEND)
-                supported = sleep_supported(m, SLEEP_SUSPEND) > 0;
-        else if (handle == HANDLE_HIBERNATE)
-                supported = sleep_supported(m, SLEEP_HIBERNATE) > 0;
-        else if (handle == HANDLE_HYBRID_SLEEP)
-                supported = sleep_supported(m, SLEEP_HYBRID_SLEEP) > 0;
-        else if (handle == HANDLE_SUSPEND_THEN_HIBERNATE)
-                supported = sleep_supported(m, SLEEP_SUSPEND_THEN_HIBERNATE) > 0;
-        else
-                assert_not_reached();
-#endif // 0
 
         if (!supported && handle != HANDLE_SUSPEND) {
-#if 0 /// elogind stores the sleep configuration in its Manager
                 supported = sleep_supported(SLEEP_SUSPEND) > 0;
-#else // 0
-                supported = sleep_supported(m, SLEEP_SUSPEND) > 0;
-#endif // 0
                 if (supported) {
                         log_notice("Requested %s operation is not supported, using regular suspend instead.",
                                    handle_action_to_string(handle));

@@ -41,10 +41,8 @@ typedef struct SleepConfig {
 typedef struct Manager SleepConfig;
 #endif // 0
 
-#if 0 /// UNNEEDED by elogind
 SleepConfig* sleep_config_free(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, sleep_config_free);
-#endif // 0
 
 int parse_sleep_config(SleepConfig **sleep_config);
 
@@ -74,17 +72,10 @@ typedef enum SleepSupport {
         SLEEP_ALARM_NOT_SUPPORTED,         /* CLOCK_BOOTTIME_ALARM is unsupported by kernel (only used by s2h) */
 } SleepSupport;
 
-#if 0 /// elogind stores the sleep configuration in its Manager
 int sleep_supported_full(SleepOperation operation, SleepSupport *ret_support);
 static inline int sleep_supported(SleepOperation operation) {
         return sleep_supported_full(operation, NULL);
 }
-#else // 0
-int sleep_supported_full(SleepConfig *m, SleepOperation operation, SleepSupport *ret_support);
-static inline int sleep_supported(SleepConfig *m, SleepOperation operation) {
-        return sleep_supported_full(m, operation, NULL);
-}
-#endif // 0
 
 /* Only for test-sleep-config */
 int sleep_state_supported(char * const *states);

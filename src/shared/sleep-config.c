@@ -51,7 +51,6 @@ static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] 
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("suspend"),
 };
 
-#if 0 /// UNNEEDED by elogind
 SleepConfig* sleep_config_free(SleepConfig *sc) {
         if (!sc)
                 return NULL;
@@ -65,7 +64,6 @@ SleepConfig* sleep_config_free(SleepConfig *sc) {
 
         return mfree(sc);
 }
-#endif // 0
 
 static int config_parse_sleep_mode(
                 const char *unit,
@@ -464,12 +462,8 @@ static int sleep_supported_internal(
         return true;
 }
 
-#if 0 /// elogind stores the sleep configuration in its Manager
 int sleep_supported_full(SleepOperation operation, SleepSupport *ret_support) {
         _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
-#else // 0
-int sleep_supported_full(SleepConfig *sleep_config, SleepOperation operation, SleepSupport *ret_support) {
-#endif // 0
         SleepSupport support;
         int r;
 
