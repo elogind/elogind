@@ -137,6 +137,11 @@ User *user_free(User *u) {
 
         (void) hashmap_remove_value(u->manager->users, UID_TO_PTR(u->user_record->uid), u);
 
+#if 1 /// elogind has to remove the XDG_RUNTIME_DIR by itself
+        /* Kill XDG_RUNTIME_DIR */
+        (void)user_runtime_dir("stop", u);
+#endif // 1
+
         free(u->runtime_path);
         free(u->state_file);
 
@@ -644,21 +649,15 @@ int user_finalize(User *u) {
          * done. This is called as a result of an earlier user_done() when all jobs are completed. */
 
         if (u->started)
+                log_debug("User %s exited.", u->user_record->user_name);
 #if 1 /// let elogind at least issue a debug message if u wasn't even started
         else
                 log_debug_elogind("User %s not started, finalizing...", u->user_record->user_name);
 #endif // 1
-                log_debug("User %s exited.", u->user_record->user_name);
 
         LIST_FOREACH(sessions_by_user, s, u->sessions)
                 RET_GATHER(r, session_finalize(s));
 
-#if 1 /// elogind has to remove the XDG_RUNTIME_DIR by itself
-        /* Kill XDG_RUNTIME_DIR */
-        k = user_runtime_dir("stop", u);
-        if (k < 0)
-                r = k;
-#endif // 1
         /* Clean SysV + POSIX IPC objects, but only if this is not a system user. Background: in many setups cronjobs
          * are run in full PAM and thus logind sessions, even if the code run doesn't belong to actual users but to
          * system components. Since enable RemoveIPC= globally for all users, we need to be a bit careful with such
