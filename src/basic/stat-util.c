@@ -86,12 +86,10 @@ int stat_verify_directory(const struct stat *st) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int fd_verify_directory(int fd) {
         assert(fd >= 0);
         return verify_stat_at(fd, NULL, false, stat_verify_directory, true);
 }
-#endif // 0
 
 int is_dir_at(int fd, const char *path, bool follow) {
         return verify_stat_at(fd, path, follow, stat_verify_directory, false);

@@ -634,14 +634,12 @@ TEST(chaseat) {
         ASSERT_OK(fd);
         ASSERT_OK(fd_verify_directory(fd));
         fd = safe_close(fd);
-#if 0 /// UNSUPPORTED by elogind
 
         fd = chase_and_openat(tfd, NULL, CHASE_PARENT|CHASE_EXTRACT_FILENAME, O_PATH|O_DIRECTORY|O_CLOEXEC, &result);
         ASSERT_OK(fd);
         ASSERT_STREQ(result, ".");
         fd = safe_close(fd);
         result = mfree(result);
-#endif // 0
 
         /* Test chase_and_openatdir() */
 
