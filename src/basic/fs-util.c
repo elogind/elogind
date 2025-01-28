@@ -1037,6 +1037,7 @@ int parse_cifs_service(
 
         return 0;
 }
+#endif // 0
 
 int open_mkdir_at_full(int dirfd, const char *path, int flags, XOpenFlags xopen_flags, mode_t mode) {
         _cleanup_close_ int fd = -EBADF, parent_fd = -EBADF;
@@ -1083,6 +1084,7 @@ int open_mkdir_at_full(int dirfd, const char *path, int flags, XOpenFlags xopen_
         return TAKE_FD(fd);
 }
 
+#if 0 /// UNNEEDED by elogind
 int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, bool *ret_newly_created) {
         unsigned attempts = 7;
         int fd;
