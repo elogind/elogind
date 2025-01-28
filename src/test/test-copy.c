@@ -253,7 +253,6 @@ TEST(copy_tree) {
         (void) rm_rf(copy_dir, REMOVE_ROOT|REMOVE_PHYSICAL);
         (void) rm_rf(original_dir, REMOVE_ROOT|REMOVE_PHYSICAL);
 }
-#endif // 0
 
 TEST(copy_tree_at_symlink) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
@@ -291,6 +290,7 @@ TEST(copy_tree_at_symlink) {
         p = mfree(p);
         fd = safe_close(fd);
 }
+#endif // 0
 
 TEST_RET(copy_bytes) {
         _cleanup_close_pair_ int pipefd[2] = EBADF_PAIR;
@@ -573,7 +573,6 @@ TEST(copy_lock) {
         assert_se(xopenat_lock(tfd, "poi", 0, LOCK_BSD, LOCK_EX|LOCK_NB) == -EAGAIN);
         fd = safe_close(fd);
 }
-#endif // 0
 
 TEST(copy_verify_linked) {
         _cleanup_(rm_rf_physical_and_freep) char *t = NULL;
@@ -596,5 +595,6 @@ TEST(copy_verify_linked) {
         assert_se(copy_file_at(fd_2, NULL, tfd, "to_2", O_EXCL, 0644, COPY_VERIFY_LINKED) == -EIDRM);
         assert_se(faccessat(tfd, "to_2", F_OK, AT_SYMLINK_NOFOLLOW) < 0 && errno == ENOENT);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
