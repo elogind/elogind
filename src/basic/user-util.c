@@ -531,6 +531,7 @@ int merge_gid_lists(const gid_t *list1, size_t size1, const gid_t *list2, size_t
         *ret = buf;
         return (int)nresult;
 }
+#endif // 0
 
 int getgroups_alloc(gid_t** gids) {
         gid_t *allocated;
@@ -572,7 +573,6 @@ int getgroups_alloc(gid_t** gids) {
         *gids = TAKE_PTR(p);
         return ngroups;
 }
-#endif // 0
 
 int get_home_dir(char **ret) {
         _cleanup_free_ struct passwd *p = NULL;
