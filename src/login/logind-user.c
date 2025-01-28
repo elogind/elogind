@@ -450,10 +450,13 @@ static int update_slice_callback(sd_bus_message *m, void *userdata, sd_bus_error
         log_debug("Successfully set slice parameters of %s.", ur->user_name);
         return 0;
 }
+#endif // 0
 
 static int user_update_slice(User *u) {
+#if 0 /// UNNEEDED by elogind
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         int r;
+#endif // 0
 
         assert(u);
 
@@ -464,6 +467,7 @@ static int user_update_slice(User *u) {
             u->user_record->io_weight == UINT64_MAX)
                 return 0;
 
+#if 0 /// elogind does not talk to systemd - makes no sense
         r = bus_message_new_method_call(u->manager->bus, &m, bus_systemd_mgr, "SetUnitProperties");
         if (r < 0)
                 return bus_log_create_error(r);
@@ -503,13 +507,13 @@ static int user_update_slice(User *u) {
         r = sd_bus_call_async(u->manager->bus, NULL, m, update_slice_callback, u->user_record, 0);
         if (r < 0)
                 return log_error_errno(r, "Failed to change user slice properties: %m");
+#endif // 0
 
         /* Ref the user record pointer, so that the slot keeps it pinned */
         user_record_ref(u->user_record);
 
         return 0;
 }
-#endif // 0
 
 int user_start(User *u) {
         int r;
