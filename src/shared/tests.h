@@ -16,7 +16,6 @@
 #include "static-destruct.h"
 #include "strv.h"
 
-#if 0 /// UNNEEDED by elogind
 static inline void log_set_assert_return_is_criticalp(bool *p) {
         log_set_assert_return_is_critical(*p);
 }
@@ -38,6 +37,7 @@ static inline void log_set_assert_return_is_criticalp(bool *p) {
 #define ASSERT_RETURN_EXPECTED(expr) ASSERT_RETURN_IS_CRITICAL(false, expr)
 #define ASSERT_RETURN_EXPECTED_SE(expr) ASSERT_RETURN_EXPECTED(assert_se(expr));
 
+#if 0 /// UNNEEDED by elogind
 static inline bool manager_errno_skip_test(int r) {
         return IN_SET(abs(r),
                       EPERM,
