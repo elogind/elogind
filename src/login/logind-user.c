@@ -920,10 +920,10 @@ UserState user_get_state(User *u) {
                 any = true;
         }
 
-#if 0 /// elogind does not support systemd units
         if (any)
                 return all_closing ? USER_CLOSING : USER_ONLINE;
 
+#if 0 /// elogind does not support systemd units
         if (user_check_linger_file(u) > 0 && user_unit_active(u))
 #else // 0
         if (user_check_linger_file(u) > 0)
