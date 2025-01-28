@@ -412,11 +412,6 @@ void elogind_manager_free( Manager* m ) {
         sd_event_source_unref( m->cgroups_agent_event_source );
 
         safe_close( m->cgroups_agent_fd );
-
-        for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
-                strv_free(m->modes[i]);
-                strv_free(m->states[i]);
-        }
 }
 
 
@@ -431,24 +426,6 @@ int elogind_manager_new( Manager* m ) {
         m->sleep_fork_pid    = 0;
         m->tool_fork_pid     = 0;
         m->sleep_fork_action = NULL;
-
-        /* Init poweroff/suspend interruption */
-        m->allow_poweroff_interrupts     = false;
-        m->broadcast_poweroff_interrupts = true;
-        m->allow_suspend_interrupts      = false;
-        m->broadcast_suspend_interrupts  = true;
-        m->callback_failed               = false;
-        m->callback_must_succeed         = false;
-
-        /* allow manipulating Nvidia cards */
-        m->handle_nvidia_sleep = false;
-
-        /* Init sleep values */
-        m->allow[SLEEP_SUSPEND]                = true;
-        m->allow[SLEEP_HIBERNATE]              = true;
-        m->allow[SLEEP_HYBRID_SLEEP]           = true;
-        m->allow[SLEEP_SUSPEND_THEN_HIBERNATE] = true;
-        m->hibernate_delay_usec                 = 0;
 
         /* If elogind should be its own controller, mount its cgroup */
         if ( streq( SYSTEMD_CGROUP_CONTROLLER, "_elogind" ) ) {
