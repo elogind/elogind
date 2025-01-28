@@ -16,7 +16,7 @@
 #include "bus-locator.h"
 #include "bus-polkit.h"
 //#include "bus-unit-util.h"
-//#include "bus-util.h"
+#include "bus-util.h"
 #include "cgroup-util.h"
 #include "device-util.h"
 #include "dirent-util.h"
@@ -1689,13 +1689,12 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
         assert(message);
         assert(m);
 
-        r = bus_verify_polkit_async(
+        r = bus_verify_polkit_async_full(
                         message,
-                        CAP_SYS_ADMIN,
                         "org.freedesktop.login1.reload-config",
-                        NULL,
-                        false,
-                        UID_INVALID,
+                        /* details= */ NULL,
+                        /* good_user= */ UID_INVALID,
+                        /* flags= */ 0,
                         &m->polkit_registry,
                         error);
         if (r < 0)
