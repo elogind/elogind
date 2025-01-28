@@ -751,8 +751,8 @@ static int print_session_status_info(sd_bus *bus, const char *path) {
         if (r < 0)
                 return table_log_print_error(r);
 
-        if (i.scope) {
 #if 0 /// UNNEEDED by elogind
+        if (i.scope) {
                 show_unit_cgroup(bus, i.scope, i.leader, /* prefix = */ strrepa(" ", STRLEN("Display: ")));
 
                 if (arg_transport == BUS_TRANSPORT_LOCAL)
@@ -766,10 +766,10 @@ static int print_session_status_info(sd_bus *bus, const char *path) {
                                         arg_lines,
                                         get_output_flags() | OUTPUT_BEGIN_NEWLINE,
                                         SD_JOURNAL_LOCAL_ONLY,
-#endif // 0
                                         /* system_unit = */ true,
                                         /* ellipsized = */ NULL);
         }
+#endif // 0
 
         return 0;
 }
