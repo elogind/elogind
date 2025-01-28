@@ -206,6 +206,7 @@ int mkdir_p(const char *path, mode_t mode) {
 int mkdir_p_safe(const char *prefix, const char *path, mode_t mode, uid_t uid, gid_t gid, MkdirFlags flags) {
         return mkdir_p_internal(prefix, path, mode, uid, gid, flags, mkdirat_errno_wrapper);
 }
+#endif // 0
 
 int mkdir_p_root_full(const char *root, const char *p, uid_t uid, gid_t gid, mode_t m, usec_t ts, char **subvolumes) {
         _cleanup_free_ char *pp = NULL, *bn = NULL;
@@ -274,4 +275,3 @@ int mkdir_p_root_full(const char *root, const char *p, uid_t uid, gid_t gid, mod
 
         return 1;
 }
-#endif // 0
