@@ -959,6 +959,7 @@ TEST(is_reaper_process) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(pid_get_start_time) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
 
@@ -979,6 +980,7 @@ TEST(pid_get_start_time) {
 
         assert_se(start_time2 >= start_time);
 }
+#endif // 0
 
 static int intro(void) {
         log_show_color(true);
