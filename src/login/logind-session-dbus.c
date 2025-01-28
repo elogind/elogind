@@ -956,9 +956,11 @@ int session_send_upgrade_reply(Session *s, sd_bus_error *error) {
         if (!s->upgrade_message)
                 return 0;
 
+#if 0 /// elogind does not support scope and service jobs
         /* See comments in session_send_create_reply */
         if (!sd_bus_error_is_set(error) && session_job_pending(s))
                 return 0;
+#endif // 0
 
         c = TAKE_PTR(s->upgrade_message);
         if (error)
