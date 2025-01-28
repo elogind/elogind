@@ -186,7 +186,6 @@ TEST(pidref_kill_and_sigcont) {
         assert_se(pidref_wait_for_terminate(&pidref, &si) >= 0);
         assert_se(si.si_signo == SIGCHLD);
 }
-#endif // 0
 
 TEST(pidref_sigqueue) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
@@ -202,6 +201,7 @@ TEST(pidref_sigqueue) {
         assert_se(pidref_wait_for_terminate(&pidref, &si) >= 0);
         assert_se(si.si_signo == SIGCHLD);
 }
+#endif // 0
 
 TEST(pidref_done_sigkill_wait) {
         _cleanup_(pidref_done_sigkill_wait) PidRef pidref = PIDREF_NULL;

@@ -52,8 +52,8 @@ int pidref_new_from_pid(pid_t pid, PidRef **ret);
 int pidref_kill(const PidRef *pidref, int sig);
 #if 0 /// UNNEEDED by elogind
 int pidref_kill_and_sigcont(const PidRef *pidref, int sig);
-#endif // 0
 int pidref_sigqueue(const PidRef *pidref, int sig, int value);
+#endif // 0
 
 int pidref_wait(const PidRef *pidref, siginfo_t *siginfo, int options);
 int pidref_wait_for_terminate(const PidRef *pidref, siginfo_t *ret);
