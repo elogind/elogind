@@ -2197,7 +2197,6 @@ uint64_t user_record_capability_ambient_set(UserRecord *h) {
         return parse_caps_strv(h->capability_ambient_set) & user_record_capability_bounding_set(h);
 }
 
-#if 0 /// UNNEEDED by elogind
 int user_record_languages(UserRecord *h, char ***ret) {
         _cleanup_strv_free_ char **l = NULL;
         int r;
@@ -2219,6 +2218,7 @@ int user_record_languages(UserRecord *h, char ***ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         assert(h);
 
