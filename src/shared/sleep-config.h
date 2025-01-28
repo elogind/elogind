@@ -25,7 +25,6 @@ static inline bool SLEEP_OPERATION_IS_HIBERNATION(SleepOperation operation) {
         return IN_SET(operation, SLEEP_HIBERNATE, SLEEP_HYBRID_SLEEP);
 }
 
-#if 0 /// elogind needs to hand over its manager
 typedef struct SleepConfig {
         bool allow[_SLEEP_OPERATION_MAX];
 
@@ -35,18 +34,31 @@ typedef struct SleepConfig {
 
         usec_t hibernate_delay_usec;
         usec_t suspend_estimation_usec;
+#if 1 /// Extra configuration needed by elogind
+        /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or SYSTEM_POWEROFF_PATH that fail, the ongoing
+         * suspend/poweroff action will be cancelled if any of these are set to true. */
+        bool allow_poweroff_interrupts, allow_suspend_interrupts;
+        bool broadcast_poweroff_interrupts, broadcast_suspend_interrupts;
+        bool callback_failed, callback_must_succeed;
+
+        /* Allow elogind to put Nvidia cards to sleep */
+        bool handle_nvidia_sleep;
+
+        /* To allow elogind to put nvidia cards to sleep on suspend/hibernate, we store the users uid to get
+         * the right VT information */
+        uid_t scheduled_sleep_uid;
+
+        /* Allow users to set programs which do the suspend/hibernation */
+        char **suspend_by_using;
+        char **hibernate_by_using;
+#endif // 1
 } SleepConfig;
-#else // 0
-#include "logind.h"
-typedef struct Manager SleepConfig;
-#endif // 0
 
 SleepConfig* sleep_config_free(SleepConfig *sc);
 DEFINE_TRIVIAL_CLEANUP_FUNC(SleepConfig*, sleep_config_free);
 
 int parse_sleep_config(SleepConfig **sleep_config);
 
-#ifdef ELOGIND_MANAGER_DECLARED
 static inline bool SLEEP_NEEDS_MEM_SLEEP(const SleepConfig *sc, SleepOperation operation) {
         assert(sc);
         assert(operation >= 0 && operation < _SLEEP_OPERATION_CONFIG_MAX);
@@ -58,7 +70,6 @@ static inline bool SLEEP_NEEDS_MEM_SLEEP(const SleepConfig *sc, SleepOperation o
         return strv_contains(sc->states[operation], "mem") ||
                strv_contains(sc->modes[operation], "suspend");
 }
-#endif // ELOGIND_MANAGER_DECLARED
 
 typedef enum SleepSupport {
         SLEEP_SUPPORTED,

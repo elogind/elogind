@@ -820,7 +820,8 @@ static int run(int argc, char *argv[]) {
         if (r <= 0)
                 return r;
 #else // 0
-int do_sleep(Manager *sleep_config, SleepOperation operation) {
+int do_sleep(SleepOperation operation) {
+        _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
         int r;
 
         assert(operation < _SLEEP_OPERATION_MAX);

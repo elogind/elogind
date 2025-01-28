@@ -1798,6 +1798,8 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until) {
 
 #if 0 /// elogind needs to call this from elogind.c
 static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
+#else // 0
+int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
 #endif // 0
         int k = 0, r, active = _active;
 
@@ -1839,29 +1841,35 @@ static int send_prepare_for(Manager *m, const HandleActionData *a, bool _active)
 
 #if 1 /// elogind specific helper to make HALT and REBOOT possible.
 static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb ) {
-        static const char  * const dirs[] = {
-                        SYSTEM_SHUTDOWN_PATH,
-                        PKGSYSCONFDIR "/system-shutdown",
-                        NULL };
-        _cleanup_free_ char* l            = NULL;
+        static const char * const dirs[] = {
+                SYSTEM_SHUTDOWN_PATH,
+                PKGSYSCONFDIR "/system-shutdown",
+                NULL };
+        _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
+        _cleanup_free_ char* l = NULL;
         int r, e;
+
+        r = parse_sleep_config(&sleep_config);
+        if (r < 0)
+                return r;
+
         void* gather_args[] = {
-                        [STDOUT_GENERATE] = m,
-                        [STDOUT_COLLECT] = m,
-                        [STDOUT_CONSUME] = m,
+                [STDOUT_GENERATE] = sleep_config,
+                [STDOUT_COLLECT] = sleep_config,
+                [STDOUT_CONSUME] = sleep_config,
         };
         char* verb_args[]   = {
-                        NULL,
-                        (char*) arg_verb,
-                        NULL
+                NULL,
+                (char*) arg_verb,
+                NULL
         };
 
-        m->callback_failed       = false;
-        m->callback_must_succeed = m->allow_poweroff_interrupts;
+        sleep_config->callback_failed       = false;
+        sleep_config->callback_must_succeed = sleep_config->allow_poweroff_interrupts;
 
         r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, EXEC_DIR_NONE );
 
-        if ( m->callback_must_succeed && ( ( r < 0 ) || m->callback_failed ) ) {
+        if ( sleep_config->callback_must_succeed && ( ( r < 0 ) || sleep_config->callback_failed ) ) {
                 e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
                               SYSTEM_SHUTDOWN_PATH, PKGSYSCONFDIR "/system-shutdown", r, arg_verb );
                 if ( e < 0 ) {
@@ -1869,8 +1877,8 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
                         return -ENOMEM;
                 }
 
-                if ( m->broadcast_poweroff_interrupts )
-                        wall( l, "root", "n/a", logind_wall_tty_filter, m );
+                if ( sleep_config->broadcast_poweroff_interrupts )
+                        wall( l, "root", "n/a", logind_wall_tty_filter, sleep_config );
 
                 log_struct_errno(LOG_ERR, r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR, LOG_MESSAGE("%s", l), "SHUTDOWN=%s", arg_verb);
 
@@ -1879,29 +1887,35 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
 
         /* If this was successful and hook scripts were allowed to interrupt, we have
          * to signal everybody that a shutdown is imminent, now. */
-        if ( m->allow_poweroff_interrupts )
-                (void) send_prepare_for(m, handle_action_lookup(HANDLE_POWEROFF), true );
-static int strdup_job(sd_bus_message *reply, char **ret) {
-        const char *j;
-        char *job;
-        int r;
-
+        if ( sleep_config->allow_poweroff_interrupts )
+                (void) send_prepare_for(sleep_config, handle_action_lookup(HANDLE_POWEROFF), true );
         r = safe_fork( helper, FORK_RESET_SIGNALS | FORK_REOPEN_LOG, &m->tool_fork_pid );
-        assert(reply);
-        assert(ret);
 
         if ( r < 0 )
                 return log_error_errno( errno, "Failed to fork run %s: %m", helper );
-        r = sd_bus_message_read_basic(reply, 'o', &j);
-        if (r < 0)
-                return r;
-
         if ( 0 == r ) {
                 /* Child */
                 execlp( helper, helper, NULL );
                 log_error_errno( errno, "Failed to execute %s: %m", helper );
                 _exit( EXIT_FAILURE );
         }
+
+        return 0;
+}
+#endif // 1
+
+static int strdup_job(sd_bus_message *reply, char **ret) {
+        const char *j;
+        char *job;
+        int r;
+
+        assert(reply);
+        assert(ret);
+
+        r = sd_bus_message_read_basic(reply, 'o', &j);
+        if (r < 0)
+                return r;
+
         job = strdup(j);
         if (!job)
                 return -ENOMEM;
@@ -1909,12 +1923,9 @@ static int strdup_job(sd_bus_message *reply, char **ret) {
         *ret = job;
         return 0;
 }
-#endif // 1
 
 #if 1 /// elogind specific executor
 static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
-        assert( m );
-
         log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
 
         switch ( action ) {
@@ -1927,13 +1938,13 @@ static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
                 case HANDLE_KEXEC:
                         return elogind_run_helper( m, KEXEC, "kexec" );
                 case HANDLE_SUSPEND:
-                        return do_sleep( m, SLEEP_SUSPEND );
+                        return do_sleep( SLEEP_SUSPEND );
                 case HANDLE_HIBERNATE:
-                        return do_sleep( m, SLEEP_HIBERNATE );
+                        return do_sleep( SLEEP_HIBERNATE );
                 case HANDLE_HYBRID_SLEEP:
-                        return do_sleep( m, SLEEP_HYBRID_SLEEP );
+                        return do_sleep( SLEEP_HYBRID_SLEEP );
                 case HANDLE_SUSPEND_THEN_HIBERNATE:
-                        return do_sleep( m, SLEEP_SUSPEND_THEN_HIBERNATE );
+                        return do_sleep( SLEEP_SUSPEND_THEN_HIBERNATE );
                 default:
                         return -EINVAL;
         }
@@ -2020,12 +2031,12 @@ static int execute_shutdown_or_sleep(
                 sd_bus_error *error) {
 
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply = NULL;
-#if 0 /// elogind does not support systemd actions
-#endif // 0
         int r;
 
         assert(m);
+#if 0 /// elogind has no action_job
         assert(!m->action_job);
+#endif // 0
         assert(a);
 
         if (a->inhibit_what == INHIBIT_SHUTDOWN)
@@ -2047,12 +2058,9 @@ static int execute_shutdown_or_sleep(
         r = elogind_execute_shutdown_or_sleep(m, a, error);
 #endif // 0
         if (r < 0)
-
-#if 0 /// elogind does not support systemd actions
                 goto fail;
 
         m->delayed_action = a;
-#endif // 0
 
         /* Make sure the lid switch is ignored for a while */
         manager_set_lid_switch_ignore(m, usec_add(now(CLOCK_MONOTONIC), m->holdoff_timeout_usec));
@@ -2387,16 +2395,12 @@ static int method_do_shutdown_or_sleep(
         } else if (HANDLE_ACTION_IS_SLEEP(action)) {
                 SleepSupport support;
 
-#if 0 /// elogind has to hand over its manager
                 assert_se(a = handle_action_lookup(action));
 
                 assert(a->sleep_operation >= 0);
                 assert(a->sleep_operation < _SLEEP_OPERATION_MAX);
 
                 r = sleep_supported_full(a->sleep_operation, &support);
-#else // 0
-                r = sleep_supported_full(m, a->sleep_operation, &support);
-#endif // 0
                 if (r < 0)
                         return r;
                 if (r == 0)
@@ -2980,16 +2984,12 @@ static int method_can_shutdown_or_sleep(
         } else if (HANDLE_ACTION_IS_SLEEP(action)) {
                 SleepSupport support;
 
-#if 0 /// elogind has to hand over its manager
                 assert_se(a = handle_action_lookup(action));
 
                 assert(a->sleep_operation >= 0);
                 assert(a->sleep_operation < _SLEEP_OPERATION_MAX);
 
                 r = sleep_supported_full(a->sleep_operation, &support);
-#else // 0
-                r = sleep_supported_full(m, a->sleep_operation, &support);
-#endif // 0
                 if (r < 0)
                         return r;
                 if (r == 0)

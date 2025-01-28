@@ -26,13 +26,14 @@
 #include "fileio.h"
 #include "log.h"
 #include "logind.h"
+#include "sleep-config.h"
 #include "string-util.h"
 
 
 
 static int gather_output_generate(int const fd, void *arg) {
         _cleanup_fclose_ FILE *f = NULL;
-        Manager* m = arg;
+        SleepConfig* sleep_config = arg;
         unsigned line = 0;
         int r;
 
@@ -46,8 +47,8 @@ static int gather_output_generate(int const fd, void *arg) {
         if (!f) {
                 safe_close(fd);
                 log_error_errno(errno, "Failed to open serialization fd: %m");
-                if (m->callback_must_succeed)
-                        m->callback_failed = true;
+                if (sleep_config->callback_must_succeed)
+                        sleep_config->callback_failed = true;
                 return -errno;
         }
 
@@ -61,14 +62,14 @@ static int gather_output_generate(int const fd, void *arg) {
                 ++line;
                 if (r == -ENOBUFS) {
                         log_error_errno(r, "ERROR: Line %u too long", line);
-                        if (m->callback_must_succeed)
-                                m->callback_failed = true;
+                        if (sleep_config->callback_must_succeed)
+                                sleep_config->callback_failed = true;
                         return r;
                 }
                 if (r < 0) {
                         log_error_errno(r, "ERROR: Line %u could not be read: %m", line);
-                        if (m->callback_must_succeed)
-                                m->callback_failed = true;
+                        if (sleep_config->callback_must_succeed)
+                                sleep_config->callback_failed = true;
                         return r;
                 }
 
@@ -79,8 +80,8 @@ static int gather_output_generate(int const fd, void *arg) {
                   || startswith_no_case(buf, "error"    )
                   || startswith_no_case(buf, "failed"   ) ) {
                         log_error_errno(ECANCELED, "Script failed at line %u: %s", line, buf);
-                        if (m->callback_must_succeed) {
-                                m->callback_failed = true;
+                        if (sleep_config->callback_must_succeed) {
+                                sleep_config->callback_failed = true;
                                 return -ECANCELED;
                         }
                         return ECANCELED;

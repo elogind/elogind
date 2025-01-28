@@ -21,8 +21,6 @@
 #include "string-util.h"
 #include "strv.h"
 #include "time-util.h"
-// Additional includes needed by elogind
-#include "logind.h"
 
 #define DEFAULT_SUSPEND_ESTIMATION_USEC (1 * USEC_PER_HOUR)
 
@@ -42,11 +40,7 @@ static char* const* const sleep_default_state_table[_SLEEP_OPERATION_CONFIG_MAX]
 };
 
 static char* const* const sleep_default_mode_table[_SLEEP_OPERATION_CONFIG_MAX] = {
-#if 0 /// elogind supports suspend modes (deep s2idle) so we need defaults, too
         /* Not used by SLEEP_SUSPEND */
-#else // 0
-        [SLEEP_SUSPEND]      = STRV_MAKE("deep", "s2idle"),
-#endif // 0
         [SLEEP_HIBERNATE]    = STRV_MAKE("platform", "shutdown"),
         [SLEEP_HYBRID_SLEEP] = STRV_MAKE("suspend"),
 };
@@ -110,9 +104,7 @@ static void sleep_config_validate_state_and_mode(SleepConfig *sc) {
                 log_warning("Sleep state 'disk' is not supported by operation %s, ignoring.",
                             sleep_operation_to_string(SLEEP_SUSPEND));
         }
-#if 0 /// elogind does support setting suspend modes
         assert(!sc->modes[SLEEP_SUSPEND]);
-#endif // 0
 
         /* People should use hybrid-sleep instead of setting HibernateMode=suspend. Warn about it but don't
          * drop it in this case. */
@@ -122,19 +114,11 @@ static void sleep_config_validate_state_and_mode(SleepConfig *sc) {
 }
 
 int parse_sleep_config(SleepConfig **ret) {
-#if 0 /// elogind uses its own manager
         _cleanup_(sleep_config_freep) SleepConfig *sc = NULL;
-#else // 0
-        Manager* sc = *ret;
-#if ENABLE_DEBUG_ELOGIND
-        int dbg_cnt;
-#endif // ENABLE_DEBUG_ELOGIND
-#endif // 0
         int allow_suspend = -1, allow_hibernate = -1, allow_s2h = -1, allow_hybrid_sleep = -1;
 
         assert(ret);
 
-#if 0 /// elogind keeps its sleep config in memory. Just erase the modes and states so they can be read anew.
         sc = new(SleepConfig, 1);
         if (!sc)
                 return log_oom();
@@ -142,19 +126,6 @@ int parse_sleep_config(SleepConfig **ret) {
         *sc = (SleepConfig) {
                 .hibernate_delay_usec = USEC_INFINITY,
         };
-#else // 0
-        for (SleepOperation i = 0; i < _SLEEP_OPERATION_MAX; i++) {
-                if (sc->modes[i]) {
-                        sc->modes[i] = strv_free(sc->modes[i]);
-                }
-
-                if (sc->states[i]) {
-                        sc->states[i] = strv_free(sc->states[i]);
-                }
-        }
-        sc->suspend_by_using   = strv_free(sc->suspend_by_using);
-        sc->hibernate_by_using = strv_free(sc->hibernate_by_using);
-#endif // 0
 
         const ConfigTableItem items[] = {
 #if 1 /// Additional options for elogind
@@ -172,11 +143,7 @@ int parse_sleep_config(SleepConfig **ret) {
                 { "Sleep", "AllowHybridSleep",          config_parse_tristate,    0,               &allow_hybrid_sleep          },
 
                 { "Sleep", "SuspendState",              config_parse_strv,        0,               sc->states + SLEEP_SUSPEND   },
-#if 0 /// elogind does support suspend modes
                 { "Sleep", "SuspendMode",               config_parse_warn_compat, DISABLED_LEGACY, NULL                         },
-#else // 0
-                { "Sleep", "SuspendMode",               config_parse_sleep_mode,  0,               sc->modes + SLEEP_SUSPEND    },
-#endif // 0
 
                 { "Sleep", "HibernateState",            config_parse_warn_compat, DISABLED_LEGACY, NULL                         },
                 { "Sleep", "HibernateMode",             config_parse_sleep_mode,  0,               sc->modes + SLEEP_HIBERNATE  },
@@ -225,32 +192,7 @@ int parse_sleep_config(SleepConfig **ret) {
 
         sleep_config_validate_state_and_mode(sc);
 
-#if ENABLE_DEBUG_ELOGIND
-        dbg_cnt = -1;
-        while (sc->modes[SLEEP_SUSPEND] && sc->modes[SLEEP_SUSPEND][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->modes[SLEEP_SUSPEND][dbg_cnt]);
-        dbg_cnt = -1;
-        while (sc->states[SLEEP_SUSPEND] && sc->states[SLEEP_SUSPEND][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_SUSPEND][%d] = %s", dbg_cnt, sc->states[SLEEP_SUSPEND][dbg_cnt]);
-        dbg_cnt = -1;
-        while (sc->modes[SLEEP_HIBERNATE] && sc->modes[SLEEP_HIBERNATE][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->modes[SLEEP_HIBERNATE][dbg_cnt]);
-        dbg_cnt = -1;
-        while (sc->states[SLEEP_HIBERNATE] && sc->states[SLEEP_HIBERNATE][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_HIBERNATE][%d] = %s", dbg_cnt, sc->states[SLEEP_HIBERNATE][dbg_cnt]);
-        dbg_cnt = -1;
-        while (sc->modes[SLEEP_HYBRID_SLEEP] && sc->modes[SLEEP_HYBRID_SLEEP][++dbg_cnt])
-                log_debug_elogind("modes[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->modes[SLEEP_HYBRID_SLEEP][dbg_cnt]);
-        dbg_cnt = -1;
-        while (sc->states[SLEEP_HYBRID_SLEEP] && sc->states[SLEEP_HYBRID_SLEEP][++dbg_cnt])
-                log_debug_elogind("states[SLEEP_HYBRID_SLEEP][%d] = %s", dbg_cnt, sc->states[SLEEP_HYBRID_SLEEP][dbg_cnt]);
-        log_debug_elogind("hibernate_delay_usec: %" PRIu64 " seconds (%lu minutes)",
-                          sc->hibernate_delay_usec / USEC_PER_SEC, sc->hibernate_delay_usec / USEC_PER_MINUTE);
-#endif // ENABLE_DEBUG_ELOGIND
-
-#if 0 /// UNNEEDED by elogind
         *ret = TAKE_PTR(sc);
-#endif // 0
 
         return 0;
 }

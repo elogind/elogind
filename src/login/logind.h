@@ -112,32 +112,6 @@ struct Manager {
 #if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
-#else // 0
-        /* Suspension and hibernation can be disabled in sleep.conf. */
-        bool allow[_SLEEP_OPERATION_MAX];
-        char **modes[_SLEEP_OPERATION_MAX];
-        char **states[_SLEEP_OPERATION_MAX];    /* Power mode after writing hibernation image (/sys/power/disk) */
-        char **mem_modes;                       /* /sys/power/mem_sleep */
-        usec_t hibernate_delay_usec;
-        usec_t suspend_estimation_usec;
-
-        /* If an admin puts scripts into SYSTEM_SLEEP_PATH and/or
-           SYSTEM_POWEROFF_PATH that fail, the ongoing suspend/poweroff
-           action will be cancelled if any of these are set to true. */
-        bool allow_poweroff_interrupts, allow_suspend_interrupts;
-        bool broadcast_poweroff_interrupts, broadcast_suspend_interrupts;
-        bool callback_failed, callback_must_succeed;
-
-        /* Allow elogind to put Nvidia cards to sleep */
-        bool handle_nvidia_sleep;
-
-        /* To allow elogind to put nvidia cards to sleep on suspend/hibernate,
-           we store the users uid to get the right VT information */
-        uid_t scheduled_sleep_uid;
-
-        /* Allow users to set programs which do the suspend/hibernation */
-        char **suspend_by_using;
-        char **hibernate_by_using;
 #endif // 0
         sd_event_source *inhibit_timeout_source;
 
