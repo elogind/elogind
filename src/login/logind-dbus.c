@@ -3016,7 +3016,7 @@ static int method_can_shutdown_or_sleep(
         multiple_sessions = r > 0;
         blocked = manager_is_inhibited(m, a->inhibit_what, INHIBIT_BLOCK, NULL, false, true, uid, NULL);
 
-#if 0 /// elogind uses its own variant, which can use the handle directly.
+#if 0 /// elogind does not load units
         if (check_unit_state && a->target) {
                 _cleanup_free_ char *load_state = NULL;
 
@@ -3028,11 +3028,11 @@ static int method_can_shutdown_or_sleep(
                         result = "no";
                         goto finish;
                 }
-#else // 0
-                log_debug_elogind("CanShutDownOrSleep: %s [%d] %s blocked",
-                                  sleep_operation_to_string(a->sleep_operation), handle, blocked ? "is" : "not");
-#endif // 0
         }
+#endif // 0
+
+        log_debug_elogind("CanShutDownOrSleep: %s %s blocked",
+                          sleep_operation_to_string(a->sleep_operation), blocked ? "is" : "not");
 
         if (multiple_sessions) {
                 r = bus_test_polkit(
