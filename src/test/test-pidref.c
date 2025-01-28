@@ -86,6 +86,7 @@ TEST(pidref_is_self) {
         assert_se(!pidref_is_self(&PIDREF_MAKE_FROM_PID(getpid_cached()+1)));
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(pidref_copy) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
         int r;
@@ -153,6 +154,7 @@ TEST(pidref_new_from_pid) {
         assert_se(r >= 0);
         assert_se(pidref_equal(pidref, &PIDREF_MAKE_FROM_PID(1)));
 }
+#endif // 0
 
 TEST(pidref_kill) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
@@ -169,6 +171,7 @@ TEST(pidref_kill) {
         assert_se(si.si_signo == SIGCHLD);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(pidref_kill_and_sigcont) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
         siginfo_t si;
@@ -183,6 +186,7 @@ TEST(pidref_kill_and_sigcont) {
         assert_se(pidref_wait_for_terminate(&pidref, &si) >= 0);
         assert_se(si.si_signo == SIGCHLD);
 }
+#endif // 0
 
 TEST(pidref_sigqueue) {
         _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
