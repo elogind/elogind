@@ -151,6 +151,8 @@ libelogind_sources = files(
         'sd-netlink/netlink-slot.c',
         'sd-netlink/netlink-socket.c',
         'sd-netlink/netlink-types-genl.c',
+        'sd-netlink/netlink-types-nfnl.c',
+        'sd-netlink/netlink-types-rtnl.c',
         'sd-netlink/netlink-types.c',
         'sd-netlink/netlink-util.c',
         'sd-netlink/sd-netlink.c',
