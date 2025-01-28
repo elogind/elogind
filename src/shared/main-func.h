@@ -14,7 +14,7 @@
 #include "pager.h"
 #include "selinux-util.h"
 #include "signal-util.h"
-#include "spawn-ask-password-agent.h"
+//#include "spawn-ask-password-agent.h"
 #include "spawn-polkit-agent.h"
 #include "static-destruct.h"
 
