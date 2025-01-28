@@ -93,7 +93,6 @@ void netlink_slot_disconnect(sd_netlink_slot *slot, bool unref) {
                 sd_netlink_slot_unref(slot);
 }
 
-#if 0 /// UNNEEDED by elogind
 static sd_netlink_slot* netlink_slot_free(sd_netlink_slot *slot) {
         assert(slot);
 
@@ -105,7 +104,6 @@ static sd_netlink_slot* netlink_slot_free(sd_netlink_slot *slot) {
         free(slot->description);
         return mfree(slot);
 }
-#endif // 0
 
 DEFINE_TRIVIAL_REF_UNREF_FUNC(sd_netlink_slot, sd_netlink_slot, netlink_slot_free);
 
