@@ -83,9 +83,11 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
                 return r;
 #endif // 0
 
+#if 0 /// elogind does not support service manager units.
         r = unit_name_build("user", lu, ".service", &u->service_manager_unit);
         if (r < 0)
                 return r;
+#endif // 0
 
         r = hashmap_put(m->users, UID_TO_PTR(ur->uid), u);
         if (r < 0)
@@ -101,9 +103,11 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
                 return r;
 #endif // 0
 
+#if 0 /// elogind does not support service manager units.
         r = hashmap_put(m->user_units, u->service_manager_unit, u);
         if (r < 0)
                 return r;
+#endif // 0
 
         *ret = TAKE_PTR(u);
         return 0;
@@ -122,13 +126,15 @@ User *user_free(User *u) {
 
         sd_event_source_unref(u->timer_event_source);
 
+#if 0 /// elogind does not support service manager units and jobs
         if (u->service_manager_unit) {
                 (void) hashmap_remove_value(u->manager->user_units, u->service_manager_unit, u);
                 free(u->service_manager_job);
                 free(u->service_manager_unit);
         }
+#endif // 0
 
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir units and jobs.
         if (u->runtime_dir_unit) {
                 (void) hashmap_remove_value(u->manager->user_units, u->runtime_dir_unit, u);
                 free(u->runtime_dir_job);
@@ -331,7 +337,7 @@ int user_load(User *u) {
         assert(u);
 
         r = parse_env_file(NULL, u->state_file,
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir and service manager jobs.
                            "RUNTIME_DIR_JOB",        &u->runtime_dir_job,
                            "SERVICE_JOB",            &u->service_manager_job,
 #endif // 0
@@ -351,7 +357,7 @@ int user_load(User *u) {
                         log_debug_errno(r, "Failed to parse 'STOPPING' boolean: %s", stopping);
                 else {
                         u->stopping = r;
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir jobs.
                         if (u->stopping && !u->runtime_dir_job)
                                 log_debug("User '%s' is stopping, but no job is being tracked.", u->user_record->user_name);
 #endif // 0
@@ -533,11 +539,13 @@ int user_start(User *u) {
 
         assert(u);
 
+#if 0 /// elogind does not support service manager units and jobs
         if (u->service_manager_started) {
                 /* Everything is up. No action needed. */
                 assert(u->started && !u->stopping);
                 return 0;
         }
+#endif // 0
 
         if (!u->started || u->stopping) {
                 /* If u->stopping is set, the user is marked for removal and service stop-jobs are queued.
@@ -845,7 +853,7 @@ bool user_may_gc(User *u, bool drop_not_started) {
 #endif // 0
                 return false;
 
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir and service manager jobs.
         /* Check if our job is still pending */
         const char *j;
         FOREACH_ARGUMENT(j, u->runtime_dir_job, u->service_manager_job) {
@@ -888,7 +896,7 @@ UserState user_get_state(User *u) {
         if (u->stopping)
                 return USER_CLOSING;
 
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir units and jobs.
         if (!u->started || u->runtime_dir_job)
 #else // 0
         if (!u->started)

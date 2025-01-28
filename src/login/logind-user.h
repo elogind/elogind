@@ -37,16 +37,18 @@ struct User {
         /* user-UID.slice */
         char *slice;
 
-#if 0 /// elogind does not support runtime dir and service jobs.
+#if 0 /// elogind does not support runtime dir units and jobs.
         /* user-runtime-dir@UID.service */
         char *runtime_dir_unit;
         char *runtime_dir_job;
 #endif // 0
 
+#if 0 /// elogind does not support service manager units and jobs
         /* user@UID.service */
         bool service_manager_started;
         char *service_manager_unit;
         char *service_manager_job;
+#endif // 0
 
         Session *display;
 
