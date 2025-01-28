@@ -27,7 +27,6 @@ static const GenericNetlinkFamily nlctrl_static = {
         .version = 0x01,
 };
 
-#if 0 /// UNNEEDED by elogind
 static GenericNetlinkFamily *genl_family_free(GenericNetlinkFamily *f) {
         if (!f)
                 return NULL;
@@ -53,6 +52,7 @@ void genl_clear_family(sd_netlink *nl) {
         nl->genl_family_by_name = hashmap_free_with_destructor(nl->genl_family_by_name, genl_family_free);
         nl->genl_family_by_id = hashmap_free_with_destructor(nl->genl_family_by_id, genl_family_free);
 }
+#if 0 /// UNNEEDED by elogind
 
 static int genl_family_new_unsupported(
                 sd_netlink *nl,

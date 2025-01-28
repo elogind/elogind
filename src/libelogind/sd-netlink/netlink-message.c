@@ -1139,7 +1139,6 @@ int sd_netlink_message_read_strv(sd_netlink_message *m, uint16_t container_type,
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int netlink_container_parse(
                 sd_netlink_message *m,
                 struct netlink_container *container,
@@ -1176,6 +1175,7 @@ static int netlink_container_parse(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int sd_netlink_message_enter_container(sd_netlink_message *m, uint16_t attr_type) {
         const NLAPolicy *policy;
         const NLAPolicySet *policy_set;
@@ -1337,7 +1337,6 @@ int sd_netlink_message_get_errno(sd_netlink_message *m) {
         return err->error;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int netlink_message_parse_error(sd_netlink_message *m) {
         struct nlmsgerr *err = NLMSG_DATA(m->hdr);
         size_t hlen = sizeof(struct nlmsgerr);
@@ -1393,7 +1392,6 @@ int sd_netlink_message_rewind(sd_netlink_message *m, sd_netlink *nl) {
                                        (struct rtattr*)((uint8_t*) NLMSG_DATA(m->hdr) + NLMSG_ALIGN(size)),
                                        NLMSG_PAYLOAD(m->hdr, size));
 }
-#endif // 0
 
 void message_seal(sd_netlink_message *m) {
         assert(m);

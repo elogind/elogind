@@ -249,10 +249,10 @@ int sd_genl_add_match(sd_netlink *nl, sd_netlink_slot **ret_slot, const char *fa
                       sd_netlink_message_handler_t callback,
                       sd_netlink_destroy_t destroy_callback,
                       void *userdata, const char *description);
+#endif // 0
 
 /* slot */
 sd_netlink_slot *sd_netlink_slot_ref(sd_netlink_slot *slot);
-#endif // 0
 sd_netlink_slot *sd_netlink_slot_unref(sd_netlink_slot *slot);
 
 #if 0 /// UNNEEDED by elogind
