@@ -987,6 +987,7 @@ TEST(json_sensitive) {
         ASSERT_STREQ(s, "{\"b\":[\"foo\",\"bar\",\"baz\",\"qux\"],\"c\":-9223372036854775808,\"d\":\"-9223372036854775808\",\"e\":{},\"a\":\"<sensitive data>\"}");
 }
 
+#if 0 /// elogind does not need unbas64_iovec and unhex_iovec
 TEST(json_iovec) {
         struct iovec iov1 = CONST_IOVEC_MAKE_STRING("üxknürz"), iov2 = CONST_IOVEC_MAKE_STRING("wuffwuffmiau");
 
@@ -998,7 +999,6 @@ TEST(json_iovec) {
         json_variant_dump(j, JSON_FORMAT_PRETTY_AUTO|JSON_FORMAT_COLOR_AUTO, /* f= */ NULL, /* prefix= */ NULL);
 
         _cleanup_(iovec_done) struct iovec a = {}, b = {};
-#if 0 /// elogind does not need unbas64_iovec and unhex_iovec
         assert_se(json_variant_unbase64_iovec(json_variant_by_key(j, "nr1"), &a) >= 0);
         assert_se(json_variant_unhex_iovec(json_variant_by_key(j, "nr2"), &b) >= 0);
 
@@ -1006,7 +1006,7 @@ TEST(json_iovec) {
         assert_se(iovec_memcmp(&iov2, &b) == 0);
         assert_se(iovec_memcmp(&iov2, &a) < 0);
         assert_se(iovec_memcmp(&iov1, &b) > 0);
-#endif // 0
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
