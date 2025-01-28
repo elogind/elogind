@@ -74,7 +74,9 @@ User *user_free(User *u);
 
 DEFINE_TRIVIAL_CLEANUP_FUNC(User*, user_free);
 
+#if 0 /// elogind does not support service manager units and jobs
 int user_start_service_manager(User *u);
+#endif // 0
 int user_start(User *u);
 
 bool user_may_gc(User *u, bool drop_not_started);

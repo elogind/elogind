@@ -1302,8 +1302,10 @@ void session_set_class(Session *s, SessionClass c) {
         (void) session_save(s);
         (void) session_send_changed(s, "Class", NULL);
 
+#if 0 /// elogind neither spawns systemd --user nor supports systemd units and services.
         /* This class change might mean we need the per-user session manager now. Try to start it. */
         (void) user_start_service_manager(s->user);
+#endif // 0
 }
 
 int session_set_display(Session *s, const char *display) {
