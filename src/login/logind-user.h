@@ -34,11 +34,9 @@ struct User {
         char *state_file;
         char *runtime_path;
 
-#if 0 ///elogind does not support systemd service jobs
         /* user-UID.slice */
         char *slice;
 
-#endif // 0
         /* user-runtime-dir@UID.service */
         char *runtime_dir_unit;
         char *runtime_dir_job;

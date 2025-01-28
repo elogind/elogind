@@ -81,11 +81,9 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not need the systemd runtime_dir_service
         r = unit_name_build("user", lu, ".service", &u->service_manager_unit);
         if (r < 0)
                 return r;
-#endif // 0
 
         r = hashmap_put(m->users, UID_TO_PTR(ur->uid), u);
         if (r < 0)
@@ -99,11 +97,9 @@ int user_new(Manager *m, UserRecord *ur, User **ret) {
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not need the systemd runtime_dir_service
         r = hashmap_put(m->user_units, u->service_manager_unit, u);
         if (r < 0)
                 return r;
-#endif // 0
 
         *ret = TAKE_PTR(u);
         return 0;
