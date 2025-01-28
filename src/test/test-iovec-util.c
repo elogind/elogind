@@ -3,6 +3,7 @@
 #include "iovec-util.h"
 #include "tests.h"
 
+#if 0 /// UNNEEDED by elogind
 TEST(iovec_memcmp) {
         struct iovec iov1 = CONST_IOVEC_MAKE_STRING("abcdef"), iov2 = IOVEC_MAKE_STRING("bcdefg"), empty = {};
 
@@ -34,6 +35,7 @@ TEST(iovec_memcmp) {
         assert_se(iovec_memdup(&iov1, &copy));
         assert_se(iovec_memcmp(&iov1, &copy) == 0);
 }
+#endif // 0
 
 TEST(iovec_set_and_valid) {
         struct iovec empty = {},

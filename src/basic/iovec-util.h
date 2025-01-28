@@ -75,6 +75,7 @@ char* set_iovec_string_field_free(struct iovec *iovec, size_t *n_iovec, const ch
 
 void iovec_array_free(struct iovec *iovec, size_t n_iovec);
 
+#if 0 /// UNNEEDED by elogind
 static inline int iovec_memcmp(const struct iovec *a, const struct iovec *b) {
 
         if (a == b)
@@ -85,6 +86,7 @@ static inline int iovec_memcmp(const struct iovec *a, const struct iovec *b) {
                          b ? b->iov_base : NULL,
                          b ? b->iov_len : 0);
 }
+#endif // 0
 
 static inline struct iovec *iovec_memdup(const struct iovec *source, struct iovec *ret) {
         assert(ret);
