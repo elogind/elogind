@@ -13,7 +13,7 @@
 #include "conf-parser.h"
 //#include "constants.h"
 //#include "dns-domain.h"
-//#include "escape.h"
+#include "escape.h"
 //#include "ether-addr-util.h"
 #include "extract-word.h"
 #include "fd-util.h"
@@ -1083,7 +1083,6 @@ int config_parse_tristate(
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int config_parse_string(
                 const char *unit,
                 const char *filename,
@@ -1133,6 +1132,7 @@ int config_parse_string(
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_dns_name(
                 const char *unit,
                 const char *filename,

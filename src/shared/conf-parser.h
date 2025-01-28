@@ -232,8 +232,8 @@ CONFIG_PARSER_PROTOTYPE(config_parse_bool);
 CONFIG_PARSER_PROTOTYPE(config_parse_id128);
 #endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_tristate);
-#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_string);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_dns_name);
 CONFIG_PARSER_PROTOTYPE(config_parse_hostname);
 CONFIG_PARSER_PROTOTYPE(config_parse_path);
@@ -277,14 +277,12 @@ typedef enum Disabled {
         DISABLED_EXPERIMENTAL,
 } Disabled;
 
-#if 0 /// UNNEEDED by elogind
 typedef enum ConfigParseStringFlags {
         CONFIG_PARSE_STRING_SAFE  = 1 << 0,
         CONFIG_PARSE_STRING_ASCII = 1 << 1,
 
         CONFIG_PARSE_STRING_SAFE_AND_ASCII = CONFIG_PARSE_STRING_SAFE | CONFIG_PARSE_STRING_ASCII,
 } ConfigParseStringFlags;
-#endif // 0
 
 #define DEFINE_CONFIG_PARSE(function, parser, msg)                      \
         CONFIG_PARSER_PROTOTYPE(function) {                             \
