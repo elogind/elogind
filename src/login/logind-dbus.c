@@ -1903,6 +1903,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
 }
 #endif // 1
 
+#if 0 /// UNNEEDED by elogind
 static int strdup_job(sd_bus_message *reply, char **ret) {
         const char *j;
         char *job;
@@ -1922,6 +1923,7 @@ static int strdup_job(sd_bus_message *reply, char **ret) {
         *ret = job;
         return 0;
 }
+#endif // 0
 
 #if 1 /// elogind specific executor
 static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
@@ -3029,6 +3031,8 @@ static int method_can_shutdown_or_sleep(
                         goto finish;
                 }
         }
+#else
+        (void)check_unit_state; // Easier than masking it out
 #endif // 0
 
         log_debug_elogind("CanShutDownOrSleep: %s %s blocked",
