@@ -545,24 +545,20 @@ int user_start(User *u) {
                 /* Set slice parameters */
                 (void) user_update_slice(u);
 
-#if 1 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
-        int r;
-        r = user_runtime_dir("start", u);
+#if 0 /// elogind has to prepare the XDG_RUNTIME_DIR by itself
                 (void) user_start_runtime_dir(u);
+#else // 0
+                r = user_runtime_dir("start", u);
+                if (r < 0)
+                        return r;
+#endif // 0
         }
 
+#if 0 /// elogind neither spawns systemd --user nor supports systemd units and services.
         /* Start user@UID.service if needed. */
         r = user_start_service_manager(u);
         if (r < 0)
                 return r;
-#endif // 1
-        /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it while starting up
-         * systemd --user.  We need to do user_save_internal() because we have not "officially" started yet. */
-
-#if 0 /// elogind does not support systemd slices
-#endif // 0
-
-#if 0 /// elogind does not spawn user instances of systemd
 #endif // 0
 
         if (!u->started) {
