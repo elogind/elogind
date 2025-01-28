@@ -47,6 +47,9 @@ typedef struct SleepConfig {
         /* Allow users to set programs which do the suspend/hibernation */
         char **suspend_by_using;
         char **hibernate_by_using;
+
+        /* We have to somehow get the elogind Manager into sleep execution, so park it as void* in do_sleep() */
+        void* manager;
 #endif // 1
 } SleepConfig;
 

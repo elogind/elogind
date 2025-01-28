@@ -1939,13 +1939,13 @@ static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
                 case HANDLE_KEXEC:
                         return elogind_run_helper( m, KEXEC, "kexec" );
                 case HANDLE_SUSPEND:
-                        return do_sleep( SLEEP_SUSPEND );
+                        return do_sleep( m, SLEEP_SUSPEND );
                 case HANDLE_HIBERNATE:
-                        return do_sleep( SLEEP_HIBERNATE );
+                        return do_sleep( m, SLEEP_HIBERNATE );
                 case HANDLE_HYBRID_SLEEP:
-                        return do_sleep( SLEEP_HYBRID_SLEEP );
+                        return do_sleep( m, SLEEP_HYBRID_SLEEP );
                 case HANDLE_SUSPEND_THEN_HIBERNATE:
-                        return do_sleep( SLEEP_SUSPEND_THEN_HIBERNATE );
+                        return do_sleep( m, SLEEP_SUSPEND_THEN_HIBERNATE );
                 default:
                         return -EINVAL;
         }

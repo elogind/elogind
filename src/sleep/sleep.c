@@ -151,15 +151,15 @@ static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* 
 #endif // 1
 
 #if 1 /// If an external program is configured to suspend/hibernate, elogind calls that one first.
-static int execute_external(Manager *m, SleepOperation operation) {
+static int execute_external(Manager* m, const SleepConfig* sleep_config, SleepOperation operation) {
         int r = -1;
         char **tools = NULL;
 
-        if ((SLEEP_SUSPEND == operation) && !strv_isempty(m->suspend_by_using))
-                tools = m->suspend_by_using;
+        if ((SLEEP_SUSPEND == operation) && !strv_isempty(sleep_config->suspend_by_using))
+                tools = sleep_config->suspend_by_using;
 
-        if (((SLEEP_HIBERNATE == operation) || (SLEEP_HYBRID_SLEEP == operation)) && !strv_isempty(m->hibernate_by_using))
-                tools = m->hibernate_by_using;
+        if (((SLEEP_HIBERNATE == operation) || (SLEEP_HYBRID_SLEEP == operation)) && !strv_isempty(sleep_config->hibernate_by_using))
+                tools = sleep_config->hibernate_by_using;
 
         if (tools) {
                 STRV_FOREACH(tool, tools) {
@@ -346,6 +346,13 @@ static int execute(
                 SleepOperation operation,
                 const char *action) {
 
+#if 1 /// elogind has to use a trick here: Our manager is parked in the sleep config struct
+        Manager* m = (Manager*)sleep_config->manager;
+
+        /* We also need a read/write pointer into the sleep config */
+        SleepConfig *sc = (SleepConfig*)sleep_config;
+#endif // 1
+
         const char *arguments[] = {
                 NULL,
                 "pre",
@@ -363,11 +370,10 @@ static int execute(
         };
 
 #if 1 /// elogind has to check hooks itself and tries to work around a missing nvidia-suspend script (if needed)
-        Manager* m = (Manager*)sleep_config; // sleep-config.h has created the alias. We use 'm' internally to reduce confusion.
         void* gather_args[] = {
-                [STDOUT_GENERATE] = m,
-                [STDOUT_COLLECT] = m,
-                [STDOUT_CONSUME] = m,
+                [STDOUT_GENERATE] = sc,
+                [STDOUT_COLLECT] = sc,
+                [STDOUT_CONSUME] = sc,
         };
         int have_nvidia = 0;
         unsigned vtnr = 0;
@@ -398,7 +404,7 @@ static int execute(
                 return log_error_errno(errno, "Failed to open /sys/power/state: %m");
 
 #if 1 /// The same with nvidia handling. elogind opens the write-to path now, so we can exit early on errors
-        if (m->handle_nvidia_sleep) {
+        if (sleep_config->handle_nvidia_sleep) {
                 /* This file is opened first, so that if we hit an error, we can abort before modifying any state. */
                 driver_fd = open("/proc/driver/nvidia/suspend", O_WRONLY | O_CLOEXEC);
                 if (driver_fd < 0)
@@ -453,17 +459,17 @@ static int execute(
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
         (void) lock_all_homes();
 #else // 0
-        m->callback_failed = false;
-        m->callback_must_succeed = m->allow_suspend_interrupts;
+        sc->callback_failed = false;
+        sc->callback_must_succeed = sleep_config->allow_suspend_interrupts;
 
         log_debug_elogind("Executing suspend hook scripts... (Must succeed: %s)",
-                          m->callback_must_succeed ? "YES" : "no");
+                          sleep_config->callback_must_succeed ? "YES" : "no");
 
         r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, (char **) arguments, NULL, EXEC_DIR_NONE);
 
-        log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
+        log_debug_elogind("Result is %d (callback_failed: %s)", r, sleep_config->callback_failed ? "true" : "false");
 
-        if (m->callback_must_succeed && (r || m->callback_failed)) {
+        if (sleep_config->callback_must_succeed && (r || sleep_config->callback_failed)) {
                 e = asprintf(&l, "A sleep script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
                              SYSTEM_SLEEP_PATH, PKGSYSCONFDIR "/system-sleep", r, sleep_operation_to_string(operation));
                 if (e < 0) {
@@ -471,8 +477,8 @@ static int execute(
                         return -ENOMEM;
                 }
 
-                if ( m->broadcast_suspend_interrupts )
-                        wall(l, "root", "n/a", logind_wall_tty_filter, m);
+                if ( sleep_config->broadcast_suspend_interrupts )
+                        wall(l, "root", "n/a", logind_wall_tty_filter, sc);
 
                 log_error_errno(r, "MESSAGE_ID=" SD_MESSAGE_SLEEP_STOP_STR " %s", l);
 
@@ -483,7 +489,7 @@ static int execute(
          * to signal everybody that a sleep is imminent, now.
          * Note: send_prepare_for() can not be used from here, so we do it by hand.
          */
-        if ( m->allow_suspend_interrupts )
+        if ( sleep_config->allow_suspend_interrupts )
                 (void) sd_bus_emit_signal(m->bus,
                                 "/org/freedesktop/login1",
                                 "org.freedesktop.login1.Manager",
@@ -498,14 +504,14 @@ static int execute(
                    "SLEEP=%s", sleep_operation_to_string(arg_operation));
 
 #if 1 /// elogind may try to send a suspend signal to an nvidia card
-        if ( m->handle_nvidia_sleep )
+        if ( sleep_config->handle_nvidia_sleep )
                 have_nvidia = nvidia_sleep(m, driver_fd, operation, &vtnr);
 #endif // 1
 
 #if 0 /// Instead of only writing to /sys/power/state, elogind offers the possibility to call an extra program instead
         r = write_state(state_fd, sleep_config->states[operation]);
 #else // 0
-        r = execute_external(m, operation);
+        r = execute_external(m, sleep_config, operation);
         if (r < 0)
                 r = write_state(state_fd, sleep_config->states[operation]);
 #endif // 0
@@ -820,7 +826,7 @@ static int run(int argc, char *argv[]) {
         if (r <= 0)
                 return r;
 #else // 0
-int do_sleep(SleepOperation operation) {
+int do_sleep(Manager* m, SleepOperation operation) {
         _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
         int r;
 
@@ -853,6 +859,10 @@ int do_sleep(SleepOperation operation) {
                            "This is not recommended, and might result in unexpected behavior, particularly\n"
                            "in suspend-then-hibernate operations or setups with encrypted home directories.");
 #endif // 0
+
+#if 1 // Before we can continue, we have to park our manager in the sleep config struct
+        sleep_config->manager = m;
+#endif // 1
 
         switch (arg_operation) {
 

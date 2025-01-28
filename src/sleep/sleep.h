@@ -23,6 +23,6 @@
 
 #include <logind.h>
 
-int do_sleep(SleepOperation operation);
+int do_sleep(Manager* m, SleepOperation operation);
 
 #endif // ELOGIND_SRC_SLEEP_SLEEP_H_INCLUDED
