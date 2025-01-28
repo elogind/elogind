@@ -858,8 +858,8 @@ static int print_user_status_info(sd_bus *bus, const char *path) {
         if (r < 0)
                 return table_log_print_error(r);
 
-        if (i.slice) {
 #if 0 /// UNNEEDED by elogind
+        if (i.slice) {
                 show_unit_cgroup(bus, i.slice, /* leader = */ 0, /* prefix = */ strrepa(" ", STRLEN("Sessions: ")));
 
                 if (arg_transport == BUS_TRANSPORT_LOCAL)
@@ -873,10 +873,10 @@ static int print_user_status_info(sd_bus *bus, const char *path) {
                                         arg_lines,
                                         get_output_flags() | OUTPUT_BEGIN_NEWLINE,
                                         SD_JOURNAL_LOCAL_ONLY,
-#endif // 0
                                         /* system_unit = */ true,
                                         /* ellipsized = */ NULL);
         }
+#endif // 0
 
         return 0;
 }
@@ -1747,18 +1747,23 @@ static int parse_argv(int argc, char *argv[]) {
                                 return log_error_errno(arg_output, "Unknown output '%s'.", optarg);
 
                         break;
+
 #if 1 /// elogind supports --no-wall and --dry-run
                 case ARG_NO_WALL:
                         arg_no_wall = true;
+                        break;
+
+                case ARG_DRY_RUN:
+                        arg_dry_run = true;
+                        arg_pager_flags |= PAGER_DISABLE;
+                        break;
+#endif // 1
 
                 case 'j':
                         arg_json_format_flags = JSON_FORMAT_PRETTY_AUTO|JSON_FORMAT_COLOR_AUTO;
                         arg_legend = false;
                         break;
 
-                case ARG_DRY_RUN:
-                        arg_dry_run = true;
-                        arg_pager_flags |= PAGER_DISABLE;
                 case ARG_JSON:
                         r = parse_json_argument(optarg, &arg_json_format_flags);
                         if (r <= 0)
@@ -1768,7 +1773,6 @@ static int parse_argv(int argc, char *argv[]) {
                                 arg_legend = false;
 
                         break;
-#endif // 1
 
                 case ARG_NO_PAGER:
                         arg_pager_flags |= PAGER_DISABLE;
