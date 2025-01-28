@@ -2373,10 +2373,6 @@ static int method_do_shutdown_or_sleep(
                 flags = interactive ? SD_LOGIND_INTERACTIVE : 0;
         }
 
-        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
-                          __FUNCTION__, handle_action_to_string(a->handle),
-                          sleep_operation_to_string(a->sleep_operation),
-                          flags & SD_LOGIND_INTERACTIVE ? "" : "NOT ");
         const HandleActionData *a = NULL;
 
         if (FLAGS_SET(flags, SD_LOGIND_SOFT_REBOOT) ||
@@ -2443,6 +2439,11 @@ static int method_do_shutdown_or_sleep(
                         }
         } else if (!a)
                 assert_se(a = handle_action_lookup(action));
+
+        log_debug_elogind("%s called with action '%s', sleep '%s' (%sinteractive)",
+                          __FUNCTION__, handle_action_to_string(a->handle),
+                          sleep_operation_to_string(a->sleep_operation),
+                          flags & SD_LOGIND_INTERACTIVE ? "" : "NOT ");
 
 #if 1 && !ENABLE_POLKIT /// elogind checks whether polkit is actually used, so regular users can suspend/hibernate without it (#167)
         // System shutdown and reboot stay being privileged operations
