@@ -3,7 +3,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 
-#include "bpf-dlopen.h"
+//#include "bpf-dlopen.h"
 #include "compress.h"
 #include "cryptsetup-util.h"
 #include "elf-util.h"

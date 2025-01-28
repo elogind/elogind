@@ -7,11 +7,11 @@
 //#include "af-list.h"
 #include "alloc-util.h"
 #include "blockdev-util.h"
-#include "bpf-devices.h"
-#include "bpf-firewall.h"
-#include "bpf-foreign.h"
-#include "bpf-restrict-ifaces.h"
-#include "bpf-socket-bind.h"
+//#include "bpf-devices.h"
+//#include "bpf-firewall.h"
+//#include "bpf-foreign.h"
+//#include "bpf-restrict-ifaces.h"
+//#include "bpf-socket-bind.h"
 #include "btrfs-util.h"
 #include "bus-error.h"
 #include "bus-locator.h"
@@ -5740,7 +5740,6 @@ static const char* const cgroup_memory_accounting_metric_table[_CGROUP_MEMORY_AC
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_memory_accounting_metric, CGroupMemoryAccountingMetric);
-#endif // 0
 
 static const char *const cgroup_effective_limit_type_table[_CGROUP_LIMIT_TYPE_MAX] = {
         [CGROUP_LIMIT_MEMORY_MAX]  = "EffectiveMemoryMax",
@@ -5749,3 +5748,4 @@ static const char *const cgroup_effective_limit_type_table[_CGROUP_LIMIT_TYPE_MA
 };
 
 DEFINE_STRING_TABLE_LOOKUP(cgroup_effective_limit_type, CGroupLimitType);
+#endif // 0
