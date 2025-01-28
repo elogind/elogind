@@ -63,7 +63,9 @@ static inline bool uid_range_is_empty(const UIDRange *range) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool uid_range_equal(const UIDRange *a, const UIDRange *b);
+#endif // 0
 
 typedef enum UIDRangeUsernsMode {
         UID_RANGE_USERNS_INSIDE,
@@ -75,6 +77,8 @@ typedef enum UIDRangeUsernsMode {
 } UIDRangeUsernsMode;
 
 int uid_range_load_userns(const char *path, UIDRangeUsernsMode mode, UIDRange **ret);
+#if 0 /// UNNEEDED by elogind
 int uid_range_load_userns_by_fd(int userns_fd, UIDRangeUsernsMode mode, UIDRange **ret);
 
 bool uid_range_overlaps(const UIDRange *range, uid_t start, uid_t nr);
+#endif // 0

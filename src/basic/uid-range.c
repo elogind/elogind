@@ -263,6 +263,7 @@ int uid_range_load_userns(const char *path, UIDRangeUsernsMode mode, UIDRange **
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int uid_range_load_userns_by_fd(int userns_fd, UIDRangeUsernsMode mode, UIDRange **ret) {
         _cleanup_(close_pairp) int pfd[2] = EBADF_PAIR;
         _cleanup_(sigkill_waitp) pid_t pid = 0;
@@ -362,3 +363,4 @@ bool uid_range_equal(const UIDRange *a, const UIDRange *b) {
 
         return true;
 }
+#endif // 0
