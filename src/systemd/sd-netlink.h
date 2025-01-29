@@ -42,26 +42,26 @@ typedef _sd_destroy_t sd_netlink_destroy_t;
 /* bus */
 int sd_netlink_open(sd_netlink **ret);
 int sd_netlink_open_fd(sd_netlink **ret, int fd);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_increase_rxbuf(sd_netlink *nl, const size_t size);
-#endif // 0
+#endif /** 0 */
 
 sd_netlink *sd_netlink_ref(sd_netlink *nl);
 sd_netlink *sd_netlink_unref(sd_netlink *nl);
 
 int sd_netlink_send(sd_netlink *nl, sd_netlink_message *message, uint32_t *serial);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_call_async(sd_netlink *nl, sd_netlink_slot **ret_slot, sd_netlink_message *message,
                           sd_netlink_message_handler_t callback, sd_netlink_destroy_t destoy_callback,
                           void *userdata, uint64_t usec, const char *description);
-#endif // 0
+#endif /** 0 */
 int sd_netlink_call(sd_netlink *nl, sd_netlink_message *message, uint64_t timeout,
                     sd_netlink_message **reply);
 int sd_netlink_read(sd_netlink *nl, uint32_t serial, uint64_t timeout, sd_netlink_message **reply);
 
 int sd_netlink_get_events(sd_netlink *nl);
 int sd_netlink_get_timeout(sd_netlink *nl, uint64_t *timeout);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_process(sd_netlink *nl, sd_netlink_message **ret);
 int sd_netlink_wait(sd_netlink *nl, uint64_t timeout);
 
@@ -111,13 +111,13 @@ int sd_netlink_message_cancel_array(sd_netlink_message *m);
 /* Reading messages */
 int sd_netlink_message_read(sd_netlink_message *m, uint16_t attr_type, size_t size, void *data);
 int sd_netlink_message_read_data(sd_netlink_message *m, uint16_t attr_type, size_t *ret_size, void **ret_data);
-#endif // 0
+#endif /** 0 */
 int sd_netlink_message_read_string_strdup(sd_netlink_message *m, uint16_t attr_type, char **data);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_read_string(sd_netlink_message *m, uint16_t attr_type, const char **data);
-#endif // 0
+#endif /** 0 */
 int sd_netlink_message_read_strv(sd_netlink_message *m, uint16_t container_type, uint16_t attr_type, char ***ret);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_read_u8(sd_netlink_message *m, uint16_t attr_type, uint8_t *data);
 int sd_netlink_message_read_u16(sd_netlink_message *m, uint16_t attr_type, uint16_t *data);
 int sd_netlink_message_read_u32(sd_netlink_message *m, uint16_t attr_type, uint32_t *data);
@@ -129,28 +129,28 @@ int sd_netlink_message_has_flag(sd_netlink_message *m, uint16_t attr_type);
 int sd_netlink_message_enter_container(sd_netlink_message *m, uint16_t attr_type);
 int sd_netlink_message_enter_array(sd_netlink_message *m, uint16_t attr_type);
 int sd_netlink_message_exit_container(sd_netlink_message *m);
-#endif // 0
+#endif /** 0 */
 
 int sd_netlink_message_rewind(sd_netlink_message *m, sd_netlink *nl);
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 sd_netlink_message *sd_netlink_message_next(sd_netlink_message *m);
-#endif // 0
+#endif /** 0 */
 
 sd_netlink_message *sd_netlink_message_ref(sd_netlink_message *m);
 sd_netlink_message *sd_netlink_message_unref(sd_netlink_message *m);
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_set_request_dump(sd_netlink_message *m, int dump);
-#endif // 0
+#endif /** 0 */
 int sd_netlink_message_is_error(sd_netlink_message *m);
 int sd_netlink_message_get_errno(sd_netlink_message *m);
 int sd_netlink_message_get_type(sd_netlink_message *m, uint16_t *type);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_set_flags(sd_netlink_message *m, uint16_t flags);
-#endif // 0
+#endif /** 0 */
 int sd_netlink_message_is_broadcast(sd_netlink_message *m);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_get_max_attribute(sd_netlink_message *m, uint16_t *ret);
 
 /* rtnl */
@@ -166,16 +166,16 @@ int sd_rtnl_message_addr_get_prefixlen(sd_netlink_message *m, unsigned char *ret
 int sd_rtnl_message_addr_get_scope(sd_netlink_message *m, unsigned char *ret_scope);
 int sd_rtnl_message_addr_get_flags(sd_netlink_message *m, unsigned char *ret_flags);
 int sd_rtnl_message_addr_get_ifindex(sd_netlink_message *m, int *ret_ifindex);
-#endif // 0
+#endif /** 0 */
 
 int sd_rtnl_message_new_link(sd_netlink *nl, sd_netlink_message **ret, uint16_t msg_type, int index);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_rtnl_message_link_set_flags(sd_netlink_message *m, unsigned flags, unsigned change);
 int sd_rtnl_message_link_set_type(sd_netlink_message *m, unsigned type);
 int sd_rtnl_message_link_set_family(sd_netlink_message *m, unsigned family);
-#endif // 0
+#endif /** 0 */
 int sd_rtnl_message_link_get_ifindex(sd_netlink_message *m, int *ifindex);
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 int sd_rtnl_message_link_get_flags(sd_netlink_message *m, unsigned *flags);
 int sd_rtnl_message_link_get_type(sd_netlink_message *m, unsigned short *type);
 
@@ -249,13 +249,13 @@ int sd_genl_add_match(sd_netlink *nl, sd_netlink_slot **ret_slot, const char *fa
                       sd_netlink_message_handler_t callback,
                       sd_netlink_destroy_t destroy_callback,
                       void *userdata, const char *description);
-#endif // 0
+#endif /** 0 */
 
 /* slot */
 sd_netlink_slot *sd_netlink_slot_ref(sd_netlink_slot *slot);
 sd_netlink_slot *sd_netlink_slot_unref(sd_netlink_slot *slot);
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /** UNNEEDED by elogind */
 sd_netlink *sd_netlink_slot_get_netlink(sd_netlink_slot *slot);
 void *sd_netlink_slot_get_userdata(sd_netlink_slot *slot);
 void *sd_netlink_slot_set_userdata(sd_netlink_slot *slot, void *userdata);
@@ -265,7 +265,7 @@ int sd_netlink_slot_get_floating(sd_netlink_slot *slot);
 int sd_netlink_slot_set_floating(sd_netlink_slot *slot, int b);
 int sd_netlink_slot_get_description(sd_netlink_slot *slot, const char **description);
 int sd_netlink_slot_set_description(sd_netlink_slot *slot, const char *description);
-#endif // 0
+#endif /** 0 */
 
 _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_netlink, sd_netlink_unref);
 _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_netlink_message, sd_netlink_message_unref);
