@@ -15,8 +15,8 @@ on:
       - github-actions-test
 
 env:
-  CC: gcc-9
-  CXX: g++-9
+  CC: gcc-14
+  CXX: g++-14
 
 defaults:
   run:
@@ -36,7 +36,7 @@ jobs:
       - name: Update ninja for meson
         run: |
              mkdir -p /tmp/build/bin
-             wget -q -O /tmp/build/ninja-linux.zip "https://github.com/ninja-build/ninja/releases/download/v1.10.2/ninja-linux.zip"
+             wget -q -O /tmp/build/ninja-linux.zip "https://github.com/ninja-build/ninja/releases/download/v1.12.1/ninja-linux.zip"
              unzip -o -d /tmp/build/bin /tmp/build/ninja-linux.zip
              chmod 755 /tmp/build/bin/ninja
              export PATH="/tmp/build/bin:$PATH"
@@ -44,7 +44,7 @@ jobs:
         run: |
              python3 -m pip install --user setuptools
              python3 -m pip install --user --upgrade pip
-             python3 -m pip install --user "meson==0.63.3"
+             python3 -m pip install --user "meson==1.7.0"
       - name: Build elogind
         run: make DEBUG=YES BUILDMODE=release CGDEFAULT=hybrid MESON=$HOME/.local/bin/meson NINJA=/tmp/build/bin/ninja
       - name: Run tests
