@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #if WANT_LINUX_FS_H
-#include <linux/fs.h>
+//#include <linux/fs.h>
 #endif
 //#include <linux/magic.h>
 #include <sys/ioctl.h>
@@ -29,7 +29,7 @@
 #include "sort-util.h"
 #include "stat-util.h"
 //#include "stdio-util.h"
-// #include "tmpfile-util.h"
+//#include "tmpfile-util.h"
 
 /* The maximum number of iterations in the loop to close descriptors in the fallback case
  * when /proc/self/fd/ is inaccessible. */

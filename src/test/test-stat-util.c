@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <fcntl.h>
-#include <linux/magic.h>
+//#include <linux/magic.h>
 #include <sched.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -11,8 +11,8 @@
 #include "fd-util.h"
 #include "fs-util.h"
 #include "macro.h"
-#include "mountpoint-util.h"
-#include "namespace-util.h"
+//#include "mountpoint-util.h"
+//#include "namespace-util.h"
 #include "path-util.h"
 #include "rm-rf.h"
 #include "stat-util.h"

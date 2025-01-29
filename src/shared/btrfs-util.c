@@ -20,7 +20,7 @@
 #include "btrfs-util.h"
 #include "chase.h"
 #include "chattr-util.h"
-#include "copy.h"
+//#include "copy.h"
 #include "fd-util.h"
 //#include "fileio.h"
 #include "fs-util.h"

@@ -4,8 +4,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <sys/file.h>
-#include <linux/falloc.h>
-#include <linux/magic.h>
+//#include <linux/falloc.h>
+//#include <linux/magic.h>
 #include <unistd.h>
 
 #include "alloc-util.h"
