@@ -332,22 +332,24 @@ def main():
             sys.exit(77 if arguments.test else 1)
 
 #if 0 /// check for elogind instead
-#     if not os.path.exists(f'{arguments.build_dir}/elogind'):
-#         sys.exit(f"{arguments.build_dir}/elogind doesn't exist. Use --build-dir=.")
-#
-#     missing_version = []
-#     stats = {page.split('/')[-1] : process(page, missing_version) for page in arguments.pages}
-#
-#     ignore_list = open(os.path.join(os.path.dirname(__file__), 'dbus_ignorelist')).read().split()
-#     missing_version = [x for x in missing_version if x not in ignore_list]
-#
-#     for missing in missing_version:
-#         print(f"{RED}Missing version information for {missing}{RESET}")
+#     if not os.path.exists(f'{arguments.build_dir}/systemd'):
+#         sys.exit(f"{arguments.build_dir}/systemd doesn't exist. Use --build-dir=.")
 #else // 0
-    if not os.path.exists(f'{opts.build_dir}/elogind'):
-        exit(f"{opts.build_dir}/elogind doesn't exist. Use --build-dir=.")
+    if not os.path.exists(f'{arguments.build_dir}/elogind'):
+        exit(f"{arguments.build_dir}/elogind doesn't exist. Use --build-dir=.")
 #endif // 0
 
+    missing_version = []
+    stats = {page.split('/')[-1] : process(page, missing_version) for page in arguments.pages}
+
+    ignore_list = open(os.path.join(os.path.dirname(__file__), 'dbus_ignorelist')).read().split()
+#if 1 /// elogind adds ReloadConfig(), which also has to be ignored
+    ignore_list.append( 'org.freedesktop.login1.Manager.ReloadConfig()' )
+#endif // 1
+    missing_version = [x for x in missing_version if x not in ignore_list]
+
+    for missing in missing_version:
+        print(f"{RED}Missing version information for {missing}{RESET}")
     if missing_version:
         sys.exit(1)
 
