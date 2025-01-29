@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: MIT-0 */
 
-/* Implement the elogind notify protocol without external dependencies.
+/* Implement the systemd notify protocol without external dependencies.
  * Supports both readiness notification on startup and on reloading,
  * according to the protocol defined at:
- * https://www.freedesktop.org/software/elogind/man/latest/sd_notify.html
+ * https://www.freedesktop.org/software/systemd/man/latest/sd_notify.html
  * This protocol is guaranteed to be stable as per:
  * https://systemd.io/PORTABILITY_AND_STABILITY/ */
 
@@ -41,16 +41,18 @@ static int notify(const char *message) {
   _cleanup_(closep) int fd = -1;
   const char *socket_path;
 
-  socket_path = getenv("NOTIFY_SOCKET");
-  if (!socket_path)
-    return 0; /* Not running under elogind? Nothing to do */
-
+  /* Verify the argument first */
   if (!message)
     return -EINVAL;
 
   message_length = strlen(message);
   if (message_length == 0)
     return -EINVAL;
+
+  /* If the variable is not set, the protocol is a noop */
+  socket_path = getenv("NOTIFY_SOCKET");
+  if (!socket_path)
+    return 0; /* Not set? Nothing to do */
 
   /* Only AF_UNIX is supported, with path or abstract sockets */
   if (socket_path[0] != '/' && socket_path[0] != '@')
@@ -91,7 +93,7 @@ static int notify_reloading(void) {
   struct timespec ts;
   uint64_t now;
 
-  /* Notify elogind that we are reloading, including a CLOCK_MONOTONIC timestamp in usec
+  /* Notify systemd that we are reloading, including a CLOCK_MONOTONIC timestamp in usec
    * so that the program is compatible with a Type=notify-reload service. */
 
   if (clock_gettime(CLOCK_MONOTONIC, &ts) < 0)

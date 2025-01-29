@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <elogind/sd-bus.h>
+#include <systemd/sd-bus.h>
 
 #define _cleanup_(f) __attribute__((cleanup(f)))
 
