@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 #include <glib.h>
-#include <elogind/sd-event.h>
+#include <systemd/sd-event.h>
 
 typedef struct SDEventSource {
   GSource source;

@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT-0 */
 
-#include <elogind/sd-bus.h>
+#include <systemd/sd-bus.h>
 
 int append_strings_to_message(sd_bus_message *m, const char *const *arr) {
   int r;

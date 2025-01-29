@@ -2,7 +2,7 @@
 
 /* Implements a D-Bus service that automatically reconnects when the system bus is restarted.
  *
- * Compile with 'cc sd_bus_service_reconnect.c $(pkg-config --libs --cflags libelogind)'
+ * Compile with 'cc sd_bus_service_reconnect.c $(pkg-config --libs --cflags libsystemd)'
  *
  * To allow the program to take ownership of the name 'org.freedesktop.ReconnectExample',
  * add the following as /etc/dbus-1/system.d/org.freedesktop.ReconnectExample.conf
@@ -37,7 +37,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <elogind/sd-bus.h>
+#include <systemd/sd-bus.h>
 
 #define _cleanup_(f) __attribute__((cleanup(f)))
 
@@ -75,7 +75,7 @@ static int property_get(
                            property);
 }
 
-/* https://www.freedesktop.org/software/elogind/man/sd_bus_add_object.html */
+/* https://www.freedesktop.org/software/systemd/man/sd_bus_add_object.html */
 static const sd_bus_vtable vtable[] = {
   SD_BUS_VTABLE_START(0),
   SD_BUS_PROPERTY(
@@ -113,8 +113,8 @@ static int request_name_callback(sd_bus_message *m, void *userdata, sd_bus_error
 static int setup(object *o) {
   /* If we are reconnecting, then the bus object needs to be closed, detached from
    * the event loop and recreated.
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_detach_event.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_close_unref.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_detach_event.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_close_unref.html
    */
   if (*o->bus) {
     check(sd_bus_detach_event(*o->bus));
@@ -124,13 +124,13 @@ static int setup(object *o) {
   /* Set up a new bus object for the system bus, configure it to wait for D-Bus to be available
    * instead of failing if it is not, and start it. All the following operations are asyncronous
    * and will not block waiting for D-Bus to be available.
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_new.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_set_address.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_set_bus_client.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_negotiate_creds.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_set_watch_bind.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_set_connected_signal.html
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_start.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_new.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_set_address.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_set_bus_client.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_negotiate_creds.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_set_watch_bind.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_set_connected_signal.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_start.html
    */
   check(sd_bus_new(o->bus));
   check(sd_bus_set_address(*o->bus, "unix:path=/run/dbus/system_bus_socket"));
@@ -141,7 +141,7 @@ static int setup(object *o) {
 
   /* Publish an interface on the bus, specifying our well-known object access
    * path and public interface name.
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_add_object.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_add_object.html
    * https://dbus.freedesktop.org/doc/dbus-tutorial.html
    */
   check(sd_bus_add_object_vtable(*o->bus,
@@ -152,9 +152,9 @@ static int setup(object *o) {
                                  o));
   /* By default the service is only assigned an ephemeral name. Also add a well-known
    * one, so that clients know whom to call. This needs to be asynchronous, as
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_request_name.html
    * D-Bus might not be yet available. The callback will check whether the error is
    * expected or not, in case it fails.
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_request_name.html
    */
   check(sd_bus_request_name_async(*o->bus,
                                   NULL,
@@ -165,7 +165,7 @@ static int setup(object *o) {
   /* When D-Bus is disconnected this callback will be invoked, which will
    * set up the connection again. This needs to be asynchronous, as D-Bus might not
    * yet be available.
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_match_signal_async.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_match_signal_async.html
    */
   check(sd_bus_match_signal_async(*o->bus,
                                   NULL,
@@ -177,7 +177,7 @@ static int setup(object *o) {
                                   NULL,
                                   o));
   /* Attach the bus object to the event loop so that calls and signals are processed.
-   * https://www.freedesktop.org/software/elogind/man/sd_bus_attach_event.html
+   * https://www.freedesktop.org/software/systemd/man/sd_bus_attach_event.html
    */
   check(sd_bus_attach_event(*o->bus, *o->event, 0));
 
@@ -198,13 +198,13 @@ int main(int argc, char **argv) {
   };
 
   /* Create an event loop data structure, with default parameters.
-   * https://www.freedesktop.org/software/elogind/man/sd_event_default.html
+   * https://www.freedesktop.org/software/systemd/man/sd_event_default.html
    */
   check(sd_event_default(&event));
 
   /* By default the event loop will terminate when all sources have disappeared, so
    * we have to keep it 'occupied'. Register signal handling to do so.
-   * https://www.freedesktop.org/software/elogind/man/sd_event_add_signal.html
+   * https://www.freedesktop.org/software/systemd/man/sd_event_add_signal.html
    */
   check(sd_event_add_signal(event, NULL, SIGINT|SD_EVENT_SIGNAL_PROCMASK, NULL, NULL));
   check(sd_event_add_signal(event, NULL, SIGTERM|SD_EVENT_SIGNAL_PROCMASK, NULL, NULL));
@@ -212,11 +212,11 @@ int main(int argc, char **argv) {
   check(setup(&o));
 
   /* Enter the main loop, it will exit only on sigint/sigterm.
-   * https://www.freedesktop.org/software/elogind/man/sd_event_loop.html
+   * https://www.freedesktop.org/software/systemd/man/sd_event_loop.html
    */
   check(sd_event_loop(event));
 
-  /* https://www.freedesktop.org/software/elogind/man/sd_bus_release_name.html */
+  /* https://www.freedesktop.org/software/systemd/man/sd_bus_release_name.html */
   check(sd_bus_release_name(bus, "org.freedesktop.ReconnectExample"));
 
   return 0;
