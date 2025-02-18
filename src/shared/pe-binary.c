@@ -31,7 +31,7 @@ static size_t pe_header_size(const PeHeader *pe_header) {
 }
 
 #if 0 /// UNNEEDED by elogind
-const IMAGE_DATA_DIRECTORY *pe_header_get_data_directory(
+const IMAGE_DATA_DIRECTORY* pe_header_get_data_directory(
                 const PeHeader *h,
                 size_t i) {
 
@@ -44,7 +44,7 @@ const IMAGE_DATA_DIRECTORY *pe_header_get_data_directory(
 }
 #endif // 0
 
-const IMAGE_SECTION_HEADER *pe_section_table_find(
+const IMAGE_SECTION_HEADER* pe_section_table_find(
                 const IMAGE_SECTION_HEADER *sections,
                 size_t n_sections,
                 const char *name) {
