@@ -52,7 +52,7 @@ int asynchronous_fsync(int fd, pid_t *ret_pid) {
                 return r;
         if (r == 0) {
                 /* Child process */
-                fsync(fd);
+                (void) fsync(fd);
                 _exit(EXIT_SUCCESS);
         }
 
