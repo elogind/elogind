@@ -14,8 +14,8 @@ test_env = environment()
 #if 0 /// UNNEEDED in elogind
 # test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
 #endif // 0
-test_env.set('PATH', project_build_root + ':' + path)
-test_env.set('PROJECT_BUILD_ROOT', project_build_root)
+test_env.set('PATH', meson.project_build_root() + ':' + path)
+test_env.set('PROJECT_BUILD_ROOT', meson.project_build_root())
 test_env.set('SYSTEMD_SLOW_TESTS', want_slow_tests ? '1' : '0')
 
 #if 0 /// UNNEEDED in elogind
