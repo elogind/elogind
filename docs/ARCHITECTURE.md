@@ -120,7 +120,7 @@ For testing and debugging, fuzzers can be executed as any other program, includi
 Sources in `test/TEST-*` implement system-level testing for executables, libraries and daemons that are shipped by the project.
 
 
-See [`test/README.md`](https://github.com/systemd/systemd/blob/main/test/README.md) for more specific details.
+See [`test/integration-tests/README.md`](https://github.com/systemd/systemd/blob/main/test/integration-tests/README.md) for more specific details.
 
 ## hwdb
 
