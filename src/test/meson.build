@@ -17,6 +17,7 @@ test_env = environment()
 test_env.set('PATH', meson.project_build_root() + ':' + path)
 test_env.set('PROJECT_BUILD_ROOT', meson.project_build_root())
 test_env.set('SYSTEMD_SLOW_TESTS', want_slow_tests ? '1' : '0')
+test_env.set('PYTHONDONTWRITEBYTECODE', '1')
 
 #if 0 /// UNNEEDED in elogind
 # if efi_addon != ''
