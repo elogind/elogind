@@ -46,7 +46,7 @@ If you do not have a github account, the elogind wiki page at
 lists further possibilities to contact the maintainers.
 
 To chat about elogind:
-  #elogind on freenode
+  #elogind on Libera.Chat
 
 Bug reports should go to:
   https://github.com/elogind/elogind/issues
