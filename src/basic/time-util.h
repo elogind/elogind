@@ -245,8 +245,8 @@ static inline int usleep_safe(usec_t usec) {
          * ⚠️ Note we are not using plain nanosleep() here, since that operates on CLOCK_REALTIME, not
          *    CLOCK_MONOTONIC! */
 
-        // FIXME: use RET_NERRNO() macro here. Currently, this header cannot include errno-util.h.
-        return clock_nanosleep(CLOCK_MONOTONIC, 0, TIMESPEC_STORE(usec), NULL) < 0 ? -errno : 0;
+        /* `clock_nanosleep()` does not use `errno`, but returns positive error codes. */
+        return -clock_nanosleep(CLOCK_MONOTONIC, 0, TIMESPEC_STORE(usec), NULL);
 }
 
 /* The last second we can format is 31. Dec 9999, 1s before midnight, because otherwise we'd enter 5 digit
