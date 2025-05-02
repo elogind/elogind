@@ -255,10 +255,12 @@ libcore_sources = files(
 #              install_dir : dbussystemservicedir)
 #
 #endif // 0
+install_emptydir(systemenvgeneratordir)
 install_emptydir(systemshutdowndir)
 install_emptydir(systemsleepdir)
 #if 0 /// UNNEEDED by elogind
 # install_emptydir(systemgeneratordir)
+# install_emptydir(userenvgeneratordir)
 # install_emptydir(usergeneratordir)
 #
 # if install_sysconfdir
