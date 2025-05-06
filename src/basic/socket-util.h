@@ -189,6 +189,7 @@ ssize_t next_datagram_size_fd(int fd);
 #if 0 /// UNNEEDED by elogind
 int flush_accept(int fd);
 #endif // 0
+ssize_t flush_mqueue(int fd);
 
 #define CMSG_FOREACH(cmsg, mh)                                          \
         for ((cmsg) = CMSG_FIRSTHDR(mh); (cmsg); (cmsg) = CMSG_NXTHDR((mh), (cmsg)))
