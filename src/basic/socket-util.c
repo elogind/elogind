@@ -4,9 +4,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <net/if.h>
-//#include <netdb.h>
-//#include <netinet/ip.h>
-//#include <poll.h>
+#include <mqueue.h>
+#include <netdb.h>
+#include <netinet/ip.h>
+#include <poll.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -1298,6 +1299,54 @@ int flush_accept(int fd) {
         }
 }
 #endif // 0
+
+ssize_t flush_mqueue(int fd) {
+        _cleanup_free_ char *buf = NULL;
+        struct mq_attr attr;
+        ssize_t count = 0;
+        int r;
+
+        assert(fd >= 0);
+
+        /* Similar to flush_fd() but flushes all messages from a POSIX message queue. */
+
+        for (;;) {
+                ssize_t l;
+
+                r = fd_wait_for_event(fd, POLLIN, /* timeout= */ 0);
+                if (r < 0) {
+                        if (r == -EINTR)
+                                continue;
+
+                        return r;
+                }
+                if (r == 0)
+                        return count;
+
+                if (!buf) {
+                        /* Buffer must be at least as large as mq_msgsize. */
+                        if (mq_getattr(fd, &attr) < 0)
+                                return -errno;
+
+                        buf = malloc(attr.mq_msgsize);
+                        if (!buf)
+                                return -ENOMEM;
+                }
+
+                l = mq_receive(fd, buf, attr.mq_msgsize, /* msg_prio = */ NULL);
+                if (l < 0) {
+                        if (errno == EINTR)
+                                continue;
+
+                        if (errno == EAGAIN)
+                                return count;
+
+                        return -errno;
+                }
+
+                count += l;
+        }
+}
 
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length) {
         struct cmsghdr *cmsg;
