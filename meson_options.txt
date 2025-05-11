@@ -199,8 +199,8 @@ option('utmp', type : 'boolean',
 #        description : 'support for restoring backlight state')
 # option('vconsole', type : 'boolean',
 #        description : 'support for vconsole configuration')
-#        description : 'install the elogind-vmspawn tool')
 # option('vmspawn', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
+#        description : 'install the systemd-vmspawn tool')
 # option('quotacheck', type : 'boolean',
 #        description : 'support for the quotacheck tools')
 # option('sysusers', type : 'boolean',
@@ -586,8 +586,8 @@ option('tests', type : 'combo', choices : ['true', 'unsafe', 'false'],
 option('slow-tests', type : 'boolean', value : false,
        description : 'run the slow tests by default')
 #if 0 /// elogind does not utilize fuzzing
-# option('fuzz-tests', type : 'boolean', value : false,
-#        description : 'run the fuzzer regression tests by default (with sanitizers)')
+# option('fuzz-tests', type : 'boolean', value : true,
+#        description : 'run the fuzzer regression tests')
 #endif // 0
 option('install-tests', type : 'boolean', value : false,
        description : 'install test executables')

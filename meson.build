@@ -370,8 +370,12 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 #endif // 0
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'systemd-cgroups-agent')
+# conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    bindir / 'systemd-cryptsetup')
+# conf.set_quoted('SYSTEMD_EXPORT_PATH',                        libexecdir / 'systemd-export')
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          libexecdir / 'systemd-fsck')
 # conf.set_quoted('SYSTEMD_GROWFS_PATH',                        libexecdir / 'systemd-growfs')
+# conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      libexecdir / 'systemd-homework')
+# conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     libexecdir / 'systemd-import-fs')
 # conf.set_quoted('SYSTEMD_IMPORT_PATH',                        libexecdir / 'systemd-import')
 # conf.set_quoted('SYSTEMD_INTEGRITYSETUP_PATH',                libexecdir / 'systemd-integritysetup')
 # conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      pkgdatadir / 'kbd-model-map')
@@ -386,8 +390,8 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 #endif // 0
 conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'elogind-userwork')
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEMD_NSRESOURCEWORK_PATH',                libexecdir / 'elogind-nsresourcework')
-# conf.set_quoted('SYSTEMD_MOUNTWORK_PATH',                     libexecdir / 'elogind-mountwork')
+# conf.set_quoted('SYSTEMD_MOUNTWORK_PATH',                     libexecdir / 'systemd-mountwork')
+# conf.set_quoted('SYSTEMD_NSRESOURCEWORK_PATH',                libexecdir / 'systemd-nsresourcework')
 # conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   libexecdir / 'systemd-veritysetup')
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     pkgsysconfdir / 'system')
 # conf.set_quoted('SYSTEM_DATA_UNIT_DIR',                       systemunitdir)
@@ -462,13 +466,10 @@ install_tests = want_tests != 'false' and get_option('install-tests')
 # endif
 #
 # if want_libfuzzer
-#         fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer', required : false)
-#         if fuzzing_engine.found()
-#                 userspace_c_args += '-fsanitize-coverage=trace-pc-guard,trace-cmp'
-#         elif cc.has_argument('-fsanitize=fuzzer-no-link')
+#         if cc.has_argument('-fsanitize=fuzzer-no-link')
 #                 userspace_c_args += '-fsanitize=fuzzer-no-link'
 #         else
-#                 error('Looks like neither libFuzzer nor -fsanitize=fuzzer-no-link is supported')
+#                 error('Looks like -fsanitize=fuzzer-no-link is not supported')
 #         endif
 # elif want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
@@ -2716,11 +2717,11 @@ fuzz_template = executable_template + {
 }
 
 #if 0 /// elogind does not fuzz
-# if want_ossfuzz or (want_libfuzzer and fuzzing_engine.found())
+# if want_ossfuzz
 #         fuzz_additional_kwargs = {
 #                 'dependencies' : fuzzing_engine,
 #         }
-# elif want_libfuzzer and not fuzzing_engine.found()
+# elif want_libfuzzer
 #         fuzz_additional_kwargs = {
 #                 'link_args' : ['-fsanitize=fuzzer'],
 #         }
@@ -3061,6 +3062,8 @@ foreach dict : executables
 #                                      exe,
 #                                      suite : 'fuzz',
 #                                      args : directive.full_path(),
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
 #                                      depends : directive)
 #                         endforeach
 #                         foreach file : fuzz_ins.get('files', [])
@@ -3072,6 +3075,8 @@ foreach dict : executables
 #                                 test(tt,
 #                                      exe,
 #                                      suite : 'fuzz',
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
 #                                      args : file)
 #                         endforeach
 #                 endif
@@ -3335,55 +3340,6 @@ foreach exec : public_programs
                      depends: exec)
         endif
 endforeach
-
-
-#if 0 /// fuzz regression tests are not supported by elogind
-# # Enable tests for all supported sanitizers
-# foreach tuple : fuzz_sanitizers
-#         sanitizer = tuple[0]
-#         build = tuple[1]
-#
-#         if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
-#                 foreach fuzzer, fuzz_ins : fuzz_regression_tests
-#                         name = '@0@:@1@'.format(fuzzer, sanitizer)
-#                         if want_tests == 'false'
-#                                 message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 continue
-#                         endif
-#                         if not want_fuzz_tests
-#                                 message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
-#                                 continue
-#                         endif
-#                         exe = custom_target(
-#                                 name,
-#                                 output : name,
-#                                 depends : build,
-#                                 command : [ln, '-fs',
-#                                            build.full_path() / fuzzer,
-#                                            '@OUTPUT@'],
-#                                 build_by_default : true)
-#
-#                         foreach directive : fuzz_ins.get('directives', [])
-#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(directive.full_path()), sanitizer),
-#                                      env,
-#                                      suite : 'fuzz+san',
-#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-#                                      timeout : 60,
-#                                      args : [exe.full_path(), directive.full_path()],
-#                                      depends : directive)
-#                         endforeach
-#                         foreach file : fuzz_ins.get('files', [])
-#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(file), sanitizer),
-#                                      env,
-#                                      suite : 'fuzz+san',
-#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-#                                      timeout : 60,
-#                                      args : [exe.full_path(), file])
-#                         endforeach
-#                 endforeach
-#         endif
-# endforeach
-#endif // 0
 
 #####################################################################
 
