@@ -226,10 +226,3 @@ Useful commands:
 A tarball can be created with:  
   `git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz`
 
---------
-
-Many thanks to JetBrains and their
-"[Licenses for Open Source Development](https://jb.gg/OpenSourceSupport)"
-program, providing free licenses for
-
-![CLion by JetBrains](https://resources.jetbrains.com/storage/products/company/brand/logos/CLion.svg)
