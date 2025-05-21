@@ -1398,14 +1398,19 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWho who, int signo) {
         assert(s);
 
-#if 0 /// Without direct cgroup support, elogind can not kill sessions
         switch (who) {
 
         case KILL_ALL:
+#if 0 /// elogind does not support systemd units
                 if (!s->scope)
                         return -ESRCH;
 
                 return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, NULL);
+#else // 0
+                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
+                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                          NULL, NULL, NULL);;
+#endif // 0
 
         case KILL_LEADER:
                 return RET_NERRNO(kill(s->leader, signo));
@@ -1413,22 +1418,6 @@ int session_kill(Session *s, KillWho who, int signo) {
         default:
                 assert_not_reached();
         }
-#else // 0
-        if (who == KILL_LEADER) {
-                if (s->leader <= 0)
-                        return -ESRCH;
-
-                /* FIXME: verify that leader is in cgroup?  */
-
-                if (kill(s->leader, signo) < 0) {
-                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader, s->id);
-                }
-                return 0;
-        } else
-                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, s->id, signo,
-                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
-                                          NULL, NULL, NULL);
-#endif // 0
 }
 
 static int session_open_vt(Session *s) {
