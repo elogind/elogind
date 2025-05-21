@@ -71,4 +71,3 @@ cb/elogind.layout
 compile_commands.json
 #endif // 1
 .dir-locals-2.el
-.vscode/
