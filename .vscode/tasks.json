@@ -19,6 +19,7 @@
 			],
 			"options": {
 				"env": {
+					"BUILDMODE": "release",
 					"DEBUG": "YES",
 					"LC_ALL": "C"
 				},
@@ -41,6 +42,7 @@
 			],
 			"options": {
 				"env": {
+					"BUILDMODE": "release",
 					"DEBUG": "YES",
 					"LC_ALL": "C"
 				},
@@ -63,6 +65,7 @@
 			],
 			"options": {
 				"env": {
+					"BUILDMODE": "release",
 					"DEBUG": "YES",
 					"LC_ALL": "C"
 				},
