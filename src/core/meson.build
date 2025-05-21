@@ -242,8 +242,8 @@ libcore_sources = files(
 # install_data('org.freedesktop.systemd1.service',
 #              install_dir : dbussystemservicedir)
 #
+# meson.add_install_script('sh', '-c', mkdir_p.format(systemenvgeneratordir))
 #endif // 0
-meson.add_install_script('sh', '-c', mkdir_p.format(systemenvgeneratordir))
 meson.add_install_script('sh', '-c', mkdir_p.format(systemshutdowndir))
 meson.add_install_script('sh', '-c', mkdir_p.format(systemsleepdir))
 #if 1 /// some package systems like portage might strip empty directories created for elogind
