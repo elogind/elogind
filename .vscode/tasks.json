@@ -1,0 +1,141 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Create Debug Directory",
+			"command": "mkdir -p ${workspaceFolder}/build_debug",
+			"group": "none"
+		},{
+			"type": "shell",
+			"label": "Build Debug",
+			"command": "cd .. && make all",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "YES",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}/build_debug"
+			},
+			"dependsOn": [
+				"Create Debug Directory"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "Test Debug",
+			"command": "cd .. && make test",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "YES",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}/build_debug"
+			},
+			"dependsOn": [
+				"Build Debug"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "Clean Debug",
+			"command": "make clean",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "YES",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "Create Release Directory",
+			"command": "mkdir -p ${workspaceFolder}/build_release",
+			"group": "none"
+		},{
+			"type": "shell",
+			"label": "Build Release",
+			"command": "cd .. && make all",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "NO",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}/build_release"
+			},
+			"dependsOn": [
+				"Create Release Directory"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "Test Release",
+			"command": "cd .. && make test",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "NO",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}/build_release"
+			},
+			"dependsOn": [
+				"Build Release"
+			]
+		},
+		{
+			"type": "shell",
+			"label": "Clean Release",
+			"command": "cd .. && make clean",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"options": {
+				"env": {
+					"DEBUG": "NO",
+					"LC_ALL": "C"
+				},
+				"cwd": "${workspaceFolder}/build_release"
+			}
+		},
+	]
+}
