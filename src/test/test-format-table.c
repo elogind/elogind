@@ -28,7 +28,7 @@ TEST(issue_9549) {
 
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
-#endif // 1 
+#endif // 1
         table_set_width(table, 75);
         assert_se(table_format(table, &formatted) >= 0);
 
@@ -39,7 +39,7 @@ TEST(issue_9549) {
                         ));
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
-#endif // 1 
+#endif // 1
 }
 
 TEST(multiline) {
@@ -57,18 +57,30 @@ TEST(multiline) {
         table_set_cell_height_max(table, 1);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO     BAR\n"
                         "three… two…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 2);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO          BAR\n"
                         "three        two\n"
                         "different… lines\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 3);
@@ -102,16 +114,25 @@ TEST(multiline) {
         table_set_cell_height_max(table, 1);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO     BAR\n"
                         "three… two…\n"
                         "short    a…\n"
                         "short2   a…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 2);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO          BAR\n"
                         "three        two\n"
@@ -120,11 +141,17 @@ TEST(multiline) {
                         "            pair\n"
                         "short2         a\n"
                         "           four…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 3);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO         BAR\n"
                         "three       two\n"
@@ -135,6 +162,9 @@ TEST(multiline) {
                         "short2        a\n"
                         "           four\n"
                         "          line…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, SIZE_MAX);
@@ -169,18 +199,30 @@ TEST(strv) {
         table_set_cell_height_max(table, 1);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO     BAR\n"
                         "three… two…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 2);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO          BAR\n"
                         "three        two\n"
                         "different… lines\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 3);
@@ -214,16 +256,25 @@ TEST(strv) {
         table_set_cell_height_max(table, 1);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO     BAR\n"
                         "three… two…\n"
                         "short    a…\n"
                         "short2   a…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 2);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO          BAR\n"
                         "three        two\n"
@@ -232,11 +283,17 @@ TEST(strv) {
                         "            pair\n"
                         "short2         a\n"
                         "           four…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 3);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO         BAR\n"
                         "three       two\n"
@@ -247,6 +304,9 @@ TEST(strv) {
                         "short2        a\n"
                         "           four\n"
                         "          line…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, SIZE_MAX);
@@ -322,16 +382,25 @@ TEST(strv_wrapped) {
         table_set_cell_height_max(table, 1);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO                             BAR\n"
                         "three different…          two lines\n"
                         "short                        a pair\n"
                         "short2           a eight line ćęłł…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 2);
         assert_se(table_format(table, &formatted) >= 0);
         fputs(formatted, stdout);
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "FOO                           BAR\n"
                         "three different         two lines\n"
@@ -339,6 +408,9 @@ TEST(strv_wrapped) {
                         "short                      a pair\n"
                         "short2          a eight line ćęłł\n"
                         "                 ___5___ ___6___…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
         formatted = mfree(formatted);
 
         table_set_cell_height_max(table, 3);
@@ -447,15 +519,18 @@ TEST(table) {
         table_set_width(t, 15);
         assert_se(table_format(t, &formatted) >= 0);
 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
-        if (is_locale_utf8()) {
-#endif // 1 
         printf("%s\n", formatted);
 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "ONE TWO TH… FO…\n"
                         "xxx yyy yes  -1\n"
                         "a … YYY no  -9…\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
 
         formatted = mfree(formatted);
 
@@ -463,10 +538,16 @@ TEST(table) {
         assert_se(table_format(t, &formatted) >= 0);
         printf("%s\n", formatted);
 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "… … … …\n"
                         "… … … …\n"
                         "… … … …\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
 
         formatted = mfree(formatted);
 
@@ -474,15 +555,17 @@ TEST(table) {
         assert_se(table_format(t, &formatted) >= 0);
         printf("%s\n", formatted);
 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         assert_se(streq(formatted,
                         "… … … …\n"
                         "… … … …\n"
                         "… … … …\n"));
-
-        formatted = mfree(formatted);
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
-#endif // 1 
+#endif // 1
+        formatted = mfree(formatted);
 
         table_set_width(t, SIZE_MAX);
         assert_se(table_set_sort(t, (size_t) 0, (size_t) 2, SIZE_MAX) >= 0);
@@ -501,7 +584,7 @@ TEST(table) {
 
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
         if (is_locale_utf8()) {
-#endif // 1 
+#endif // 1
         assert_se(table_add_many(t,
                                  TABLE_STRING, "fäää",
                                  TABLE_STRING, "uuu",
@@ -529,6 +612,9 @@ TEST(table) {
                         "fäää         uuu  yes          42\n"
                         "xxx          yyy  yes          -1\n"
                         "             4.6K 5min -123456789\n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
 
         formatted = mfree(formatted);
 
@@ -537,9 +623,9 @@ TEST(table) {
         assert_se(table_format(t, &formatted) >= 0);
         printf("%s\n", formatted);
 
-#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
-        }
-#endif // 1 
+#if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
+        if (is_locale_utf8()) {
+#endif // 1
         if (isatty(STDOUT_FILENO))
                 assert_se(streq(formatted,
                                 "no   a long f… no   a long f… a long fi…\n"
@@ -554,6 +640,9 @@ TEST(table) {
                                 "yes  fäää         yes  fäää         fäää\n"
                                 "yes  xxx          yes  xxx          xxx\n"
                                 "5min              5min              \n"));
+#if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
+        }
+#endif // 1
 }
 
 static int intro(void) {
