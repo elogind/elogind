@@ -1364,7 +1364,6 @@ int must_be_root(void) {
 }
 #endif // 0
 
-
 pid_t clone_with_nested_stack(int (*fn)(void *), int flags, void *userdata) {
         size_t ps;
         pid_t pid;
