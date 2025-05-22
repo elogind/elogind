@@ -1298,7 +1298,6 @@ int flush_accept(int fd) {
                 safe_close(cfd);
         }
 }
-#endif // 0
 
 ssize_t flush_mqueue(int fd) {
         _cleanup_free_ char *buf = NULL;
@@ -1347,6 +1346,7 @@ ssize_t flush_mqueue(int fd) {
                 count += l;
         }
 }
+#endif // 0
 
 struct cmsghdr* cmsg_find(struct msghdr *mh, int level, int type, socklen_t length) {
         struct cmsghdr *cmsg;
