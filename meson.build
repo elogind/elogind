@@ -2237,7 +2237,6 @@ check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 # # We generally prefer the former (to support reproducible builds), but will
 # # fallback to the latter.
 #
-# #if 0 /// UNSUPPORTED by elogind (we do not build boot images)
 # if conf.get('BPF_FRAMEWORK') == 1
 #         enable_vmlinux_h = get_option('vmlinux-h')
 #
