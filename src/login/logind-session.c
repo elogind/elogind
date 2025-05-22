@@ -1474,6 +1474,7 @@ int session_kill(Session *s, KillWho who, int signo) {
                         return -ESRCH;
 
                 return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, NULL);
+
 #else // 0
                 return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, signo,
                                           CGROUP_IGNORE_SELF | CGROUP_REMOVE,
