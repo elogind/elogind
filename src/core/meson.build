@@ -254,8 +254,8 @@ libcore_sources = files(
 # install_data('org.freedesktop.systemd1.service',
 #              install_dir : dbussystemservicedir)
 #
+#install_emptydir(systemenvgeneratordir)
 #endif // 0
-install_emptydir(systemenvgeneratordir)
 install_emptydir(systemshutdowndir)
 install_emptydir(systemsleepdir)
 #if 0 /// UNNEEDED by elogind
