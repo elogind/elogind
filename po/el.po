@@ -7,10 +7,10 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 15:33+0200\n"
+"POT-Creation-Date: 2024-11-28 18:16+0900\n"
 "PO-Revision-Date: 2024-08-04 03:41+0000\n"
 "Last-Translator: Dimitrys Meliates <demetresmeliates+fedora@gmail.com>\n"
-"Language-Team: Greek <https://translate.fedoraproject.org/projects/elogind/"
+"Language-Team: Greek <https://translate.fedoraproject.org/projects/systemd/"
 "main/el/>\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
@@ -67,21 +67,21 @@ msgstr ""
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:64
 # msgid "Reload the systemd state"
-# msgstr "Επαναφόρτωση κατάστασης elogind"
+# msgstr "Επαναφόρτωση κατάστασης systemd"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:65
 # msgid "Authentication is required to reload the systemd state."
-# msgstr "Απαιτείται ταυτοποίηση για την επαναφόρτωση της κατάστασης elogind."
+# msgstr "Απαιτείται ταυτοποίηση για την επαναφόρτωση της κατάστασης systemd."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:74
 # msgid "Dump the systemd state without rate limits"
-# msgstr "Απόρριψη κατάστασης elogind χωρίς όρια ρυθμού"
+# msgstr "Απόρριψη κατάστασης systemd χωρίς όρια ρυθμού"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
 # msgid ""
 # "Authentication is required to dump the systemd state without rate limits."
 # msgstr ""
-# "Απαιτείται ταυτοποίηση για την απόρριψη κατάστασης elogind χωρίς όρια ρυθμού."
+# "Απαιτείται ταυτοποίηση για την απόρριψη κατάστασης systemd χωρίς όρια ρυθμού."
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
@@ -119,31 +119,41 @@ msgstr ""
 # msgstr "Απαιτείται ταυτοποίηση για την ενημέρωση αρχικής περιοχής ενός χρήστη."
 #
 # #: src/home/org.freedesktop.home1.policy:53
+# #, fuzzy
+# msgid "Update your home area"
+# msgstr "Ενημέρωση αρχικής περιοχής"
+#
+# #: src/home/org.freedesktop.home1.policy:54
+# #, fuzzy
+# msgid "Authentication is required to update your home area."
+# msgstr "Απαιτείται ταυτοποίηση για την ενημέρωση αρχικής περιοχής ενός χρήστη."
+#
+# #: src/home/org.freedesktop.home1.policy:63
 # msgid "Resize a home area"
 # msgstr "Αλλαγή μεγέθους αρχικής περιοχής"
 #
-# #: src/home/org.freedesktop.home1.policy:54
+# #: src/home/org.freedesktop.home1.policy:64
 # msgid "Authentication is required to resize a user's home area."
 # msgstr ""
 # "Απαιτείται ταυτοποίηση για την αλλαγή του μεγέθους αρχικής περιοχής ενός "
 # "χρήστη."
 #
-# #: src/home/org.freedesktop.home1.policy:63
+# #: src/home/org.freedesktop.home1.policy:73
 # msgid "Change password of a home area"
 # msgstr ""
 #
-# #: src/home/org.freedesktop.home1.policy:64
+# #: src/home/org.freedesktop.home1.policy:74
 # #, fuzzy
 # msgid ""
 # "Authentication is required to change the password of a user's home area."
 # msgstr ""
 # "Απαιτείται πιστοποίηση για προσάρτηση μιας συσκευής σε έναν σταθμό εργασίας."
 #
-# #: src/home/org.freedesktop.home1.policy:73
+# #: src/home/org.freedesktop.home1.policy:83
 # msgid "Activate a home area"
 # msgstr ""
 #
-# #: src/home/org.freedesktop.home1.policy:74
+# #: src/home/org.freedesktop.home1.policy:84
 # #, fuzzy
 # msgid "Authentication is required to activate a user's home area."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
@@ -1225,6 +1235,16 @@ msgstr "Απαιτείται πιστοποίηση για να ορίσετε �
 # msgid "Authentication is required to cleanup old system updates."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:75
+# msgid "Manage optional features"
+# msgstr ""
+#
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:76
+# #, fuzzy
+# msgid "Authentication is required to manage optional features."
+# msgstr ""
+# "Απαιτείται πιστοποίηση για προσάρτηση μιας συσκευής σε έναν σταθμό εργασίας."
+#
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
 # msgstr "Ορισμός ώρας συστήματος"
@@ -1265,51 +1285,51 @@ msgstr "Απαιτείται πιστοποίηση για να ορίσετε �
 # "Απαιτείται πιστοποίηση για να ελέγξετε αν ο συγχρονισμός ώρας δικτύου θα "
 # "ενεργοποιηθεί."
 #
-# #: src/core/dbus-unit.c:353
+# #: src/core/dbus-unit.c:370
 # #, fuzzy
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:354
+# #: src/core/dbus-unit.c:371
 # #, fuzzy
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:355
+# #: src/core/dbus-unit.c:372
 # #, fuzzy
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:356 src/core/dbus-unit.c:357
+# #: src/core/dbus-unit.c:373 src/core/dbus-unit.c:374
 # #, fuzzy
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:549
+# #: src/core/dbus-unit.c:566
 # #, fuzzy
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:577
+# #: src/core/dbus-unit.c:594
 # #, fuzzy
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε τοπικά όνομα οικοδεσπότη."
 #
-# #: src/core/dbus-unit.c:607
+# #: src/core/dbus-unit.c:624
 # #, fuzzy
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε την ώρα του συστήματος."
 #
-# #: src/core/dbus-unit.c:704
+# #: src/core/dbus-unit.c:721
 # #, fuzzy
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
 # msgstr "Απαιτείται πιστοποίηση για να ορίσετε τοπικά όνομα οικοδεσπότη."
 #
-# #: src/core/dbus-unit.c:741
+# #: src/core/dbus-unit.c:758
 # #, fuzzy
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."

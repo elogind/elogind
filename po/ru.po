@@ -13,8 +13,8 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 15:33+0200\n"
-"PO-Revision-Date: 2024-08-25 11:38+0000\n"
+"POT-Creation-Date: 2024-11-28 18:16+0900\n"
+"PO-Revision-Date: 2024-12-06 08:19+0000\n"
 "Last-Translator: \"Sergey A.\" <Ser82-png@yandex.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/systemd/"
 "main/ru/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.7\n"
+"X-Generator: Weblate 5.8.4\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -131,31 +131,40 @@ msgstr ""
 # "аутентификацию."
 #
 # #: src/home/org.freedesktop.home1.policy:53
+# msgid "Update your home area"
+# msgstr "Обновить домашнее пространство"
+#
+# #: src/home/org.freedesktop.home1.policy:54
+# msgid "Authentication is required to update your home area."
+# msgstr ""
+# "Чтобы обновить ваше домашнее пространство, необходимо пройти аутентификацию."
+#
+# #: src/home/org.freedesktop.home1.policy:63
 # msgid "Resize a home area"
 # msgstr "Изменить размер домашнего пространства"
 #
-# #: src/home/org.freedesktop.home1.policy:54
+# #: src/home/org.freedesktop.home1.policy:64
 # msgid "Authentication is required to resize a user's home area."
 # msgstr ""
 # "Чтобы изменить размер домашнего пространства пользователя, необходимо пройти "
 # "аутентификацию."
 #
-# #: src/home/org.freedesktop.home1.policy:63
+# #: src/home/org.freedesktop.home1.policy:73
 # msgid "Change password of a home area"
 # msgstr "Изменить пароль для домашнего пространства"
 #
-# #: src/home/org.freedesktop.home1.policy:64
+# #: src/home/org.freedesktop.home1.policy:74
 # msgid ""
 # "Authentication is required to change the password of a user's home area."
 # msgstr ""
 # "Чтобы изменить пароль для домашнего пространства пользователя, необходимо "
 # "пройти аутентификацию."
 #
-# #: src/home/org.freedesktop.home1.policy:73
+# #: src/home/org.freedesktop.home1.policy:83
 # msgid "Activate a home area"
 # msgstr "Активация домашнего пространства"
 #
-# #: src/home/org.freedesktop.home1.policy:74
+# #: src/home/org.freedesktop.home1.policy:84
 # msgid "Authentication is required to activate a user's home area."
 # msgstr ""
 # "Чтобы активировать домашнее пространство пользователя, необходимо пройти "
@@ -1209,7 +1218,8 @@ msgstr "Чтобы сменить виртуальный терминал, не�
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:166
 # msgid "Authentication is required to dump server state."
-# msgstr "Чтобы создать дамп состояние сервера, необходимо пройти аутентификацию."
+# msgstr ""
+# "Чтобы создать дамп состояние сервера, необходимо пройти аутентификацию."
 #
 # #: src/resolve/org.freedesktop.resolve1.policy:176
 # msgid "Dump statistics"
@@ -1266,6 +1276,15 @@ msgstr "Чтобы сменить виртуальный терминал, не�
 # "Чтобы удалить устаревшие обновления системы, необходимо пройти "
 # "аутентификацию."
 #
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:75
+# msgid "Manage optional features"
+# msgstr "Управление дополнительными функциями"
+#
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:76
+# msgid "Authentication is required to manage optional features."
+# msgstr ""
+# "Для управления дополнительными функциями необходимо пройти аутентификацию."
+#
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
 # msgstr "Настроить системное время"
@@ -1306,25 +1325,25 @@ msgstr "Чтобы сменить виртуальный терминал, не�
 # "Чтобы включить или отключить синхронизацию времени по сети, необходимо "
 # "пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:353
+# #: src/core/dbus-unit.c:370
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "Чтобы запустить «$(unit)», необходимо пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:354
+# #: src/core/dbus-unit.c:371
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "Чтобы остановить «$(unit)», необходимо пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:355
+# #: src/core/dbus-unit.c:372
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr ""
 # "Чтобы заставить «$(unit)» перечитать конфигурацию, необходимо пройти "
 # "аутентификацию."
 #
-# #: src/core/dbus-unit.c:356 src/core/dbus-unit.c:357
+# #: src/core/dbus-unit.c:373 src/core/dbus-unit.c:374
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "Чтобы перезапустить «$(unit)», необходимо пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:549
+# #: src/core/dbus-unit.c:566
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
@@ -1332,18 +1351,18 @@ msgstr "Чтобы сменить виртуальный терминал, не�
 # "Чтобы отправить сигнал UNIX процессам юнита «$(unit)», необходимо пройти "
 # "аутентификацию."
 #
-# #: src/core/dbus-unit.c:577
+# #: src/core/dbus-unit.c:594
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "Чтобы сбросить состояние «failed» у юнита «$(unit)», необходимо пройти "
 # "аутентификацию."
 #
-# #: src/core/dbus-unit.c:607
+# #: src/core/dbus-unit.c:624
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr ""
 # "Чтобы изменить параметры юнита «$(unit)», необходимо пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:704
+# #: src/core/dbus-unit.c:721
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -1351,7 +1370,7 @@ msgstr "Чтобы сменить виртуальный терминал, не�
 # "Чтобы удалить файлы и директории, относящиеся к юниту «$(unit)», необходимо "
 # "пройти аутентификацию."
 #
-# #: src/core/dbus-unit.c:741
+# #: src/core/dbus-unit.c:758
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""

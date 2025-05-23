@@ -8,12 +8,13 @@
 # Tiago Rocha Cunha <tiagocunha.me@gmail.com>, 2024.
 # Gabriel Elyas <gabrielelyas@protonmail.com>, 2024.
 # Fábio Rodrigues Ribeiro <farribeiro@gmail.com>, 2024.
+# "Geraldo S. Simião Kutz" <geraldo.simiao.kutz@gmail.com>, 2024.
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-23 15:33+0200\n"
-"PO-Revision-Date: 2024-09-25 01:07+0000\n"
-"Last-Translator: Fábio Rodrigues Ribeiro <farribeiro@gmail.com>\n"
+"POT-Creation-Date: 2024-11-28 18:16+0900\n"
+"PO-Revision-Date: 2024-12-04 02:38+0000\n"
+"Last-Translator: \"Geraldo S. Simião Kutz\" <geraldo.simiao.kutz@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://translate.fedoraproject.org/"
 "projects/elogind/main/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.7.2\n"
+"X-Generator: Weblate 5.8.2\n"
 
 #if 0 /// UNNEEDED by elogind
 # #: src/core/org.freedesktop.systemd1.policy.in:22
@@ -78,15 +79,14 @@ msgstr ""
 # msgstr "É necessária autenticação para recarregar o estado do sistema."
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:74
-# #, fuzzy
 # msgid "Dump the systemd state without rate limits"
-# msgstr "Descarregue o estado do elogind sem limites de taxa"
+# msgstr "Descarregue o estado do systemd sem limites de velocidade"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
 # msgid ""
 # "Authentication is required to dump the systemd state without rate limits."
 # msgstr ""
-# "A autenticação é necessária para descarregar o estado do elogind sem limites "
+# "A autenticação é necessária para descarregar o estado do systemd sem limites "
 # "de taxa."
 #
 # #: src/home/org.freedesktop.home1.policy:13
@@ -125,32 +125,40 @@ msgstr ""
 # msgstr "É necessária autenticação para atualizar a área home de um usuário."
 #
 # #: src/home/org.freedesktop.home1.policy:53
+# msgid "Update your home area"
+# msgstr "Atualizar seu espaço da home"
+#
+# #: src/home/org.freedesktop.home1.policy:54
+# msgid "Authentication is required to update your home area."
+# msgstr ""
+# "É necessária autenticação para atualizar o espaço da home de um usuário."
+#
+# #: src/home/org.freedesktop.home1.policy:63
 # msgid "Resize a home area"
 # msgstr "Redimensionar uma área home"
 #
-# #: src/home/org.freedesktop.home1.policy:54
+# #: src/home/org.freedesktop.home1.policy:64
 # msgid "Authentication is required to resize a user's home area."
 # msgstr ""
 # "É necessária autenticação para redimensionar a área home de um usuário."
 #
-# #: src/home/org.freedesktop.home1.policy:63
+# #: src/home/org.freedesktop.home1.policy:73
 # msgid "Change password of a home area"
 # msgstr "Alterar senha de uma área home"
 #
-# #: src/home/org.freedesktop.home1.policy:64
+# #: src/home/org.freedesktop.home1.policy:74
 # msgid ""
 # "Authentication is required to change the password of a user's home area."
 # msgstr ""
 # "É necessária autenticação para alterar a senha da área home de um usuário."
 #
-# #: src/home/org.freedesktop.home1.policy:73
+# #: src/home/org.freedesktop.home1.policy:83
 # msgid "Activate a home area"
 # msgstr "Ativar uma área home"
 #
-# #: src/home/org.freedesktop.home1.policy:74
-# #, fuzzy
+# #: src/home/org.freedesktop.home1.policy:84
 # msgid "Authentication is required to activate a user's home area."
-# msgstr "É necessária autenticação para criar a área home de um usuário."
+# msgstr "É necessária autenticação para criar o espaço da home de um usuário."
 #
 # #: src/home/pam_systemd_home.c:293
 # #, c-format
@@ -1055,6 +1063,8 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # #: src/network/org.freedesktop.network1.policy:187
 # msgid "Specify whether persistent storage for systemd-networkd is available"
 # msgstr ""
+# "Especificar se o armazenamento persistente para systemd-networkd está "
+# "disponível"
 #
 # #: src/network/org.freedesktop.network1.policy:188
 # msgid ""
@@ -1062,6 +1072,7 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # "networkd is available."
 # msgstr ""
 # "A autenticação é necessária para especificar se o armazenamento persistente "
+# "para systemd-networkd está disponível."
 #
 # #: src/portable/org.freedesktop.portable1.policy:13
 # msgid "Inspect a portable service image"
@@ -1165,39 +1176,45 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # msgstr "Verifique se há atualizações do sistema"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:36
-# #, fuzzy
 # msgid "Authentication is required to check for system updates."
-# msgstr "É necessária autenticação para definir o horário do sistema."
+# msgstr "É necessária autenticação para verificar por atualizações do sistema."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:45
 # msgid "Install system updates"
 # msgstr "Instalar atualizações do sistema"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:46
-# #, fuzzy
 # msgid "Authentication is required to install system updates."
-# msgstr "É necessária autenticação para definir o horário do sistema."
+# msgstr "É necessária autenticação para instalar atualizações do sistema."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:55
-# #, fuzzy
 # msgid "Install specific system version"
-# msgstr "Instalar sistema especifico de versão"
+# msgstr "Instalar versão específica do sistema"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:56
-# #, fuzzy
 # msgid ""
 # "Authentication is required to update the system to a specific (possibly old) "
 # "version."
-# msgstr "É necessária autenticação para definir o fuso horário do sistema."
+# msgstr ""
+# "A autenticação é necessária para atualizar o sistema para uma versão "
+# "específica (possivelmente antiga)."
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:65
 # msgid "Cleanup old system updates"
 # msgstr "Limpar velhas atualizações do sistema"
 #
 # #: src/sysupdate/org.freedesktop.sysupdate1.policy:66
-# #, fuzzy
 # msgid "Authentication is required to cleanup old system updates."
-# msgstr "É necessária autenticação para definir o horário do sistema."
+# msgstr ""
+# "A autenticação é necessária para limpar atualizações antigas do sistema."
+#
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:75
+# msgid "Manage optional features"
+# msgstr "Gerenciar recursos opcionais"
+#
+# #: src/sysupdate/org.freedesktop.sysupdate1.policy:76
+# msgid "Authentication is required to manage optional features."
+# msgstr "A autenticação é necessária para gerenciar recursos opcionais."
 #
 # #: src/timedate/org.freedesktop.timedate1.policy:22
 # msgid "Set system time"
@@ -1239,23 +1256,23 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # "É necessária autenticação para controlar se deve ser habilitada, ou não, a "
 # "sincronização de horário através de rede."
 #
-# #: src/core/dbus-unit.c:353
+# #: src/core/dbus-unit.c:370
 # msgid "Authentication is required to start '$(unit)'."
 # msgstr "É necessária autenticação para iniciar “$(unit)”."
 #
-# #: src/core/dbus-unit.c:354
+# #: src/core/dbus-unit.c:371
 # msgid "Authentication is required to stop '$(unit)'."
 # msgstr "É necessária autenticação para parar “$(unit)”."
 #
-# #: src/core/dbus-unit.c:355
+# #: src/core/dbus-unit.c:372
 # msgid "Authentication is required to reload '$(unit)'."
 # msgstr "É necessária autenticação para recarregar “$(unit)”."
 #
-# #: src/core/dbus-unit.c:356 src/core/dbus-unit.c:357
+# #: src/core/dbus-unit.c:373 src/core/dbus-unit.c:374
 # msgid "Authentication is required to restart '$(unit)'."
 # msgstr "É necessária autenticação para reiniciar “$(unit)”."
 #
-# #: src/core/dbus-unit.c:549
+# #: src/core/dbus-unit.c:566
 # msgid ""
 # "Authentication is required to send a UNIX signal to the processes of "
 # "'$(unit)'."
@@ -1263,16 +1280,16 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # "É necessária autenticação para enviar um sinal UNIX para os processos de "
 # "“$(unit)”."
 #
-# #: src/core/dbus-unit.c:577
+# #: src/core/dbus-unit.c:594
 # msgid "Authentication is required to reset the \"failed\" state of '$(unit)'."
 # msgstr ""
 # "É necessária autenticação para reiniciar o estado “failed” de “$(unit)”."
 #
-# #: src/core/dbus-unit.c:607
+# #: src/core/dbus-unit.c:624
 # msgid "Authentication is required to set properties on '$(unit)'."
 # msgstr "É necessária autenticação para definir propriedades em “$(unit)”."
 #
-# #: src/core/dbus-unit.c:704
+# #: src/core/dbus-unit.c:721
 # msgid ""
 # "Authentication is required to delete files and directories associated with "
 # "'$(unit)'."
@@ -1280,7 +1297,7 @@ msgstr "É necessária autenticação para alterar o terminal virtual."
 # "É necessária autenticação para excluir arquivos e diretórios associados com "
 # "“$(unit)”."
 #
-# #: src/core/dbus-unit.c:741
+# #: src/core/dbus-unit.c:758
 # msgid ""
 # "Authentication is required to freeze or thaw the processes of '$(unit)' unit."
 # msgstr ""
