@@ -160,8 +160,8 @@
           <para>Note that the journal service does not validate the values of any structured
           journal fields whose name is not prefixed with an underscore, and this includes any
           syslog related fields such as these. Hence, applications that supply a facility, PID,
-          or log level are expected to do so properly formatted, i.e. as numeric integers formatted
-          as decimal strings.</para>
+          or log level are expected to do so properly formatted, i.e. as integers formatted
+          as decimals.</para>
         </listitem>
       </varlistentry>
 
@@ -241,11 +241,10 @@
         <term><varname>_UID=</varname></term>
         <term><varname>_GID=</varname></term>
         <listitem>
-          <para>The process, user, and group ID of the process the
-          journal entry originates from formatted as a decimal
-          string. Note that entries obtained via <literal>stdout</literal> or
-          <literal>stderr</literal> of forked processes will contain credentials valid for a parent
-          process (that initiated the connection to <command>systemd-journald</command>).</para>
+          <para>The process number, user number, and group number of the process the journal entry originates
+          from formatted as decimals. Note that entries obtained via <literal>stdout</literal> or
+          <literal>stderr</literal> of forked processes will contain credentials valid for a parent process
+          (that initiated the connection to <command>systemd-journald</command>).</para>
         </listitem>
       </varlistentry>
 
@@ -308,17 +307,17 @@
       <varlistentry>
         <term><varname>_SOURCE_REALTIME_TIMESTAMP=</varname></term>
         <listitem>
-          <para>The earliest trusted timestamp of the message, if any is known that is different from
-          the reception time of the journal. The timestamp is in the <constant>CLOCK_REALTIME</constant>
-          clock in microseconds, formatted as decimal strings.</para>
+          <para>The earliest trusted timestamp of the message, if any is known that is different from the
+          reception time of the journal. The timestamp is the <constant>CLOCK_REALTIME</constant> time in
+          microseconds, formatted as a decimal.</para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term><varname>_SOURCE_BOOTTIME_TIMESTAMP=</varname></term>
         <listitem>
-          <para>The earliest trusted timestamp of the message in <constant>CLOCK_BOOTTIME</constant> clock.
-          For details, refer to <varname>_SOURCE_REALTIME_TIMESTAMP=</varname>.</para>
+          <para>The earliest trusted timestamp of the message in the <constant>CLOCK_BOOTTIME</constant>
+          time, in the same format as <varname>_SOURCE_REALTIME_TIMESTAMP=</varname>.</para>
 
           <xi:include href="version-info.xml" xpointer="v257"/>
         </listitem>
@@ -336,8 +335,7 @@
       <varlistentry>
         <term><varname>_MACHINE_ID=</varname></term>
         <listitem>
-          <para>The machine ID of the originating host, as available
-          in
+          <para>The machine ID of the originating host, as described in
           <citerefentry><refentrytitle>machine-id</refentrytitle><manvolnum>5</manvolnum></citerefentry>.</para>
         </listitem>
       </varlistentry>
@@ -357,7 +355,7 @@
       <varlistentry>
         <term><varname>_HOSTNAME=</varname></term>
         <listitem>
-          <para>The name of the originating host.</para>
+          <para>The hostname of the originating host.</para>
         </listitem>
       </varlistentry>
 
@@ -614,6 +612,8 @@
         <term><varname>OBJECT_SYSTEMD_UNIT=</varname></term>
         <term><varname>OBJECT_SYSTEMD_USER_UNIT=</varname></term>
         <listitem>
+          <para>These are additional fields added automatically by <command>systemd-journald</command>.
+          Their meaning is the same as
           <varname>_UID=</varname>,
           <varname>_GID=</varname>,
           <varname>_COMM=</varname>,
@@ -637,6 +637,8 @@
       <varlistentry>
         <term><varname>OBJECT_SYSTEMD_INVOCATION_ID=</varname></term>
         <listitem>
+          <para>An additional field added automatically by <command>systemd-journald</command>. The meaning
+          is mostly the same as <varname>_SYSTEMD_INVOCATION_ID=</varname>, with the difference described
           above.</para>
 
           <xi:include href="version-info.xml" xpointer="v235"/>
@@ -683,7 +685,7 @@
           <para>The wallclock time
           (<constant>CLOCK_REALTIME</constant>) at the point in time
           the entry was received by the journal, in microseconds since
-          the epoch UTC, formatted as a decimal string. This has
+          the epoch UTC, formatted as a decimal. This has
           different properties from
           <literal>_SOURCE_REALTIME_TIMESTAMP=</literal>, as it is
           usually a bit later but more likely to be monotonic.
@@ -697,7 +699,7 @@
           <para>The monotonic time
           (<constant>CLOCK_MONOTONIC</constant>) at the point in time
           the entry was received by the journal in microseconds,
-          formatted as a decimal string. To be useful as an address
+          formatted as a decimal. To be useful as an address
           for the entry, this should be combined with the boot ID in
           <literal>_BOOT_ID=</literal>.
           </para>
@@ -724,6 +726,8 @@
       <para><simplelist type="inline">
         <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
         <!-- 0 /// elogind does not have these
+        <member><citerefentry><refentrytitle>systemd-journald.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+        <member><citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>journald.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>coredumpctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
