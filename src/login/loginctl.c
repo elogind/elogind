@@ -646,7 +646,6 @@ static int print_session_status_info(sd_bus *bus, const char *path) {
                         return table_log_add_error(r);
         }
 
-
         if (!isempty(i.seat)) {
                 r = table_add_cell(table, NULL, TABLE_FIELD, "Seat");
                 if (r < 0)
@@ -1768,7 +1767,7 @@ static int parse_argv(int argc, char *argv[]) {
                         if (r <= 0)
                                 return r;
 
-                        if (!FLAGS_SET(arg_json_format_flags, SD_JSON_FORMAT_OFF))
+                        if (sd_json_format_enabled(arg_json_format_flags))
                                 arg_legend = false;
 
                         break;
