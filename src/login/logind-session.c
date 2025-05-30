@@ -1522,10 +1522,10 @@ SessionState session_get_state(Session *s) {
 int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
         assert(s);
 
-#if 0 /// Without direct cgroup support, elogind can not kill sessions
         switch (whom) {
 
         case KILL_ALL:
+#if 0 /// Without direct cgroup support, elogind can not kill sessions
                 if (!SESSION_CLASS_WANTS_SCOPE(s->class))
                         return sd_bus_error_setf(error, SD_BUS_ERROR_NOT_SUPPORTED,
                                                  "Session '%s' has no associated scope", s->id);
@@ -1534,6 +1534,11 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
                         return sd_bus_error_set_errnof(error, ESRCH, "Scope for session '%s' not active", s->id);
 
                 return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, error);
+#else // 0
+                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, signo,
+                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                          NULL, NULL, NULL);
+#endif // 0
 
         case KILL_LEADER:
                 return pidref_kill(&s->leader, signo);
@@ -1541,23 +1546,6 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
         default:
                 assert_not_reached();
         }
-#else // 0
-        if (who == KILL_LEADER) {
-                if (s->leader.pid <= 0)
-                        return -ESRCH;
-
-                /* FIXME: verify that leader is in cgroup?  */
-
-                if (kill(s->leader.pid, signo) < 0) {
-                        return log_error_errno(errno, "Failed to kill process leader %d for session %s: %m", s->leader.pid, s->id);
-                }
-                return 0;
-        } else
-                // const char *path, int sig, CGroupFlags flags, Set *s, cg_kill_log_func_t kill_log, void *userdata
-                return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, signo,
-                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
-                                          NULL, NULL, NULL);
-#endif // 0
 }
 
 static int session_open_vt(Session *s, bool reopen) {
