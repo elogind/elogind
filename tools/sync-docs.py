@@ -11,7 +11,7 @@ import sys
 
 import requests
 
-BASE_URL = "https://www.freedesktop.org/software/elogind/man/"
+BASE_URL = "https://www.freedesktop.org/software/systemd/man/"
 JQUERY_URL = "https://code.jquery.com/jquery-3.7.1.min.js"
 SCRIPT_TAG = '<script src="{}"></script>'
 
@@ -85,7 +85,7 @@ def get_latest_version():
     tags = subprocess.check_output(["git", "tag", "-l", "v*"], text=True).split()
     versions = []
     for tag in tags:
-        m = re.match("v?(\d+).*", tag)
+        m = re.match(r"v?(\d+).*", tag)
         if m:
             versions.append(int(m.group(1)))
     return max(versions)
