@@ -188,10 +188,6 @@
 
   <refsect1>
     <title>See Also</title>
-/// elogind empty mask else converted
-#if 1 /// elogind is in section 8
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-#endif // 1
     <para><simplelist type="inline">
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
