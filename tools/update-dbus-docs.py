@@ -228,7 +228,7 @@ def subst_output(document, programlisting, stats, missing_version):
     xml = etree.fromstring(out, parser=xml_parser())
 
     new_text, declarations, interfaces = xml_to_text(node, xml, only_interface=interface)
-    programlisting.text = '\n' + new_text + '    '
+    programlisting.text = '\n' + new_text
 
     if declarations:
         missing = check_documented(document, declarations, stats, interface, missing_version)
@@ -350,6 +350,7 @@ def main():
 
     for missing in missing_version:
         print(f"{RED}Missing version information for {missing}{RESET}")
+
     if missing_version:
         sys.exit(1)
 
