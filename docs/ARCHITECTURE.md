@@ -118,7 +118,7 @@ For testing and debugging, fuzzers can be executed as any other program, includi
 ## Integration Tests
 
 Sources in `test/TEST-*` implement system-level testing for executables, libraries and daemons that are shipped by the project.
-They require privileges to run, and are not safe to execute directly on a host.
+
 
 See [`test/README.testsuite`](https://github.com/systemd/systemd/blob/main/test/README.testsuite) for more specific details.
 
