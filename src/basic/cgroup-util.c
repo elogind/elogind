@@ -69,11 +69,7 @@ int cg_cgroupid_open(int cgroupfs_fd, uint64_t id) {
         cg_file_handle fh = CG_FILE_HANDLE_INIT;
         CG_FILE_HANDLE_CGROUPID(fh) = id;
 
-        int fd = open_by_handle_at(cgroupfs_fd, &fh.file_handle, O_DIRECTORY|O_CLOEXEC);
-        if (fd < 0)
-                return -errno;
-
-        return fd;
+        return RET_NERRNO(open_by_handle_at(cgroupfs_fd, &fh.file_handle, O_DIRECTORY|O_CLOEXEC));
 }
 #endif // 0
 
@@ -829,16 +825,20 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
                         log_debug_elogind("Found legacy line %s => '%s'", line, e + 1);
                 }
 
-                char *path = strdup(e + 1);
+                _cleanup_free_ char *path = strdup(e + 1);
                 if (!path)
                         return -ENOMEM;
+
+                /* Refuse cgroup paths from outside our cgroup namespace */
+                if (startswith(path, "/../"))
+                        return -EUNATCH;
 
                 /* Truncate suffix indicating the process is a zombie */
                 e = endswith(path, " (deleted)");
                 if (e)
                         *e = 0;
 
-                *ret_path = path;
+                *ret_path = TAKE_PTR(path);
                 return 0;
         }
 }

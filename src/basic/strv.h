@@ -48,6 +48,8 @@ int strv_copy_unless_empty(char * const *l, char ***ret);
 size_t strv_length(char * const *l) _pure_;
 
 int strv_extend_strv(char ***a, char * const *b, bool filter_duplicates);
+int strv_extend_strv_consume(char ***a, char **b, bool filter_duplicates);
+
 int strv_extend_strv_biconcat(char ***a, const char *prefix, const char* const *b, const char *suffix);
 static inline int strv_extend_strv_concat(char ***a, const char* const *b, const char *suffix) {
         return strv_extend_strv_biconcat(a, NULL, b, suffix);
@@ -279,7 +281,6 @@ int fputstrv(FILE *f, char * const *l, const char *separator, bool *space);
         free_and_replace_full(a, b, strv_free)
 
 #if 0 /// UNNEEDED by elogind
-extern const struct hash_ops string_strv_hash_ops;
 int _string_strv_hashmap_put(Hashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
 int _string_strv_ordered_hashmap_put(OrderedHashmap **h, const char *key, const char *value  HASHMAP_DEBUG_PARAMS);
 #define string_strv_hashmap_put(h, k, v) _string_strv_hashmap_put(h, k, v  HASHMAP_DEBUG_SRC_ARGS)

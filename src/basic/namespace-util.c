@@ -3,13 +3,19 @@
 #include <fcntl.h>
 //#include <sys/ioctl.h>
 #include <sys/mount.h>
+#if WANT_LINUX_FS_H
+#include <linux/fs.h>
+#endif
 
 #include "errno-util.h"
 #include "fd-util.h"
 //#include "fileio.h"
 #include "missing_fs.h"
 #include "missing_magic.h"
+#include "missing_namespace.h"
 #include "missing_sched.h"
+#include "missing_syscall.h"
+#include "mountpoint-util.h"
 #include "namespace-util.h"
 #include "parse-util.h"
 #include "process-util.h"
@@ -18,17 +24,17 @@
 #include "user-util.h"
 
 const struct namespace_info namespace_info[_NAMESPACE_TYPE_MAX + 1] = {
-        [NAMESPACE_CGROUP] =  { "cgroup", "ns/cgroup", CLONE_NEWCGROUP,                          },
-        [NAMESPACE_IPC]    =  { "ipc",    "ns/ipc",    CLONE_NEWIPC,                             },
-        [NAMESPACE_NET]    =  { "net",    "ns/net",    CLONE_NEWNET,                             },
+        [NAMESPACE_CGROUP] =  { "cgroup", "ns/cgroup", CLONE_NEWCGROUP, PROC_CGROUP_INIT_INO     },
+        [NAMESPACE_IPC]    =  { "ipc",    "ns/ipc",    CLONE_NEWIPC,    PROC_IPC_INIT_INO        },
+        [NAMESPACE_NET]    =  { "net",    "ns/net",    CLONE_NEWNET,    0                        },
         /* So, the mount namespace flag is called CLONE_NEWNS for historical
          * reasons. Let's expose it here under a more explanatory name: "mnt".
          * This is in-line with how the kernel exposes namespaces in /proc/$PID/ns. */
-        [NAMESPACE_MOUNT]  =  { "mnt",    "ns/mnt",    CLONE_NEWNS,                              },
-        [NAMESPACE_PID]    =  { "pid",    "ns/pid",    CLONE_NEWPID,                             },
-        [NAMESPACE_USER]   =  { "user",   "ns/user",   CLONE_NEWUSER,                            },
-        [NAMESPACE_UTS]    =  { "uts",    "ns/uts",    CLONE_NEWUTS,                             },
-        [NAMESPACE_TIME]   =  { "time",   "ns/time",   CLONE_NEWTIME,                            },
+        [NAMESPACE_MOUNT]  =  { "mnt",    "ns/mnt",    CLONE_NEWNS,     0                        },
+        [NAMESPACE_PID]    =  { "pid",    "ns/pid",    CLONE_NEWPID,    PROC_PID_INIT_INO        },
+        [NAMESPACE_USER]   =  { "user",   "ns/user",   CLONE_NEWUSER,   PROC_USER_INIT_INO       },
+        [NAMESPACE_UTS]    =  { "uts",    "ns/uts",    CLONE_NEWUTS,    PROC_UTS_INIT_INO        },
+        [NAMESPACE_TIME]   =  { "time",   "ns/time",   CLONE_NEWTIME,   PROC_TIME_INIT_INO       },
         { /* Allow callers to iterate over the array without using _NAMESPACE_TYPE_MAX. */       },
 };
 
@@ -133,12 +139,14 @@ int namespace_open(
                 int *ret_userns_fd,
                 int *ret_root_fd) {
 
-        assert(pid >= 0);
+        _cleanup_(pidref_done) PidRef pidref = PIDREF_NULL;
+        int r;
 
-        if (pid == 0)
-                pid = getpid_cached();
+        r = pidref_set_pid(&pidref, pid);
+        if (r < 0)
+                return r;
 
-        return pidref_namespace_open(&PIDREF_MAKE_FROM_PID(pid), ret_pidns_fd, ret_mntns_fd, ret_netns_fd, ret_userns_fd, ret_root_fd);
+        return pidref_namespace_open(&pidref, ret_pidns_fd, ret_mntns_fd, ret_netns_fd, ret_userns_fd, ret_root_fd);
 }
 
 int namespace_enter(int pidns_fd, int mntns_fd, int netns_fd, int userns_fd, int root_fd) {
@@ -345,7 +353,7 @@ int userns_acquire(const char *uid_map, const char *gid_map) {
 
         r = safe_fork("(sd-mkuserns)", FORK_CLOSE_ALL_FDS|FORK_DEATHSIG_SIGKILL|FORK_NEW_USERNS, &pid);
         if (r < 0)
-                return log_debug_errno(r, "Failed to fork process (sd-mkuserns): %m");
+                return r;
         if (r == 0)
                 /* Child. We do nothing here, just freeze until somebody kills us. */
                 freeze();
@@ -477,6 +485,28 @@ int namespace_open_by_type(NamespaceType type) {
         return fd;
 }
 
+int namespace_is_init(NamespaceType type) {
+        int r;
+
+        assert(type >= 0);
+        assert(type <= _NAMESPACE_TYPE_MAX);
+
+        if (namespace_info[type].root_inode == 0)
+                return -EBADR; /* Cannot answer this question */
+
+        const char *p = pid_namespace_path(0, type);
+
+        struct stat st;
+        r = RET_NERRNO(stat(p, &st));
+        if (r == -ENOENT)
+                /* If the /proc/ns/<type> API is not around in /proc/ then ns is off in the kernel and we are in the init ns */
+                return proc_mounted() == 0 ? -ENOSYS : true;
+        if (r < 0)
+                return r;
+
+        return st.st_ino == namespace_info[type].root_inode;
+}
+
 int is_our_namespace(int fd, NamespaceType request_type) {
         int clone_flag;
 
@@ -508,3 +538,56 @@ int is_our_namespace(int fd, NamespaceType request_type) {
         return stat_inode_same(&st_ours, &st_fd);
 }
 #endif // 0
+
+int is_idmapping_supported(const char *path) {
+        _cleanup_close_ int mount_fd = -EBADF, userns_fd = -EBADF, dir_fd = -EBADF;
+        _cleanup_free_ char *uid_map = NULL, *gid_map = NULL;
+        int r;
+
+        assert(path);
+
+        if (!mount_new_api_supported())
+                return false;
+
+        r = strextendf(&uid_map, UID_FMT " " UID_FMT " " UID_FMT "\n", UID_NOBODY, UID_NOBODY, 1u);
+        if (r < 0)
+                return r;
+
+        r = strextendf(&gid_map, GID_FMT " " GID_FMT " " GID_FMT "\n", GID_NOBODY, GID_NOBODY, 1u);
+        if (r < 0)
+                return r;
+
+        userns_fd = r = userns_acquire(uid_map, gid_map);
+        if (ERRNO_IS_NEG_NOT_SUPPORTED(r) || ERRNO_IS_NEG_PRIVILEGE(r) || r == -EINVAL)
+                return false;
+        if (r == -ENOSPC) {
+                log_debug_errno(r, "Failed to acquire new user namespace, user.max_user_namespaces seems to be exhausted or maybe even zero, assuming ID-mapping is not supported: %m");
+                return false;
+        }
+        if (r < 0)
+                return log_debug_errno(r, "Failed to acquire new user namespace for checking if '%s' supports ID-mapping: %m", path);
+
+        dir_fd = r = RET_NERRNO(open(path, O_RDONLY | O_CLOEXEC | O_NOFOLLOW));
+        if (ERRNO_IS_NEG_NOT_SUPPORTED(r))
+                return false;
+        if (r < 0)
+                return log_debug_errno(r, "Failed to open '%s', cannot determine if ID-mapping is supported: %m", path);
+
+        mount_fd = r = RET_NERRNO(open_tree(dir_fd, "", AT_EMPTY_PATH | OPEN_TREE_CLONE | OPEN_TREE_CLOEXEC));
+        if (ERRNO_IS_NEG_NOT_SUPPORTED(r) || ERRNO_IS_NEG_PRIVILEGE(r) || r == -EINVAL)
+                return false;
+        if (r < 0)
+                return log_debug_errno(r, "Failed to open mount tree '%s', cannot determine if ID-mapping is supported: %m", path);
+
+        r = RET_NERRNO(mount_setattr(mount_fd, "", AT_EMPTY_PATH,
+                       &(struct mount_attr) {
+                                .attr_set = MOUNT_ATTR_IDMAP | MOUNT_ATTR_NOSUID | MOUNT_ATTR_NOEXEC | MOUNT_ATTR_RDONLY | MOUNT_ATTR_NODEV,
+                                .userns_fd = userns_fd,
+                        }, sizeof(struct mount_attr)));
+        if (ERRNO_IS_NEG_NOT_SUPPORTED(r) || ERRNO_IS_NEG_PRIVILEGE(r) || r == -EINVAL)
+                return false;
+        if (r < 0)
+                return log_debug_errno(r, "Failed to set mount attribute to '%s', cannot determine if ID-mapping is supported: %m", path);
+
+        return true;
+}
