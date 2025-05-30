@@ -158,6 +158,7 @@ sd_event_sources = files(
 # ############################################################
 #
 # libelogind_sources = files(
+# libsystemd_sources = files(
 #         'sd-hwdb/sd-hwdb.c',
 #         'sd-resolve/sd-resolve.c',
 # ) + sd_journal_sources + sd_id128_sources + sd_daemon_sources \
