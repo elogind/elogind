@@ -68,7 +68,7 @@ __extension__ typedef enum _SD_ENUM_TYPE_S64(sd_varlink_server_flags_t) {
         SD_VARLINK_SERVER_ROOT_ONLY        = 1 << 0, /* Only accessible by root */
         SD_VARLINK_SERVER_MYSELF_ONLY      = 1 << 1, /* Only accessible by our own UID */
         SD_VARLINK_SERVER_ACCOUNT_UID      = 1 << 2, /* Do per user accounting */
-        SD_VARLINK_SERVER_INHERIT_USERDATA = 1 << 3, /* Initialize Varlink connection userdata from VarlinkServer userdata */
+        SD_VARLINK_SERVER_INHERIT_USERDATA = 1 << 3, /* Initialize Varlink connection userdata from sd_varlink_server userdata */
         SD_VARLINK_SERVER_INPUT_SENSITIVE  = 1 << 4, /* Automatically mark all connection input as sensitive */
         _SD_ENUM_FORCE_S64(SD_VARLINK_SERVER)
 } sd_varlink_server_flags_t;
@@ -219,6 +219,13 @@ int sd_varlink_server_new(sd_varlink_server **ret, sd_varlink_server_flags_t fla
 sd_varlink_server* sd_varlink_server_ref(sd_varlink_server *s);
 sd_varlink_server* sd_varlink_server_unref(sd_varlink_server *s);
 
+int sd_varlink_server_set_info(
+                sd_varlink_server *s,
+                const char *vendor,
+                const char *product,
+                const char *version,
+                const char *url);
+
 /* Add addresses or fds to listen on */
 int sd_varlink_server_listen_address(sd_varlink_server *s, const char *address, mode_t mode);
 int sd_varlink_server_listen_fd(sd_varlink_server *s, int fd);
@@ -244,7 +251,7 @@ void* sd_varlink_server_get_userdata(sd_varlink_server *s);
 
 int sd_varlink_server_attach_event(sd_varlink_server *v, sd_event *e, int64_t priority);
 int sd_varlink_server_detach_event(sd_varlink_server *v);
-sd_event *sd_varlink_server_get_event(sd_varlink_server *v);
+sd_event* sd_varlink_server_get_event(sd_varlink_server *v);
 
 int sd_varlink_server_loop_auto(sd_varlink_server *server);
 
