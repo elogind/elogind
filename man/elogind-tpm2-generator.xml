@@ -30,7 +30,7 @@
   <refsect1>
     <title>Description</title>
 
-    <para><filename>elogind-tpm2-generator</filename> is a generator that adds a <varname>Wants=</varname>
+    <para><command>elogind-tpm2-generator</command> is a generator that adds a <varname>Wants=</varname>
     dependency from <filename>sysinit.target</filename> to <filename>tpm2.target</filename> when it detects
     that the firmware discovered a TPM2 device but the OS kernel so far did
     not. <filename>tpm2.target</filename> is supposed to act as synchronization point for all services that
@@ -45,8 +45,8 @@
     for it yet. The latter might be useful in environments where a suitable TPM2 driver for the available
     hardware is not available.</para>
 
-    <para><filename>elogind-tpm2-generator</filename> implements
     <citerefentry><refentrytitle>elogind.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+    <para><command>elogind-tpm2-generator</command> implements
   </refsect1>
 
   <refsect1>

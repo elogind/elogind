@@ -123,9 +123,8 @@
     It may be given after a space, like above, in which case it can be:
     <literal>UTC</literal>,
     <!-- 0 /// No timedatectl in elogind
-    an entry in the installed IANA timezone database (<literal>CET</literal>, <literal>Asia/Tokyo</literal>, &amp;c.;
-    complete list obtainable with <literal>timedatectl
-    list-timezones</literal> (see
+    an entry in the installed IANA timezone database (e.g. <literal>CET</literal>, <literal>Asia/Tokyo</literal>,
+    where the complete list can be obtained with <command>timedatectl list-timezones</command> (see
     <citerefentry><refentrytitle>timedatectl</refentrytitle><manvolnum>1</manvolnum></citerefentry>)),
     --><!-- else // 0 -->
     the locally configured timezone, or the timezone name in the IANA timezone database format,
@@ -272,7 +271,7 @@ tomorrow Pacific/Auckland → Thu 2012-11-23 19:00:00
       yearly → *-01-01 00:00:00
    quarterly → *-01,04,07,10-01 00:00:00
 semiannually → *-01,07-01 00:00:00
-   </programlisting>
+</programlisting>
 
     <para>Examples for valid timestamps and their
     normalized form:</para>

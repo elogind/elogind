@@ -77,8 +77,8 @@ Host .host
     <para>This tool is supposed to be used together with
     <citerefentry><refentrytitle>elogind-ssh-generator</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     which when run inside a VM or container will bind SSH to suitable
-    addresses. <command>elogind-ssh-generator</command> is supposed to run in the container of VM guest, and
     <command>elogind-ssh-proxy</command> is run on the host, in order to connect to the container or VM
+    addresses. <command>elogind-ssh-generator</command> is supposed to run in the container or VM guest, and
     guest.</para>
   </refsect1>
 
