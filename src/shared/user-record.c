@@ -207,6 +207,10 @@ static UserRecord* user_record_free(UserRecord *h) {
         for (size_t i = 0; i < h->n_recovery_key; i++)
                 recovery_key_done(h->recovery_key + i);
 
+        strv_free(h->self_modifiable_fields);
+        strv_free(h->self_modifiable_blobs);
+        strv_free(h->self_modifiable_privileged);
+
         sd_json_variant_unref(h->json);
 
         return mfree(h);
@@ -487,40 +491,6 @@ static int json_dispatch_access_mode(const char *name, sd_json_variant *variant,
 
         *m = (mode_t) k;
         return 0;
-}
-
-static int json_dispatch_environment(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata) {
-        _cleanup_strv_free_ char **n = NULL;
-        char ***l = userdata;
-        int r;
-
-        if (sd_json_variant_is_null(variant)) {
-                *l = strv_free(*l);
-                return 0;
-        }
-
-        if (!sd_json_variant_is_array(variant))
-                return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an array.", strna(name));
-
-        for (size_t i = 0; i < sd_json_variant_elements(variant); i++) {
-                sd_json_variant *e;
-                const char *a;
-
-                e = sd_json_variant_by_index(variant, i);
-                if (!sd_json_variant_is_string(e))
-                        return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an array of strings.", strna(name));
-
-                assert_se(a = sd_json_variant_string(e));
-
-                if (!env_assignment_is_valid(a))
-                        return json_log(variant, flags, SYNTHETIC_ERRNO(EINVAL), "JSON field '%s' is not an array of environment variables.", strna(name));
-
-                r = strv_env_replace_strdup(&n, a);
-                if (r < 0)
-                        return json_log_oom(variant, flags);
-        }
-
-        return strv_free_and_replace(*l, n);
 }
 
 static int json_dispatch_locale(const char *name, sd_json_variant *variant, sd_json_dispatch_flags_t flags, void *userdata) {
@@ -1233,7 +1203,7 @@ static int dispatch_per_machine(const char *name, sd_json_variant *variant, sd_j
                 { "location",                   SD_JSON_VARIANT_STRING,        sd_json_dispatch_string,              offsetof(UserRecord, location),                      0              },
                 { "shell",                      SD_JSON_VARIANT_STRING,        json_dispatch_filename_or_path,       offsetof(UserRecord, shell),                         0              },
                 { "umask",                      SD_JSON_VARIANT_UNSIGNED,      json_dispatch_umask,                  offsetof(UserRecord, umask),                         0              },
-                { "environment",                SD_JSON_VARIANT_ARRAY,         json_dispatch_environment,            offsetof(UserRecord, environment),                   0              },
+                { "environment",                SD_JSON_VARIANT_ARRAY,         json_dispatch_strv_environment,       offsetof(UserRecord, environment),                   0              },
                 { "timeZone",                   SD_JSON_VARIANT_STRING,        sd_json_dispatch_string,              offsetof(UserRecord, time_zone),                     SD_JSON_STRICT },
                 { "preferredLanguage",          SD_JSON_VARIANT_STRING,        json_dispatch_locale,                 offsetof(UserRecord, preferred_language),            0              },
                 { "additionalLanguages",        SD_JSON_VARIANT_ARRAY,         json_dispatch_locales,                offsetof(UserRecord, additional_languages),          0              },
@@ -1300,6 +1270,9 @@ static int dispatch_per_machine(const char *name, sd_json_variant *variant, sd_j
                 { "passwordChangeNow",          SD_JSON_VARIANT_BOOLEAN,       sd_json_dispatch_tristate,            offsetof(UserRecord, password_change_now),           0              },
                 { "pkcs11TokenUri",             SD_JSON_VARIANT_ARRAY,         dispatch_pkcs11_uri_array,            offsetof(UserRecord, pkcs11_token_uri),              0              },
                 { "fido2HmacCredential",        SD_JSON_VARIANT_ARRAY,         dispatch_fido2_hmac_credential_array, 0,                                                   0              },
+                { "selfModifiableFields",       SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_fields),        SD_JSON_STRICT },
+                { "selfModifiableBlobs",        SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_blobs),         SD_JSON_STRICT },
+                { "selfModifiablePrivileged",   SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_privileged),    SD_JSON_STRICT },
                 {},
         };
 
@@ -1468,7 +1441,6 @@ int user_group_record_mangle(
 
         assert(v);
         assert(ret_variant);
-        assert(ret_mask);
 
         /* Note that this function is shared with the group record parser, hence we try to be generic in our
          * log message wording here, to cover both cases. */
@@ -1556,7 +1528,8 @@ int user_group_record_mangle(
         else
                 *ret_variant = sd_json_variant_ref(v);
 
-        *ret_mask = m;
+        if (ret_mask)
+                *ret_mask = m;
         return 0;
 }
 
@@ -1576,7 +1549,7 @@ int user_record_load(UserRecord *h, sd_json_variant *v, UserRecordLoadFlags load
                 { "lastPasswordChangeUSec",     _SD_JSON_VARIANT_TYPE_INVALID, sd_json_dispatch_uint64,              offsetof(UserRecord, last_password_change_usec),     0              },
                 { "shell",                      SD_JSON_VARIANT_STRING,        json_dispatch_filename_or_path,       offsetof(UserRecord, shell),                         0              },
                 { "umask",                      SD_JSON_VARIANT_UNSIGNED,      json_dispatch_umask,                  offsetof(UserRecord, umask),                         0              },
-                { "environment",                SD_JSON_VARIANT_ARRAY,         json_dispatch_environment,            offsetof(UserRecord, environment),                   0              },
+                { "environment",                SD_JSON_VARIANT_ARRAY,         json_dispatch_strv_environment,       offsetof(UserRecord, environment),                   0              },
                 { "timeZone",                   SD_JSON_VARIANT_STRING,        sd_json_dispatch_string,              offsetof(UserRecord, time_zone),                     SD_JSON_STRICT },
                 { "preferredLanguage",          SD_JSON_VARIANT_STRING,        json_dispatch_locale,                 offsetof(UserRecord, preferred_language),            0              },
                 { "additionalLanguages",        SD_JSON_VARIANT_ARRAY,         json_dispatch_locales,                offsetof(UserRecord, additional_languages),          0              },
@@ -1646,6 +1619,9 @@ int user_record_load(UserRecord *h, sd_json_variant *v, UserRecordLoadFlags load
                 { "pkcs11TokenUri",             SD_JSON_VARIANT_ARRAY,         dispatch_pkcs11_uri_array,            offsetof(UserRecord, pkcs11_token_uri),              0              },
                 { "fido2HmacCredential",        SD_JSON_VARIANT_ARRAY,         dispatch_fido2_hmac_credential_array, 0,                                                   0              },
                 { "recoveryKeyType",            SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, recovery_key_type),             0              },
+                { "selfModifiableFields",       SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_fields),        SD_JSON_STRICT },
+                { "selfModifiableBlobs",        SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_blobs),         SD_JSON_STRICT },
+                { "selfModifiablePrivileged",   SD_JSON_VARIANT_ARRAY,         sd_json_dispatch_strv,                offsetof(UserRecord, self_modifiable_privileged),    SD_JSON_STRICT },
 
                 { "secret",                     SD_JSON_VARIANT_OBJECT,        dispatch_secret,                      0,                                                   0              },
                 { "privileged",                 SD_JSON_VARIANT_OBJECT,        dispatch_privileged,                  0,                                                   0              },
@@ -2165,6 +2141,257 @@ int user_record_languages(UserRecord *h, char ***ret) {
 }
 
 #if 0 /// UNNEEDED by elogind
+const char** user_record_self_modifiable_fields(UserRecord *h) {
+        /* As a rule of thumb: a setting is safe if it cannot be used by a
+         * user to give themselves some unfair advantage over other users on
+         * a given system. */
+        static const char *const default_fields[] = {
+                /* For display purposes */
+                "realName",
+                "emailAddress", /* Just the $EMAIL env var */
+                "iconName",
+                "location",
+
+                /* Basic account settings */
+                "shell",
+                "umask",
+                "environment",
+                "timeZone",
+                "preferredLanguage",
+                "additionalLanguages",
+                "preferredSessionLauncher",
+                "preferredSessionType",
+
+                /* Authentication methods */
+                "pkcs11TokenUri",
+                "fido2HmacCredential",
+                "recoveryKeyType",
+
+                "lastChangeUSec", /* Necessary to be able to change record at all */
+                "lastPasswordChangeUSec", /* Ditto, but for authentication methods */
+                NULL
+        };
+
+        assert(h);
+
+        /* Note: if the self_modifiable_fields field in UserRecord is NULL we'll apply a default, if we have
+         * one. If it is a non-NULL empty strv, we'll report it as explicit empty list. When the field is
+         * NULL and we have no default list we'll return NULL. */
+
+        /* Note that we intentionally distinguish between NULL and an empty array here */
+        if (h->self_modifiable_fields)
+                return (const char**) h->self_modifiable_fields;
+
+        return user_record_disposition(h) == USER_REGULAR ? (const char**) default_fields : NULL;
+}
+
+const char** user_record_self_modifiable_blobs(UserRecord *h) {
+        static const char *const default_blobs[] = {
+                /* For display purposes */
+                "avatar",
+                "login-background",
+                NULL
+        };
+
+        assert(h);
+
+        /* Note that we intentionally distinguish between NULL and an empty array here */
+        if (h->self_modifiable_blobs)
+                return (const char**) h->self_modifiable_blobs;
+
+        return user_record_disposition(h) == USER_REGULAR ? (const char**) default_blobs : NULL;
+}
+
+const char** user_record_self_modifiable_privileged(UserRecord *h) {
+        static const char *const default_fields[] = {
+                /* For display purposes */
+                "passwordHint",
+
+                /* Authentication methods */
+                "hashedPassword",
+                "pkcs11EncryptedKey",
+                "fido2HmacSalt",
+                "recoveryKey",
+
+                "sshAuthorizedKeys", /* Basically just ~/.ssh/authorized_keys */
+                NULL
+        };
+
+        assert(h);
+
+        /* Note that we intentionally distinguish between NULL and an empty array here */
+        if (h->self_modifiable_privileged)
+                return (const char**) h->self_modifiable_privileged;
+
+        return user_record_disposition(h) == USER_REGULAR ? (const char**) default_fields : NULL;
+}
+
+static int remove_self_modifiable_json_fields_common(UserRecord *current, sd_json_variant **target) {
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *v = NULL, *blobs = NULL;
+        char **allowed;
+        int r;
+
+        assert(current);
+        assert(target);
+
+        if (!sd_json_variant_is_object(*target))
+                return -EINVAL;
+
+        v = sd_json_variant_ref(*target);
+
+        /* Handle basic fields */
+        allowed = (char**) user_record_self_modifiable_fields(current);
+        r = sd_json_variant_filter(&v, allowed);
+        if (r < 0)
+                return r;
+
+        /* Handle blobs */
+        blobs = sd_json_variant_ref(sd_json_variant_by_key(v, "blobManifest"));
+        if (blobs) {
+                /* The blobManifest contains the sha256 hashes of the blobs,
+                 * which are enforced by the service managing the user. So, by
+                 * comparing the blob manifests like this, we're actually comparing
+                 * the contents of the blob directories & files */
+
+                allowed = (char**) user_record_self_modifiable_blobs(current);
+                r = sd_json_variant_filter(&blobs, allowed);
+                if (r < 0)
+                        return r;
+
+                if (sd_json_variant_is_blank_object(blobs))
+                        r = sd_json_variant_filter(&v, STRV_MAKE("blobManifest"));
+                else
+                        r = sd_json_variant_set_field(&v, "blobManifest", blobs);
+                if (r < 0)
+                        return r;
+        }
+
+        JSON_VARIANT_REPLACE(*target, TAKE_PTR(v));
+        return 0;
+}
+
+static int remove_self_modifiable_json_fields(UserRecord *current, UserRecord *h, sd_json_variant **ret) {
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *v = NULL, *privileged = NULL;
+        sd_json_variant *per_machine;
+        char **allowed;
+        int r;
+
+        assert(current);
+        assert(h);
+        assert(ret);
+
+        r = user_group_record_mangle(h->json, USER_RECORD_EXTRACT_SIGNABLE|USER_RECORD_PERMISSIVE, &v, NULL);
+        if (r < 0)
+                return r;
+
+        /* Handle the regular section */
+        r = remove_self_modifiable_json_fields_common(current, &v);
+        if (r < 0)
+                return r;
+
+        /* Handle the perMachine section */
+        per_machine = sd_json_variant_by_key(v, "perMachine");
+        if (per_machine) {
+                _cleanup_(sd_json_variant_unrefp) sd_json_variant *new_per_machine = NULL;
+                sd_json_variant *e;
+
+                if (!sd_json_variant_is_array(per_machine))
+                        return -EINVAL;
+
+                JSON_VARIANT_ARRAY_FOREACH(e, per_machine) {
+                        _cleanup_(sd_json_variant_unrefp) sd_json_variant *z = NULL;
+
+                        if (!sd_json_variant_is_object(e))
+                                return -EINVAL;
+
+                        r = per_machine_match(e, 0);
+                        if (r < 0)
+                                return r;
+                        if (r == 0) {
+                                /* It's only permissible to change anything inside of matching perMachine sections */
+                                r = sd_json_variant_append_array(&new_per_machine, e);
+                                if (r < 0)
+                                        return r;
+                                continue;
+                        }
+
+                        z = sd_json_variant_ref(e);
+
+                        r = remove_self_modifiable_json_fields_common(current, &z);
+                        if (r < 0)
+                                return r;
+
+                        if (!sd_json_variant_is_blank_object(z)) {
+                                r = sd_json_variant_append_array(&new_per_machine, z);
+                                if (r < 0)
+                                        return r;
+                        }
+                }
+
+                if (sd_json_variant_is_blank_array(new_per_machine))
+                        r = sd_json_variant_filter(&v, STRV_MAKE("perMachine"));
+                else
+                        r = sd_json_variant_set_field(&v, "perMachine", new_per_machine);
+                if (r < 0)
+                        return r;
+        }
+
+        /* Handle the privileged section */
+        privileged = sd_json_variant_ref(sd_json_variant_by_key(v, "privileged"));
+        if (privileged) {
+                allowed = (char**) user_record_self_modifiable_privileged(current);
+                r = sd_json_variant_filter(&privileged, allowed);
+                if (r < 0)
+                        return r;
+
+                if (sd_json_variant_is_blank_object(privileged))
+                        r = sd_json_variant_filter(&v, STRV_MAKE("privileged"));
+                else
+                        r = sd_json_variant_set_field(&v, "privileged", privileged);
+                if (r < 0)
+                        return r;
+        }
+
+        JSON_VARIANT_REPLACE(*ret, TAKE_PTR(v));
+        return 0;
+}
+
+int user_record_self_changes_allowed(UserRecord *current, UserRecord *incoming) {
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *vc = NULL, *vi = NULL;
+        int r;
+
+        assert(current);
+        assert(incoming);
+
+        /* We remove the fields that the user is allowed to change and then
+         * compare the resulting JSON records. If they are not equal, that
+         * means a disallowed field has been changed and thus we should
+         * require administrator permission to apply the changes. */
+
+        r = remove_self_modifiable_json_fields(current, current, &vc);
+        if (r < 0)
+                return r;
+
+        /* Note that we use `current` as the source of the allowlist, and not
+         * `incoming`. This prevents the user from adding fields. Consider a
+         * scenario that would've been possible if we had messed up this check:
+         *
+         * 1) A user starts out with no group memberships and no custom allowlist.
+         *    Thus, this user is not an administrator, and the `memberOf` and
+         *    `selfModifiableFields` fields are unset in their record.
+         * 2) This user crafts a request to add the following to their record:
+         *    { "memberOf": ["wheel"], "selfModifiableFields": ["memberOf", "selfModifiableFields"] }
+         * 3) We remove the `mebmerOf` and `selfModifiabileFields` fields from `incoming`
+         * 4) `current` and `incoming` compare as equal, so we let the change happen
+         * 5) the user has granted themselves administrator privileges
+         */
+        r = remove_self_modifiable_json_fields(current, incoming, &vi);
+        if (r < 0)
+                return r;
+
+        return sd_json_variant_equal(vc, vi);
+}
+
 uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         assert(h);
 

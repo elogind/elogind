@@ -233,7 +233,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result < 0) {                                                                              \
-                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr);                                         \
                         abort();                                                                                \
                 }                                                                                               \
@@ -244,7 +244,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result < 0) {                                                                              \
-                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr);                                         \
                         abort();                                                                                \
                 }                                                                                               \
@@ -259,7 +259,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result < 0) {                                                                              \
-                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(_result, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr);                                         \
                         abort();                                                                                \
                 }                                                                                               \
@@ -274,19 +274,19 @@ static inline int run_test_table(void) {
 
 #define ASSERT_OK_EQ(expr1, expr2)                                                                              \
         ({                                                                                                      \
-                typeof(expr1) _expr1 = (expr1);                                                                \
-                typeof(expr2) _expr2 = (expr2);                                                              \
-                if (_expr1 < 0) {                                                                              \
-                        log_error_errno(_expr1, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                typeof(expr1) _expr1 = (expr1);                                                                 \
+                typeof(expr2) _expr2 = (expr2);                                                                 \
+                if (_expr1 < 0) {                                                                               \
+                        log_error_errno(_expr1, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr1);                                        \
                         abort();                                                                                \
                 }                                                                                               \
-                if (_expr1 != _expr2) {                                                                     \
+                if (_expr1 != _expr2) {                                                                         \
                         char _sexpr1[DECIMAL_STR_MAX(typeof(expr1))];                                           \
                         char _sexpr2[DECIMAL_STR_MAX(typeof(expr2))];                                           \
-                        xsprintf(_sexpr1, DECIMAL_STR_FMT(_expr1), _expr1);                                    \
-                        xsprintf(_sexpr2, DECIMAL_STR_FMT(_expr2), _expr2);                                  \
-                        log_error("%s:%i: Assertion failed: expected \"%s == %s\", but %s != %s",           \
+                        xsprintf(_sexpr1, DECIMAL_STR_FMT(_expr1), _expr1);                                     \
+                        xsprintf(_sexpr2, DECIMAL_STR_FMT(_expr2), _expr2);                                     \
+                        log_error("%s:%i: Assertion failed: expected \"%s == %s\", got %s != %s",               \
                                   PROJECT_FILE, __LINE__, #expr1, #expr2, _sexpr1, _sexpr2);                    \
                         abort();                                                                                \
                 }                                                                                               \
@@ -296,7 +296,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result < 0) {                                                                              \
-                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr);                                         \
                         abort();                                                                                \
                 }                                                                                               \
@@ -306,7 +306,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result < 0) {                                                                              \
-                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr);                                         \
                         abort();                                                                                \
                 }                                                                                               \
@@ -324,7 +324,7 @@ static inline int run_test_table(void) {
                 typeof(expr1) _expr1 = (expr1);                                                                 \
                 typeof(expr2) _expr2 = (expr2);                                                                 \
                 if (_expr1 < 0) {                                                                               \
-                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed but got the following error: %m", \
+                        log_error_errno(errno, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
                                         PROJECT_FILE, __LINE__, #expr1);                                        \
                         abort();                                                                                \
                 }                                                                                               \
@@ -401,7 +401,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
                 if (_result != NULL) {                                                                          \
-                        log_error("%s:%i: Assertion failed: expected \"%s\" to be NULL, but \"%p\" != NULL",    \
+                        log_error("%s:%i: Assertion failed: expected \"%s\" to be NULL, got \"%p\" != NULL",    \
                                   PROJECT_FILE, __LINE__, #expr, _result);                                      \
                         abort();                                                                                \
                 }                                                                                               \
@@ -420,7 +420,7 @@ static inline int run_test_table(void) {
         ({                                                                                                      \
                 const char *_expr1 = (expr1), *_expr2 = (expr2);                                                \
                 if (!streq_ptr(_expr1, _expr2)) {                                                               \
-                        log_error("%s:%i: Assertion failed: expected \"%s == %s\", but \"%s != %s\"",           \
+                        log_error("%s:%i: Assertion failed: expected \"%s == %s\", got \"%s != %s\"",           \
                                   PROJECT_FILE, __LINE__, #expr1, #expr2, strnull(_expr1), strnull(_expr2));    \
                         abort();                                                                                \
                 }                                                                                               \
@@ -564,6 +564,25 @@ static inline int run_test_table(void) {
                                   PROJECT_FILE, __LINE__,                                                       \
                                   #expr1, #expr2,                                                               \
                                   SD_ID128_TO_STRING(_expr1), SD_ID128_TO_STRING(_expr2));                      \
+                        abort();                                                                                \
+                }                                                                                               \
+        })
+
+#define EFI_GUID_Fmt "%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x"
+#define EFI_GUID_Arg(guid) (guid).Data1, (guid).Data2, (guid).Data3,                           \
+                           (guid).Data4[0], (guid).Data4[1], (guid).Data4[2], (guid).Data4[3], \
+                           (guid).Data4[4], (guid).Data4[5], (guid).Data4[6], (guid).Data4[7]  \
+
+#define ASSERT_EQ_EFI_GUID(expr1, expr2)                                                                        \
+        ({                                                                                                      \
+                typeof(expr1) _expr1 = (expr1);                                                                 \
+                typeof(expr2) _expr2 = (expr2);                                                                 \
+                if (!efi_guid_equal(_expr1, _expr2)) {                                                          \
+                        log_error("%s:%i: Assertion failed: expected \"%s == %s\", but " EFI_GUID_Fmt           \
+                                  " != " EFI_GUID_Fmt,                                                          \
+                                  PROJECT_FILE, __LINE__,                                                       \
+                                  #expr1, #expr2,                                                               \
+                                  EFI_GUID_Arg(*_expr1), EFI_GUID_Arg(*_expr2));                                \
                         abort();                                                                                \
                 }                                                                                               \
         })

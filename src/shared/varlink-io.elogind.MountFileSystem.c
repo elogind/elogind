@@ -35,8 +35,6 @@ static SD_VARLINK_DEFINE_STRUCT_TYPE(
 
 static SD_VARLINK_DEFINE_METHOD(
                 MountImage,
-                io_elogind_MountFileSystem,
-                "io.elogind.MountFileSystem",
                 SD_VARLINK_DEFINE_INPUT(imageFileDescriptor, SD_VARLINK_INT, 0),
                 SD_VARLINK_DEFINE_INPUT(userNamespaceFileDescriptor, SD_VARLINK_INT, SD_VARLINK_NULLABLE),
                 SD_VARLINK_DEFINE_INPUT(readOnly, SD_VARLINK_BOOL, SD_VARLINK_NULLABLE),
@@ -59,6 +57,8 @@ static SD_VARLINK_DEFINE_ERROR(KeyNotFound);
 static SD_VARLINK_DEFINE_ERROR(VerityFailure);
 
 SD_VARLINK_DEFINE_INTERFACE(
+                io_elogind_MountFileSystem,
+                "io.elogind.MountFileSystem",
                 &vl_type_PartitionDesignator,
                 &vl_type_PartitionInfo,
                 &vl_method_MountImage,
