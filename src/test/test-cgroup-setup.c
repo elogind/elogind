@@ -35,14 +35,13 @@ TEST(is_wanted) {
         ASSERT_OK_ERRNO(setenv("SYSTEMD_PROC_CMDLINE",
         test_is_wanted_print_one(false);
 
-                         "elogind.unified_cgroup_hierarchy=0", 1));
         ASSERT_OK_ERRNO(setenv("SYSTEMD_PROC_CMDLINE",
                                "systemd.unified_cgroup_hierarchy=0", 1));
         test_is_wanted_print_one(false);
 
                          "elogind.legacy_elogind_cgroup_controller", 1));
         ASSERT_OK_ERRNO(setenv("SYSTEMD_PROC_CMDLINE",
-                               "elogind.unified_cgroup_hierarchy=0 "
+                               "elogind.unified_cgroup_hierarchy=0 ", 1));
         test_is_wanted_print_one(false);
 
                          "elogind.legacy_elogind_cgroup_controller=0", 1));

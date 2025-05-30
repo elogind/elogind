@@ -284,6 +284,7 @@ TEST(link_tmpfile) {
         assert_se(link_tmpfile(fd, tmp, d, /* flags= */ 0) == -EEXIST);
         assert_se(unlink(d) >= 0);
         assert_se(link_tmpfile(fd, tmp, d, /* flags= */ 0) >= 0);
+
         assert_se(read_one_line_file(d, &line) >= 0);
         ASSERT_STREQ(line, "foobar");
 

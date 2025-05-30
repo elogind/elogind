@@ -55,6 +55,7 @@ simple_tests += files(
 #endif // 0
         'test-argv-util.c',
 #if 0 /// UNNEEDED by elogind
+#         'test-audit-util.c',
 #         'test-barrier.c',
 #         'test-bitfield.c',
 #         'test-bitmap.c',
@@ -73,6 +74,7 @@ simple_tests += files(
         'test-cgroup.c',
         'test-chase.c',
 #if 0 /// UNNEEDED by elogind
+#         'test-chid.c',
 #         'test-clock.c',
 #endif // 0
         'test-color-util.c',
@@ -269,6 +271,7 @@ simple_tests += files(
 #if 0 /// UNNEEDED by elogind
 #         'test-unit-file.c',
 #endif // 0
+        'test-user-record.c',
         'test-user-util.c',
         'test-utf8.c',
         'test-verbs.c',
@@ -483,7 +486,6 @@ executables += [
 #if 0 /// UNNEEDED by elogind
 #         test_template + {
 #                 'sources' : files('test-progress-bar.c'),
-#                 'type' : 'manual',
 #         },
 #         test_template + {
 #                 'sources' : files('test-qrcode-util.c'),
