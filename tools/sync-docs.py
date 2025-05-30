@@ -24,12 +24,20 @@ $(document).ready(function() {
 
         var items = [];
         $.each( data, function(_, version) {
+            if (version == data[1]) {
+                latest = " (latest stable)";
+            } else {
+                latest = "";
+            }
             if (version == dirname) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
+                items.push( "<option selected value='" + version + "'>" + "systemd " + version + latest + "</option>");
             } else if (dirname == "latest" && version == data[1]) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
+                items.push( "<option selected value='" + version + "'>" + "systemd " + version + latest + "</option>");
             } else {
                 items.push( "<option value='" + version + "'>" + "elogind " + version + "</option>");
+                items.push( "<option value='" + version + "'>" + "systemd " + version + latest + "</option>");
             }
         });
 
