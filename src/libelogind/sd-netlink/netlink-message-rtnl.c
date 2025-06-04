@@ -408,7 +408,6 @@ int sd_rtnl_message_new_addr_update(
 }
 #endif // 0
 
-
 int sd_rtnl_message_get_family(sd_netlink_message *m, int *ret) {
         assert_return(m, -EINVAL);
 
