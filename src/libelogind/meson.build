@@ -119,7 +119,7 @@ sd_event_sources = files(
 # sd_varlink_sources = files(
 #         'sd-varlink/sd-varlink.c',
 #         'sd-varlink/sd-varlink-idl.c',
-#         'sd-varlink/varlink-io.elogind.c',
+#         'sd-varlink/varlink-io.systemd.c',
 #         'sd-varlink/varlink-org.varlink.service.c',
 #         'sd-varlink/varlink-util.c',
 # )
