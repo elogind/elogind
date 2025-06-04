@@ -68,8 +68,8 @@ simple_tests += files(
         'test-bus-util.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-calendarspec.c',
+#         'test-cgroup-setup.c',
 #endif // 0
-        'test-cgroup-setup.c',
         'test-cgroup-util.c',
         'test-cgroup.c',
         'test-chase.c',
