@@ -157,10 +157,6 @@ int fgetsgent_sane(FILE *stream, struct sgrp **sg);
 int putsgent_sane(const struct sgrp *sg, FILE *stream);
 #endif
 
-#endif // 0
-
-
-#if 0 /// UNNEEDED by elogind
 int is_this_me(const char *username);
 #endif // 0
 
