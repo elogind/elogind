@@ -38,6 +38,7 @@ mkosi.local.conf
 /tags
 .dir-locals-2.el
 .vscode/
+/pkg/
 
 #if 1 /// elogind specific stuff
 /elogind
@@ -73,4 +74,3 @@ cb/elogind.layout
 compile_commands.json
 _Deparsed_XSubs.pm
 #endif // 1
-/pkg/
