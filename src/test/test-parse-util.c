@@ -13,8 +13,6 @@
 #include "tests.h"
 
 TEST(parse_boolean) {
-
-
         ASSERT_OK_EQ(parse_boolean("1"), 1);
         ASSERT_OK_EQ(parse_boolean("y"), 1);
         ASSERT_OK_EQ(parse_boolean("Y"), 1);
@@ -24,6 +22,7 @@ TEST(parse_boolean) {
         ASSERT_OK_EQ(parse_boolean("TRUE"), 1);
         ASSERT_OK_EQ(parse_boolean("on"), 1);
         ASSERT_OK_EQ(parse_boolean("ON"), 1);
+
         ASSERT_OK_ZERO(parse_boolean("0"));
         ASSERT_OK_ZERO(parse_boolean("n"));
         ASSERT_OK_ZERO(parse_boolean("N"));
@@ -33,6 +32,7 @@ TEST(parse_boolean) {
         ASSERT_OK_ZERO(parse_boolean("FALSE"));
         ASSERT_OK_ZERO(parse_boolean("off"));
         ASSERT_OK_ZERO(parse_boolean("OFF"));
+
         ASSERT_FAIL(parse_boolean("garbage"));
         ASSERT_FAIL(parse_boolean(""));
         ASSERT_FAIL(parse_boolean("full"));
@@ -68,12 +68,12 @@ TEST(parse_pid) {
 TEST(parse_mode) {
         mode_t m;
 
-
         ASSERT_FAIL(parse_mode("-1", &m));
         ASSERT_FAIL(parse_mode("+1", &m));
         ASSERT_FAIL(parse_mode("", &m));
         ASSERT_FAIL(parse_mode("888", &m));
         ASSERT_FAIL(parse_mode("77777", &m));
+
         ASSERT_OK(parse_mode("544", &m));
         ASSERT_EQ(m, 0544U);
 
@@ -254,81 +254,81 @@ TEST(parse_range) {
         unsigned lower, upper;
 
         /* Successful cases */
-
-
-
-
-
-
-
-
         ASSERT_OK_ZERO(parse_range("111", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 111ULL);
+
         ASSERT_OK_ZERO(parse_range("111-123", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 123ULL);
+
         ASSERT_OK_ZERO(parse_range("123-111", &lower, &upper));
         ASSERT_EQ(lower, 123ULL);
         ASSERT_EQ(upper, 111ULL);
+
         ASSERT_OK_ZERO(parse_range("123-123", &lower, &upper));
         ASSERT_EQ(lower, 123ULL);
         ASSERT_EQ(upper, 123ULL);
+
         ASSERT_OK_ZERO(parse_range("0", &lower, &upper));
         ASSERT_EQ(lower, 0ULL);
         ASSERT_EQ(upper, 0ULL);
+
         ASSERT_OK_ZERO(parse_range("0-15", &lower, &upper));
         ASSERT_EQ(lower, 0ULL);
         ASSERT_EQ(upper, 15ULL);
+
         ASSERT_OK_ZERO(parse_range("15-0", &lower, &upper));
         ASSERT_EQ(lower, 15ULL);
         ASSERT_EQ(upper, 0ULL);
+
         ASSERT_OK_ZERO(parse_range("128-65535", &lower, &upper));
         ASSERT_EQ(lower, 128ULL);
         ASSERT_EQ(upper, 65535ULL);
+
         ASSERT_OK_ZERO(parse_range("1024-4294967295", &lower, &upper));
         ASSERT_EQ(lower, 1024ULL);
         ASSERT_EQ(upper, 4294967295ULL);
 
         /* Leading whitespace is acceptable */
-
-
-
-
         ASSERT_OK_ZERO(parse_range(" 111", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 111ULL);
+
         ASSERT_OK_ZERO(parse_range(" 111-123", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 123ULL);
+
         ASSERT_OK_ZERO(parse_range("111- 123", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 123ULL);
+
         ASSERT_OK_ZERO(parse_range("\t111-\t123", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 123ULL);
+
         ASSERT_OK_ZERO(parse_range(" \t 111- \t 123", &lower, &upper));
         ASSERT_EQ(lower, 111ULL);
         ASSERT_EQ(upper, 123ULL);
 
         /* Error cases, make sure they fail as expected */
         lower = upper = 9999;
-
-
-
-
         ASSERT_ERROR(parse_range("111garbage", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("garbage111", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("garbage", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123garbage", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111garbage-123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
@@ -340,89 +340,89 @@ TEST(parse_range) {
         ASSERT_EQ(upper, 9999ULL);
 
         /* 111--123 will pass -123 to safe_atou which returns -ERANGE for negative */
-
-
-
-
-
-
-
         ASSERT_ERROR(parse_range("111--123", &lower, &upper), ERANGE);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("-123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("-111-123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123-", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111.4-123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123.4", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111,4-123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123,4", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
 
         /* Error on trailing dash */
-
-
-
         ASSERT_ERROR(parse_range("111-", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123-", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111--", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111- ", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
 
         /* Whitespace is not a separator */
-
-
         ASSERT_ERROR(parse_range("111 123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111\t123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111 \t 123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
 
         /* Trailing whitespace is invalid (from safe_atou) */
-
-
-
-
-
         ASSERT_ERROR(parse_range("111 ", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111-123 ", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111 -123", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111 -123 ", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111\t-123\t", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
+
         ASSERT_ERROR(parse_range("111 \t -123 \t ", &lower, &upper), EINVAL);
         ASSERT_EQ(lower, 9999ULL);
         ASSERT_EQ(upper, 9999ULL);
@@ -584,9 +584,9 @@ TEST(safe_atou64) {
         ASSERT_OK_ZERO(safe_atou64("0o11", &l));
         ASSERT_EQ(l, 9U);
 
-
         ASSERT_OK_ZERO(safe_atou64("0b11", &l));
         ASSERT_EQ(l, 3U);
+
         ASSERT_ERROR(safe_atou64("18446744073709551617", &l), ERANGE);
         ASSERT_ERROR(safe_atou64("-1", &l), ERANGE);
         ASSERT_ERROR(safe_atou64("  -1", &l), ERANGE);
@@ -608,9 +608,9 @@ TEST(safe_atoi64) {
         ASSERT_OK_ZERO(safe_atoi64("32767", &l));
         ASSERT_EQ(l, 32767);
 
-
         ASSERT_OK_ZERO(safe_atoi64("  32767", &l));
         ASSERT_EQ(l, 32767);
+
         ASSERT_OK_ZERO(safe_atoi64("  0o20", &l));
         ASSERT_EQ(l, 16);
 
@@ -638,9 +638,9 @@ TEST(safe_atoux64) {
         ASSERT_OK_ZERO(safe_atoux64("0x12345", &l));
         ASSERT_EQ(l, 0x12345U);
 
-
         ASSERT_OK_ZERO(safe_atoux64("0b11011", &l));
         ASSERT_EQ(l, 11603985U);
+
         ASSERT_OK_ZERO(safe_atoux64("+12345", &l));
         ASSERT_EQ(l, 0x12345U);
 
@@ -716,7 +716,6 @@ TEST(safe_atod) {
 TEST(parse_nice) {
         int n;
 
-
         ASSERT_OK(parse_nice("0", &n));
         ASSERT_EQ(n, 0);
 
@@ -728,6 +727,7 @@ TEST(parse_nice) {
 
         ASSERT_OK(parse_nice("-2", &n));
         ASSERT_EQ(n, -2);
+
         ASSERT_OK(parse_nice("1", &n));
         ASSERT_EQ(n, 1);
 
@@ -764,16 +764,16 @@ TEST(parse_nice) {
 
 #if 0 /// UNNEEDED by elogind
 TEST(parse_errno) {
-
-
         ASSERT_OK_EQ(parse_errno("EILSEQ"), EILSEQ);
         ASSERT_OK_EQ(parse_errno("EINVAL"), EINVAL);
         ASSERT_OK_EQ(parse_errno("0"), 0);
         ASSERT_OK_EQ(parse_errno("1"), 1);
         ASSERT_OK_EQ(parse_errno("4095"), 4095);
+
         ASSERT_ERROR(parse_errno("-1"), ERANGE);
         ASSERT_ERROR(parse_errno("-3"), ERANGE);
         ASSERT_ERROR(parse_errno("4096"), ERANGE);
+
         ASSERT_ERROR(parse_errno(""), EINVAL);
         ASSERT_ERROR(parse_errno("12.3"), EINVAL);
         ASSERT_ERROR(parse_errno("123junk"), EINVAL);
@@ -800,7 +800,6 @@ TEST(parse_fd) {
 TEST(parse_mtu) {
         uint32_t mtu = 0;
 
-
         ASSERT_OK(parse_mtu(AF_UNSPEC, "1500", &mtu));
         ASSERT_EQ(mtu, 1500U);
 
@@ -826,6 +825,7 @@ TEST(parse_mtu) {
 
         ASSERT_OK(parse_mtu(AF_UNSPEC, "68", &mtu));
         ASSERT_EQ(mtu, 68U);
+
         ASSERT_OK(parse_mtu(AF_UNSPEC, "67", &mtu));
         ASSERT_EQ(mtu, 67U);
 
@@ -876,22 +876,22 @@ TEST(parse_mtu) {
 TEST(parse_loadavg_fixed_point) {
         loadavg_t fp;
 
-
-
-
-
         ASSERT_OK_ZERO(parse_loadavg_fixed_point("1.23", &fp));
         ASSERT_EQ(LOADAVG_INT_SIDE(fp), 1U);
         ASSERT_EQ(LOADAVG_DECIMAL_SIDE(fp), 23U);
+
         ASSERT_OK_ZERO(parse_loadavg_fixed_point("1.80", &fp));
         ASSERT_EQ(LOADAVG_INT_SIDE(fp), 1U);
         ASSERT_EQ(LOADAVG_DECIMAL_SIDE(fp), 80U);
+
         ASSERT_OK_ZERO(parse_loadavg_fixed_point("0.07", &fp));
         ASSERT_EQ(LOADAVG_INT_SIDE(fp), 0U);
         ASSERT_EQ(LOADAVG_DECIMAL_SIDE(fp), 7U);
+
         ASSERT_OK_ZERO(parse_loadavg_fixed_point("0.00", &fp));
         ASSERT_EQ(LOADAVG_INT_SIDE(fp), 0U);
         ASSERT_EQ(LOADAVG_DECIMAL_SIDE(fp), 0U);
+
         ASSERT_OK_ZERO(parse_loadavg_fixed_point("4096.57", &fp));
         ASSERT_EQ(LOADAVG_INT_SIDE(fp), 4096U);
         ASSERT_EQ(LOADAVG_DECIMAL_SIDE(fp), 57U);
