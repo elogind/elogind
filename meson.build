@@ -20,7 +20,7 @@ else
         project_minor_version = '0'
 endif
 
-libelogind_version = '0.40.0'
+libsystemd_version = '0.40.0'
 libudev_version = '1.7.10'
 
 conf = configuration_data()
@@ -2518,7 +2518,7 @@ libelogind = shared_library(
 #         link_depends : libsystemd_sym,
 #else // 0
                      '-Wl,--version-script=' + libelogind_sym_path],
-        link_with : [libbasic],
+        link_with : [libbasic_static],
         link_whole : [libelogind_static],
         dependencies : [threads,
                         userspace],
@@ -2768,15 +2768,15 @@ subdir('src/update-utmp')
 # subdir('src/analyze')
 #endif // 0
 
-#if 0 /// elogind does not provide bootctl (for now)
+#if 0 /// elogind does not provide these tools (for now)
 # subdir('src/ask-password')
 # subdir('src/backlight')
 # subdir('src/battery-check')
 # subdir('src/binfmt')
 # subdir('src/bless-boot')
+# subdir('src/boot')
+# subdir('src/bootctl')
 #endif // 0
-subdir('src/boot')
-subdir('src/bootctl')
 subdir('src/busctl')
 
 #if 0 /// UNNEEDED by elogind
@@ -3210,8 +3210,8 @@ subdir('man')
 # subdir('modprobe.d')
 # subdir('network')
 # subdir('presets')
+# subdir('profile.d')
 #endif // 0
-subdir('profile.d')
 subdir('shell-completion/bash')
 subdir('shell-completion/zsh')
 #if 0 /// UNNEEDED by elogind

@@ -165,6 +165,7 @@ sd_event_sources = files(
 #   + sd_login_sources + sd_json_sources + sd_varlink_sources \
 #   + sd_path_sources + sd_netlink_sources + sd_network_sources
 #else // 0
+sd_login_sources = files('sd-login/sd-login.c')
 libelogind_sources = files(
         'sd-bus/bus-common-errors.c',
         'sd-bus/bus-container.c',
@@ -204,7 +205,7 @@ libelogind_sources = files(
         'sd-netlink/netlink-util.c',
         'sd-netlink/sd-netlink.c',
         'sd-path/sd-path.c',
-) + sd_journal_sources + id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
+) + sd_journal_sources + sd_id128_sources + sd_daemon_sources + sd_event_sources + sd_login_sources
 #endif // 0
 
 libelogind_c_args = ['-fvisibility=default']
@@ -242,12 +243,11 @@ libelogind_c_args = ['-fvisibility=default']
 libelogind_static = static_library(
         'elogind_static',
         libelogind_sources,
-        install : false,
-        include_directories : includes,
-        link_with : libbasic,
+        include_directories : libelogind_includes,
+        link_with : [libbasic_static],
         dependencies : [threads,
                         userspace],
-        c_args : libelogind_c_args)
+        build_by_default : false)
 
 libelogind_dir_path = meson.current_source_dir()
 
