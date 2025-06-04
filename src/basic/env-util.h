@@ -46,8 +46,6 @@ char** _strv_env_merge(char **first, ...);
 char** strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 char** strv_env_unset(char **l, const char *p); /* In place ... */
 char** strv_env_unset_many_internal(char **l, ...) _sentinel_;
 #define strv_env_unset_many(l, ...) strv_env_unset_many_internal(l, __VA_ARGS__, NULL)
@@ -72,8 +70,6 @@ int strv_env_get_merged(char **l, char ***ret);
 int getenv_bool(const char *p);
 int secure_getenv_bool(const char *p);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int secure_getenv_uint64(const char *p, uint64_t *ret);
 
 /* Like setenv, but calls unsetenv if value == NULL. */

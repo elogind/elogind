@@ -41,7 +41,6 @@
 
 bool isatty_safe(int fd);
 
-/// elogind empty mask removed (UNNEEDED by elogind)
 int terminal_reset_defensive(int fd, bool switch_to_text);
 int terminal_reset_defensive_locked(int fd, bool switch_to_text);
 
@@ -108,8 +107,6 @@ bool tty_is_vc_resolve(const char *tty);
 #endif // 0
 bool tty_is_console(const char *tty) _pure_;
 int vtnr_from_tty(const char *tty);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 const char* default_term_for_tty(const char *tty);
 
 #if 0 /// UNNEEDED by elogind
@@ -143,25 +140,6 @@ static inline bool colors_enabled(void) {
         return get_color_mode() != COLOR_OFF;
 }
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 int get_ctty_devnr(pid_t pid, dev_t *ret);
 int get_ctty(pid_t, dev_t *ret_devnr, char **ret);
 
@@ -180,9 +158,6 @@ int vt_restore(int fd);
 int vt_release(int fd, bool restore_vt);
 
 void get_log_colors(int priority, const char **on, const char **off, const char **highlight);
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 
 /* This assumes there is a 'tty' group */
 #define TTY_MODE 0620

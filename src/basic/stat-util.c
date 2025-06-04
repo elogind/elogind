@@ -424,9 +424,6 @@ int path_is_network_fs(const char *path) {
 }
 
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
 int proc_mounted(void) {
         int r;
 

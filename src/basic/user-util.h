@@ -60,8 +60,6 @@ typedef enum UserCredsFlags {
         USER_CREDS_SUPPRESS_PLACEHOLDER = 1 << 3,  /* suppress home and/or shell fields if value is placeholder (root/empty/nologin) */
 } UserCredsFlags;
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int get_user_creds(const char **username, uid_t *ret_uid, gid_t *ret_gid, const char **ret_home, const char **ret_shell, UserCredsFlags flags);
 int get_group_creds(const char **groupname, gid_t *ret_gid, UserCredsFlags flags);
 
@@ -137,8 +135,6 @@ bool valid_gecos(const char *d);
 char* mangle_gecos(const char *d);
 bool valid_home(const char *p);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 bool valid_shell(const char *p);
 
 int maybe_setgroups(size_t size, const gid_t *list);

@@ -111,8 +111,6 @@ int sd_netlink_message_cancel_array(sd_netlink_message *m);
 int sd_netlink_message_read(sd_netlink_message *m, uint16_t attr_type, size_t size, void *ret);
 int sd_netlink_message_read_data(sd_netlink_message *m, uint16_t attr_type, size_t *ret_size, void **ret_data);
 #endif /** 0 */
-#if 0 /** UNNEEDED by elogind */
-#endif /** 0 */
 int sd_netlink_message_read_string_strdup(sd_netlink_message *m, uint16_t attr_type, char **ret);
 int sd_netlink_message_read_string(sd_netlink_message *m, uint16_t attr_type, const char **ret);
 int sd_netlink_message_read_strv(sd_netlink_message *m, uint16_t container_type, uint16_t attr_type, char ***ret);
@@ -133,8 +131,6 @@ int sd_netlink_message_exit_container(sd_netlink_message *m);
 
 int sd_netlink_message_rewind(sd_netlink_message *m, sd_netlink *nl);
 
-#if 0 /** UNNEEDED by elogind */
-#endif /** 0 */
 sd_netlink_message* sd_netlink_message_next(sd_netlink_message *m);
 
 sd_netlink_message* sd_netlink_message_ref(sd_netlink_message *m);

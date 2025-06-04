@@ -200,15 +200,11 @@ char* strextend_with_separator_internal(char **x, const char *separator, ...) _s
 #define strextend_with_separator(x, separator, ...) strextend_with_separator_internal(x, separator, __VA_ARGS__, NULL)
 #define strextend(x, ...) strextend_with_separator_internal(x, NULL, __VA_ARGS__, NULL)
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 char* strextendn(char **x, const char *s, size_t l);
 
 int strextendf_with_separator(char **x, const char *separator, const char *format, ...) _printf_(3,4);
 #define strextendf(x, ...) strextendf_with_separator(x, NULL, __VA_ARGS__)
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 char* strrep(const char *s, unsigned n);
 
 #define strrepa(s, n)                                                   \
@@ -315,8 +311,6 @@ int make_cstring(const char *s, size_t n, MakeCStringMode mode, char **ret);
 
 size_t strspn_from_end(const char *str, const char *accept);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 char* strdupspn(const char *a, const char *accept);
 char* strdupcspn(const char *a, const char *reject);
 
@@ -329,7 +323,5 @@ bool version_is_valid_versionspec(const char *s);
 #endif // 0
 
 ssize_t strlevenshtein(const char *x, const char *y);
-
-/// elogind empty mask removed (UNNEEDED by elogind)
 
 char* strrstr(const char *haystack, const char *needle);

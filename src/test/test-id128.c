@@ -70,9 +70,6 @@ TEST(id128) {
         ASSERT_OK(sd_id128_from_string(UUID_WALDI, &id));
         ASSERT_EQ_ID128(id, ID128_WALDI);
 
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         ASSERT_FAIL(sd_id128_from_string("", &id));
         ASSERT_FAIL(sd_id128_from_string("01020304-0506-0708-090a-0b0c0d0e0f101", &id));
         ASSERT_FAIL(sd_id128_from_string("01020304-0506-0708-090a-0b0c0d0e0f10-", &id));

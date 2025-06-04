@@ -35,8 +35,6 @@ static inline int readlink_malloc(const char *p, char **ret) {
         return readlinkat_malloc(AT_FDCWD, p, ret);
 }
 int readlink_value(const char *p, char **ret);
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 int readlink_and_make_absolute(const char *p, char **ret);
 
 int chmod_and_chown_at(int dir_fd, const char *path, mode_t mode, uid_t uid, gid_t gid);

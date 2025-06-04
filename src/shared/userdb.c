@@ -21,8 +21,6 @@
 //#include "userdb-dropin.h"
 #include "userdb.h"
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_func, trivial_compare_func, sd_varlink, sd_varlink_unref);
 
 typedef enum LookupWhat {

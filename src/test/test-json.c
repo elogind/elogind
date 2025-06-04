@@ -354,8 +354,6 @@ TEST(build) {
         a = sd_json_variant_unref(a);
         b = sd_json_variant_unref(b);
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
         assert_se(sd_json_build(&a, SD_JSON_BUILD_REAL(M_PI)) >= 0);
 
         s = mfree(s);

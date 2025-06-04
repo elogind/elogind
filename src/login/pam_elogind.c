@@ -1006,9 +1006,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
          * background to finish start-up. If the service is "elogind-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
 
-#if 0 /// This does not apply to elogind, as it is not a part of init or any service manager
-#endif // 0
-
         seat = getenv_harder(handle, "XDG_SEAT", NULL);
         cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
         type = getenv_harder(handle, "XDG_SESSION_TYPE", type_pam);

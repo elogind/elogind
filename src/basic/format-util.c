@@ -4,8 +4,6 @@
 //#include "memory-util.h"
 #include "stdio-util.h"
 
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 #include "strxcpyx.h"
 
 char* format_bytes_full(char *buf, size_t l, uint64_t t, FormatBytesFlag flag) {

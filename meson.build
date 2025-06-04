@@ -3513,10 +3513,6 @@ summary({
 #         'default LLMNR mode' :              default_llmnr,
 #         'default DNS servers' :             dns_servers.split(' '),
 #         'default NTP servers' :             ntp_servers.split(' '),
-#endif // 0
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 #         'default net.naming_scheme= value': default_net_naming_scheme,
 #         'default KillUserProcesses= value': kill_user_processes,
 #         'default locale' :                  default_locale,
@@ -3673,10 +3669,10 @@ foreach tuple : [
         ['debug mmap cache'],
         ['debug siphash'],
         ['trace logging',          conf.get('LOG_TRACE') == 1],
-#if 0 /// elogind does not utilize fuzzing
-#endif // 0
         ['slow tests',             want_slow_tests],
-        ['fuzz tests',             want_fuzz_tests],
+#if 0 /// elogind does not utilize fuzzing
+#         ['fuzz tests',             want_fuzz_tests],
+#endif // 0
         ['install tests',          install_tests],
 #if 0 /// elogind does not ship any of those
 #         ['link-udev-shared',       get_option('link-udev-shared')],

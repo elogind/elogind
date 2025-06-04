@@ -71,12 +71,6 @@ assert_cc(sizeof(gid_t) == sizeof(uint32_t));
 #endif
 
 typedef enum {
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
-#if 0 /// UNNEEDED by elogind
-#endif // 0
-
         FORMAT_BYTES_USE_IEC     = 1 << 0,
         FORMAT_BYTES_BELOW_POINT = 1 << 1,
         FORMAT_BYTES_TRAILING_B  = 1 << 2,
