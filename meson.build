@@ -2211,6 +2211,7 @@ update_man_rules_py = find_program('tools/update-man-rules.py')
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
 
+# ############################################################
 #if 1 /// These are not needed by elogind, but meson wants them although they are commented out.
 conf.set_quoted('CERTIFICATE_ROOT',                 '/dev/null')
 conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO', 'N/A')
@@ -2917,7 +2918,7 @@ foreach dict : modules
         if is_nss
                 # We cannot use shared_module because it does not support version suffix.
                 # Unfortunately shared_library insists on creating the symlink…
-                meson.add_install_script(sh, '-c', 'rm $DESTDIR@0@/lib@1@.so'.format(libdir, name),
+                meson.add_install_script(sh, '-c', 'rm -f $DESTDIR@0@/lib@1@.so'.format(libdir, name),
                                          install_tag : 'nss')
         endif
 
