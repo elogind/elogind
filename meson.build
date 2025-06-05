@@ -3048,9 +3048,7 @@ foreach dict : executables
 #         if is_fuzz
 #                 fuzzer_exes += exe
 #
-#                 if want_tests != 'false'
-#                         # Run the fuzz regression tests without any sanitizers enabled.
-#                         # Additional invocations with sanitizers may get added below.
+#                 if want_tests != 'false' and want_fuzz_tests
 #                         fuzz_ins = fuzz_regression_tests.get(name, {})
 #                         foreach directive : fuzz_ins.get('directives', [])
 #                                 tt = '@0@_@1@'.format(name, fs.name(directive.full_path()))
@@ -3140,7 +3138,7 @@ foreach dict : modules
         if is_nss
                 # We cannot use shared_module because it does not support version suffix.
                 # Unfortunately shared_library insists on creating the symlink…
-                meson.add_install_script(sh, '-c', 'rm $DESTDIR@0@/lib@1@.so'.format(libdir, name),
+                meson.add_install_script(sh, '-c', 'rm -f $DESTDIR@0@/lib@1@.so'.format(libdir, name),
                                          install_tag : 'nss')
                 nss_targets += lib
         endif
