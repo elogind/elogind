@@ -221,10 +221,8 @@ void log_assert_failed_return(
                 int line,
                 const char *func);
 
-#if 0 /// UNNEEDED by elogind
 #define log_dispatch(level, error, buffer)                              \
         log_dispatch_internal(level, error, PROJECT_FILE, __LINE__, __func__, NULL, NULL, NULL, NULL, buffer)
-#endif // 0
 
 /* Logging with level */
 #define log_full_errno_zerook(level, error, ...)                        \
@@ -278,6 +276,7 @@ int log_emergency_level(void);
 #define log_error_errno(error, ...)     log_full_errno(LOG_ERR,     error, __VA_ARGS__)
 #if 0 /// UNNEEDED by elogind
 #define log_emergency_errno(error, ...) log_full_errno(log_emergency_level(), error, __VA_ARGS__)
+#endif // 0
 
 /* This logs at the specified level the first time it is called, and then
  * logs at debug. If the specified level is debug, this logs only the first
@@ -301,7 +300,6 @@ int log_emergency_level(void);
                         _err = -ERRNO_VALUE(_err);                       \
                 _err;                                                    \
         })
-#endif // 0
 
 #if LOG_TRACE
 #  define log_trace(...)          log_debug(__VA_ARGS__)
@@ -329,23 +327,14 @@ int log_emergency_level(void);
 
 #if 0 /// UNNEEDED by elogind
 #define log_struct_iovec_errno(level, error, iovec, n_iovec)            \
-        log_struct_iovec_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
-                                  error, __FILE__, __LINE__, __func__, iovec, n_iovec)
-                                  error, PROJECT_FILE, __LINE__, __func__, iovec, n_iovec)
         log_struct_iovec_internal(level, error, PROJECT_FILE, __LINE__, __func__, iovec, n_iovec)
 #define log_struct_iovec(level, iovec, n_iovec) log_struct_iovec_errno(level, 0, iovec, n_iovec)
+#endif // 0
 
 /* This modifies the buffer passed! */
-#define log_dump(level, buffer) \
-        log_dump_internal(LOG_REALM_PLUS_LEVEL(LOG_REALM, level), \
-                          0, PROJECT_FILE, __LINE__, __func__, buffer)
-#endif // 0
 #define log_dump(level, buffer)                                         \
         log_dump_internal(level, 0, PROJECT_FILE, __LINE__, __func__, buffer)
 
-#define log_oom() log_oom_internal(LOG_ERR, PROJECT_FILE, __LINE__, __func__)
-#define log_oom_debug() log_oom_internal(LOG_DEBUG, PROJECT_FILE, __LINE__, __func__)
-#define log_oom_warning() log_oom_internal(LOG_WARNING, PROJECT_FILE, __LINE__, __func__)
 #define log_oom_full(level) log_oom_internal(level, PROJECT_FILE, __LINE__, __func__)
 #define log_oom()           log_oom_full(LOG_ERR)
 #define log_oom_debug()     log_oom_full(LOG_DEBUG)
@@ -495,14 +484,18 @@ typedef struct LogRateLimit {
 #define log_ratelimit_notice(...)    log_ratelimit_full(LOG_NOTICE,  __VA_ARGS__)
 #define log_ratelimit_warning(...)   log_ratelimit_full(LOG_WARNING, __VA_ARGS__)
 #define log_ratelimit_error(...)     log_ratelimit_full(LOG_ERR,     __VA_ARGS__)
+#if 0 /// UNNEEDED by elogind
 #define log_ratelimit_emergency(...) log_ratelimit_full(log_emergency_level(), __VA_ARGS__)
+#endif // 0
 
 /* Logging triggered by an errno-like error */
 #define log_ratelimit_info_errno(error, ...)      log_ratelimit_full_errno(LOG_INFO,    error, __VA_ARGS__)
 #define log_ratelimit_notice_errno(error, ...)    log_ratelimit_full_errno(LOG_NOTICE,  error, __VA_ARGS__)
 #define log_ratelimit_warning_errno(error, ...)   log_ratelimit_full_errno(LOG_WARNING, error, __VA_ARGS__)
 #define log_ratelimit_error_errno(error, ...)     log_ratelimit_full_errno(LOG_ERR,     error, __VA_ARGS__)
+#if 0 /// UNNEEDED by elogind
 #define log_ratelimit_emergency_errno(error, ...) log_ratelimit_full_errno(log_emergency_level(), error, __VA_ARGS__)
+#endif // 0
 
 const char* _log_set_prefix(const char *prefix, bool force);
 static inline const char* _log_unset_prefixp(const char **p) {
