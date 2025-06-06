@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "alloc-util.h"
-//#include "ansi-color.h"
+#include "ansi-color.h"
 #include "build.h"
 #include "extract-word.h"
 #include "macro.h"
@@ -33,13 +33,13 @@ const char* const elogind_features =
         " -SELINUX"
 #endif
 
+#if 0 /// NOT used/available/supported in elogind
 #if HAVE_APPARMOR
         " +APPARMOR"
 #else
         " -APPARMOR"
 #endif
 
-#if 0 /// UNNEEDED by elogind
 #if ENABLE_IMA
         " +IMA"
 #else
@@ -59,6 +59,7 @@ const char* const elogind_features =
         " -SMACK"
 #endif
 
+#if 0 /// NOT used/available/supported in elogind
 #if HAVE_SECCOMP
         " +SECCOMP"
 #else
@@ -67,7 +68,6 @@ const char* const elogind_features =
 
         /* cryptographic libraries */
 
-#if 0 /// UNNEEDED by elogind
 #if HAVE_GCRYPT
         " +GCRYPT"
 #else
@@ -95,7 +95,7 @@ const char* const elogind_features =
         " -ACL"
 #endif
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// NOT used/available/supported in elogind
 #if HAVE_BLKID
         " +BLKID"
 #else
@@ -251,25 +251,24 @@ const char* const elogind_features =
         " -UTMP"
 #endif
 
-#if 0 /// UNNEEDED by elogind
+#if 0 /// NOT used/available/supported in elogind
 #if HAVE_SYSV_COMPAT
         " +SYSVINIT"
 #else
         " -SYSVINIT"
 #endif
-#endif // 0
 
 #if HAVE_LIBARCHIVE
         " +LIBARCHIVE"
 #else
         " -LIBARCHIVE"
 #endif
+#endif // 0
 
         ;
 
-static char *elogind_features_with_color(void) {
-        const char *p = elogind_features;
 static char* elogind_features_with_color(void) {
+        const char *p = elogind_features;
         _cleanup_free_ char *ret = NULL;
         int r;
 
@@ -309,8 +308,8 @@ int version(void) {
         if (colors_enabled())
                 b = elogind_features_with_color();
 
-               b ?: elogind_features);
         printf("%selogind %i%s (" GIT_VERSION ")\n%s\n",
                ansi_highlight(), PROJECT_VERSION, ansi_normal(),
+               b ?: elogind_features);
         return 0;
 }
