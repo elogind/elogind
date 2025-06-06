@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #include "alloc-util.h"
-#include "ansi-color.h"
+//#include "ansi-color.h"
 #include "build.h"
 #include "extract-word.h"
 #include "macro.h"
@@ -45,13 +45,13 @@ const char* const elogind_features =
 #else
         " -IMA"
 #endif
-#endif // 0
 
 #if ENABLE_IPE
         " +IPE"
 #else
         " -IPE"
 #endif
+#endif // 0
 
 #if ENABLE_SMACK
         " +SMACK"
