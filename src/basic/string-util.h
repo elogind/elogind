@@ -242,9 +242,11 @@ static inline int strdup_to(char **ret, const char *src) {
 }
 
 bool string_is_safe(const char *p) _pure_;
+#if 0 /// UNNEEDED by elogind
 static inline bool string_is_safe_ascii(const char *p) {
         return ascii_is_valid(p) && string_is_safe(p);
 }
+#endif // 0
 
 DISABLE_WARNING_STRINGOP_TRUNCATION;
 static inline void strncpy_exact(char *buf, const char *src, size_t buf_len) {
