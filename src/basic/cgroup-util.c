@@ -292,11 +292,6 @@ int cg_read_subgroup(DIR *d, char **ret) {
         return 0;
 }
 
-#if 0 /// elogind supports other controllers
-#else // 0
-                if (r < 0)
-                        log_warning_errno(r, "Failed to remove compat %s cgroup %s: %m", CGROUP_CONTROLLER_NAME, path);
-#endif // 0
 static int cg_kill_items(
                 const char *path,
                 const char *item,
