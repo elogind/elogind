@@ -408,6 +408,7 @@ int write_string_filef(
         return write_string_file(fn, p, flags);
 }
 
+#if 0 /// UNNEEDED by elogind
 int write_base64_file_at(
                 int dir_fd,
                 const char *fn,
@@ -423,6 +424,7 @@ int write_base64_file_at(
 
         return write_string_file_at(dir_fd, fn, encoded, flags);
 }
+#endif // 0
 
 int read_one_line_file_at(int dir_fd, const char *filename, char **ret) {
         _cleanup_fclose_ FILE *f = NULL;

@@ -63,7 +63,9 @@ static inline int write_string_file(const char *fn, const char *line, WriteStrin
 }
 int write_string_filef(const char *fn, WriteStringFileFlags flags, const char *format, ...) _printf_(3, 4);
 
+#if 0 /// UNNEEDED by elogind
 int write_base64_file_at(int dir_fd, const char *fn, const struct iovec *data, WriteStringFileFlags flags);
+#endif // 0
 
 int read_one_line_file_at(int dir_fd, const char *filename, char **ret);
 static inline int read_one_line_file(const char *filename, char **ret) {
