@@ -1514,12 +1514,8 @@ static ColorMode get_color_mode_impl(void) {
          * unrestricted color output. */
 
 
-#if 0 /// elogind is never init!
-#else // 0
-                else {
-#endif // 0
         /* First, we check $SYSTEMD_COLORS, which is the explicit way to change the mode. */
-        ColorMode m = parse_elogind_colors();
+        ColorMode m = parse_systemd_colors();
         if (m >= 0)
                 return m;
 

@@ -76,10 +76,10 @@ typedef enum ColorMode {
         _COLOR_MODE_INVALID = -EINVAL,
 } ColorMode;
 
-#if 0 /// UNNEEDED by elogind
 const char* color_mode_to_string(ColorMode m) _const_;
 ColorMode color_mode_from_string(const char *s) _pure_;
 
+#if 0 /// UNNEEDED by elogind
 int terminal_vhangup_fd(int fd);
 int terminal_vhangup(const char *tty);
 
