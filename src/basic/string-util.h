@@ -147,8 +147,8 @@ static inline char* skip_leading_chars(const char *s, const char *bad) {
 }
 
 char ascii_tolower(char x);
-#if 0 /// UNNEEDED by elogind
 char* ascii_strlower(char *s);
+#if 0 /// UNNEEDED by elogind
 char* ascii_strlower_n(char *s, size_t n);
 
 char ascii_toupper(char x);

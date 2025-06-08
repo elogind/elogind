@@ -326,12 +326,12 @@ TEST(string_has_cc) {
         assert_se(!string_has_cc("a\ab\tc", "\t\a"));
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(ascii_strlower) {
         char a[] = "AabBcC Jk Ii Od LKJJJ kkd LK";
         ASSERT_STREQ(ascii_strlower(a), "aabbcc jk ii od lkjjj kkd lk");
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(strshorten) {
         char s[] = "foobar";
 
