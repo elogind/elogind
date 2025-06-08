@@ -170,10 +170,10 @@ char* format_proc_pid_fd_path(char buf[static PROC_PID_FD_PATH_MAX], pid_t pid, 
 /* Kinda the same as FORMAT_PROC_FD_PATH(), but goes by PID rather than "self" symlink */
 #define FORMAT_PROC_PID_FD_PATH(pid, fd)                                \
         format_proc_pid_fd_path((char[PROC_PID_FD_PATH_MAX]) {}, (pid), (fd))
+#endif // 0
 
 int proc_fd_enoent_errno(void);
 
-#endif // 0
 const char* accmode_to_string(int flags);
 
 /* Like ASSERT_PTR, but for fds */
