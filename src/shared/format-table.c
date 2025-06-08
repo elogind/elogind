@@ -2879,8 +2879,8 @@ static int table_data_to_json(TableData *d, sd_json_variant **ret) {
                 return sd_json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET));
 
         case TABLE_IN6_ADDR:
-#endif // 0
                 return sd_json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET6));
+#endif // 0
 
         case TABLE_ID128:
                 return sd_json_variant_new_id128(ret, d->id128);
