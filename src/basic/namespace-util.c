@@ -484,6 +484,7 @@ int namespace_open_by_type(NamespaceType type) {
 
         return fd;
 }
+#endif // 0
 
 int namespace_is_init(NamespaceType type) {
         int r;
@@ -507,6 +508,7 @@ int namespace_is_init(NamespaceType type) {
         return st.st_ino == namespace_info[type].root_inode;
 }
 
+#if 0 /// UNNEEDED by elogind
 int is_our_namespace(int fd, NamespaceType request_type) {
         int clone_flag;
 

@@ -77,9 +77,11 @@ int in_same_namespace(pid_t pid1, pid_t pid2, NamespaceType type);
 int parse_userns_uid_range(const char *s, uid_t *ret_uid_shift, uid_t *ret_uid_range);
 
 int namespace_open_by_type(NamespaceType type);
+#endif // 0
 
 int namespace_is_init(NamespaceType type);
 
+#if 0 /// UNNEEDED by elogind
 int is_our_namespace(int fd, NamespaceType type);
 
 int is_idmapping_supported(const char *path);
