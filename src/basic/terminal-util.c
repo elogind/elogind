@@ -257,7 +257,6 @@ int ask_string(char **ret, const char *text, ...) {
         return 0;
 }
 
-#endif // 0
 bool any_key_to_proceed(void) {
         char key = 0;
         bool need_nl = true;
@@ -322,6 +321,7 @@ int show_menu(char **x, unsigned n_columns, unsigned width, unsigned percentage)
 
         return 0;
 }
+#endif // 0
 
 int open_terminal(const char *name, int mode) {
         _cleanup_close_ int fd = -EBADF;
