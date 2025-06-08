@@ -152,8 +152,8 @@ int show_boot_entry(
                 bool show_reported);
 int show_boot_entries(
                 const BootConfig *config,
-#endif // 0
                 sd_json_format_flags_t json_format);
+#endif // 0
 
 int boot_filename_extract_tries(const char *fname, char **ret_stripped, unsigned *ret_tries_left, unsigned *ret_tries_done);
 
