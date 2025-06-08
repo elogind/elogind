@@ -239,7 +239,6 @@ shared_sources = files(
         'enable-mempool.c',
         'exec-elogind.c',
         'exec-util.c',
-        'fileio-label.c',
         'find-esp.c',
         'format-table.c',
         'hibernate-util.c',
