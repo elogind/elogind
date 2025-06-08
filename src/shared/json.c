@@ -31,6 +31,8 @@
 #include "terminal-util.h"
 #include "user-util.h"
 #include "utf8.h"
+/// Additional includes needed by elogind
+#include "ansi-color.h"
 
 /* Refuse putting together variants with a larger depth than 2K by default (as a protection against overflowing stacks
  * if code processes JSON objects recursively. Note that we store the depth in an uint16_t, hence make sure this
