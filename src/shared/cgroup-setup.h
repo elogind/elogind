@@ -45,8 +45,8 @@ int cg_migrate(const char *cfrom, const char *pfrom, const char *cto, const char
 typedef const char* (*cg_migrate_callback_t)(CGroupMask mask, void *userdata);
 
 /* CGroup V1 specific */
-int cg_migrate_recursive(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
 #if 0 /// UNNEEDED by elogind
+int cg_migrate_recursive(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
 int cg_migrate_recursive_fallback(const char *cfrom, const char *pfrom, const char *cto, const char *pto, CGroupFlags flags);
 int cg_migrate_v1_controllers(CGroupMask supported, CGroupMask mask, const char *from, cg_migrate_callback_t to_callback, void *userdata);
 int cg_trim_v1_controllers(CGroupMask supported, CGroupMask mask, const char *path, bool delete_root);

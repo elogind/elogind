@@ -899,7 +899,6 @@ int cg_enable_everywhere(
 
         return 0;
 }
-#endif // 0
 
 int cg_migrate_recursive(
                 const char *cfrom,
@@ -1042,6 +1041,7 @@ int cg_trim_v1_controllers(CGroupMask supported, CGroupMask mask, const char *pa
 
         return r;
 }
+#endif // 0
 
 int cg_install_release_agent(const char *controller, const char *agent) {
         _cleanup_free_ char *fs = NULL, *contents = NULL;
