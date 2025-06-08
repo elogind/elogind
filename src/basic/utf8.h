@@ -19,12 +19,12 @@ static inline char* utf8_is_valid(const char *str) {
         return utf8_is_valid_n(str, SIZE_MAX);
 }
 
-#if 0 /// UNNEEDED by elogind
 char* ascii_is_valid_n(const char *str, size_t len) _pure_;
 static inline char* ascii_is_valid(const char *str) {
         return ascii_is_valid_n(str, SIZE_MAX);
 }
 
+#if 0 /// UNNEEDED by elogind
 int utf8_to_ascii(const char *str, char replacement_char, char **ret);
 #endif // 0
 

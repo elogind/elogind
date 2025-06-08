@@ -39,13 +39,11 @@ TEST(utf8_is_valid) {
         assert_se(!utf8_is_valid("\341\204"));
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(ascii_is_valid) {
         assert_se( ascii_is_valid("alsdjf\t\vbarr\nba z"));
         assert_se(!ascii_is_valid("\342\204\242"));
         assert_se(!ascii_is_valid("\341\204"));
 }
-#endif // 0
 
 TEST(ascii_is_valid_n) {
         assert_se( ascii_is_valid_n("alsdjf\t\vbarr\nba z", 17));
