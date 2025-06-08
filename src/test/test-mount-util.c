@@ -537,7 +537,6 @@ TEST(bind_mount_submounts) {
         assert_se(umount_recursive(a, 0) >= 0);
         assert_se(umount_recursive(b, 0) >= 0);
 }
-#endif // 0
 
 TEST(path_is_network_fs_harder) {
         _cleanup_close_ int dir_fd = -EBADF;
@@ -588,5 +587,6 @@ TEST(path_is_network_fs_harder) {
                 _exit(EXIT_SUCCESS);
         }
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_DEBUG);
