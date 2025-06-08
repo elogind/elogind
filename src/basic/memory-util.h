@@ -27,7 +27,6 @@ static inline void* memcpy_safe(void *dst, const void *src, size_t n) {
         return memcpy(dst, src, n);
 }
 
-#if 0 /// UNNEEDED by elogind
 /* Normal mempcpy() requires src to be nonnull. We do nothing if n is 0. */
 static inline void* mempcpy_safe(void *dst, const void *src, size_t n) {
         if (n == 0)
@@ -35,7 +34,6 @@ static inline void* mempcpy_safe(void *dst, const void *src, size_t n) {
         assert(src);
         return mempcpy(dst, src, n);
 }
-#endif // 0
 
 #define mempcpy_typesafe(dst, src, n)                                   \
         ({                                                              \
