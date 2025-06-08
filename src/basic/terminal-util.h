@@ -41,8 +41,10 @@
 
 bool isatty_safe(int fd);
 
+#if 0 /// UNNEEDED by elogind
 int terminal_reset_defensive(int fd, bool switch_to_text);
 int terminal_reset_defensive_locked(int fd, bool switch_to_text);
+#endif // 0
 
 int terminal_set_cursor_position(int fd, unsigned row, unsigned column);
 

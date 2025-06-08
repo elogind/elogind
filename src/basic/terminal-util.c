@@ -1693,7 +1693,6 @@ int terminal_set_cursor_position(int fd, unsigned row, unsigned column) {
 
         return loop_write(fd, cursor_position, SIZE_MAX);
 }
-#endif // 0
 
 int terminal_reset_defensive(int fd, bool switch_to_text) {
         int r = 0;
@@ -1736,6 +1735,7 @@ void termios_disable_echo(struct termios *termios) {
         termios->c_cc[VMIN] = 1;
         termios->c_cc[VTIME] = 0;
 }
+#endif // 0
 
 static int terminal_verify_same(int input_fd, int output_fd) {
         assert(input_fd >= 0);

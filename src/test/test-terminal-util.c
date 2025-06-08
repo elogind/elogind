@@ -302,6 +302,7 @@ TEST(get_color_mode) {
         reset_terminal_feature_caches();
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(terminal_reset_defensive) {
         int r;
 
@@ -309,6 +310,7 @@ TEST(terminal_reset_defensive) {
         if (r < 0)
                 log_notice_errno(r, "Failed to reset terminal: %m");
 }
+#endif // 0
 
 TEST(pty_open_peer) {
         _cleanup_close_ int pty_fd = -EBADF, peer_fd = -EBADF;
