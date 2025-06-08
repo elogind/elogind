@@ -759,9 +759,9 @@ finish:
 }
 
 _public_ int sd_booted(void) {
+#if 0 /// elogind is always used without systemd running the show. (Well, it should...)
         int r;
 
-#if 0 /// elogind is always used without systemd running the show. (Well, it should...)
         /* We test whether the runtime unit file directory has been created. This takes place in mount-setup.c,
          * so is guaranteed to happen very early during boot. */
 
@@ -772,6 +772,9 @@ _public_ int sd_booted(void) {
                 return false;
 
         return r;
+#else // 0
+        return 0;
+#endif // 0
 }
 
 static void unsetenv_watchdog(bool unset_environment) {
@@ -780,9 +783,6 @@ static void unsetenv_watchdog(bool unset_environment) {
 
         assert_se(unsetenv("WATCHDOG_USEC") == 0);
         assert_se(unsetenv("WATCHDOG_PID") == 0);
-#else // 0
-        return 0;
-#endif // 0
 }
 
 _public_ int sd_watchdog_enabled(int unset_environment, uint64_t *usec) {
