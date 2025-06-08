@@ -214,7 +214,6 @@ static int add_rtattr(sd_netlink_message *m, uint16_t attr_type, const void *dat
         /* return old message size */
         return offset;
 }
-#endif // 0
 
 static int message_attribute_has_type(sd_netlink_message *m, size_t *ret_size, uint16_t attr_type, NLAType type) {
         const NLAPolicy *policy;
@@ -233,7 +232,6 @@ static int message_attribute_has_type(sd_netlink_message *m, size_t *ret_size, u
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int sd_netlink_message_append_string(sd_netlink_message *m, uint16_t attr_type, const char *data) {
         size_t length, size;
         int r;

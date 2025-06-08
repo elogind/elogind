@@ -356,12 +356,12 @@ int sd_rtnl_message_new_link(sd_netlink *rtnl, sd_netlink_message **ret, uint16_
 
         ifi->ifi_family = AF_UNSPEC;
 
-#if 0 /// UNNEEDED by elogind
         ifi->ifi_index = ifindex;
 
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int sd_rtnl_message_new_addr(
                 sd_netlink *rtnl,
                 sd_netlink_message **ret,
@@ -406,13 +406,9 @@ int sd_rtnl_message_new_addr_update(
 
         return 0;
 }
-#endif // 0
 
 int sd_rtnl_message_get_family(sd_netlink_message *m, int *ret) {
         assert_return(m, -EINVAL);
-
-#if 0 /// UNNEEDED by elogind
-        assert_return(ret, -EINVAL);
 
         assert(m->hdr);
 

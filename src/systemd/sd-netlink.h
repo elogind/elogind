@@ -49,8 +49,8 @@ int sd_netlink_increase_rxbuf(sd_netlink *nl, const size_t size);
 sd_netlink* sd_netlink_ref(sd_netlink *nl);
 sd_netlink* sd_netlink_unref(sd_netlink *nl);
 
-#if 0 /** UNNEEDED by elogind */
 int sd_netlink_send(sd_netlink *nl, sd_netlink_message *message, uint32_t *ret_serial);
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_call_async(sd_netlink *nl, sd_netlink_slot **ret_slot, sd_netlink_message *message,
                           sd_netlink_message_handler_t callback, sd_netlink_destroy_t destroy_callback,
                           void *userdata, uint64_t usec, const char *description);
@@ -59,8 +59,8 @@ int sd_netlink_call(sd_netlink *nl, sd_netlink_message *message, uint64_t timeou
 int sd_netlink_read(sd_netlink *nl, uint32_t serial, uint64_t timeout, sd_netlink_message **ret);
 
 int sd_netlink_get_events(sd_netlink *nl);
-#if 0 /** UNNEEDED by elogind */
 int sd_netlink_get_timeout(sd_netlink *nl, uint64_t *ret);
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_process(sd_netlink *nl, sd_netlink_message **ret);
 int sd_netlink_wait(sd_netlink *nl, uint64_t timeout);
 
@@ -141,8 +141,8 @@ int sd_netlink_message_set_request_dump(sd_netlink_message *m, int dump);
 #endif /** 0 */
 int sd_netlink_message_is_error(sd_netlink_message *m);
 int sd_netlink_message_get_errno(sd_netlink_message *m);
-#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_get_type(sd_netlink_message *m, uint16_t *ret);
+#if 0 /** UNNEEDED by elogind */
 int sd_netlink_message_set_flags(sd_netlink_message *m, uint16_t flags);
 #endif /** 0 */
 int sd_netlink_message_is_broadcast(sd_netlink_message *m);
@@ -166,10 +166,13 @@ int sd_rtnl_message_addr_set_flags(sd_netlink_message *m, uint8_t flags); /* ifa
 int sd_rtnl_message_addr_get_flags(sd_netlink_message *m, uint8_t *ret);
 int sd_rtnl_message_addr_set_scope(sd_netlink_message *m, uint8_t scope); /* ifa_scope */
 int sd_rtnl_message_addr_get_scope(sd_netlink_message *m, uint8_t *ret);
+#endif /** 0 */
 
 int sd_rtnl_message_new_link(sd_netlink *nl, sd_netlink_message **ret, uint16_t msg_type, int ifindex);
+
 /* struct ifinfomsg */
 int sd_rtnl_message_link_get_ifindex(sd_netlink_message *m, int *ret); /* ifi_index */
+#if 0 /** UNNEEDED by elogind */
 int sd_rtnl_message_link_set_family(sd_netlink_message *m, int family); /* ifi_family */
 int sd_rtnl_message_link_get_family(sd_netlink_message *m, int *ret);
 int sd_rtnl_message_link_set_type(sd_netlink_message *m, uint16_t type); /* ifi_type */
