@@ -552,6 +552,7 @@ int vt_disallocate(const char *tty_path) {
                                SIZE_MAX,
                                100 * USEC_PER_MSEC);
 }
+#endif // 0
 
 static int vt_default_utf8(void) {
         _cleanup_free_ char *b = NULL;
@@ -580,6 +581,7 @@ static int vt_reset_keyboard(int fd) {
         return RET_NERRNO(ioctl(fd, KDSKBMODE, kb));
 }
 
+#if 0 /// UNNEEDED by elogind
 static int terminal_reset_ioctl(int fd, bool switch_to_text) {
         struct termios termios;
         int r;
