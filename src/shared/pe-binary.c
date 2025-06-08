@@ -230,6 +230,7 @@ int pe_read_section_data(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pe_read_section_data_by_name(
                 int fd,
                 const PeHeader *pe_header,
@@ -252,6 +253,7 @@ int pe_read_section_data_by_name(
 
         return pe_read_section_data(fd, section, max_size, ret, ret_size);
 }
+#endif // 0
 
 bool pe_is_uki(const PeHeader *pe_header, const IMAGE_SECTION_HEADER *sections) {
         assert(pe_header);
@@ -328,6 +330,7 @@ static int section_offset_cmp(const IMAGE_SECTION_HEADER *a, const IMAGE_SECTION
 }
 #endif
 
+#if 0 /// UNNEEDED by elogind
 int pe_hash(int fd,
             const EVP_MD *md,
             void **ret_hash,
@@ -599,3 +602,4 @@ int uki_hash(int fd,
         return log_debug_errno(SYNTHETIC_ERRNO(EOPNOTSUPP), "OpenSSL is not supported, cannot calculate UKI hash.");
 #endif
 }
+#endif // 0

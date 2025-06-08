@@ -3,10 +3,10 @@
 
 #include <sys/types.h>
 
-#include "openssl-util.h"
+//#include "openssl-util.h"
 #include "macro-fundamental.h"
 #include "sparse-endian.h"
-#include "uki.h"
+//#include "uki.h"
 
 #define IMAGE_DATA_DIRECTORY_INDEX_CERTIFICATION_TABLE 4U
 
@@ -148,15 +148,19 @@ int pe_load_headers(int fd, IMAGE_DOS_HEADER **ret_dos_header, PeHeader **ret_pe
 
 int pe_load_sections(int fd, const IMAGE_DOS_HEADER *dos_header, const PeHeader *pe_header, IMAGE_SECTION_HEADER **ret_sections);
 int pe_read_section_data(int fd, const IMAGE_SECTION_HEADER *section, size_t max_size, void **ret, size_t *ret_size);
+#if 0 /// UNNEEDED by elogind
 int pe_read_section_data_by_name(int fd, const PeHeader *pe_header, const IMAGE_SECTION_HEADER *sections, const char *name, size_t max_size, void **ret, size_t *ret_size);
+#endif // 0
 
 bool pe_is_uki(const PeHeader *pe_header, const IMAGE_SECTION_HEADER *sections);
 bool pe_is_addon(const PeHeader *pe_header, const IMAGE_SECTION_HEADER *sections);
 
 bool pe_is_native(const PeHeader *pe_header);
 
+#if 0 /// UNNEEDED by elogind
 int pe_hash(int fd, const EVP_MD *md, void **ret_hash, size_t *ret_hash_size);
 
 int pe_checksum(int fd, uint32_t *ret);
 
 int uki_hash(int fd, const EVP_MD *md, void *ret_hashes[static _UNIFIED_SECTION_MAX], size_t *ret_hash_size);
+#endif // 0
