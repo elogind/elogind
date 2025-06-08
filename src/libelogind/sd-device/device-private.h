@@ -94,7 +94,7 @@ int device_read_uevent_file(sd_device *device);
 
 int device_set_action(sd_device *device, sd_device_action_t a);
 sd_device_action_t device_action_from_string(const char *s) _pure_;
-#if 0 /// UNNEEDED by elogind
 const char* device_action_to_string(sd_device_action_t a) _const_;
+#if 0 /// UNNEEDED by elogind
 void dump_device_action_table(void);
 #endif // 0
