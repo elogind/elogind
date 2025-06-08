@@ -29,7 +29,7 @@
 //#include "string-table.h"
 #include "string-util.h"
 #include "strv.h"
-//#include "terminal-util.h"
+#include "terminal-util.h"
 #include "tmpfile-util.h"
 
 #define EXIT_SKIP_REMAINING 77
