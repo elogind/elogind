@@ -636,7 +636,6 @@ int safe_atod(const char *s, double *ret_d) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         unsigned val = 0;
         const char *s;
@@ -672,6 +671,7 @@ int parse_fractional_part_u(const char **p, size_t digits, unsigned *res) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int parse_nice(const char *p, int *ret) {
         int n, r;
 
