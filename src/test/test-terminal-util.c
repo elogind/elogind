@@ -230,6 +230,8 @@ TEST(terminal_fix_size) {
                 log_notice("Fixed terminal size.");
 }
 
+
+#if 0 /// UNNEEDED by elogind
 TEST(terminal_is_pty_fd) {
         _cleanup_close_ int fd1 = -EBADF, fd2 = -EBADF;
         int r;
@@ -268,6 +270,7 @@ TEST(terminal_is_pty_fd) {
                 assert_se(terminal_is_pty_fd(tfd) <= 0);
         }
 }
+#endif // 0
 
 static void test_get_color_mode_with_env(const char *key, const char *val, ColorMode expected) {
         ASSERT_OK_ERRNO(setenv(key, val, true));
@@ -310,26 +313,26 @@ TEST(terminal_reset_defensive) {
         if (r < 0)
                 log_notice_errno(r, "Failed to reset terminal: %m");
 }
-#endif // 0
 
 TEST(pty_open_peer) {
         _cleanup_close_ int pty_fd = -EBADF, peer_fd = -EBADF;
         _cleanup_free_ char *pty_path = NULL;
-
+        
         pty_fd = openpt_allocate(O_RDWR|O_NOCTTY|O_CLOEXEC|O_NONBLOCK, &pty_path);
         assert(pty_fd >= 0);
         assert(pty_path);
-
+        
         peer_fd = pty_open_peer(pty_fd, O_RDWR|O_NOCTTY|O_CLOEXEC);
         assert(peer_fd >= 0);
-
+        
         static const char x[] = { 'x', '\n' };
         assert(write(pty_fd, x, sizeof(x)) == 2);
-
+        
         char buf[3];
         assert(read(peer_fd, &buf, sizeof(buf)) == sizeof(x));
         assert(buf[0] == x[0]);
         assert(buf[1] == x[1]);
 }
+#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

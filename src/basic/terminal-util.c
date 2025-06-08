@@ -2276,6 +2276,7 @@ int terminal_fix_size(int input_fd, int output_fd) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int terminal_is_pty_fd(int fd) {
         int r;
 
@@ -2360,3 +2361,4 @@ int pty_open_peer(int fd, int mode) {
 
         return open_terminal(peer_path, mode);
 }
+#endif // 0
