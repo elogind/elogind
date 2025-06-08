@@ -24,8 +24,8 @@
 #include "hash-funcs.h"
 #include "hostname-util.h"
 #include "id128-util.h"
-#include "in-addr-prefix-util.h"
-#include "ip-protocol-list.h"
+//#include "in-addr-prefix-util.h"
+//#include "ip-protocol-list.h"
 #include "log.h"
 #include "macro.h"
 #include "missing_network.h"
@@ -2090,6 +2090,7 @@ int config_parse_unsigned_bounded(
 
         return 1;  /* Return 1 if something was set */
 }
+#endif // 0
 
 int config_parse_calendar(
                 const char *unit,
@@ -2125,11 +2126,13 @@ int config_parse_calendar(
         return 1;
 }
 
-#endif // 0
+#if 0 /// UNNEEDED by elogind
 DEFINE_CONFIG_PARSE(config_parse_percent, parse_percent);
 DEFINE_CONFIG_PARSE(config_parse_permyriad, parse_permyriad);
+#endif // 0
 DEFINE_CONFIG_PARSE_PTR(config_parse_sec_fix_0, parse_sec_fix_0, usec_t);
 
+#if 0 /// UNNEEDED by elogind
 int config_parse_timezone(
                 const char *unit,
                 const char *filename,
@@ -2196,3 +2199,4 @@ int config_parse_ip_protocol(
         *proto = r;
         return 1; /* done. */
 }
+#endif // 0

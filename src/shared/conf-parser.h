@@ -325,12 +325,16 @@ CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_data);
 CONFIG_PARSER_PROTOTYPE(config_parse_in_addr_prefix);
 CONFIG_PARSER_PROTOTYPE(config_parse_percent);
 CONFIG_PARSER_PROTOTYPE(config_parse_permyriad);
-#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_pid);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_sec_fix_0);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_timezone);
+#endif // 0
 CONFIG_PARSER_PROTOTYPE(config_parse_calendar);
+#if 0 /// UNNEEDED by elogind
 CONFIG_PARSER_PROTOTYPE(config_parse_ip_protocol);
+#endif // 0
 
 typedef enum Disabled {
         DISABLED_CONFIGURATION,
