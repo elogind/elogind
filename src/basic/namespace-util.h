@@ -81,6 +81,6 @@ int namespace_open_by_type(NamespaceType type);
 int namespace_is_init(NamespaceType type);
 
 int is_our_namespace(int fd, NamespaceType type);
-#endif // 0
 
 int is_idmapping_supported(const char *path);
+#endif // 0

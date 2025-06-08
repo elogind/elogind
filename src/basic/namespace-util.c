@@ -537,7 +537,6 @@ int is_our_namespace(int fd, NamespaceType request_type) {
 
         return stat_inode_same(&st_ours, &st_fd);
 }
-#endif // 0
 
 int is_idmapping_supported(const char *path) {
         _cleanup_close_ int mount_fd = -EBADF, userns_fd = -EBADF, dir_fd = -EBADF;
@@ -591,3 +590,4 @@ int is_idmapping_supported(const char *path) {
 
         return true;
 }
+#endif // 0
