@@ -423,7 +423,6 @@ int conf_files_cat(const char *root, const char *name, CatFlags flags) {
 
         return cat_files(path, files, flags);
 }
-#endif // 0
 
 int terminal_tint_color(double hue, char **ret) {
         double red, green, blue;
@@ -454,7 +453,6 @@ int terminal_tint_color(double hue, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool shall_tint_background(void) {
         static int cache = -1;
 
