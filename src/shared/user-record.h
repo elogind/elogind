@@ -407,10 +407,10 @@ UserStorage user_record_storage(UserRecord *h);
 const char* user_record_file_system_type(UserRecord *h);
 const char* user_record_skeleton_directory(UserRecord *h);
 mode_t user_record_access_mode(UserRecord *h);
-#endif // 0
-#if 0 /// UNNEEDED by elogind
 const char* user_record_home_directory(UserRecord *h);
+#endif // 0
 const char* user_record_image_path(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 unsigned long user_record_mount_flags(UserRecord *h);
 const char* user_record_cifs_user_name(UserRecord *h);
 const char* user_record_shell(UserRecord *h);

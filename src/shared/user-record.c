@@ -1760,6 +1760,7 @@ static const char *user_record_home_directory_real(UserRecord *h) {
         return "/";
 }
 
+#if 0 /// UNNEEDED by elogind
 const char* user_record_home_directory(UserRecord *h) {
         assert(h);
 
@@ -1768,6 +1769,7 @@ const char* user_record_home_directory(UserRecord *h) {
 
         return user_record_home_directory_real(h);
 }
+#endif // 0
 
 const char* user_record_image_path(UserRecord *h) {
         assert(h);
