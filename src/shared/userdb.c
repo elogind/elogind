@@ -6,7 +6,7 @@
 
 #include "conf-files.h"
 #include "dirent-util.h"
-#include "dlfcn-util.h"
+//#include "dlfcn-util.h"
 #include "errno-util.h"
 //#include "fd-util.h"
 //#include "format-util.h"
@@ -21,7 +21,9 @@
 //#include "userdb-dropin.h"
 #include "userdb.h"
 
+#if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_func, trivial_compare_func, sd_varlink, sd_varlink_unref);
+#endif // 0
 
 typedef enum LookupWhat {
         LOOKUP_USER,
