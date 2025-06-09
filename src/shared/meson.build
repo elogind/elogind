@@ -242,7 +242,6 @@ shared_sources = files(
         'find-esp.c',
         'format-table.c',
         'hibernate-util.c',
-        'json.c',
         'label-util.c',
         'libcrypt-util.c',
         'libmount-util.c',
