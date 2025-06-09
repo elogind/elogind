@@ -355,7 +355,6 @@ int sd_rtnl_message_new_link(sd_netlink *rtnl, sd_netlink_message **ret, uint16_
         ifi = NLMSG_DATA((*ret)->hdr);
 
         ifi->ifi_family = AF_UNSPEC;
-
         ifi->ifi_index = ifindex;
 
         return 0;
@@ -409,6 +408,7 @@ int sd_rtnl_message_new_addr_update(
 
 int sd_rtnl_message_get_family(sd_netlink_message *m, int *ret) {
         assert_return(m, -EINVAL);
+        assert_return(ret, -EINVAL);
 
         assert(m->hdr);
 
