@@ -1080,7 +1080,6 @@ int open_mkdir_at_full(int dirfd, const char *path, int flags, XOpenFlags xopen_
         return TAKE_FD(fd);
 }
 
-#if 0 /// UNNEEDED by elogind
 int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, bool *ret_newly_created) {
         int fd;
 
@@ -1131,7 +1130,6 @@ int openat_report_new(int dirfd, const char *pathname, int flags, mode_t mode, b
                         return -EEXIST;
         }
 }
-#endif // 0
 
 int xopenat_full(int dir_fd, const char *path, int open_flags, XOpenFlags xopen_flags, mode_t mode) {
         _cleanup_close_ int fd = -EBADF;
