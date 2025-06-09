@@ -1643,6 +1643,7 @@ int get_timezone(char **ret) {
 
         return strdup_to(ret, e);
 }
+#endif // 0
 
 int mktime_or_timegm_usec(
                 struct tm *tm, /* input + normalized output */
@@ -1673,7 +1674,6 @@ int mktime_or_timegm_usec(
                 *ret = (usec_t) t * USEC_PER_SEC;
         return 0;
 }
-#endif // 0
 
 int localtime_or_gmtime_usec(
                 usec_t t,

@@ -197,8 +197,8 @@ usec_t usec_shift_clock(usec_t, clockid_t from, clockid_t to);
 
 #if 0 /// UNNEEDED by elogind
 int get_timezone(char **ret);
-
 #endif // 0
+
 int mktime_or_timegm_usec(struct tm *tm, bool utc, usec_t *ret);
 int localtime_or_gmtime_usec(usec_t t, bool utc, struct tm *ret);
 
