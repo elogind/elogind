@@ -569,6 +569,7 @@ int unbase64char(char c) {
 
         return -EINVAL;
 }
+
 static void maybe_line_break(char **x, char *start, size_t line_break) {
         size_t n;
 
