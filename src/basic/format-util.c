@@ -3,7 +3,6 @@
 #include "format-util.h"
 //#include "memory-util.h"
 #include "stdio-util.h"
-
 #include "strxcpyx.h"
 
 char* format_bytes_full(char *buf, size_t l, uint64_t t, FormatBytesFlag flag) {
