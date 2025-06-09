@@ -113,17 +113,19 @@ sd_json_sources = files(
 )
 
 ############################################################
+
+sd_varlink_sources = files(
+        'sd-varlink/sd-varlink.c',
+        'sd-varlink/sd-varlink-idl.c',
+        'sd-varlink/varlink-io.systemd.c',
+        'sd-varlink/varlink-org.varlink.service.c',
 #if 0 /// Not used by elogind
-#
-# sd_varlink_sources = files(
-#         'sd-varlink/sd-varlink.c',
-#         'sd-varlink/sd-varlink-idl.c',
-#         'sd-varlink/varlink-io.systemd.c',
-#         'sd-varlink/varlink-org.varlink.service.c',
 #         'sd-varlink/varlink-util.c',
-# )
-#
-# ############################################################
+#endif // 0
+)
+
+############################################################
+#if 0 /// Not used by elogind
 #
 # sd_path_sources = files(
 #         'sd-path/path-lookup.c',
@@ -174,7 +176,8 @@ libelogind_sources = files(
         'sd-hwdb/sd-hwdb.c',
 ) + sd_journal_sources + sd_id128_sources + sd_daemon_sources \
   + sd_event_sources + sd_bus_sources + sd_device_sources \
-  + sd_login_sources + sd_json_sources + sd_netlink_sources
+  + sd_login_sources + sd_json_sources + sd_varlink_sources \
+  + sd_netlink_sources
 #endif // 0
 
 libelogind_c_args = ['-fvisibility=default']
