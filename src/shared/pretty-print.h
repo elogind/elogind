@@ -57,9 +57,9 @@ static inline const char* green_check_mark_internal(char buffer[static GREEN_CHE
 
 int terminal_tint_color(double hue, char **ret);
 
+#if 0 /// UNNEEDED by elogind
 bool shall_tint_background(void);
 
-#if 0 /// UNNEEDED by elogind
 void draw_progress_bar(const char *prefix, double percentage);
 int draw_progress_barf(double percentage, const char *prefixf, ...) _printf_(2, 3);
 void clear_progress_bar(const char *prefix);

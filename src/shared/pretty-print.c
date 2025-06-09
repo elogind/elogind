@@ -454,6 +454,7 @@ int terminal_tint_color(double hue, char **ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool shall_tint_background(void) {
         static int cache = -1;
 
@@ -469,7 +470,6 @@ bool shall_tint_background(void) {
         return cache != 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 void draw_progress_bar_unbuffered(const char *prefix, double percentage) {
         fputc('\r', stderr);
         if (prefix) {
