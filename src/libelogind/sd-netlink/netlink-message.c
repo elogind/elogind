@@ -850,7 +850,6 @@ int sd_netlink_message_read_string_strdup(sd_netlink_message *m, uint16_t attr_t
         return strdup_to(ret, s);
 }
 
-#if 0 /// UNNEEDED by elogind
 int sd_netlink_message_read_string(sd_netlink_message *m, uint16_t attr_type, const char **ret) {
         void *attr_data;
         int r;
@@ -874,6 +873,7 @@ int sd_netlink_message_read_string(sd_netlink_message *m, uint16_t attr_type, co
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int sd_netlink_message_read_u8(sd_netlink_message *m, uint16_t attr_type, uint8_t *ret) {
         assert_return(m, -EINVAL);
 
