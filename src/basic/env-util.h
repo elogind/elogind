@@ -45,7 +45,6 @@ char** _strv_env_merge(char **first, ...);
 #endif // 0
 char** strv_env_delete(char **x, size_t n_lists, ...); /* New copy */
 
-
 char** strv_env_unset(char **l, const char *p); /* In place ... */
 char** strv_env_unset_many_internal(char **l, ...) _sentinel_;
 #define strv_env_unset_many(l, ...) strv_env_unset_many_internal(l, __VA_ARGS__, NULL)
