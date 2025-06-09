@@ -1490,20 +1490,20 @@ ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags) {
         return n;
 }
 
-#if 0 /// UNNEEDED by elogind
 int socket_get_family(int fd) {
         int af;
         socklen_t sl = sizeof(af);
-
+        
         if (getsockopt(fd, SOL_SOCKET, SO_DOMAIN, &af, &sl) < 0)
-                return -errno;
-
+        return -errno;
+        
         if (sl != sizeof(af))
-                return -EINVAL;
-
+        return -EINVAL;
+        
         return af;
 }
 
+#if 0 /// UNNEEDED by elogind
 int socket_set_recvpktinfo(int fd, int af, bool b) {
 
         if (af == AF_UNSPEC) {
