@@ -190,10 +190,10 @@ char* strshorten(char *s, size_t l);
 
 #if 0 /// UNNEEDED by elogind
 int strgrowpad0(char **s, size_t l);
+#endif // 0
 
 char* strreplace(const char *text, const char *old_string, const char *new_string);
 
-#endif // 0
 char* strip_tab_ansi(char **ibuf, size_t *_isz, size_t highlight[2]);
 
 char* strextend_with_separator_internal(char **x, const char *separator, ...) _sentinel_;

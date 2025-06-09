@@ -634,6 +634,7 @@ int strgrowpad0(char **s, size_t l) {
         memzero(*s + sz, l - sz);
         return 0;
 }
+#endif // 0
 
 char* strreplace(const char *text, const char *old_string, const char *new_string) {
         size_t l, old_len, new_len;
@@ -680,6 +681,7 @@ char* strreplace(const char *text, const char *old_string, const char *new_strin
         return ret;
 }
 
+#if 0 /// UNNEEDED by elogind
 static void advance_offsets(
                 ssize_t diff,
                 size_t offsets[2], /* note: we can't use [static 2] here, since this may be NULL */
