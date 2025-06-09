@@ -105,6 +105,7 @@ static bool rtnl_message_type_is_nsid(uint16_t type) {
         DEFINE_RTNL_MESSAGE_SETTER(routing_policy_rule, struct fib_rule_hdr, element, name, value_type)
 #define DEFINE_RTNL_MESSAGE_TRAFFIC_CONTROL_SETTER(element, name, value_type) \
         DEFINE_RTNL_MESSAGE_SETTER(traffic_control, struct tcmsg, element, name, value_type)
+#endif // 0
 
 #define DEFINE_RTNL_MESSAGE_GETTER(class, header_type, element, name, value_type) \
         int sd_rtnl_message_##class##_get_##name(sd_netlink_message *m, value_type *ret) { \
@@ -118,10 +119,13 @@ static bool rtnl_message_type_is_nsid(uint16_t type) {
                 return 0;                                               \
         }
 
+#if 0 /// UNNEEDED by elogind
 #define DEFINE_RTNL_MESSAGE_ADDR_GETTER(element, name, value_type)      \
         DEFINE_RTNL_MESSAGE_GETTER(addr, struct ifaddrmsg, element, name, value_type)
+#endif // 0
 #define DEFINE_RTNL_MESSAGE_LINK_GETTER(element, name, value_type)      \
         DEFINE_RTNL_MESSAGE_GETTER(link, struct ifinfomsg, element, name, value_type)
+#if 0 /// UNNEEDED by elogind
 #define DEFINE_RTNL_MESSAGE_ROUTE_GETTER(element, name, value_type)     \
         DEFINE_RTNL_MESSAGE_GETTER(route, struct rtmsg, element, name, value_type)
 #define DEFINE_RTNL_MESSAGE_NEXTHOP_GETTER(element, name, value_type)   \
@@ -143,8 +147,10 @@ DEFINE_RTNL_MESSAGE_ADDR_SETTER(ifa_flags, flags, uint8_t);
 DEFINE_RTNL_MESSAGE_ADDR_GETTER(ifa_flags, flags, uint8_t);
 DEFINE_RTNL_MESSAGE_ADDR_SETTER(ifa_scope, scope, uint8_t);
 DEFINE_RTNL_MESSAGE_ADDR_GETTER(ifa_scope, scope, uint8_t);
+#endif // 0
 
 DEFINE_RTNL_MESSAGE_LINK_GETTER(ifi_index, ifindex, int);
+#if 0 /// UNNEEDED by elogind
 DEFINE_RTNL_MESSAGE_LINK_SETTER(ifi_family, family, int);
 DEFINE_RTNL_MESSAGE_LINK_GETTER(ifi_family, family, int);
 DEFINE_RTNL_MESSAGE_LINK_SETTER(ifi_type, type, uint16_t);
