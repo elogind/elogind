@@ -469,6 +469,7 @@ bool shall_tint_background(void) {
         return cache != 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 void draw_progress_bar_unbuffered(const char *prefix, double percentage) {
         fputc('\r', stderr);
         if (prefix) {
@@ -532,7 +533,6 @@ void draw_progress_bar_unbuffered(const char *prefix, double percentage) {
         fputc('\r', stderr);
 }
 
-#if 0 /// UNNEEDED by elogind
 void clear_progress_bar_unbuffered(const char *prefix) {
         fputc('\r', stderr);
 
@@ -548,7 +548,6 @@ void clear_progress_bar_unbuffered(const char *prefix) {
 
         fputc('\r', stderr);
 }
-#endif // 0
 
 void draw_progress_bar(const char *prefix, double percentage) {
         /* We are going output a bunch of small strings that shall appear as a single line to STDERR which is
@@ -574,7 +573,6 @@ int draw_progress_barf(double percentage, const char *prefixf, ...) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 void clear_progress_bar(const char *prefix) {
         WITH_BUFFERED_STDERR;
         clear_progress_bar_unbuffered(prefix);
