@@ -1726,6 +1726,7 @@ int terminal_reset_defensive_locked(int fd, bool switch_to_text) {
 
         return terminal_reset_defensive(fd, switch_to_text);
 }
+#endif // 0
 
 void termios_disable_echo(struct termios *termios) {
         assert(termios);
@@ -1734,7 +1735,6 @@ void termios_disable_echo(struct termios *termios) {
         termios->c_cc[VMIN] = 1;
         termios->c_cc[VTIME] = 0;
 }
-#endif // 0
 
 static int terminal_verify_same(int input_fd, int output_fd) {
         assert(input_fd >= 0);
