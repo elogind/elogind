@@ -1515,7 +1515,6 @@ static ColorMode get_color_mode_impl(void) {
          * COLOR_16 for only the base 16 ANSI colors, COLOR_256 for more colors, and COLOR_24BIT for
          * unrestricted color output. */
 
-
         /* First, we check $SYSTEMD_COLORS, which is the explicit way to change the mode. */
         ColorMode m = parse_systemd_colors();
         if (m >= 0)
