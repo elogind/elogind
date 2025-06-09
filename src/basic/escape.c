@@ -444,7 +444,6 @@ char* escape_non_printable_full(const char *str, size_t console_width, XEscapeFl
                                                       FLAGS_SET(flags, XESCAPE_FORCE_ELLIPSIS));
 }
 
-#if 0 /// UNNEEDED by elogind
 char* octescape(const char *s, size_t len) {
         char *buf, *t;
 
@@ -477,7 +476,6 @@ char* octescape(const char *s, size_t len) {
         *t = 0;
         return buf;
 }
-#endif // 0
 
 char* decescape(const char *s, const char *bad, size_t len) {
         char *buf, *t;
