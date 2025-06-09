@@ -423,7 +423,6 @@ int path_is_network_fs(const char *path) {
         return is_network_fs(&s);
 }
 
-
 int proc_mounted(void) {
         int r;
 
