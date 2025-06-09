@@ -80,9 +80,9 @@ typedef enum SocketAddressBindIPv6Only {
 const char* socket_address_type_to_string(int t) _const_;
 int socket_address_type_from_string(const char *s) _pure_;
 
-#if 0 /// UNNEEDED by elogind
 int sockaddr_un_unlink(const struct sockaddr_un *sa);
 
+#if 0 /// UNNEEDED by elogind
 static inline int socket_address_unlink(const SocketAddress *a) {
         return socket_address_family(a) == AF_UNIX ? sockaddr_un_unlink(&a->sockaddr.un) : 0;
 }
