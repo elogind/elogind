@@ -169,7 +169,6 @@ int sd_rtnl_message_addr_get_scope(sd_netlink_message *m, uint8_t *ret);
 #endif /** 0 */
 
 int sd_rtnl_message_new_link(sd_netlink *nl, sd_netlink_message **ret, uint16_t msg_type, int ifindex);
-
 /* struct ifinfomsg */
 int sd_rtnl_message_link_get_ifindex(sd_netlink_message *m, int *ret); /* ifi_index */
 #if 0 /** UNNEEDED by elogind */
