@@ -1005,7 +1005,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         /* Make sure we don't enter a loop by talking to elogind when it is actually waiting for the
          * background to finish start-up. If the service is "elogind-user" we simply set XDG_RUNTIME_DIR and
          * leave. */
-
         seat = getenv_harder(handle, "XDG_SEAT", NULL);
         cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
         type = getenv_harder(handle, "XDG_SESSION_TYPE", type_pam);
