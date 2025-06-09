@@ -18,7 +18,6 @@ int event_reset_time(
                 int64_t priority,
                 const char *description,
                 bool force_reset);
-#if 0 /// UNNEEDED in elogind
 int event_reset_time_relative(
                 sd_event *e,
                 sd_event_source **s,
@@ -30,6 +29,7 @@ int event_reset_time_relative(
                 int64_t priority,
                 const char *description,
                 bool force_reset);
+#if 0 /// UNNEEDED in elogind
 static inline int event_source_disable(sd_event_source *s) {
         return sd_event_source_set_enabled(s, SD_EVENT_OFF);
 }

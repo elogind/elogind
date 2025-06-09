@@ -85,7 +85,6 @@ int event_reset_time(
         return created;
 }
 
-#if 0 /// UNNEEDED in elogind
 int event_reset_time_relative(
                 sd_event *e,
                 sd_event_source **s,
@@ -115,6 +114,7 @@ int event_reset_time_relative(
         return event_reset_time(e, s, clock, usec, accuracy, callback, userdata, priority, description, force_reset);
 }
 
+#if 0 /// UNNEEDED in elogind
 int event_add_time_change(sd_event *e, sd_event_source **ret, sd_event_io_handler_t callback, void *userdata) {
         _cleanup_(sd_event_source_unrefp) sd_event_source *s = NULL;
         _cleanup_close_ int fd = -EBADF;
