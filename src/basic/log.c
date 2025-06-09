@@ -1771,7 +1771,6 @@ int log_syntax_invalid_utf8_internal(
                                    "String is not UTF-8 clean, ignoring assignment: %s", strna(p));
 }
 
-#if 0 /// UNNEEDED by elogind
 int log_syntax_parse_error_internal(
                 const char *unit,
                 const char *config_file,
@@ -1810,6 +1809,7 @@ int log_syntax_parse_error_internal(
         return critical ? -ERRNO_VALUE(error) : 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 void log_set_upgrade_syslog_to_journal(bool b) {
         upgrade_syslog_to_journal = b;
 
