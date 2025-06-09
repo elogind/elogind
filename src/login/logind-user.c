@@ -940,12 +940,13 @@ int user_kill(User *u, int signo) {
 
         return manager_kill_unit(u->manager, u->slice, KILL_ALL, signo, NULL);
 #else // 0
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int res = 0;
 
         assert(u);
 
         LIST_FOREACH(sessions_by_user, session, u->sessions) {
-                int r = session_kill(session, KILL_ALL, signo);
+                int r = session_kill(session, KILL_ALL, signo, &error);
                 if (res == 0 && r < 0)
                         res = r;
         }

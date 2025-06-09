@@ -783,13 +783,14 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
                         s->user->slice,
                         description,
                         /* These should have been pulled in explicitly in user_start(). Just to be sure. */
-                        /* We usually want to order session scopes after elogind-user-sessions.service
                         /* requires = */ STRV_MAKE_CONST(s->user->runtime_dir_unit),
                         /* wants = */ STRV_MAKE_CONST(SESSION_CLASS_WANTS_SERVICE_MANAGER(s->class) ? s->user->service_manager_unit : NULL),
+                        /* We usually want to order session scopes after systemd-user-sessions.service
                          * since the unit is used as login session barrier for unprivileged users. However
                          * the barrier doesn't apply for root as sysadmin should always be able to log in
                          * (and without waiting for any timeout to expire) in case something goes wrong
                          * during the boot process. */
+                        /* extra_after = */ STRV_MAKE_CONST("systemd-logind.service",
                                         SESSION_CLASS_IS_EARLY(s->class) ? NULL : "elogind-user-sessions.service"),
                         /* extra_after = */ STRV_MAKE_CONST("elogind.service",
                         user_record_home_directory(s->user->user_record),
@@ -1000,7 +1001,7 @@ static int session_stop_cgroup(Session *s, bool force) {
         // elogind must not kill lingering user processes alive
         if ( (force || manager_shall_kill(s->manager, s->user->user_record->user_name) )
             && (user_check_linger_file(s->user) < 1) ) {
-                r = session_kill(s, KILL_ALL, SIGTERM);
+                r = session_kill(s, KILL_ALL, SIGTERM, &error);
                 if (r < 0)
                         return r;
         }
@@ -1536,7 +1537,7 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
                 return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, error);
 #else // 0
                 return cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, signo,
-                                          CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                          CGROUP_IGNORE_SELF,
                                           NULL, NULL, NULL);
 #endif // 0
 
