@@ -196,7 +196,7 @@ static Manager* manager_free(Manager *m) {
 
         free(m->scheduled_shutdown_tty);
         free(m->wall_message);
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind has no action_job
         free(m->action_job);
 #endif // 0
 

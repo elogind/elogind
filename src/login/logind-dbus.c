@@ -2233,6 +2233,7 @@ static void cancel_delayed_action(Manager *m) {
 
         (void) sd_event_source_set_enabled(m->inhibit_timeout_source, SD_EVENT_OFF);
 
+#if 0 /// elogind has no action_job, we always NULL any delayed action. Canceled is canceled.
         /* When m->action_job is NULL, the delayed action has not been triggered yet. Let's clear it to
          * accept later shutdown and friends.
          *
@@ -2241,6 +2242,9 @@ static void cancel_delayed_action(Manager *m) {
          * Hence, do not clear it. */
         if (!m->action_job)
                 m->delayed_action = NULL;
+#else // 0
+        m->delayed_action = NULL;
+#endif // 0
 }
 
 int bus_manager_shutdown_or_sleep_now_or_later(
