@@ -161,7 +161,6 @@ int unhexmem_full(
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 /* https://tools.ietf.org/html/rfc4648#section-6
  * Notice that base32hex differs from base32 in the alphabet it uses.
  * The distinction is that the base32hex representation preserves the
@@ -175,6 +174,7 @@ char base32hexchar(int x) {
         return table[x & 31];
 }
 
+#if 0 /// UNNEEDED by elogind
 int unbase32hexchar(char c) {
         unsigned offset;
 
@@ -188,6 +188,7 @@ int unbase32hexchar(char c) {
 
         return -EINVAL;
 }
+#endif // 0
 
 char* base32hexmem(const void *p, size_t l, bool padding) {
         char *r, *z;
@@ -297,6 +298,7 @@ char* base32hexmem(const void *p, size_t l, bool padding) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int unbase32hexmem(const char *p, size_t l, bool padding, void **mem, size_t *_len) {
         _cleanup_free_ uint8_t *r = NULL;
         int a, b, c, d, e, f, g, h;
@@ -567,8 +569,6 @@ int unbase64char(char c) {
 
         return -EINVAL;
 }
-
-#if 0 /// UNNEEDED by elogind
 static void maybe_line_break(char **x, char *start, size_t line_break) {
         size_t n;
 
@@ -652,6 +652,7 @@ ssize_t base64mem_full(
         return z - b;
 }
 
+#if 0 /// UNNEEDED by elogind
 static ssize_t base64_append_width(
                 char **prefix,
                 size_t plen,
