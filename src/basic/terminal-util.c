@@ -1683,16 +1683,16 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int terminal_set_cursor_position(int fd, unsigned row, unsigned column) {
         assert(fd >= 0);
-
+        
         char cursor_position[STRLEN("\x1B[" ";" "H") + DECIMAL_STR_MAX(unsigned) * 2 + 1];
         xsprintf(cursor_position, "\x1B[%u;%uH", row, column);
-
+        
         return loop_write(fd, cursor_position, SIZE_MAX);
 }
 
+#if 0 /// UNNEEDED by elogind
 int terminal_reset_defensive(int fd, bool switch_to_text) {
         int r = 0;
 
