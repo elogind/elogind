@@ -1810,7 +1810,7 @@ int make_fsmount(
 
 char* umount_and_unlink_and_free(char *p) {
         if (!p)
-        return NULL;
+                return NULL;
         
         PROTECT_ERRNO;
         (void) umount2(p, 0);
