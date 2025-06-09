@@ -1942,7 +1942,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         sleep_config->callback_failed       = false;
         sleep_config->callback_must_succeed = sleep_config->allow_poweroff_interrupts;
 
-        r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, EXEC_DIR_NONE );
+        r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, 0 );
 
         if ( sleep_config->callback_must_succeed && ( ( r < 0 ) || sleep_config->callback_failed ) ) {
                 e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
@@ -3141,8 +3141,8 @@ static int method_can_shutdown_or_sleep(
         multiple_sessions = r > 0;
         blocked = manager_is_inhibited(m, a->inhibit_what, /* block= */ true, NULL, false, true, uid, NULL);
 
-#if 0 /// elogind does not load units
         if (check_unit_state && a->target) {
+#if 0 /// elogind does not load units
                 _cleanup_free_ char *load_state = NULL;
 
                 r = unit_load_state(m->bus, a->target, &load_state);
@@ -3153,8 +3153,8 @@ static int method_can_shutdown_or_sleep(
                         result = "no";
                         goto finish;
                 }
-        }
 #endif // 0
+        }
 
         log_debug_elogind("CanShutDownOrSleep: %s %s blocked",
                           sleep_operation_to_string(a->sleep_operation), blocked ? "is" : "not");
