@@ -68,7 +68,6 @@ char* strv_find_startswith(char * const *l, const char *name) {
         return NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 static char* strv_find_closest_prefix(char * const *l, const char *name) {
         size_t best_distance = SIZE_MAX;
         char *best = NULL;
@@ -131,6 +130,7 @@ char* strv_find_closest(char * const *l, const char *name) {
         return strv_find_closest_by_levenshtein(l, name);
 }
 
+#if 0 /// UNNEEDED by elogind
 char* strv_find_first_field(char * const *needles, char * const *haystack) {
         STRV_FOREACH(k, needles) {
                 char *value = strv_env_pairs_get((char **)haystack, *k);
