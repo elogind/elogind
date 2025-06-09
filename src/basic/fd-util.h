@@ -95,9 +95,7 @@ bool fdname_is_valid(const char *s);
 
 int fd_get_path(int fd, char **ret);
 
-#if 0 /// UNNEEDED by elogind
 int move_fd(int from, int to, int cloexec);
-#endif // 0
 
 int fd_move_above_stdio(int fd);
 

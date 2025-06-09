@@ -676,7 +676,6 @@ int fd_get_path(int fd, char **ret) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int move_fd(int from, int to, int cloexec) {
         int r;
 
@@ -720,7 +719,6 @@ int move_fd(int from, int to, int cloexec) {
 
         return to;
 }
-#endif // 0
 
 int fd_move_above_stdio(int fd) {
         int flags, copy;
