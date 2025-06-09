@@ -415,6 +415,7 @@ TEST(build) {
         assert_se(sd_json_variant_format(y, /* flags= */ 0, &f2));
         ASSERT_STREQ(f1, f2);
 
+#if 0 /// elogind does not use JSON_BUILD_PAIR_CALLBACK* anywhere
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *z = NULL;
         ASSERT_OK(sd_json_build(&z, SD_JSON_BUILD_OBJECT(JSON_BUILD_PAIR_CALLBACK_NON_NULL("mypid3", test_callback, INT_TO_PTR(4713)))));
         ASSERT_TRUE(sd_json_variant_is_blank_object(z));
@@ -424,7 +425,9 @@ TEST(build) {
                                                          JSON_BUILD_PAIR_CALLBACK_NON_NULL("mypid2", test_callback, INT_TO_PTR(4712)))));
         ASSERT_OK(sd_json_variant_format(z, /* flags= */ 0, &f2));
         ASSERT_STREQ(f1, f2);
+#endif // 0
 
+#if 0 /// elogind does not use JSON_BUILD_[ORDERED_]STRING_SET anywhere
         _cleanup_set_free_ Set *ss = NULL;
         assert_se(set_ensure_put(&ss, &string_hash_ops_free, ASSERT_PTR(strdup("pief"))) >= 0);
         assert_se(set_ensure_put(&ss, &string_hash_ops_free, ASSERT_PTR(strdup("xxxx"))) >= 0);
@@ -451,6 +454,7 @@ TEST(build) {
         assert_se(sd_json_build(&ossv2, SD_JSON_BUILD_LITERAL("{\"zzz\":[\"pief\",\"xxxx\",\"kawumm\"]}")) >= 0);
 
         assert_se(sd_json_variant_equal(ossv, ossv2));
+#endif // 0
 }
 
 TEST(json_buildo) {
