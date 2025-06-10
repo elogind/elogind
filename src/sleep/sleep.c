@@ -861,7 +861,6 @@ int do_sleep(Manager* m, SleepOperation operation) {
         r = getenv_bool("SYSTEMD_SLEEP_FREEZE_USER_SESSIONS");
         if (r < 0 && r != -ENXIO)
                 log_warning_errno(r, "Cannot parse value of $SYSTEMD_SLEEP_FREEZE_USER_SESSIONS, ignoring: %m");
-#endif // 0
         if (r != 0) {
                 r = unit_freezer_new(SPECIAL_USER_SLICE, &user_slice_freezer);
                 if (r < 0)
@@ -872,6 +871,7 @@ int do_sleep(Manager* m, SleepOperation operation) {
                 log_notice("User sessions remain unfrozen on explicit request ($SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0).\n"
                            "This is not recommended, and might result in unexpected behavior, particularly\n"
                            "in suspend-then-hibernate operations or setups with encrypted home directories.");
+#endif // 0
 
         switch (arg_operation) {
 
