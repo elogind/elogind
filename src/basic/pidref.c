@@ -345,20 +345,20 @@ int pidref_kill(const PidRef *pidref, int sig) {
         return -ESRCH;
 }
 
-#if 0 /// UNNEEDED by elogind
 int pidref_kill_and_sigcont(const PidRef *pidref, int sig) {
         int r;
-
+        
         r = pidref_kill(pidref, sig);
         if (r < 0)
-                return r;
-
+        return r;
+        
         if (!IN_SET(sig, SIGCONT, SIGKILL))
-                (void) pidref_kill(pidref, SIGCONT);
-
+        (void) pidref_kill(pidref, SIGCONT);
+        
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pidref_sigqueue(const PidRef *pidref, int sig, int value) {
 
         if (!pidref)
