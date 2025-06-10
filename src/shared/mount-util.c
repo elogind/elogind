@@ -1807,6 +1807,7 @@ int make_fsmount(
 
         return TAKE_FD(mnt_fd);
 }
+#endif // 0
 
 char* umount_and_unlink_and_free(char *p) {
         if (!p)
@@ -1818,6 +1819,7 @@ char* umount_and_unlink_and_free(char *p) {
         return mfree(p);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int path_get_mount_info_at(
                 int dir_fd,
                 const char *path,

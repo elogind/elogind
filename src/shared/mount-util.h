@@ -117,10 +117,12 @@ static inline char* umount_and_free(char *p) {
         return mfree(p);
 }
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, umount_and_free);
+#endif // 0
 
 char* umount_and_unlink_and_free(char *p);
 DEFINE_TRIVIAL_CLEANUP_FUNC(char*, umount_and_unlink_and_free);
 
+#if 0 /// UNNEEDED by elogind
 int mount_exchange_graceful(int fsmount_fd, const char *dest, bool mount_beneath);
 
 typedef enum MountInNamespaceFlags {
