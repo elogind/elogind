@@ -125,14 +125,14 @@ sd_varlink_sources = files(
 )
 
 ############################################################
+
+sd_path_sources = files(
 #if 0 /// Not used by elogind
-#
-# sd_path_sources = files(
 #         'sd-path/path-lookup.c',
-#         'sd-path/sd-path.c',
-# )
-#
 #endif // 0
+        'sd-path/sd-path.c',
+)
+
 ############################################################
 
 sd_netlink_sources = files(
@@ -153,32 +153,25 @@ sd_netlink_sources = files(
 )
 
 ############################################################
+
+sd_network_sources = files(
 #if 0 /// Not used by elogind
-#
-# sd_network_sources = files(
 #         'sd-network/network-util.c',
 #         'sd-network/sd-network.c',
-# )
-#
 #endif // 0
+)
+
 ############################################################
 
-#if 0 /// elogind does not need all of these
-# libsystemd_sources = files(
-#         'sd-hwdb/sd-hwdb.c',
-#         'sd-resolve/sd-resolve.c',
-# ) + sd_journal_sources + sd_id128_sources + sd_daemon_sources \
-#   + sd_event_sources + sd_bus_sources + sd_device_sources \
-#   + sd_login_sources + sd_json_sources + sd_varlink_sources \
-#   + sd_path_sources + sd_netlink_sources + sd_network_sources
-#else // 0
 libelogind_sources = files(
         'sd-hwdb/sd-hwdb.c',
+#if 0 /// elogind does not need sd-resolve.c
+#         'sd-resolve/sd-resolve.c',
+#endif // 0
 ) + sd_journal_sources + sd_id128_sources + sd_daemon_sources \
   + sd_event_sources + sd_bus_sources + sd_device_sources \
   + sd_login_sources + sd_json_sources + sd_varlink_sources \
-  + sd_netlink_sources
-#endif // 0
+  + sd_path_sources + sd_netlink_sources + sd_network_sources
 
 libelogind_c_args = ['-fvisibility=default']
 

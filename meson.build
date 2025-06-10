@@ -2470,9 +2470,9 @@ basic_includes = include_directories(
 #         'src/libsystemd/sd-json',
 #         'src/libsystemd/sd-netlink',
 #         'src/libsystemd/sd-network',
-#         'src/libelogind/sd-resolve',
-#         'src/libelogind/sd-varlink')]
-#         'src/libelogind/sd-path',
+#         'src/libsystemd/sd-path',
+#         'src/libsystemd/sd-resolve',
+#         'src/libsystemd/sd-varlink')]
 #else // 0
 libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-bus',
@@ -2483,6 +2483,7 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-journal',
         'src/libelogind/sd-json',
         'src/libelogind/sd-netlink',
+        'src/libelogind/sd-path',
         'src/sleep',
         'src/update-utmp')]
 libsystemd_includes = libelogind_includes
