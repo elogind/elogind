@@ -216,6 +216,7 @@ libelogind_static = static_library(
         'elogind_static',
         libelogind_sources,
         include_directories : libelogind_includes,
+        c_args : libelogind_c_args,
         link_with : [libbasic_static],
         dependencies : [threads,
                         userspace],

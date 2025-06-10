@@ -2549,8 +2549,8 @@ install_libelogind_static = static_library(
         build_by_default : static_libelogind != 'false',
         install : static_libelogind != 'false',
         install_tag: 'libelogind',
+        install_dir : libdir,
 #if 0 /// elogind only needs libcap, libdl, libmount threads and selinux.
-#         install_dir : libdir,
 #         pic : static_libsystemd_pic,
 #         dependencies : [libblkid,
 #                         libcap,
@@ -2607,13 +2607,14 @@ install_libelogind_static = static_library(
 #         c_args : static_libudev_pic ? [] : ['-fno-PIC'],
 #         pic : static_libudev_pic)
 #else // 0
-        dependencies : [threads,
-                        libcap,
+        pic : static_libelogind_pic,
+        dependencies : [libcap,
                         libdl,
                         libmount,
                         libselinux,
+                        threads,
                         userspace],
-        c_args : libelogind_c_args)
+        c_args : libelogind_c_args + (static_libelogind_pic ? [] : ['-fno-PIC']))
 #endif // 0
 
 #if 0 /// elogind depends on external libudev:
