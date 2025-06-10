@@ -232,6 +232,7 @@ shared_sources = files(
         'common-signal.c',
         'conf-parser.c',
         'copy.c',
+        'creds-util.c',
         'daemon-util.c',
         'dns-domain.c',
         'efi-api.c',
