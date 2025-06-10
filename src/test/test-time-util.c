@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
-//#include "env-util.h"
+#include "env-util.h"
 //#include "fd-util.h"
 //#include "fileio.h"
 #include "random-util.h"
@@ -345,6 +345,7 @@ TEST(usec_sub_signed) {
         assert_se(usec_sub_signed(USEC_INFINITY-1, INT64_MIN) == USEC_INFINITY);
         assert_se(usec_sub_signed(USEC_INFINITY-1, -(INT64_MIN+1)) == USEC_INFINITY-1-((usec_t) (-(INT64_MIN+1))));
 }
+#endif // 0
 
 TEST(format_timestamp) {
         for (unsigned i = 0; i < TRIAL; i++) {
@@ -481,7 +482,6 @@ TEST(FORMAT_TIMESTAMP_with_tz) {
         STRV_FOREACH(tz, timezones)
                 test_format_timestamp_with_tz_one(*tz);
 }
-#endif // 0
 
 TEST(format_timestamp_relative_full) {
         char buf[CONST_MAX(FORMAT_TIMESTAMP_MAX, FORMAT_TIMESPAN_MAX)];

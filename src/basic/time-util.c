@@ -635,7 +635,6 @@ char* format_timespan(char *buf, size_t l, usec_t t, usec_t accuracy) {
         return buf;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int parse_timestamp_impl(
                 const char *t,
                 size_t max_len,
@@ -1090,7 +1089,6 @@ int parse_timestamp(const char *t, usec_t *ret) {
 
         return tmp.return_value;
 }
-#endif // 0
 
 static const char* extract_multiplier(const char *p, usec_t *ret) {
         static const struct {
@@ -1421,6 +1419,7 @@ int parse_nsec(const char *t, nsec_t *ret) {
 
         return 0;
 }
+#endif // 0
 
 static int get_timezones_from_zone1970_tab(char ***ret) {
         _cleanup_fclose_ FILE *f = NULL;
@@ -1541,7 +1540,6 @@ int get_timezones(char ***ret) {
         *ret = TAKE_PTR(zones);
         return 0;
 }
-#endif // 0
 
 int verify_timezone(const char *name, int log_level) {
         bool slash = false;
