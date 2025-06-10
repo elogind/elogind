@@ -94,6 +94,7 @@ static void test_config_parse_nsec_one(const char *rvalue, nsec_t expected) {
         ASSERT_OK(config_parse_nsec("unit", "filename", 1, "nsection", 1, "lvalue", 0, rvalue, &v, NULL));
         ASSERT_EQ(expected, v);
 }
+#endif // 0
 
 static void test_config_parse_iec_uint64_one(const char *rvalue, uint64_t expected) {
         uint64_t v = 0;
@@ -102,6 +103,7 @@ static void test_config_parse_iec_uint64_one(const char *rvalue, uint64_t expect
         ASSERT_EQ(expected, v);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(config_parse_path) {
         test_config_parse_path_one("/path", "/path");
         test_config_parse_path_one("/path//////////", "/path");
