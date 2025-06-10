@@ -18,7 +18,7 @@
 #include "cgroup-util.h"
 #include "format-table.h"
 #include "log.h"
-//#include "logs-show.h"
+#include "logs-show.h"
 #include "macro.h"
 #include "main-func.h"
 #include "memory-util.h"
