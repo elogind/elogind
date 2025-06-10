@@ -439,6 +439,7 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
 
         return r;
 }
+#endif // 0
 
 int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         int r, q;
@@ -458,6 +459,7 @@ int cg_create_and_attach(const char *controller, const char *path, pid_t pid) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_set_access(
                 const char *controller,
                 const char *path,
