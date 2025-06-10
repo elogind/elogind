@@ -586,8 +586,8 @@ executables += [
 #else // 0
         test_template + {
                 'name' : 'test-libelogind-sym',
-                'link_with' : libelogind,
                 'sources' : test_libelogind_sym_c,
+                'link_with' : libelogind,
                 'suite' : 'libelogind',
         },
         test_template + {
