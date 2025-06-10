@@ -292,6 +292,28 @@ static inline int run_test_table(void) {
                 }                                                                                               \
         })
 
+#if 1 /// elogind also needs an ASSERT makro to asseret greater-or-equal
+#define ASSERT_OK_GE(expr1, expr2)                                                                              \
+        ({                                                                                                      \
+                typeof(expr1) _expr1 = (expr1);                                                                 \
+                typeof(expr2) _expr2 = (expr2);                                                                 \
+                if (_expr1 < 0) {                                                                               \
+                        log_error_errno(_expr1, "%s:%i: Assertion failed: expected \"%s\" to succeed, but got error: %m", \
+                                        PROJECT_FILE, __LINE__, #expr1);                                        \
+                        abort();                                                                                \
+                }                                                                                               \
+                if (_expr1 < _expr2) {                                                                          \
+                        char _sexpr1[DECIMAL_STR_MAX(typeof(expr1))];                                           \
+                        char _sexpr2[DECIMAL_STR_MAX(typeof(expr2))];                                           \
+                        xsprintf(_sexpr1, DECIMAL_STR_FMT(_expr1), _expr1);                                     \
+                        xsprintf(_sexpr2, DECIMAL_STR_FMT(_expr2), _expr2);                                     \
+                        log_error("%s:%i: Assertion failed: expected \"%s >= %s\", got %s < %s",                \
+                                  PROJECT_FILE, __LINE__, #expr1, #expr2, _sexpr1, _sexpr2);                    \
+                        abort();                                                                                \
+                }                                                                                               \
+        })
+#endif // 1
+
 #define ASSERT_OK_ERRNO(expr)                                                                                   \
         ({                                                                                                      \
                 typeof(expr) _result = (expr);                                                                  \
