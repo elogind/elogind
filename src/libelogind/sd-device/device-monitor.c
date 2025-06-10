@@ -126,13 +126,11 @@ _public_ int sd_device_monitor_set_receive_buffer_size(sd_device_monitor *m, siz
 }
 
 
-#if 0 /// UNNEEDED by elogind
 _public_ int sd_device_monitor_get_fd(sd_device_monitor *m) {
         assert_return(m, -EINVAL);
 
         return m->sock;
 }
-#endif // 0
 
 _public_ int sd_device_monitor_get_events(sd_device_monitor *m) {
         assert_return(m, -EINVAL);
