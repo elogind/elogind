@@ -27,7 +27,7 @@
 #include "reboot-util.h"
 #include "sd-login.h"
 #include "sd-messages.h"
-#include "spawn-polkit-agent.h"
+#include "polkit-agent.h"
 #include "string-util.h"
 #include "strv.h"
 #include "terminal-util.h"
