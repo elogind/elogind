@@ -57,7 +57,6 @@ TEST(close_nointr) {
         assert_se(close_nointr(fd) < 0);
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(fd_validate) {
         assert_se(fd_validate(-EINVAL) == -EBADF);
         assert_se(fd_validate(-EBADF) == -EBADF);
@@ -71,6 +70,7 @@ TEST(fd_validate) {
         TAKE_FD(b);
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(same_fd) {
         _cleanup_close_pair_ int p[2];
         _cleanup_close_ int a, b, c, d, e;
