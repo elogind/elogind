@@ -876,7 +876,6 @@ int _ordered_hashmap_ensure_put(OrderedHashmap **h, const struct hash_ops *hash_
         return ordered_hashmap_put(*h, key, value);
 }
 
-#if 0 /// UNNEEDED by elogind
 int _ordered_hashmap_ensure_replace(OrderedHashmap **h, const struct hash_ops *hash_ops, const void *key, void *value  HASHMAP_DEBUG_PARAMS) {
         int r;
 
@@ -886,7 +885,6 @@ int _ordered_hashmap_ensure_replace(OrderedHashmap **h, const struct hash_ops *h
 
         return ordered_hashmap_replace(*h, key, value);
 }
-#endif // 0
 
 int _hashmap_ensure_replace(Hashmap **h, const struct hash_ops *hash_ops, const void *key, void *value  HASHMAP_DEBUG_PARAMS) {
         int r;
