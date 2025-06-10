@@ -89,9 +89,7 @@ int same_fd(int a, int b);
 
 void cmsg_close_all(struct msghdr *mh);
 
-#if 0 /// UNNEEDED by elogind
 bool fdname_is_valid(const char *s);
-#endif // 0
 
 int fd_get_path(int fd, char **ret);
 

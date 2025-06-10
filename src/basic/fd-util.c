@@ -633,7 +633,6 @@ void cmsg_close_all(struct msghdr *mh) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 bool fdname_is_valid(const char *s) {
         const char *p;
 
@@ -660,7 +659,6 @@ bool fdname_is_valid(const char *s) {
 
         return p - s <= FDNAME_MAX;
 }
-#endif // 0
 
 int fd_get_path(int fd, char **ret) {
         int r;
