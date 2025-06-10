@@ -35,7 +35,6 @@ int id128_from_string_nonzero(const char *s, sd_id128_t *ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) {
         size_t l;
 
@@ -63,7 +62,6 @@ bool id128_is_valid(const char *s) {
 
         return false;
 }
-#endif // 0
 
 int id128_read_fd(int fd, Id128Flag f, sd_id128_t *ret) {
         char buffer[SD_ID128_UUID_STRING_MAX + 1]; /* +1 is for trailing newline */

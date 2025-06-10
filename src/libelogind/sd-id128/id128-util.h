@@ -11,9 +11,7 @@
 #include "macro.h"
 
 
-#if 0 /// UNNEEDED by elogind
 bool id128_is_valid(const char *s) _pure_;
-#endif // 0
 
 typedef enum Id128Flag {
         ID128_FORMAT_PLAIN  = 1 << 0,  /* formatted as 32 hex chars as-is */
