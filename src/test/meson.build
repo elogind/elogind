@@ -268,8 +268,8 @@ simple_tests += files(
         'test-unaligned.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-unit-file.c',
+#         'test-user-record.c',
 #endif // 0
-        'test-user-record.c',
         'test-user-util.c',
         'test-utf8.c',
         'test-verbs.c',
