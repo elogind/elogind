@@ -1114,6 +1114,7 @@ void columns_lines_cache_reset(int signum) {
         cached_columns = 0;
         cached_lines = 0;
 }
+#endif // 0
 
 void reset_terminal_feature_caches(void) {
         cached_columns = 0;
@@ -1124,7 +1125,6 @@ void reset_terminal_feature_caches(void) {
         cached_on_tty = -1;
         cached_on_dev_null = -1;
 }
-#endif // 0
 
 bool on_tty(void) {
 

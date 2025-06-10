@@ -125,8 +125,8 @@ unsigned lines(void);
 
 #if 0 /// UNNEEDED by elogind
 void columns_lines_cache_reset(int _unused_ signum);
-void reset_terminal_feature_caches(void);
 #endif // 0
+void reset_terminal_feature_caches(void);
 
 bool on_tty(void);
 bool getenv_terminal_is_dumb(void);
