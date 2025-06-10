@@ -118,9 +118,7 @@ simple_tests += files(
 #         'test-exit-status.c',
 #endif // 0
         'test-extract-word.c',
-#if 0 /// UNNEEDED by elogind
-#         'test-fdset.c',
-#endif // 0
+        'test-fdset.c',
         'test-fiemap.c',
         'test-fileio.c',
 #if 0 /// UNNEEDED by elogind
