@@ -24,8 +24,8 @@ int fd_verify_directory(int fd);
 int is_dir_at(int fd, const char *path, bool follow);
 int is_dir(const char *path, bool follow);
 
-#if 0 /// UNNEEDED by elogind
 int stat_verify_symlink(const struct stat *st);
+#if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path);
 #endif // 0
 

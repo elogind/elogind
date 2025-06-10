@@ -101,19 +101,19 @@ int is_dir(const char *path, bool follow) {
         return is_dir_at(AT_FDCWD, path, follow);
 }
 
-#if 0 /// UNNEEDED by elogind
 int stat_verify_symlink(const struct stat *st) {
         assert(st);
-
+        
         if (S_ISDIR(st->st_mode))
-                return -EISDIR;
-
+        return -EISDIR;
+        
         if (!S_ISLNK(st->st_mode))
-                return -ENOLINK;
-
+        return -ENOLINK;
+        
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int is_symlink(const char *path) {
         assert(!isempty(path));
         return verify_stat_at(AT_FDCWD, path, false, stat_verify_symlink, false);
