@@ -1,26 +1,41 @@
-#if 0 /// The original Makefile follows, which isn't enough for elogind.
-# # SPDX-License-Identifier: LGPL-2.1-or-later
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
-# all:
-# 	ninja -C build
+# Convenience wrapper for meson and ninja.
+# Most configuration values have defaults that can be overridden via command line.
 #
-# install:
-# 	DESTDIR=$(DESTDIR) ninja -C build install
-#else // 0
-.PHONY: all build clean full install justprint loginctl test test-login
+# Default target  : Build everything
+# all, build, full: Aliases for building everything
+# clean           : Run ninja targets 'cleandead' and 'clean'
+# cleanall        : Run 'clean' with DEBUG=YES and again with DEBUG=NO
+# install         : Build all then run the ninja target 'install'
+# justprint       : Do not build, only have ninja print out all build commands
+#                   ( Enables Makefile output parsing in IDEs like Jetbrains CLion )
+# loginctl        : Build loginctl program only
+# test            : Build everything needed then run all tests
+# test-login      : Build test-login only, then run it
+# -----------------------------------------------------------------------------------
+.PHONY: all build clean cleanall full install justprint loginctl test test-login
 export
 
+# -----------------------------------------------------------------------------------
 # Set this to YES on the command line for a debug build
 DEBUG      ?= NO
 
+# -----------------------------------------------------------------------------------
+# Set this to either "release" or "developer" to force a mode
+# Otherwise DEBUG=YES sets BUILDMODE=developer and DEBUG=NO sets BUILDMODE=release
+BUILDMODE  ?= auto
+
+# -----------------------------------------------------------------------------------
 # Set this to yes to not build, but to show all build commands ninja would issue
 JUST_PRINT ?= NO
 
-HERE := ${CURDIR}
-
+# -----------------------------------------------------------------------------------
+# --- Build variables
+# -----------------------------------------------------------------------------------
+HERE       := ${CURDIR}
 BASIC_OPT  := --buildtype release
 BUILDDIR   ?= $(HERE)/build
-BUILDMODE  ?= auto
 CGCONTROL  ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
 CGDEFAULT  ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
 DESTDIR    ?=
@@ -30,7 +45,9 @@ PREFIX     ?= $(ROOTPREFIX)/usr
 SYSCONFDIR ?= $(ROOTPREFIX)/etc
 VERSION    ?= 9999
 
-# Detailed config with sane defaults
+# -----------------------------------------------------------------------------------
+# --- Package configuration
+# -----------------------------------------------------------------------------------
 USE_ACL     ?= enabled
 USE_AUDIT   ?= enabled
 USE_EFI     ?= false
@@ -41,15 +58,13 @@ USE_SMACK   ?= true
 USE_UTMP    ?= true
 USE_XENCTRL ?= auto
 
+# -----------------------------------------------------------------------------------
 # Tools needed by the wrapper
-CC    ?= $(shell which cc)
-LD    ?= $(shell which ld)
-LN    := $(shell which ln) -s
+# -----------------------------------------------------------------------------------
 MAKE  := $(shell which make)
 MESON ?= $(shell which meson)
 MKDIR := $(shell which mkdir) -p
 NINJA ?= $(shell which ninja)
-RM    := $(shell which rm) -f
 
 # Save users/systems choice
 envCFLAGS   := ${CFLAGS}
@@ -72,7 +87,7 @@ ifeq (YES,$(JUST_PRINT))
     NINJA_OPT := ${NINJA_OPT} -t commands
 endif
 
-# Combine with "sane defaults"
+# Combine with "sane defaults" (tm)
 ifeq (YES,$(DEBUG))
     BASIC_OPT := --werror -Dlog-trace=true -Dslow-tests=true -Ddebug-extra=elogind --buildtype debug
     BUILDDIR  := ${BUILDDIR}_debug
@@ -155,6 +170,8 @@ test: $(CONFIG)
 test-login: $(CONFIG)
 	+@(echo "make[2]: Entering directory '$(BUILDDIR)'")
 	(cd $(BUILDDIR) && $(NINJA) $(NINJA_OPT) $@)
+	+@(echo "Running test-login" )
+	@(cd $(BUILDDIR) && ./$@ && echo "$@ succeeded" || echo "$@ FAILED!")
 	+@(echo "make[2]: Leaving directory '$(BUILDDIR)'")
 
 $(BUILDDIR):
@@ -193,4 +210,3 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 	)
 
 .DEFAULT: all
-#endif // 0
