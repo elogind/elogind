@@ -791,8 +791,7 @@ static int session_start_scope(Session *s, sd_bus_message *properties, sd_bus_er
                          * (and without waiting for any timeout to expire) in case something goes wrong
                          * during the boot process. */
                         /* extra_after = */ STRV_MAKE_CONST("systemd-logind.service",
-                                        SESSION_CLASS_IS_EARLY(s->class) ? NULL : "elogind-user-sessions.service"),
-                        /* extra_after = */ STRV_MAKE_CONST("elogind.service",
+                                                            SESSION_CLASS_IS_EARLY(s->class) ? NULL : "systemd-user-sessions.service"),
                         user_record_home_directory(s->user->user_record),
                         properties,
                         error,
