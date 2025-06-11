@@ -3162,7 +3162,6 @@ static int method_can_shutdown_or_sleep(
 
         log_debug_elogind("CanShutDownOrSleep: %s %s blocked",
                           sleep_operation_to_string(a->sleep_operation), blocked ? "is" : "not");
-
         if (multiple_sessions) {
                 r = bus_test_polkit(
                                 message,
