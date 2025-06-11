@@ -105,10 +105,10 @@ int stat_verify_symlink(const struct stat *st) {
         assert(st);
         
         if (S_ISDIR(st->st_mode))
-        return -EISDIR;
+                return -EISDIR;
         
         if (!S_ISLNK(st->st_mode))
-        return -ENOLINK;
+                return -ENOLINK;
         
         return 0;
 }
