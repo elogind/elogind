@@ -1495,10 +1495,10 @@ int socket_get_family(int fd) {
         socklen_t sl = sizeof(af);
         
         if (getsockopt(fd, SOL_SOCKET, SO_DOMAIN, &af, &sl) < 0)
-        return -errno;
+                return -errno;
         
         if (sl != sizeof(af))
-        return -EINVAL;
+                return -EINVAL;
         
         return af;
 }
