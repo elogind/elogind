@@ -181,7 +181,7 @@ TEST(pidref_kill_and_sigcont) {
         r = pidref_safe_fork("(test-pidref-kill-and-sigcont)", FORK_DEATHSIG_SIGTERM, &pidref);
         assert_se(r >= 0);
         if (r == 0)
-        freeze();
+                freeze();
         
         assert_se(pidref_kill_and_sigcont(&pidref, SIGTERM) >= 0);
         assert_se(pidref_wait_for_terminate(&pidref, &si) >= 0);
