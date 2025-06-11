@@ -125,7 +125,6 @@ _public_ int sd_device_monitor_set_receive_buffer_size(sd_device_monitor *m, siz
         return fd_set_rcvbuf(m->sock, size, false);
 }
 
-
 _public_ int sd_device_monitor_get_fd(sd_device_monitor *m) {
         assert_return(m, -EINVAL);
 
