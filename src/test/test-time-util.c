@@ -433,7 +433,7 @@ static void test_format_timestamp_loop(void) {
         test_format_timestamp_impl(USEC_TIMESTAMP_FORMATTABLE_MAX-1);
         test_format_timestamp_impl(USEC_TIMESTAMP_FORMATTABLE_MAX);
 
-        /* Two cases which trigger https://github.com/elogind/elogind/issues/28472 */
+        /* Two cases which trigger https://github.com/systemd/systemd/issues/28472 */
         test_format_timestamp_impl(1504938962980066);
         test_format_timestamp_impl(1509482094632752);
 
