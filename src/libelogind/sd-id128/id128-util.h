@@ -10,7 +10,6 @@
 #include "hash-funcs.h"
 #include "macro.h"
 
-
 bool id128_is_valid(const char *s) _pure_;
 
 typedef enum Id128Flag {
