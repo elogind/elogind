@@ -42,7 +42,6 @@ int show_journal_entry(
                 bool *ellipsized,
                 dual_timestamp *previous_display_ts,
                 sd_id128_t *previous_boot_id);
-
 int show_journal(
                 FILE *f,
                 sd_journal *j,
