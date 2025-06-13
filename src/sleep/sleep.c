@@ -10,7 +10,7 @@
 #include <poll.h>
 #include <sys/timerfd.h>
 //#include <sys/types.h>
-//#include <sys/utsname.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 
 #include "sd-bus.h"
@@ -39,7 +39,7 @@
 #include "io-util.h"
 #include "log.h"
 //#include "main-func.h"
-//#include "os-util.h"
+#include "os-util.h"
 //#include "parse-util.h"
 //#include "pretty-print.h"
 #include "sleep-config.h"
