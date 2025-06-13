@@ -246,7 +246,6 @@ udevlibexecdir = get_option('udevbindir')
 udevlibexecdir = udevlibexecdir != '' ? udevlibexecdir : prefixdir / 'lib/udev'
 udevrulesdir = get_option('udevrulesdir')
 udevrulesdir = udevrulesdir != '' ? udevrulesdir : udevlibexecdir / 'rules.d'
-elogindstatedir = localstatedir / 'lib/elogind'
 factorydir = datadir / 'factory'
 configfiledir = get_option('configfiledir')
 if configfiledir == ''
@@ -264,7 +263,6 @@ endif
 testsdir = prefixdir / 'lib/elogind/tests'
 unittestsdir = testsdir / 'unit-tests'
 testdata_dir = testsdir / 'testdata'
-randomseeddir = localstatedir / 'lib/elogind'
 #endif // 0
 
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
@@ -3270,8 +3268,8 @@ install_data('LICENSE.GPL2',
 # install_subdir('LICENSES',
 #                install_dir : docdir)
 #
+# install_emptydir(systemdstatedir)
 #endif // 0
-install_emptydir(elogindstatedir)
 
 #####################################################################
 
