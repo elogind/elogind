@@ -831,15 +831,13 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
 #endif // 1
 
 awk = find_program('awk')
-#if 0 /// UNNEEDED by elogind
-#endif // 0
 diff = find_program('diff')
 echo = find_program('echo')
 env = find_program('env')
 find = find_program('find')
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
-meson_symlink_headers = project_source_root + '/tools/meson-symlink_headers.sh'
+meson_symlink_headers = meson.project_source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
 getent = find_program('getent', required : false)
 git = find_program('git', required : false)
