@@ -13,7 +13,7 @@
 
 #include "alloc-util.h"
 #include "audit-util.h"
-// #include "bus-error.h"
+#include "bus-error.h"
 #include "bus-util.h"
 #include "daemon-util.h"
 #include "devnum-util.h"
@@ -955,13 +955,13 @@ int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int session_stop_scope(Session *s, bool force) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
         int r;
 
         assert(s);
 
+#if 0 /// elogind does not start scopes, so there is nothing to abandon here.
         if (!s->scope)
                 return 0;
 
@@ -975,6 +975,9 @@ static int session_stop_scope(Session *s, bool force) {
         }
 
         s->scope_job = mfree(s->scope_job);
+#else // 0
+        session_add_to_gc_queue(s);
+#endif // 0
 
         /* Optionally, let's kill everything that's left now. */
         if (force ||
@@ -982,7 +985,14 @@ static int session_stop_scope(Session *s, bool force) {
              (s->user->user_record->kill_processes > 0 ||
               manager_shall_kill(s->manager, s->user->user_record->user_name)))) {
 
+#if 0 /// elogind does not start scopes, but sessions
                 r = manager_stop_unit(s->manager, s->scope, force ? "replace" : "fail", &error, &s->scope_job);
+#else // 0
+                // elogind must not kill lingering user processes alive
+                r = 0;
+                if (user_check_linger_file(s->user) < 1)
+                        r = session_kill(s, KILL_ALL, SIGTERM, &error);
+#endif // 0
                 if (r < 0) {
                         if (force)
                                 return log_error_errno(r, "Failed to stop session scope: %s", bus_error_message(&error, r));
@@ -1003,24 +1013,6 @@ static int session_stop_scope(Session *s, bool force) {
 
         return 0;
 }
-#else // 0
-static int session_stop_cgroup(Session *s, bool force) {
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        int r;
-
-        assert(s);
-
-        // elogind must not kill lingering user processes alive
-        if ( (force || manager_shall_kill(s->manager, s->user->user_record->user_name) )
-            && (user_check_linger_file(s->user) < 1) ) {
-                r = session_kill(s, KILL_ALL, SIGTERM, &error);
-                if (r < 0)
-                        return r;
-        }
-
-        return 0;
-}
-#endif // 0
 
 int session_stop(Session *s, bool force) {
         int r;
@@ -1050,12 +1042,7 @@ int session_stop(Session *s, bool force) {
         session_remove_fifo(s);
 
         /* Kill cgroup */
-#if 0 /// elogind does not start scopes, but sessions
         r = session_stop_scope(s, force);
-#else // 0
-        r = session_stop_cgroup(s, force);
-        session_add_to_gc_queue(s);
-#endif // 0
 
         s->stopping = true;
 
