@@ -1131,7 +1131,6 @@ static int create_session(
 
         session->create_message = sd_bus_message_ref(message);
 
-#if 0 /// UNNEEDED by elogind
         /* Now call into session_send_create_reply(), which will reply to this method call for us. Or it
          * won't – in case we just spawned a session scope and/or user service manager, and they aren't ready
          * yet. We'll call session_create_reply() again once the session scope or the user service manager is
@@ -1140,13 +1139,6 @@ static int create_session(
         r = session_send_create_reply(session, /* error= */ NULL);
         if (r < 0)
                 return r;
-#else // 0
-        /* We reply directly. */
-
-        r = session_send_create_reply(session, NULL);
-        if (r < 0)
-                goto fail;
-#endif // 0
 
         return 1;
 

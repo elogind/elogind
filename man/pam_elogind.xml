@@ -125,7 +125,11 @@
               </row>
               <row>
                 <entry><constant>user-early</constant></entry>
-                <entry>Similar to <literal>user</literal> but sessions of this class are not ordered after <citerefentry><refentrytitle>elogind-user-sessions.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>, i.e. may be started before regular sessions are allowed to be established. This session class is the default for sessions of the root user that would otherwise qualify for the <constant>user</constant> class, see above. (Added in v256.)</entry>
+<!-- 0 /// elogind has no user instances like systemd-user
+                <entry>Similar to <literal>user</literal> but sessions of this class are not ordered after <citerefentry><refentrytitle>systemd-user-sessions.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>, i.e. may be started before regular sessions are allowed to be established. This session class is the default for sessions of the root user that would otherwise qualify for the <constant>user</constant> class, see above. (Added in v256.)</entry>
+--><!-- else // 0 -->
+                <entry>Similar to <literal>user</literal> but sessions of this class may be started before regular sessions are allowed to be established. This session class is the default for sessions of the root user that would otherwise qualify for the <constant>user</constant> class, see above. (Added in v256.)</entry>
+<!-- // 0 -->
               </row>
               <row>
                 <entry><constant>user-incomplete</constant></entry>
@@ -203,7 +207,11 @@
         for details on the capabilities concept. If not specified, the default bounding set is left as is
         (i.e. usually contains the full set of capabilities). The default ambient set is set to
         <constant>CAP_WAKE_ALARM</constant> for regular users if the PAM session is associated with a local
-        seat or if it is invoked for the <literal>elogind-user</literal> service. Otherwise, defaults to the
+<!-- 0 /// elogind has no user instances like systemd-user
+        seat or if it is invoked for the <literal>systemd-user</literal> service. Otherwise, defaults to the
+--><!-- else // 0 -->
+        seat. Otherwise, defaults to the
+<!-- // 0 -->
         empty set.</para>
 
         <xi:include href="version-info.xml" xpointer="v254"/></listitem>
@@ -484,7 +492,7 @@ session         optional        pam_mail.so
       <member><citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       // 0 -->
       <!-- 0 /// elogind does not provide or support scope, slice or service files
-      <member><citerefentry><refentrytitle>elogind-user-sessions.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>systemd-user-sessions.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>user@.service</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
       // 0 -->
       <member><citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
