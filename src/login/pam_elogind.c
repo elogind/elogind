@@ -1052,23 +1052,23 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         remote = !isempty(remote_host) && !is_localhost(remote_host);
 
+#if 0 /// elogind does not handle session limits
         r = pam_get_data(handle, "systemd.memory_max", (const void **)&memory_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.memory_max data: @PAMERR@");
         r = pam_get_data(handle, "systemd.tasks_max",  (const void **)&tasks_max);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.tasks_max data: @PAMERR@");
-#if 0 /// elogind neither handles io_weight nor cpu_weight
         r = pam_get_data(handle, "systemd.cpu_weight", (const void **)&cpu_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.cpu_weight data: @PAMERR@");
         r = pam_get_data(handle, "systemd.io_weight",  (const void **)&io_weight);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM systemd.io_weight data: @PAMERR@");
-#endif // 0
         r = pam_get_data(handle, "elogind.runtime_max_sec", (const void **)&runtime_max_sec);
         if (!IN_SET(r, PAM_SUCCESS, PAM_NO_MODULE_DATA))
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM elogind.runtime_max_sec data: @PAMERR@");
+#endif // 0
 
         /* Talk to logind over the message bus */
         r = pam_acquire_bus_connection(handle, "pam-elogind", &bus, &d);

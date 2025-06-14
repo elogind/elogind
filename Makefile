@@ -31,12 +31,12 @@ SYSCONFDIR ?= $(ROOTPREFIX)/etc
 VERSION    ?= 9999
 
 # Detailed config with sane defaults
-USE_ACL     ?= enabled
-USE_AUDIT   ?= enabled
+USE_ACL     ?= true
+USE_AUDIT   ?= true
 USE_EFI     ?= false
 USE_HTML    ?= auto
 USE_MAN     ?= auto
-USE_SELINUX ?= disabled
+USE_SELINUX ?= false
 USE_SMACK   ?= true
 USE_UTMP    ?= true
 USE_XENCTRL ?= auto
