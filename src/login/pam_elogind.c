@@ -912,8 +912,13 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 *remote_user = NULL, *remote_host = NULL,
                 *seat = NULL,
                 *type = NULL, *class = NULL,
+#if 0 /// elogind does not support session limits that require systemd.resource-control
                 *class_pam = NULL, *type_pam = NULL, *cvtnr = NULL, *desktop = NULL, *desktop_pam = NULL,
                 *memory_max = NULL, *tasks_max = NULL, *cpu_weight = NULL, *io_weight = NULL, *runtime_max_sec = NULL;
+#else // 0
+                *class_pam = NULL, *type_pam = NULL, *cvtnr = NULL, *desktop = NULL, *desktop_pam = NULL;
+#endif // 0
+
         uint64_t default_capability_bounding_set = UINT64_MAX, default_capability_ambient_set = UINT64_MAX;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
         _cleanup_(user_record_unrefp) UserRecord *ur = NULL;
@@ -1078,10 +1083,12 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                          type, class, strempty(desktop),
                          strempty(seat), vtnr, strempty(tty), strempty(display),
                          yes_no(remote), strempty(remote_user), strempty(remote_host));
+#if 0 /// elogind does not support session limits, which would need systemd.resource-control
         pam_debug_syslog(handle, debug,
                          "Session limits: "
                          "memory_max=%s tasks_max=%s cpu_weight=%s io_weight=%s runtime_max_sec=%s",
                          strna(memory_max), strna(tasks_max), strna(cpu_weight), strna(io_weight), strna(runtime_max_sec));
+#endif // 0
 
         const SessionContext context = {
                 .uid = ur->uid,
@@ -1097,11 +1104,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 .remote = remote,
                 .remote_user = remote_user,
                 .remote_host = remote_host,
-                .memory_max = memory_max,
-                .tasks_max = tasks_max,
-                .cpu_weight = cpu_weight,
-                .io_weight = io_weight,
-                .runtime_max_sec = runtime_max_sec,
+                .memory_max = "inifinity",
+                .tasks_max = "infinity",
+                .cpu_weight = "",
+                .io_weight = "",
+                .runtime_max_sec = "infinity",
         };
 
         r = create_session_message(bus,
