@@ -210,8 +210,9 @@ bool kexec_loaded(void) {
 int create_shutdown_run_nologin_or_warn(void) {
         int r;
 
-        /* This is used twice: once in elogind-user-sessions.service, in order to block logins when we
-         * actually go down, and once in elogind.service when shutdowns are scheduled, and logins are
+#if 0 /// elogind has no user instances like systemd-user, or service files
+        /* This is used twice: once in systemd-user-sessions.service, in order to block logins when we
+         * actually go down, and once in systemd.service when shutdowns are scheduled, and logins are
          * to be turned off a bit in advance. We use the same wording of the message in both cases.
          *
          * Traditionally, there was only /etc/nologin, and we managed that. Then, in PAM 1.1
@@ -219,6 +220,9 @@ int create_shutdown_run_nologin_or_warn(void) {
          * (https://github.com/linux-pam/linux-pam/commit/e9e593f6ddeaf975b7fe8446d184e6bc387d450b).
          * 13 years later we stopped managing /etc/nologin, leaving it for the administrator to manage.
          */
+#else
+        /* The comment above is masked, so the migration tools won't rename the systemd-only service files mentioned. */
+#endif // 0
 
         r = write_string_file("/run/nologin",
                               "System is going down. Unprivileged users are not permitted to log in anymore. "

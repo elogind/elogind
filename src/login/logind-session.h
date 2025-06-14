@@ -21,23 +21,23 @@ typedef enum SessionState {
 
 typedef enum SessionClass {
         SESSION_USER,               /* A regular user session */
-        SESSION_USER_EARLY,         /* A user session, that is not ordered after elogind-user-sessions.service (i.e. for root) */
+        SESSION_USER_EARLY,         /* A user session, that is not ordered after systemd-user-sessions.service (i.e. for root) */
         SESSION_USER_INCOMPLETE,    /* A user session that is only half-way set up and doesn't pull in the service manager, and can be upgraded to a full user session later */
         SESSION_GREETER,            /* A login greeter pseudo-session */
         SESSION_LOCK_SCREEN,        /* A lock screen */
         SESSION_BACKGROUND,         /* Things like cron jobs, which are non-interactive */
         SESSION_BACKGROUND_LIGHT,   /* Like SESSION_BACKGROUND, but without the service manager */
         SESSION_MANAGER,            /* The service manager */
-        SESSION_MANAGER_EARLY,      /* The service manager for root (which is allowed to run before elogind-user-sessions.service) */
+        SESSION_MANAGER_EARLY,      /* The service manager for root (which is allowed to run before systemd-user-sessions.service) */
         _SESSION_CLASS_MAX,
         _SESSION_CLASS_INVALID = -EINVAL,
 } SessionClass;
 
-/* Whether we shall allow sessions of this class to run before 'elogind-user-sessions.service'. For now,
- * there's only one class we allow this for. It's generally set for root sessions, but no one else. */
-/* Whether we shall allow sessions of this class to run before 'elogind-user-sessions.service'. It's
+#if 0 /// elogind has no user instances like systemd-user
+/* Whether we shall allow sessions of this class to run before 'systemd-user-sessions.service'. It's
  * generally set for root sessions, but no one else. */
 #define SESSION_CLASS_IS_EARLY(class) IN_SET((class), SESSION_USER_EARLY, SESSION_MANAGER_EARLY)
+#endif // 0
 
 /* Which session classes want their own scope units? (all of them, except the manager, which comes in its own service unit already */
 #define SESSION_CLASS_WANTS_SCOPE(class) IN_SET((class), SESSION_USER, SESSION_USER_EARLY, SESSION_USER_INCOMPLETE, SESSION_GREETER, SESSION_LOCK_SCREEN, SESSION_BACKGROUND, SESSION_BACKGROUND_LIGHT)
