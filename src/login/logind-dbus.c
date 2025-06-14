@@ -1014,7 +1014,7 @@ static int create_session(
 
         r = session_send_create_reply(session, NULL);
         if (r < 0)
-                goto fail;
+                return r;
 #endif // 0
 
         return 1;

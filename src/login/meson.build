@@ -184,13 +184,15 @@ custom_target(
         install : enable_logind and install_sysconfdir_samples and pkgsysconfdir != 'no',
         install_dir : pkgconfigfiledir)
 
-custom_target(
-        'elogind-user',
-        input : 'elogind-user.in',
-        output : 'elogind-user',
-        command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-        install : enable_logind and pamconfdir != 'no',
-        install_dir : pamconfdir)
+#if 0 /// elogind has no user instances like systemd-user
+# custom_target(
+#         'systemd-user',
+#         input : 'systemd-user.in',
+#         output : 'systemd-user',
+#         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
+#         install : enable_logind and pamconfdir != 'no',
+#         install_dir : pamconfdir)
+#endif // 0
 
 if enable_logind
         install_data('org.freedesktop.login1.conf',

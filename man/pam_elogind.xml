@@ -152,7 +152,11 @@
         for details on the capabilities concept. If not specified, the default bounding set is left as is
         (i.e. usually contains the full set of capabilities). The default ambient set is set to
         <constant>CAP_WAKE_ALARM</constant> for regular users if the PAM session is associated with a local
-        seat or if it is invoked for the <literal>elogind-user</literal> service. Otherwise defaults to the
+<!-- 0 /// elogind has no user instances like systemd-user
+        seat or if it is invoked for the <literal>systemd-user</literal> service. Otherwise, defaults to the
+--><!-- else // 0 -->
+        seat. Otherwise, defaults to the
+<!-- // 0 -->
         empty set.</para>
 
         <xi:include href="version-info.xml" xpointer="v254"/></listitem>
@@ -427,9 +431,8 @@ session         optional        pam_mail.so
       <citerefentry project='man-pages'><refentrytitle>pam</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <citerefentry project='man-pages'><refentrytitle>pam_loginuid</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
       <!-- 0 /// elogind does not provide or support scope, slice or service files
-      <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <member><citerefentry><refentrytitle>systemd-user-sessions.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>user@.service</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
       // 0 -->
     </para>
   </refsect1>

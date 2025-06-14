@@ -779,14 +779,24 @@ static uint64_t pick_default_capability_ambient_set(
                 const char *service,
                 const char *seat) {
 
+#if 0 /// elogind has no user instances like systemd-user
         /* If not configured otherwise, let's enable CAP_WAKE_ALARM for regular users when logging in on a
-         * seat (i.e. when they are present physically on the device), or when invoked for the elogind --user
+         * seat (i.e. when they are present physically on the device), or when invoked for the systemd --user
          * instances. This allows desktops to install CAP_WAKE_ALARM to implement alarm clock apps without
          * much fuss. */
 
         return ur &&
                 user_record_disposition(ur) == USER_REGULAR &&
-                (streq_ptr(service, "elogind-user") || !isempty(seat)) ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+                (streq_ptr(service, "systemd-user") || !isempty(seat)) ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+#else // 0
+        /* If not configured otherwise, let's enable CAP_WAKE_ALARM for regular users when logging in on a
+         * seat (i.e. when they are present physically on the device).
+         * This allows desktops to install CAP_WAKE_ALARM to implement alarm clock apps without
+         * much fuss. */
+
+        return ur && user_record_disposition(ur) == USER_REGULAR && (!isempty(seat))
+                ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+#endif // 0
 }
 
 typedef struct SessionContext {
