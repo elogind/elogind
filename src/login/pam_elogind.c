@@ -705,7 +705,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 #endif // 0
 
         /* Make sure we don't enter a loop by talking to
-         * elogind when it is actually waiting for the
+         * systemd when it is actually waiting for the
          * background to finish start-up. If the service is
          * "systemd-user" we simply set XDG_RUNTIME_DIR and
          * leave. */

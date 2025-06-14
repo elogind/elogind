@@ -922,8 +922,8 @@ Features:
   credential logic and drops them into /run where nss-elogind can pick them up,
   similar to /run/host/userdb/. Usecase: drop a root user JSON record there,
   and use it in the initrd to log in as root with locally selected password,
-  for debugging purposes. Other usecase: boot into qemu with regular user
-  mounted from host. maybe put this in elogind-user-sessions.service?
+  for debugging purposes. Other use case: boot into qemu with regular user
+  mounted from host. maybe put this in systemd-user-sessions.service?
 
 * drop dependency on libcap, replace by direct syscalls based on
   CapabilityQuintet we already have. (This likely allows us drop drop libcap

@@ -983,7 +983,7 @@ static int method_create_session(sd_bus_message *message, void *userdata, sd_bus
 
         r = session_send_create_reply(session, NULL);
         if (r < 0)
-                goto fail;
+                return r;
 #endif // 0
 
         return 1;
