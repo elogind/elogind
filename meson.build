@@ -2514,29 +2514,32 @@ subdir('src/shared')
 # subdir('src/libudev')
 #endif // 0
 
-libelogind = shared_library(
-        'systemd',
-        version : libsystemd_version,
-        include_directories : libsystemd_includes,
-        link_args : ['-shared',
-#if 0 /// elogind is a lot simpler in its needs.
-#                      # Make sure our library is never deleted from memory, so that our open logging fds don't leak on dlopen/dlclose cycles.
-#                      '-z', 'nodelete',
-#                      '-Wl,--version-script=' + libsystemd_sym_path],
-#         link_with : [libbasic_static],
-#         link_whole : [libsystemd_static],
-#         dependencies : [librt,
-#                         threads,
-#                         userspace],
-#         link_depends : libsystemd_sym,
+#if 0 /// Do a real elogind masking else, diff always goes haywire here
+# libsystemd = shared_library(
+#         'systemd',
+#         version : libsystemd_version,
+#         include_directories : libsystemd_includes,
 #else // 0
+libelogind = shared_library(
+        'elogind',
+        version : libsystemd_version,
+        include_directories : libelogind_includes,
+#endif // 0
+        link_args : ['-shared',
+                     # Make sure our library is never deleted from memory, so that our open logging fds don't leak on dlopen/dlclose cycles.
+                     '-z', 'nodelete',
                      '-Wl,--version-script=' + libelogind_sym_path],
         link_with : [libbasic_static],
         link_whole : [libelogind_static],
+#if 0 /// elogind does not need librt
+#         dependencies : [librt,
+#                         threads,
+#                         userspace],
+#else // 0
         dependencies : [threads,
                         userspace],
-        link_depends : libelogind_sym,
 #endif // 0
+        link_depends : libelogind_sym,
         install : true,
 #if 0 /// elogind uses libelogind as tag
 #         install_tag: 'libsystemd',
