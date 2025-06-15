@@ -168,6 +168,19 @@ Session* session_free(Session *s) {
         sd_event_source_unref(s->fifo_event_source);
         safe_close(s->fifo_fd);
 
+#if 1 /// elogind does not rely on external cgroup controllers to clean up after ourselves
+        if (s->id) {
+                _cleanup_free_ char *fs = NULL;
+                int r;
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
+                log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
+                if (0 == r)
+                        r = cg_kill_recursive (fs, SIGTERM, CGROUP_IGNORE_SELF, NULL, NULL, NULL);
+                if (0 == r)
+                        cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
+        }
+#endif // 1
+
         /* Note that we remove neither the state file nor the fifo path here, since we want both to survive
          * daemon restarts */
         free(s->state_file);
@@ -1382,6 +1395,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         log_debug_elogind("Session %s may gc ?", s->id);
         log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
         log_debug_elogind("  is userless    : %s", yes_no(!s->user));
+        log_debug_elogind("  has leader     : %s", yes_no(-ESRCH == pidref_is_alive(&s->leader)));
         log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || s->stopping));
         log_debug_elogind("  FIFO state     : %s",
                           s->fifo_fd < 0           ? "No FIFO opened"   :
