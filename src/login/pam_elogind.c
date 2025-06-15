@@ -1114,7 +1114,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 .remote = remote,
                 .remote_user = remote_user,
                 .remote_host = remote_host,
-                .memory_max = "inifinity",
+                .memory_max = "infinity",
                 .tasks_max = "infinity",
                 .cpu_weight = "",
                 .io_weight = "",
