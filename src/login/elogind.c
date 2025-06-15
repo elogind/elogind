@@ -288,7 +288,7 @@ int elogind_setup_cgroups_agent( Manager* m ) {
                         .un.sun_family = AF_UNIX,
                         .un.sun_path = "/run/systemd/cgroups-agent",
         };
-        int                               r  = 0;
+        int r;
 
         /* This creates a listening socket we receive cgroups agent messages on. We do not use D-Bus for delivering
          * these messages from the cgroups agent binary to PID 1, as the cgroups agent binary is very short-living, and

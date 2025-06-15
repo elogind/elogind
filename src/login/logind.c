@@ -1018,6 +1018,7 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 seat->in_gc_queue = false;
 
                 if (seat_may_gc(seat, drop_not_started)) {
+                        log_debug_elogind("Seat '%s' from gc queue will be dropped now", strna(seat->id));
                         seat_stop(seat, /* force = */ false);
                         seat_free(seat);
                 }
@@ -1034,6 +1035,7 @@ static void manager_gc(Manager *m, bool drop_not_started) {
                 /* Normally, this should make the session referenced again, if it doesn't then let's get rid
                  * of it immediately. */
                 if (session_may_gc(session, drop_not_started)) {
+                        log_debug_elogind("Session '%s' from gc queue will be finalized now", strna(session->id));
                         (void) session_finalize(session);
                         session_free(session);
                 }
@@ -1048,6 +1050,7 @@ static void manager_gc(Manager *m, bool drop_not_started) {
 
                 /* Second step: finalize user */
                 if (user_may_gc(user, drop_not_started)) {
+                        log_debug_elogind("User '%s' from gc queue will be finalized now", strna(user->user_record->user_name));
                         (void) user_finalize(user);
                         user_free(user);
                 }
@@ -1365,8 +1368,8 @@ static int run(int argc, char *argv[]) {
 #endif // 0
 
         log_debug_elogind("%s", "Creating manager...");
-#if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
 
+#if 0 /// elogind also blocks SIGQUIT, and installs a signal handler for it
         assert_se(sigprocmask_many(SIG_BLOCK, /* ret_old_mask= */ NULL, SIGCHLD) >= 0);
 #else // 0
         assert_se(sigprocmask_many(SIG_BLOCK, NULL, SIGHUP, SIGTERM, SIGINT, SIGCHLD, SIGRTMIN+18, SIGQUIT, -1) >= 0);
