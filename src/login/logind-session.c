@@ -980,9 +980,9 @@ static int session_stop_scope(Session *s, bool force) {
 #if 0 /// elogind does not start scopes, but sessions
                 r = manager_stop_unit(s->manager, s->scope, force ? "replace" : "fail", &error, &s->scope_job);
 #else // 0
-                // elogind must not kill lingering user processes alive
+                // elogind must not kill lingering user processes alive, until forced to
                 r = 0;
-                if (user_check_linger_file(s->user) < 1)
+                if (force || (user_check_linger_file(s->user) < 1))
                         r = session_kill(s, KILL_ALL, SIGTERM, &error);
 #endif // 0
                 if (r < 0) {
