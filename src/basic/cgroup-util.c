@@ -404,6 +404,7 @@ int cg_kill(
 
         assert(path);
 
+        log_debug_elogind("Killing procs from %s ...", path);
         ret = cg_kill_items(path, "cgroup.procs", sig, flags, s, log_kill, userdata);
         if (ret < 0)
                 return log_debug_errno(ret, "Failed to kill processes in cgroup '%s' item cgroup.procs: %m", path);
