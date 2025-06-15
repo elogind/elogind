@@ -2336,8 +2336,8 @@ libelogind = shared_library(
         'elogind',
         version : libsystemd_version,
         include_directories : libelogind_includes,
-        link_args : ['-shared',
 #if 0 /// elogind is a lot simpler in its needs.
+#         link_args : ['-shared',
 #                      # Make sure our library is never deleted from memory, so that our open logging fds don't leak on dlopen/dlclose cycles.
 #                      '-z', 'nodelete',
 #                      '-Wl,--version-script=' + libsystemd_sym_path],
@@ -2350,6 +2350,9 @@ libelogind = shared_library(
 #                         userspace],
 #         link_depends : libsystemd_sym,
 #else // 0
+        link_args : ['-shared',
+                     # Make sure our library is never deleted from memory, so that our open logging fds don't leak on dlopen/dlclose cycles.
+                     '-z', 'nodelete',
                      '-Wl,--version-script=' + libelogind_sym_path],
         link_with : [libbasic],
         link_whole : [libelogind_static],
