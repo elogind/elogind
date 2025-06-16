@@ -267,6 +267,7 @@ endif
 testsdir = prefixdir / 'lib/elogind/tests'
 unittestsdir = testsdir / 'unit-tests'
 testdata_dir = testsdir / 'testdata'
+elogindstatedir = localstatedir / 'lib/elogind'
 #endif // 0
 
 #if 1 /// Will elogind find system_bus_socket in /run/dbus or /var/run/dbus ?
@@ -3257,8 +3258,12 @@ install_data('LICENSE.GPL2',
 #if 0 /// irrelevant for elogind
 # install_subdir('LICENSES',
 #                install_dir : docdir)
-#
+#endif // 0
+
+# if 0 /// elogind needs its own
 # install_emptydir(systemdstatedir)
+#else // 0
+install_emptydir(elogindstatedir)
 #endif // 0
 
 #####################################################################
