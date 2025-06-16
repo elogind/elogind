@@ -391,6 +391,7 @@ static int export_legacy_dbus_address(
         return PAM_SUCCESS;
 }
 
+#if 0 /// elogind does not support session limits that require systemd to run the show
 static int append_session_memory_max(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
         uint64_t val;
         int r;
@@ -813,11 +814,13 @@ typedef struct SessionContext {
         const bool remote;
         const char *remote_user;
         const char *remote_host;
+#if 0 /// elogind does not support session limits that require systemd to run the show
         const char *memory_max;
         const char *tasks_max;
         const char *cpu_weight;
         const char *io_weight;
         const char *runtime_max_sec;
+#endif // 0
 } SessionContext;
 
 static int create_session_message(
@@ -874,6 +877,7 @@ static int create_session_message(
         if (r < 0)
                 return r;
 
+#if 0 /// elogind does not support session limits that require systemd to run the show
         r = append_session_memory_max(handle, m, context->memory_max);
         if (r != PAM_SUCCESS)
                 return r;
@@ -1114,11 +1118,13 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 .remote = remote,
                 .remote_user = remote_user,
                 .remote_host = remote_host,
-                .memory_max = "infinity",
-                .tasks_max = "infinity",
-                .cpu_weight = "",
-                .io_weight = "",
-                .runtime_max_sec = "infinity",
+#if 0 /// elogind does not support session limits that require systemd to run the show
+                .memory_max = memory_max,
+                .tasks_max = tasks_max,
+                .cpu_weight = cpu_weight,
+                .io_weight = io_weight,
+                .runtime_max_sec = runtime_max_sec,
+#endif // 0
         };
 
         r = create_session_message(bus,
