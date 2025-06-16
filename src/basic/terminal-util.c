@@ -1674,10 +1674,10 @@ void get_log_colors(int priority, const char **on, const char **off, const char 
 
 int terminal_set_cursor_position(int fd, unsigned row, unsigned column) {
         assert(fd >= 0);
-        
+
         char cursor_position[STRLEN("\x1B[" ";" "H") + DECIMAL_STR_MAX(unsigned) * 2 + 1];
         xsprintf(cursor_position, "\x1B[%u;%uH", row, column);
-        
+
         return loop_write(fd, cursor_position, SIZE_MAX);
 }
 
@@ -2119,13 +2119,13 @@ int terminal_get_size_by_dsr(
 
         struct termios old_termios;
         if (tcgetattr(input_fd, &old_termios) < 0)
-                return log_debug_errno(errno, "Failed to to get terminal settings: %m");
+                return log_debug_errno(errno, "Failed to get terminal settings: %m");
 
         struct termios new_termios = old_termios;
         termios_disable_echo(&new_termios);
 
         if (tcsetattr(input_fd, TCSADRAIN, &new_termios) < 0)
-                return log_debug_errno(errno, "Failed to to set new terminal settings: %m");
+                return log_debug_errno(errno, "Failed to set new terminal settings: %m");
 
         unsigned saved_row = 0, saved_column = 0;
 
