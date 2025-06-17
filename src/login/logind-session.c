@@ -41,6 +41,7 @@
 #include "uid-classification.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
+#include "cgroup.h"
 #include "cgroup-setup.h"
 #include "extract-word.h"
 #include "musl_missing.h"
@@ -832,7 +833,6 @@ static int session_start_cgroup(Session *s) {
         assert(s->user);
         assert(s->leader.pid > 0);
 
-        /* First, create our own group */
         r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
@@ -840,6 +840,10 @@ static int session_start_cgroup(Session *s) {
         r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader.pid);
         if (r < 0)
                 log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader.pid, s->id);
+
+        r = session_watch_cgroup(s);
+        if (r < 0)
+                log_warning_errno(r, "Failed to watch cgroup %s: %m", s->id);
 
         return 0;
 }
