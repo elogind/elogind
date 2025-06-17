@@ -467,7 +467,6 @@ static int append_session_tasks_max(pam_handle_t *handle, sd_bus_message *m, con
         return PAM_SUCCESS;
 }
 
-#if 0 /// elogind neither handles io_weight nor cpu_weight
 static int append_session_cpu_weight(pam_handle_t *handle, sd_bus_message *m, const char *limit) {
         uint64_t val;
         int r;
@@ -890,7 +889,6 @@ static int create_session_message(
         if (r != PAM_SUCCESS)
                 return r;
 
-#if 0 /// elogind neither handles io_weight nor cpu_weight
         r = append_session_cpu_weight(handle, m, context->cpu_weight);
         if (r != PAM_SUCCESS)
                 return r;

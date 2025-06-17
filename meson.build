@@ -3011,7 +3011,9 @@ install_data('LICENSE.GPL2',
 #if 0 /// irrelevant for elogind
 # install_subdir('LICENSES',
 #                install_dir : docdir)
+#endif // 0
 install_emptydir(elogindstatedir)
+
 
 ############################################################
 

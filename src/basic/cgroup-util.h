@@ -272,8 +272,10 @@ int cg_get_xattr_malloc(const char *path, const char *name, char **ret);
 /* Returns negative on error, and 0 or 1 on success for the bool value */
 int cg_get_xattr_bool(const char *path, const char *name);
 int cg_remove_xattr(const char *path, const char *name);
+#endif // 0
 
 int cg_install_release_agent(const char *controller, const char *agent);
+#if 0 /// UNNEEDED by elogind
 int cg_uninstall_release_agent(const char *controller);
 #endif // 0
 
