@@ -420,8 +420,9 @@ void elogind_manager_free( Manager* m ) {
 int elogind_manager_new( Manager* m ) {
         int r = 0;
 
-        m->cgroups_agent_fd  = -1;
+        m->cgroup_inotify_fd = -EBADF;
         m->pin_cgroupfs_fd   = -1;
+        m->cgroups_agent_fd  = -1;
         m->test_run_flags    = 0;
         m->do_interrupt      = false;
         m->sleep_fork_pid    = 0;

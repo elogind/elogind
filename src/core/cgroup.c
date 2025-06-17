@@ -36,7 +36,7 @@
 #include "stdio-util.h"
 //#include "string-table.h"
 #include "string-util.h"
-//#include "virt.h"
+#include "virt.h"
 
 #if BPF_FRAMEWORK
 #include "bpf-dlopen.h"
@@ -60,6 +60,7 @@ uint64_t tasks_max_resolve(const TasksMax *tasks_max) {
 
         return system_tasks_max_scale(tasks_max->value, tasks_max->scale);
 }
+#endif // 0
 
 bool manager_owns_host_root_cgroup(Manager *m) {
         assert(m);
@@ -78,6 +79,7 @@ bool manager_owns_host_root_cgroup(Manager *m) {
         return empty_or_root(m->cgroup_root);
 }
 
+#if 0 /// UNNEEDED by elogind
 bool unit_has_startup_cgroup_constraints(Unit *u) {
         assert(u);
 
@@ -2038,7 +2040,9 @@ int unit_set_cgroup_path(Unit *u, const char *path) {
 
         return 1;
 }
+#endif // 0
 
+#if 0 /// elogind does not support systemd units, but session
 int unit_watch_cgroup(Unit *u) {
         _cleanup_free_ char *events = NULL;
         int r;
@@ -2090,6 +2094,40 @@ int unit_watch_cgroup(Unit *u) {
         return 0;
 }
 
+#else // 0
+int session_watch_cgroup(Session *s) {
+        Manager* m = ASSERT_PTR(s->manager);
+        _cleanup_free_ char *events = NULL;
+        int r;
+
+        assert(s);
+
+        /* Add the session to our hash of watched sessions, but only if cgroupv2 is available. */
+
+        /* Only applies to the unified hierarchy */
+        r = cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER);
+        if (r < 0)
+                return log_error_errno(r, "Failed to determine whether the name=%s hierarchy is unified: %m", SYSTEMD_CGROUP_CONTROLLER);
+        if (r == 0)
+                return 0;
+
+        r = hashmap_ensure_allocated(&m->cgroup_control_inotify_wd_session, &trivial_hash_ops);
+        if (r < 0)
+                return log_oom();
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, "cgroup.events", &events);
+        if (r < 0)
+                return 0;
+
+        r = hashmap_put(m->cgroup_control_inotify_wd_session, s->id, s);
+        if (r < 0)
+                return log_error_errno(r, "Failed to add session %s to hash map: %m", strna(s->id));
+
+        return 0;
+}
+#endif // 0
+
+#if 0 /// UNNEEDED by elogind
 int unit_watch_cgroup_memory(Unit *u) {
         _cleanup_free_ char *events = NULL;
         CGroupContext *c;
@@ -2770,7 +2808,9 @@ int unit_realize_cgroup(Unit *u) {
         /* And realize this one now (and apply the values) */
         return unit_realize_cgroup_now(u, manager_state(u->manager));
 }
+#endif // 0
 
+#if 0 /// elogind does not support systemd units, but sessions
 void unit_release_cgroup(Unit *u) {
         assert(u);
 
@@ -2799,6 +2839,26 @@ void unit_release_cgroup(Unit *u) {
         }
 }
 
+#else // 0
+void session_release_cgroup(Session *s) {
+        assert(s);
+        Manager* m = ASSERT_PTR(s->manager);
+        _cleanup_free_ char *fs = NULL;
+        int r;
+
+        /* forward a session to manager_notify_cgroup_empty() we got an empty inotify about */
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
+        if (r)
+                return;
+
+        (void) hashmap_remove(m->cgroup_control_inotify_wd_session, s->id);
+
+        manager_notify_cgroup_empty(m, s->id);
+}
+#endif // 0
+
+#if 0 /// UNNEEDED by elogind
 bool unit_maybe_release_cgroup(Unit *u) {
         int r;
 
@@ -3280,6 +3340,7 @@ static int unit_check_cgroup_events(Unit *u) {
 
         return 0;
 }
+#endif // 0
 
 static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
         Manager *m = ASSERT_PTR(userdata);
@@ -3300,7 +3361,11 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                 }
 
                 FOREACH_INOTIFY_EVENT_WARN(e, buffer, l) {
+#if 0 /// elogind does not support system units, but sessions
                         Unit *u;
+#else // 0
+                        Session *u; /* s is taken by the sd_event_source argumen */
+#endif // 0
 
                         if (e->wd < 0)
                                 /* Queue overflow has no watch descriptor */
@@ -3313,6 +3378,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         /* Note that inotify might deliver events for a watch even after it was removed,
                          * because it was queued before the removal. Let's ignore this here safely. */
 
+#if 0 /// elogind does not support system units, but sessions
                         u = hashmap_get(m->cgroup_control_inotify_wd_unit, INT_TO_PTR(e->wd));
                         if (u)
                                 unit_check_cgroup_events(u);
@@ -3320,10 +3386,29 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         u = hashmap_get(m->cgroup_memory_inotify_wd_unit, INT_TO_PTR(e->wd));
                         if (u)
                                 unit_add_to_cgroup_oom_queue(u);
+#else // 0
+                        u = hashmap_get(m->cgroup_control_inotify_wd_session, INT_TO_PTR(e->wd));
+                        if (u)
+                                session_release_cgroup(u);
+
+                        /*
+                                struct inotify_event
+                                {
+                                int wd;		* Watch descriptor.  *
+                                uint32_t mask;	* Watch mask.  *
+                                uint32_t cookie;	* Cookie to synchronize two events.  *
+                                uint32_t len;		* Length (including NULs) of name.  *
+                                char name __flexarr;	* Name.  *
+                                };
+                        */
+                        log_notice("(TODO) inotify event: id %d (mask %u; cookie %u; len %u): '%s'",
+                                e->wd, e->mask, e->cookie, e->len, strna(e->name));
+#endif // 0
                 }
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 static int cg_bpf_mask_supported(CGroupMask *ret) {
         CGroupMask mask = 0;
         int r;
@@ -3436,7 +3521,7 @@ int manager_setup_cgroup(Manager *m) {
                         log_debug("Using cgroup controller " SYSTEMD_CGROUP_CONTROLLER_LEGACY ". File system hierarchy is at %s.", path);
         }
 
-#if 0 /// elogind is not init, and does not install the agent here.
+#if 0 /// elogind does not support systemd units
         /* 3. Allocate cgroup empty defer event source */
         m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
         r = sd_event_add_defer(m->event, &m->cgroup_empty_event_source, on_cgroup_empty_event, m);
@@ -3455,6 +3540,7 @@ int manager_setup_cgroup(Manager *m) {
                 return log_error_errno(r, "Failed to disable cgroup empty event source: %m");
 
         (void) sd_event_source_set_description(m->cgroup_empty_event_source, "cgroup-empty");
+#endif // 0
 
         /* 4. Install notifier inotify object, or agent */
         if (cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER) > 0) {
@@ -3495,6 +3581,7 @@ int manager_setup_cgroup(Manager *m) {
                         log_debug("Release agent already installed.");
         }
 
+#if 0 /// elogind does not support systemd scopes and units
         /* 5. Make sure we are in the special "init.scope" unit in the root slice. */
         scope_path = strjoina(m->cgroup_root, "/" SPECIAL_INIT_SCOPE);
         r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
@@ -3505,11 +3592,11 @@ int manager_setup_cgroup(Manager *m) {
                         log_warning_errno(r, "Couldn't move remaining userspace processes, ignoring: %m");
 #else // 0
         /* Note:
-                * This method is in core, and normally called by systemd
-                * being init. As elogind is never init, we can not install
-                * our agent here. We do so when mounting our cgroup file
-                * system, so only if elogind is its own tiny controller.
-                * Further, elogind is not meant to run in systemd init scope. */
+         * This method is in core, and normally called by systemd
+         * being init. As elogind is never init, we can not install
+         * our agent here. We do so when mounting our cgroup file
+         * system, so only if elogind is its own tiny controller.
+         * Further, elogind is not meant to run in systemd init scope. */
         if (MANAGER_IS_SYSTEM(m))
                 // we are our own cgroup controller
                 scope_path = strjoina("");
@@ -3519,9 +3606,10 @@ int manager_setup_cgroup(Manager *m) {
         else
                 // we have to create our own group
                 scope_path = strjoina(m->cgroup_root, "/elogind");
-        (void) cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
+        r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
+        if (r >= 0) {
 #endif // 0
-        log_debug_elogind("Created control group \"%s\"", scope_path);
+                log_debug_elogind("Created control group \"%s\"", scope_path);
 
                 /* 6. And pin it, so that it cannot be unmounted */
                 safe_close(m->pin_cgroupfs_fd);
@@ -3529,10 +3617,8 @@ int manager_setup_cgroup(Manager *m) {
                 if (m->pin_cgroupfs_fd < 0)
                         return log_error_errno(errno, "Failed to open pin file: %m");
 
-#if 0 /// this is from the cgroup migration above that elogind does not need.
         } else if (!MANAGER_IS_TEST_RUN(m))
                 return log_error_errno(r, "Failed to create %s control group: %m", scope_path);
-#endif // 0
 
         /* 7. Always enable hierarchical support if it exists... */
         if (!all_unified && !MANAGER_IS_TEST_RUN(m))
@@ -3562,20 +3648,22 @@ int manager_setup_cgroup(Manager *m) {
 void manager_shutdown_cgroup(Manager *m, bool delete) {
         assert(m);
 
-#if 0 /// elogind is not init
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
         if (delete && m->cgroup_root && !FLAGS_SET(m->test_run_flags, MANAGER_TEST_RUN_MINIMAL))
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
 
+#if 0 /// elogind does not support systemd units, but sessions
         m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
 
         m->cgroup_control_inotify_wd_unit = hashmap_free(m->cgroup_control_inotify_wd_unit);
         m->cgroup_memory_inotify_wd_unit = hashmap_free(m->cgroup_memory_inotify_wd_unit);
+#else // 0
+        m->cgroup_control_inotify_wd_session = hashmap_free(m->cgroup_control_inotify_wd_session);
+#endif // 0
 
         m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);
         m->cgroup_inotify_fd = safe_close(m->cgroup_inotify_fd);
-#endif // 0
 
         m->pin_cgroupfs_fd = safe_close(m->pin_cgroupfs_fd);
 

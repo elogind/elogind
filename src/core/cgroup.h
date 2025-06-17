@@ -8,6 +8,8 @@
 //#include "cpu-set-util.h"
 #include "list.h"
 #include "time-util.h"
+/// Additional includes needed by elogind
+#include "logind-session.h"
 
 #if 0 /// UNNEEDED by elogind
 typedef struct TasksMax {
@@ -262,11 +264,25 @@ int unit_pick_cgroup_path(Unit *u);
 
 int unit_realize_cgroup(Unit *u);
 void unit_prune_cgroup(Unit *u);
+#endif // 0
+
+#if 0 /// elogind does not support systemd units, but sessions
 int unit_watch_cgroup(Unit *u);
+#else // 0
+int session_watch_cgroup(Session *s);
+#endif // 0
+
+#if 0 /// UNNEEDED by elogind
 int unit_watch_cgroup_memory(Unit *u);
 void unit_add_to_cgroup_realize_queue(Unit *u);
+#endif // 0
 
+#if 0 /// elogind does not support systemd units, but sessions
 void unit_release_cgroup(Unit *u);
+#else // 0
+void session_release_cgroup(Session *s);
+#endif // 0
+#if 0 /// UNNEEDED by elogind
 /* Releases the cgroup only if it is recursively empty.
  * Returns true if the cgroup was released, false otherwise. */
 bool unit_maybe_release_cgroup(Unit *u);
@@ -315,8 +331,11 @@ int unit_reset_accounting(Unit *u);
         CGroupContext *cc = unit_get_cgroup_context(u); \
         cc ? cc->name : false;                          \
         })
+#endif // 0
 
 bool manager_owns_host_root_cgroup(Manager *m);
+
+#if 0 /// UNNEEDED by elogind
 bool unit_has_host_root_cgroup(Unit *u);
 
 bool unit_has_startup_cgroup_constraints(Unit *u);

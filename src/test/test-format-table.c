@@ -518,7 +518,6 @@ TEST(table) {
 
         table_set_width(t, 15);
         assert_se(table_format(t, &formatted) >= 0);
-
         printf("%s\n", formatted);
 
 #if 1 /// elogind supports systems with non-UTF-8 locales, the next would fail there
@@ -565,6 +564,7 @@ TEST(table) {
 #if 1 /// elogind supports systems with non-UTF-8 locales, the previous would fail there
         }
 #endif // 1
+
         formatted = mfree(formatted);
 
         table_set_width(t, SIZE_MAX);
