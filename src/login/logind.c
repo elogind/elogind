@@ -93,12 +93,6 @@ static int manager_new(Manager **ret) {
 #endif // 0
                 return -ENOMEM;
 
-#if 1 /// elogind needs some more data
-        r = elogind_manager_new(m);
-        if (r < 0) {
-                return r;
-        }
-#endif // 1
         r = sd_event_default(&m->event);
         if (r < 0)
                 return r;
@@ -118,6 +112,14 @@ static int manager_new(Manager **ret) {
                 log_debug_errno(r, "Failed allocate memory pressure event source, ignoring: %m");
 
         (void) sd_event_set_watchdog(m->event, true);
+
+
+#if 1 /// elogind needs some more data
+        r = elogind_manager_new(m);
+        if (r < 0) {
+                return r;
+        }
+#endif // 1
 
         manager_reset_config(m);
 

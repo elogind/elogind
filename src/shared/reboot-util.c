@@ -220,7 +220,7 @@ int create_shutdown_run_nologin_or_warn(void) {
          * (https://github.com/linux-pam/linux-pam/commit/e9e593f6ddeaf975b7fe8446d184e6bc387d450b).
          * 13 years later we stopped managing /etc/nologin, leaving it for the administrator to manage.
          */
-#else
+#else // 0
         /* The comment above is masked, so the migration tools won't rename the systemd-only service files mentioned. */
 #endif // 0
 

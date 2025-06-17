@@ -27,11 +27,22 @@ typedef struct Manager Manager;
 #include "cgroup-util.h"
 #include "sleep-config.h"
 
-#if 1 /// elogind has to ident itself
+#if 1 /// elogind has to ident itself and needs some systemd manager flags
 #define MANAGER_IS_SYSTEM(m)   (  (m)->is_system)
 #define MANAGER_IS_TEST_RUN(m) (  (m)->test_run_flags != 0)
 #define MANAGER_IS_USER(m)     (!((m)->is_system))
+typedef enum ManagerTestRunFlags {
+        MANAGER_TEST_NORMAL                  = 0,       /* run normally */
+        MANAGER_TEST_RUN_MINIMAL             = 1 << 0,  /* create basic data structures */
+        MANAGER_TEST_RUN_BASIC               = 1 << 1,  /* interact with the environment */
+        MANAGER_TEST_RUN_ENV_GENERATORS      = 1 << 2,  /* also run env generators  */
+        MANAGER_TEST_RUN_GENERATORS          = 1 << 3,  /* also run unit generators */
+        MANAGER_TEST_RUN_IGNORE_DEPENDENCIES = 1 << 4,  /* run while ignoring dependencies */
+        MANAGER_TEST_DONT_OPEN_EXECUTOR      = 1 << 5,  /* avoid trying to load sd-executor */
+        MANAGER_TEST_FULL = MANAGER_TEST_RUN_BASIC | MANAGER_TEST_RUN_ENV_GENERATORS | MANAGER_TEST_RUN_GENERATORS,
+} ManagerTestRunFlags;
 #endif // 1
+
 struct Manager {
         sd_event *event;
         sd_bus *bus;
@@ -64,7 +75,16 @@ struct Manager {
 
         unsigned reserve_vt;
         int reserve_vt_fd;
-#else // 0
+#endif // 0
+
+#if 1 /// Extra data needed by elogind
+        /* Notifications from cgroups, when the unified hierarchy is used is done via inotify. */
+        int cgroup_inotify_fd;
+        sd_event_source *cgroup_inotify_event_source;
+
+        /* Map for finding the session for each inotify watch descriptor for the cgroup.events cgroupv2 attribute. */
+        Hashmap *cgroup_control_inotify_wd_session;
+
         /* Make sure the user cannot accidentally unmount our cgroup
          * file system */
         int pin_cgroupfs_fd;
@@ -88,7 +108,7 @@ struct Manager {
 
         /* To wake up sleeping consumers using the right operation, the manager must know what is going on. */
         const HandleActionData *sleep_fork_action;
-#endif // 0
+#endif // 1
 
         Seat *seat0;
 
@@ -236,6 +256,17 @@ int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata);
 
 int manager_read_efi_boot_loader_entries(Manager *m);
+
+#if 1 /// elogind needs a few priority enums from the systemd manager.h
+enum {
+        /* most important … */
+        EVENT_PRIORITY_CGROUP_AGENT      = SD_EVENT_PRIORITY_NORMAL-10, /* cgroupv1 */
+        EVENT_PRIORITY_CGROUP_INOTIFY    = SD_EVENT_PRIORITY_NORMAL-10, /* cgroupv2 */
+        EVENT_PRIORITY_CGROUP_OOM        = SD_EVENT_PRIORITY_NORMAL-9,
+        EVENT_PRIORITY_CGROUP_EMPTY      = SD_EVENT_PRIORITY_NORMAL-2,
+        /* … to least important */
+};
+#endif // 1
 
 #if 1 /// elogind has a circular dependency in sleep-config.h, so declare we are set here
 #ifndef ELOGIND_MANAGER_DECLARED
