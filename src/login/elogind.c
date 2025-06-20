@@ -103,9 +103,11 @@ static int elogind_sigchld_handler(
                         log_debug_elogind( "sleep_fork PID %d waitpid() set status %d", m->sleep_fork_pid, status );
                         if ( WIFEXITED(status) || WIFSIGNALED(status) )
                                 m->sleep_fork_pid = 0;
-                        /* Tell people that they now may take a lock again */
+                        /* emulate match_job_removed for sleep wakeup */
                         if ( a && a->sleep_operation != _SLEEP_OPERATION_INVALID ) {
                                 (void) send_prepare_for( m, a->inhibit_what, false );
+                                m->action_job = mfree(m->action_job);
+                                m->delayed_action = NULL;
                                 m->sleep_fork_action = NULL; /* All done */
                         }
                 }

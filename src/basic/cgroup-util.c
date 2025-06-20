@@ -809,7 +809,6 @@ int cg_pid_get_path(const char *controller, pid_t pid, char **ret_path) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int cg_install_release_agent(const char *controller, const char *agent) {
         _cleanup_free_ char *fs = NULL, *contents = NULL;
         const char *sc;
@@ -864,6 +863,7 @@ int cg_install_release_agent(const char *controller, const char *agent) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int cg_uninstall_release_agent(const char *controller) {
         _cleanup_free_ char *fs = NULL;
         int r;

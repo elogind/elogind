@@ -18,9 +18,9 @@
 #include "sd-messages.h"
 
 //#include "btrfs-util.h"
-//#include "bus-error.h"
-//#include "bus-locator.h"
-//#include "bus-util.h"
+#include "bus-error.h"
+#include "bus-locator.h"
+#include "bus-util.h"
 #include "def.h"
 #include "efivars.h"
 #include "exec-util.h"
@@ -356,6 +356,43 @@ static int lock_all_homes(void) {
 }
 #endif // 0
 
+#if 1 /// elogind must be told to inform processes that a sleep/wakeup is imminent
+static int prepare_for_sleep(bool active) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        int r;
+
+        r = sd_bus_open_system(&bus);
+        if (r < 0)
+                return log_error_errno(r, "Failed to connect to system bus: %m");
+
+        r = bus_message_new_method_call(bus, &m, bus_login_mgr, "SendPrepareForSleep");
+        if (r < 0)
+                return bus_log_create_error(r);
+
+        /* If elogind is no longer running, it can not send any signals */
+        r = sd_bus_message_set_auto_start(m, false);
+        if (r < 0)
+                return log_error_errno(r, "Failed to disable auto-start of SendPrepareForSleep message: %m");
+
+        r = sd_bus_message_append(m, "b", active ? 1 : 0);
+        if (r < 0)
+                return log_error_errno(r, "Failed to add b=%d to SendPrepareForSleep message: %m", active ? 1 : 0);
+
+        r = sd_bus_call(bus, m, DEFAULT_TIMEOUT_USEC, &error, NULL);
+
+        if (r < 0) {
+                if (!bus_error_is_unknown_service(&error))
+                        return log_error_errno(r, "Failed to send SendPrepareForSleep: %s", bus_error_message(&error, r));
+
+                log_debug("elogind is not running, preparing for sleep skipped.");
+        } else
+                log_debug("Successfully requested to prepare for sleep.");
+        return 0;
+}
+#endif // 1
+
 static int execute(
                 const SleepConfig *sleep_config,
                 SleepOperation operation,
@@ -490,14 +527,10 @@ static int execute(
         }
 
         /* If this was successful and hook scripts were allowed to interrupt, we have
-         * to signal everybody that a sleep is imminent, now. */
-        if ( m->allow_suspend_interrupts )
-                (void) sd_bus_emit_signal(m->bus,
-                                "/org/freedesktop/login1",
-                                "org.freedesktop.login1.Manager",
-                                "PrepareForSleep",
-                                "b",
-                                1);
+         * to signal everybody that a sleep is imminent, now.
+         */
+        if (sleep_config->allow_suspend_interrupts)
+                (void) prepare_for_sleep(true);
 #endif // 0
 
         log_struct(LOG_INFO,
@@ -533,7 +566,12 @@ static int execute(
                 nvidia_sleep(m, _SLEEP_OPERATION_MAX, &vtnr);
 #endif // 1
 
+#if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
+        (void) prepare_for_sleep(false);
+#endif // 0
+
         arguments[1] = (char*) "post";
+
 #if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
 #else // 0
@@ -819,7 +857,6 @@ int do_sleep(Manager *sleep_config, SleepOperation operation) {
         int r;
 
         assert(operation < _SLEEP_OPERATION_MAX);
-        assert(sleep_config);
 
         arg_operation = operation;
 

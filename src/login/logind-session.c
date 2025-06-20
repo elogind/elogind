@@ -163,7 +163,7 @@ Session* session_free(Session *s) {
                 r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
                 log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
                 if (0 == r)
-                        r = cg_kill_recursive (fs, SIGTERM, CGROUP_IGNORE_SELF, NULL, NULL, NULL);
+                        r = cg_kill_recursive (SYSTEMD_CGROUP_CONTROLLER, fs, SIGTERM, CGROUP_IGNORE_SELF, NULL, NULL, NULL);
                 if (0 == r)
                         cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
         }
@@ -1338,7 +1338,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         log_debug_elogind("Session %s may gc ?", s->id);
         log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
         log_debug_elogind("  is userless    : %s", yes_no(!s->user));
-        log_debug_elogind("  has leader     : %s", yes_no(-ESRCH == pidref_is_alive(&s->leader)));
+        log_debug_elogind("  has leader     : %s", yes_no(pid_is_alive(s->leader)));
         log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || s->stopping));
         log_debug_elogind("  FIFO state     : %s",
                           s->fifo_fd < 0           ? "No FIFO opened"   :

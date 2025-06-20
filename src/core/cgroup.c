@@ -21,7 +21,7 @@
 #include "fd-util.h"
 //#include "fileio.h"
 //#include "in-addr-prefix-util.h"
-//#include "inotify-util.h"
+#include "inotify-util.h"
 //#include "io-util.h"
 //#include "ip-protocol-list.h"
 //#include "limits-util.h"
@@ -37,6 +37,8 @@
 //#include "string-table.h"
 #include "string-util.h"
 #include "virt.h"
+/// Additional includes needed by elogind
+#include "errno-util.h"
 
 #if BPF_FRAMEWORK
 #include "bpf-dlopen.h"
