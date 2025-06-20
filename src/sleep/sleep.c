@@ -23,7 +23,7 @@
 #include "battery-util.h"
 //#include "build.h"
 #include "bus-error.h"
-//#include "bus-locator.h"
+#include "bus-locator.h"
 //#include "bus-unit-util.h"
 #include "bus-util.h"
 #include "constants.h"
@@ -342,6 +342,43 @@ static int lock_all_homes(void) {
 }
 #endif // 0
 
+#if 1 /// elogind must be told to inform processes that a sleep/wakeup is imminent
+static int prepare_for_sleep(bool active) {
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        int r;
+
+        r = sd_bus_open_system(&bus);
+        if (r < 0)
+                return log_error_errno(r, "Failed to connect to system bus: %m");
+
+        r = bus_message_new_method_call(bus, &m, bus_login_mgr, "SendPrepareForSleep");
+        if (r < 0)
+                return bus_log_create_error(r);
+
+        /* If elogind is no longer running, it can not send any signals */
+        r = sd_bus_message_set_auto_start(m, false);
+        if (r < 0)
+                return log_error_errno(r, "Failed to disable auto-start of SendPrepareForSleep message: %m");
+
+        r = sd_bus_message_append(m, "b", active ? 1 : 0);
+        if (r < 0)
+                return log_error_errno(r, "Failed to add b=%d to SendPrepareForSleep message: %m", active ? 1 : 0);
+
+        r = sd_bus_call(bus, m, DEFAULT_TIMEOUT_USEC, &error, NULL);
+
+        if (r < 0) {
+                if (!bus_error_is_unknown_service(&error))
+                        return log_error_errno(r, "Failed to send SendPrepareForSleep: %s", bus_error_message(&error, r));
+
+                log_debug("elogind is not running, preparing for sleep skipped.");
+        } else
+                log_debug("Successfully requested to prepare for sleep.");
+        return 0;
+}
+#endif // 1
+
 static int execute(
                 const SleepConfig *sleep_config,
                 SleepOperation operation,
@@ -458,7 +495,6 @@ static int execute(
 
 #if 0 /// elogind allows admins to configure that hook scripts must succeed. The systemd default does not cut it here
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
-        (void) lock_all_homes();
 #else // 0
         sc->callback_failed = false;
         sc->callback_must_succeed = sleep_config->allow_suspend_interrupts;
@@ -488,15 +524,12 @@ static int execute(
 
         /* If this was successful and hook scripts were allowed to interrupt, we have
          * to signal everybody that a sleep is imminent, now.
-         * Note: send_prepare_for() can not be used from here, so we do it by hand.
          */
-        if ( sleep_config->allow_suspend_interrupts )
-                (void) sd_bus_emit_signal(m->bus,
-                                "/org/freedesktop/login1",
-                                "org.freedesktop.login1.Manager",
-                                "PrepareForSleep",
-                                "b",
-                                1);
+        if (sleep_config->allow_suspend_interrupts)
+                (void) prepare_for_sleep(true);
+#endif // 0
+#if 0 /// elogind does not support systemd-homed
+        (void) lock_all_homes();
 #endif // 0
 
         log_struct(LOG_INFO,
@@ -531,6 +564,11 @@ static int execute(
         if (have_nvidia)
                 nvidia_sleep(m, driver_fd, _SLEEP_OPERATION_MAX, &vtnr);
 #endif // 1
+
+#if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
+        (void) prepare_for_sleep(false);
+#endif // 0
+
 
         arguments[1] = "post";
 #if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
@@ -840,7 +878,6 @@ int do_sleep(Manager* m, SleepOperation operation) {
         int r;
 
         assert(operation < _SLEEP_OPERATION_MAX);
-        assert(sleep_config);
 
         arg_operation = operation;
 
@@ -855,6 +892,10 @@ int do_sleep(Manager* m, SleepOperation operation) {
                 return log_error_errno(SYNTHETIC_ERRNO(EACCES),
                                        "Sleep operation \"%s\" is disabled by configuration, refusing.",
                                        sleep_operation_to_string(arg_operation));
+
+#if 1 /// elogind needs its manager, which is parked in the sleep config
+        sleep_config->manager = m;
+#endif // 1
 
 #if 0 /// This freezes the user slice, which is not supported by elogind
         /* Freeze the user sessions */
