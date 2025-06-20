@@ -129,10 +129,10 @@ struct Manager {
          * start after the delay is over */
         const HandleActionData *delayed_action;
 
-#if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
-#else // 0
+
+#if 1 // Extra values needed by elogind
         /* Suspension and hibernation can be disabled in sleep.conf. */
         bool allow[_SLEEP_OPERATION_MAX];
         char **modes[_SLEEP_OPERATION_MAX];
@@ -157,7 +157,8 @@ struct Manager {
         /* Allow users to set programs which do the suspend/hibernation */
         char **suspend_by_using;
         char **hibernate_by_using;
-#endif // 0
+#endif // 1
+
         sd_event_source *inhibit_timeout_source;
 
         const HandleActionData *scheduled_shutdown_action;
