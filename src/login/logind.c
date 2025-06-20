@@ -198,9 +198,7 @@ static Manager* manager_free(Manager *m) {
 
         free(m->scheduled_shutdown_tty);
         free(m->wall_message);
-#if 0 /// elogind has no action_job
         free(m->action_job);
-#endif // 0
 
         strv_free(m->efi_boot_loader_entries);
         free(m->efi_loader_entry_one_shot);

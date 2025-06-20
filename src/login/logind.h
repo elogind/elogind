@@ -130,10 +130,8 @@ struct Manager {
          * start after the delay is over */
         const HandleActionData *delayed_action;
 
-#if 0 /// elogind does all relevant actions on its own. No systemd jobs and units.
         /* If a shutdown/suspend is currently executed, then this is the job of it */
         char *action_job;
-#endif // 0
         sd_event_source *inhibit_timeout_source;
 
         HandleAction scheduled_shutdown_action;

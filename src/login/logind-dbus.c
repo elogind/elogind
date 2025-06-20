@@ -1777,6 +1777,27 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
 }
 #endif // 1
 
+#if 1 /// Trigger elogind to send out a PrepareForSleep signal to its subscribers
+static int method_send_prepare_for_sleep(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+        Manager *m = ASSERT_PTR(userdata);
+        int active, r;
+
+        assert(message);
+
+        r = sd_bus_message_read(message, "b", &active);
+        if (r < 0)
+                return r;
+
+        log_debug("Received request to send PrepareForSleep=%s signal", active > 0 ? "true" : "false");
+
+        r = send_prepare_for(m, handle_action_lookup(HANDLE_SUSPEND), active > 0);
+        if (r < 0)
+                return r;
+
+        return sd_bus_reply_method_return(message, NULL);
+}
+#endif // 0
+
 static int have_multiple_sessions(
                 Manager *m,
                 uid_t uid) {
@@ -2059,14 +2080,13 @@ static int elogind_execute_shutdown_or_sleep(
          * make it impossible to talk to ourselves.
          */
         m->sleep_fork_action = a; /* Remember this for the SIGCHLD handler */
-        forker = strjoina( "e-", handle_action_to_string( a->handle ) );
+        m->action_job = strdup( handle_action_to_string( a->handle ) );
+        forker = strjoina( "e-", m->action_job );
         t = safe_fork( forker,
                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO,
                        &m->sleep_fork_pid );
 
         if ( t ) {
-                /* no more pending actions, whether this failed or not */
-                m->delayed_action = NULL;
                 log_debug_elogind( "Forking off '%s' returned %d and set PID %d", forker, t, m->sleep_fork_pid );
                 return t < 0 ? log_error_errno( t, "Failed to fork %s: %m", forker ) : t;
         }
@@ -2085,6 +2105,11 @@ static int elogind_execute_shutdown_or_sleep(
 
         log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
+        log_info("Operation '%s' finished.", handle_action_to_string(m->delayed_action->handle));
+
+        m->action_job = mfree(m->action_job);
+        m->delayed_action = NULL;
+
         _exit( EXIT_SUCCESS );
 }
 #endif // 1
@@ -2098,9 +2123,7 @@ static int execute_shutdown_or_sleep(
         int r;
 
         assert(m);
-#if 0 /// elogind has no action_job
         assert(!m->action_job);
-#endif // 0
         assert(a);
 
         if (a->inhibit_what == INHIBIT_SHUTDOWN)
@@ -2119,6 +2142,8 @@ static int execute_shutdown_or_sleep(
 
         r = strdup_job(reply, &m->action_job);
 #else // 0
+        if ( m->sleep_fork_action )
+                return 0;
         r = elogind_execute_shutdown_or_sleep(m, a, error);
 #endif // 0
         if (r < 0)
@@ -2148,11 +2173,7 @@ int manager_dispatch_delayed(Manager *manager, bool timeout) {
 
         assert(manager);
 
-#if 0 /// elogind has no action_job
         if (!manager->delayed_action || manager->action_job)
-#else // 0
-        if (!manager->delayed_action)
-#endif // 0
                 return 0;
 
         if (manager_is_inhibited(manager, manager->delayed_action->inhibit_what, /* block= */ false, NULL, false, false, 0, &offending)) {
@@ -2220,7 +2241,6 @@ static void cancel_delayed_action(Manager *m) {
 
         (void) sd_event_source_set_enabled(m->inhibit_timeout_source, SD_EVENT_OFF);
 
-#if 0 /// elogind has no action_job, we always NULL any delayed action. Canceled is canceled.
         /* When m->action_job is NULL, the delayed action has not been triggered yet. Let's clear it to
          * accept later shutdown and friends.
          *
@@ -2229,9 +2249,6 @@ static void cancel_delayed_action(Manager *m) {
          * Hence, do not clear it. */
         if (!m->action_job)
                 m->delayed_action = NULL;
-#else // 0
-        m->delayed_action = NULL;
-#endif // 0
 }
 
 int bus_manager_shutdown_or_sleep_now_or_later(
@@ -2245,9 +2262,9 @@ int bus_manager_shutdown_or_sleep_now_or_later(
 
         assert(m);
         assert(a);
-#if 0 /// elogind does neither use nor support systemd units
         assert(!m->action_job);
 
+#if 0 /// elogind does neither use nor support systemd units
         r = unit_load_state(m->bus, a->target, &load_state);
         if (r < 0)
                 return r;
@@ -4130,6 +4147,13 @@ static const sd_bus_vtable manager_vtable[] = {
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
         SD_BUS_METHOD("ReloadConfig", NULL, NULL, method_reload_config, SD_BUS_VTABLE_UNPRIVILEGED),
 #endif // 1
+#if 1 /// Add a command to prepare all subscribers for the system going to sleep or to wake up
+        SD_BUS_METHOD_WITH_ARGS("SendPrepareForSleep",
+                                SD_BUS_ARGS("b", state),
+                                SD_BUS_NO_RESULT,
+                                method_send_prepare_for_sleep,
+                                0),
+#endif // 0
         SD_BUS_METHOD_WITH_ARGS("GetSession",
                                 SD_BUS_ARGS("s", session_id),
                                 SD_BUS_RESULT("o", object_path),
