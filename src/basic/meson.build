@@ -373,6 +373,7 @@ filesystem_list_h = custom_target(
                    '@INPUT@'],
         capture : true)
 
+#if 0 /// UNNEEDED by elogind
 generate_filesystem_switch_case_h = find_program('generate-filesystem-switch-case.py')
 fname = 'filesystem-switch-case.h'
 filesystem_switch_case_h = custom_target(
@@ -382,6 +383,9 @@ filesystem_switch_case_h = custom_target(
         command : [generate_filesystem_switch_case_h,
                    '@INPUT@'],
         capture : true)
+#else
+filesystem_switch_case_h = files()
+#endif // 0
 
 basic_sources += [filesystem_list_h, filesystem_switch_case_h, filesystems_gperf_h]
 
