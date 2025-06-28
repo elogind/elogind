@@ -59,7 +59,7 @@ static int get_startup_monotonic_time(Context *c, usec_t *ret) {
         assert(ret);
 
         if (!c->bus) {
-                r = bus_connect_system_elogind(&c->bus);
+                r = bus_connect_system_systemd(&c->bus);
                 if (r < 0)
                         return log_warning_errno(r, "Failed to get D-Bus connection, ignoring: %m");
         }
@@ -96,7 +96,7 @@ static int get_current_runlevel(Context *c) {
 
         for (unsigned n_attempts = 0;;) {
                 if (n_attempts++ > 0) {
-                        /* elogind might have dropped off momentarily, let's not make this an error,
+                        /* systemd might have dropped off momentarily, let's not make this an error,
                         * and wait some random time. Let's pick a random time in the range 100ms…2000ms,
                         * linearly scaled by the number of failed attempts. */
                         c->bus = sd_bus_flush_close_unref(c->bus);
@@ -107,7 +107,7 @@ static int get_current_runlevel(Context *c) {
                         (void) usleep_safe(usec);
                 }
 
-                        r = bus_connect_system_elogind(&c->bus);
+                        r = bus_connect_system_systemd(&c->bus);
                 if (!c->bus) {
                         if (r == -ECONNREFUSED && n_attempts < 64) {
                                 log_debug_errno(r, "Failed to %s to system bus, retrying after a slight delay: %m",
