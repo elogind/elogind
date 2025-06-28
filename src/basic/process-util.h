@@ -184,9 +184,7 @@ static inline bool pid_is_automatic(pid_t p) {
 pid_t getpid_cached(void);
 void reset_cached_pid(void);
 
-#if 0 /// UNNEEDED by elogind
 int must_be_root(void);
-#endif // 0
 
 pid_t clone_with_nested_stack(int (*fn)(void *), int flags, void *userdata);
 

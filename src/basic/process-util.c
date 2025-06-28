@@ -1441,7 +1441,6 @@ pid_t getpid_cached(void) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 int must_be_root(void) {
 
         if (geteuid() == 0)
@@ -1449,7 +1448,6 @@ int must_be_root(void) {
 
         return log_error_errno(SYNTHETIC_ERRNO(EPERM), "Need to be root.");
 }
-#endif // 0
 
 static void restore_sigsetp(sigset_t **ssp) {
         if (*ssp)
