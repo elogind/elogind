@@ -106,7 +106,6 @@ const char* boot_entry_source_json_to_string(BootEntrySource) _const_;
 
 BootEntry* boot_config_find_entry(BootConfig *config, const char *id);
 
-#if 0 /// UNNEEDED by elogind
 static inline const BootEntry* boot_config_default_entry(const BootConfig *config) {
         assert(config);
 
@@ -116,7 +115,6 @@ static inline const BootEntry* boot_config_default_entry(const BootConfig *confi
         assert((size_t) config->default_entry < config->n_entries);
         return config->entries + config->default_entry;
 }
-#endif // 0
 
 void boot_config_free(BootConfig *config);
 
@@ -135,9 +133,7 @@ int boot_config_load(BootConfig *config, const char *esp_path, const char *xboot
 int boot_config_load_auto(BootConfig *config, const char *override_esp_path, const char *override_xbootldr_path);
 int boot_config_augment_from_loader(BootConfig *config, char **list, bool only_auto);
 
-#if 0 /// UNNEEDED by elogind
 int boot_config_select_special_entries(BootConfig *config, bool skip_efivars);
-#endif // 0
 
 static inline const char* boot_entry_title(const BootEntry *entry) {
         assert(entry);
