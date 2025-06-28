@@ -207,7 +207,6 @@ bool bus_error_is_unknown_service(const sd_bus_error *error) {
                                       BUS_ERROR_NO_SUCH_UNIT);
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c) {
         struct ucred ucred;
         int fd, r;
@@ -228,6 +227,7 @@ int bus_check_peercred(sd_bus *c) {
         return 1;
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_connect_system_systemd(sd_bus **ret_bus) {
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         int r;
@@ -253,8 +253,9 @@ int bus_connect_system_systemd(sd_bus **ret_bus) {
         *ret_bus = TAKE_PTR(bus);
         return 0;
 }
+#endif // 0
 
-int bus_connect_user_systemd(sd_bus **ret_bus) {
+int bus_connect_user_elogind(sd_bus **ret_bus) {
         _cleanup_(sd_bus_close_unrefp) sd_bus *bus = NULL;
         _cleanup_free_ char *ee = NULL;
         const char *e;
@@ -274,7 +275,7 @@ int bus_connect_user_systemd(sd_bus **ret_bus) {
         if (r < 0)
                 return r;
 
-        bus->address = strjoin("unix:path=", ee, "/systemd/private");
+        bus->address = strjoin("unix:path=", ee, "/elogind/private");
         if (!bus->address)
                 return -ENOMEM;
 
@@ -289,7 +290,6 @@ int bus_connect_user_systemd(sd_bus **ret_bus) {
         *ret_bus = TAKE_PTR(bus);
         return 0;
 }
-#endif // 0
 
 static int pin_capsule_socket(const char *capsule, const char *suffix, uid_t *ret_uid, gid_t *ret_gid) {
         _cleanup_close_ int inode_fd = -EBADF;
@@ -499,7 +499,6 @@ int bus_connect_transport(
         return 0;
 }
 
-#if 0 /// elogind is never used with systemd.
 int bus_connect_transport_elogind(
                 BusTransport transport,
                 const char *host,
@@ -533,15 +532,17 @@ int bus_connect_transport_elogind(
                         return r;
 
                 case RUNTIME_SCOPE_SYSTEM:
+#if 0 /// elogind is never used with systemd. Avoid useless check.
                         if (sd_booted() <= 0)
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with systemd as init system (PID 1). Can't operate.");
-                        return bus_connect_system_elogind(ret_bus);
+                        return bus_connect_system_systemd(ret_bus);
 
                         /* If we are root then let's talk directly to the system instance, instead of
                          * going via the bus. */
                         if (geteuid() == 0)
+#endif // 0
 
                         return sd_bus_default_system(ret_bus);
 
@@ -568,6 +569,7 @@ int bus_connect_transport_elogind(
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 /**
  * bus_path_encode_unique() - encode unique object path
  * @b: bus connection or NULL

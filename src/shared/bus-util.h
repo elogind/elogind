@@ -40,16 +40,14 @@ int bus_event_loop_with_idle(sd_event *e, sd_bus *bus, const char *name, usec_t 
 int bus_name_has_owner(sd_bus *c, const char *name, sd_bus_error *error);
 bool bus_error_is_unknown_service(const sd_bus_error *error);
 
-#if 0 /// UNNEEDED by elogind
 int bus_check_peercred(sd_bus *c);
-#endif // 0
 
 int bus_set_address_capsule_bus(sd_bus *bus, const char *capsule, int *ret_pin_fd);
 
 #if 0 /// UNNEEDED by elogind
 int bus_connect_system_systemd(sd_bus **ret_bus);
-int bus_connect_user_systemd(sd_bus **ret_bus);
 #endif // 0
+int bus_connect_user_elogind(sd_bus **ret_bus);
 int bus_connect_capsule_elogind(const char *capsule, sd_bus **ret_bus);
 int bus_connect_capsule_bus(const char *capsule, sd_bus **ret_bus);
 
