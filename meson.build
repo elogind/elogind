@@ -3446,11 +3446,11 @@ alias_target('update-man-rules', update_man_rules)
 #
 # meson_extract_unit_files = find_program('tools/meson-extract-unit-files.py')
 # custom_target(
-#               output : 'installed-unit-files.txt',
-#               capture : true,
-#               install : want_tests != 'no' and install_tests,
-#               install_dir : testdata_dir,
-#               command : [meson_extract_unit_files, meson.project_build_root()])
+#         output : 'installed-unit-files.txt',
+#         capture : true,
+#         install : want_tests != 'no' and install_tests,
+#         install_dir : testdata_dir,
+#         command : [meson_extract_unit_files, meson.project_build_root()])
 #
 # #####################################################################
 #

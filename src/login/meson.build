@@ -194,11 +194,13 @@ custom_target(
 #endif // 0
 
 if enable_logind
-        install_data('org.freedesktop.login1.conf',
-                     install_dir : dbuspolicydir)
 #if 0 /// Works a bit differently here, as elogind allows dbus activation.
-#         install_data('org.freedesktop.login1.service',
-#                      install_dir : dbussystemservicedir)
+#         install_data(
+#                 'org.freedesktop.login1.conf',
+#                 install_dir : dbuspolicydir)
+#         install_data(
+#                 'org.freedesktop.login1.service',
+#                 install_dir : dbussystemservicedir)
 #else // 0
         custom_target(
                 'org.freedesktop.login1.service',
@@ -208,10 +210,11 @@ if enable_logind
                 install: enable_logind,
                 install_dir : dbussystemservicedir)
 #endif // 0
-        install_data('org.freedesktop.login1.policy',
-                     install_dir : polkitpolicydir)
-endif
 
+        install_data(
+                'org.freedesktop.login1.policy',
+                install_dir : polkitpolicydir)
+endif
 #if 1 /// elogind comes with a first drop-in representing its defaults
 if install_sysconfdir_samples
         install_data('10-elogind.conf',
