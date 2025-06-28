@@ -577,7 +577,6 @@ possible_link_flags = [
         '-Wl,--fatal-warnings',
         '-Wl,-z,now',
         '-Wl,-z,relro',
-        '-Wl,-z,gcs-report-dynamic=none',
 ]
 
 if get_option('b_sanitize') == 'none'
@@ -2401,7 +2400,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #
 # conf.set10('HAVE_VMLINUX_H', use_provided_vmlinux_h or use_generated_vmlinux_h)
 #
-# conf.set10('ENABLE_SYSCTL_BPF', conf.get('HAVE_VMLINUX_H') == 1 and libbpf.version().version_compare('>= 0.7'))
 #else // 0
 conf.set10('HAVE_VMLINUX_H', false)
 #endif // 0
