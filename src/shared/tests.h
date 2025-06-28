@@ -94,12 +94,16 @@ bool can_memlock(void);
         size_t name##_len = 0;                                          \
         assert_se(unhexmem_full(hex, strlen_ptr(hex), false, &name, &name##_len) >= 0);
 
+#if 0 /// elogind is never used with systemd. Avoid useless check.
 #define TEST_REQ_RUNNING_SYSTEMD(x)                                 \
         if (sd_booted() > 0) {                                      \
                 x;                                                  \
         } else {                                                    \
-                printf("elogind not booted, skipping '%s'\n", #x);   \
+                printf("systemd not booted, skipping '%s'\n", #x);  \
         }
+#else
+#define TEST_REQ_RUNNING_SYSTEMD(x) { printf("systemd not booted, skipping '%s'\n", #x); }
+#endif // 0
 
 #if 0 /// UNNEEDED by elogind
 /* Provide a convenient way to check if we're running in CI. */
