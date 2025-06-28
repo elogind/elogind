@@ -250,16 +250,12 @@ int verb_start_special(int argc, char *argv[], void *userdata) {
 
 #if 0 /// The regular verb_start() would call Units in systemd, which elogind does not support
                 r = verb_start(argc, argv, userdata);
-#else // 0
-                assert_not_reached();
 #endif // 0
         }
 
-#if 0 /// elogind has no --force argument in loginctl
         if (termination_action && arg_force < 2 &&
             IN_SET(r, -ENOENT, -ETIMEDOUT))
-                log_notice("It is possible to perform action directly, see discussion of --force --force in man:systemctl(1).");
-#endif // 0
+                log_notice("It is possible to perform action directly, see discussion of --force --force in man:loginctl(1).");
 
         return r;
 }

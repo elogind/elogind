@@ -249,7 +249,7 @@ int logind_check_inhibitors(enum action a) {
         return log_error_errno(SYNTHETIC_ERRNO(EPERM),
                                "Please retry operation after closing inhibitors and logging out other users.\n"
                                "'systemd-inhibit' can be used to list active inhibitors.\n"
-                               "Alternatively, ignore inhibitors and users with 'systemctl %s -i'.",
+                               "Alternatively, ignore inhibitors and users with 'loginctl %s -i'.",
                                action_table[a].verb);
 #else
         return 0;
@@ -425,7 +425,7 @@ int logind_show_shutdown(void) {
                 pretty_action = action;
 
         if (IN_SET(arg_action, ACTION_SYSTEMCTL, ACTION_SYSTEMCTL_SHOW_SHUTDOWN))
-                log_info("%s scheduled for %s, use 'systemctl %s --when=cancel' to cancel.",
+                log_info("%s scheduled for %s, use 'loginctl %s --when=cancel' to cancel.",
                          pretty_action,
                          FORMAT_TIMESTAMP_STYLE(elapse, arg_timestamp_style),
                          action);

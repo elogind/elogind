@@ -422,8 +422,8 @@
                 <description gettext-domain="systemd">Reload the elogind configuration</description>
                 <message gettext-domain="systemd">Authentication is required to reload the elogind configuration.</message>
                 <defaults>
-                        <allow_any>auth_admin_keep</allow_any>
-                        <allow_inactive>auth_admin_keep</allow_inactive>
+                        <allow_any>auth_admin</allow_any>
+                        <allow_inactive>auth_admin</allow_inactive>
                         <allow_active>auth_admin_keep</allow_active>
                 </defaults>
         </action>
