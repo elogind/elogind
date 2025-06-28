@@ -1332,7 +1332,6 @@ static int boot_entries_uniquify(BootEntry *entries, size_t n_entries) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int boot_config_find(const BootConfig *config, const char *id) {
         assert(config);
 
@@ -1451,7 +1450,6 @@ int boot_config_select_special_entries(BootConfig *config, bool skip_efivars) {
 
         return 0;
 }
-#endif // 0
 
 int boot_config_finalize(BootConfig *config) {
         int r;
