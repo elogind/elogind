@@ -2,7 +2,6 @@
 
 awkscript = 'test-hashmap-ordered.awk'
 test_hashmap_ordered_c = custom_target(
-        'test-hashmap-ordered.c',
         input : [awkscript, 'test-hashmap-plain.c'],
         output : 'test-hashmap-ordered.c',
         command : [awk, '-f', '@INPUT0@', '@INPUT1@'],
@@ -27,8 +26,8 @@ endif
 
 generate_sym_test_py = find_program('generate-sym-test.py')
 
-test_libelogind_sym_c = custom_target(
         'test-libelogind-sym.c',
+test_libelogind_sym_c = custom_target(
         input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
         output : 'test-libelogind-sym.c',
         command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
@@ -37,7 +36,6 @@ test_libelogind_sym_c = custom_target(
 
 #if 0 /// UNNEEDED in elogind
 # test_libudev_sym_c = custom_target(
-#         'test-libudev-sym.c',
 #         input : [libudev_sym_path, libudev_h_path] + libudev_sources,
 #         output : 'test-libudev-sym.c',
 #         command : [generate_sym_test_py, libudev_sym_path, libudev_dir_path, libudev_h_path],

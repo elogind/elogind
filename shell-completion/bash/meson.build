@@ -12,7 +12,6 @@ endif
 
 #if 0 /// elogind has a *very* short list for this...
 # custom_target(
-#         'systemctl',
 #         input : 'systemctl.in',
 #         output : 'systemctl',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
@@ -25,6 +24,7 @@ endif
 #          ['systemd-cat',         ''],
 #          ['systemd-cgls',        ''],
 #          ['systemd-cgtop',       ''],
+#          ['systemd-creds',       ''],
 #          ['systemd-delta',       ''],
 #          ['systemd-detect-virt', ''],
 #          ['systemd-id128',       ''],
@@ -52,7 +52,7 @@ endif
 #          ['systemd-dissect',     'HAVE_BLKID'],
 #          ['systemd-resolve',     'ENABLE_RESOLVE'],
 #          ['systemd-sysext',      'ENABLE_SYSEXT'],
-#          ['elogind-vmspawn',     'ENABLE_VMSPAWN'],
+#          ['systemd-vmspawn',     'ENABLE_VMSPAWN'],
 #          ['timedatectl',         'ENABLE_TIMEDATED']]
 #else // 0
 items = [['busctl',              ''],

@@ -2376,7 +2376,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #         message('Using provided @0@'.format(provided_vmlinux_h_path))
 # elif use_generated_vmlinux_h
 #         vmlinux_h_dependency = custom_target(
-#                 'vmlinux.h',
 #                 output: 'vmlinux.h',
 #                 command : [ bpftool, 'btf', 'dump', 'file', '/sys/kernel/btf/vmlinux', 'format', 'c' ],
 #                 capture : true)
@@ -3200,7 +3199,6 @@ endif
 # endforeach
 #
 # ukify = custom_target(
-#         'ukify',
 #         input : 'src/ukify/ukify.py',
 #         output : 'ukify',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
@@ -3374,7 +3372,6 @@ if git.found()
                 all_files = files(all_files.stdout().split())
 
                 custom_target(
-                        'tags',
                         output : 'tags',
                         command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.project_source_root())] + all_files)
                 run_target(
@@ -3448,7 +3445,7 @@ alias_target('update-man-rules', update_man_rules)
 # endif
 #
 # meson_extract_unit_files = find_program('tools/meson-extract-unit-files.py')
-# custom_target('installed-unit-files.txt',
+# custom_target(
 #               output : 'installed-unit-files.txt',
 #               capture : true,
 #               install : want_tests != 'no' and install_tests,

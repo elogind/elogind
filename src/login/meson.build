@@ -11,7 +11,6 @@ elogind_sources = files(
 #endif // 0
 
 logind_gperf_c = custom_target(
-        'logind_gperf.c',
         input : 'logind-gperf.gperf',
         output : 'logind-gperf.c',
         command : [gperf, '@INPUT@', '--output-file', '@OUTPUT@'])
@@ -179,7 +178,6 @@ modules += [
 enable_logind = conf.get('ENABLE_LOGIND') == 1
 
 custom_target(
-        'logind.conf',
         input : 'logind.conf.in',
         output : 'logind.conf',
         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
@@ -188,7 +186,6 @@ custom_target(
 
 #if 0 /// elogind has no user instances like systemd-user
 # custom_target(
-#         'systemd-user',
 #         input : 'systemd-user.in',
 #         output : 'systemd-user',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],

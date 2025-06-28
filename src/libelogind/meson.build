@@ -195,7 +195,6 @@ libelogind_c_args = ['-fvisibility=default']
 # static_libsystemd_pic = static_libsystemd == 'true' or static_libsystemd == 'pic'
 #
 # libsystemd_pc = custom_target(
-#         'libsystemd.pc',
 #         input : 'libsystemd.pc.in',
 #         output : 'libsystemd.pc',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
