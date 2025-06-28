@@ -90,7 +90,7 @@ static int get_current_runlevel(Context *c) {
 
         for (unsigned n_attempts = 0;;) {
                 if (n_attempts++ > 0) {
-                        /* elogind might have dropped off momentarily, let's not make this an error,
+                        /* systemd might have dropped off momentarily, let's not make this an error,
                         * and wait some random time. Let's pick a random time in the range 100ms…2000ms,
                         * linearly scaled by the number of failed attempts. */
                         c->bus = sd_bus_flush_close_unref(c->bus);
@@ -100,7 +100,7 @@ static int get_current_runlevel(Context *c) {
                                 random_u64_range(UINT64_C(1900) * USEC_PER_MSEC * n_attempts / MAX_ATTEMPTS);
                         (void) usleep_safe(usec);
 
-                        r = bus_connect_system_elogind(&c->bus);
+                        r = bus_connect_system_systemd(&c->bus);
                         if (r == -ECONNREFUSED && n_attempts < 64) {
                                 log_debug_errno(r, "Failed to reconnect to system bus, retrying after a slight delay: %m");
                                 continue;
