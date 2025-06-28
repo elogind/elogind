@@ -13,10 +13,8 @@ typedef enum RebootFlags {
 } RebootFlags;
 
 int read_reboot_parameter(char **parameter);
-#if 0 /// UNNEEDED by elogind
 int reboot_with_parameter(RebootFlags flags);
 
-#endif // 0
 bool shall_restore_state(void);
 
 bool kexec_loaded(void);
