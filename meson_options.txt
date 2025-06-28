@@ -49,11 +49,13 @@ option('static-libelogind', type : 'combo',
 #        description : 'install a static library for libudev')
 # option('standalone-binaries', type : 'boolean', value : false,
 #        description : 'also build standalone versions of supported binaries')
-#
-# option('sysvinit-path', type : 'string', value : '/etc/init.d',
-#        description : 'the directory where the SysV init scripts are located')
-# option('sysvrcnd-path', type : 'string', value : '/etc/rc.d',
-#        description : 'the base directory for SysV rcN.d directories')
+#endif // 0
+
+option('sysvinit-path', type : 'string', value : '/etc/init.d',
+       description : 'the directory where the SysV init scripts are located')
+option('sysvrcnd-path', type : 'string', value : '/etc/rc.d',
+       description : 'the base directory for SysV rcN.d directories')
+#if 0 /// UNNEEDED by elogind
 # option('rc-local', type : 'string',
 #        value : '/etc/rc.local')
 # option('initrd', type : 'boolean',
