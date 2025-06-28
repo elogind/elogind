@@ -50,28 +50,11 @@ static bool arg_legend = true;
 static sd_json_format_flags_t arg_json_format_flags = SD_JSON_FORMAT_OFF;
 static const char *arg_kill_whom = NULL;
 static int arg_signal = SIGTERM;
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind uses the non-static variants provided by systemctl.h
 static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
 static unsigned arg_lines = 10;
-#else // 0
-/// Instead we need this:
-extern BusTransport arg_transport;
-static char *arg_host;
-extern bool arg_ask_password;
-extern bool arg_dry_run;
-extern bool arg_no_wall;
-extern usec_t arg_when;
-extern bool arg_ignore_inhibitors;
-extern elogind_action arg_action;
-#if ENABLE_EFI
-extern bool arg_firmware_setup;
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
-extern usec_t arg_boot_loader_menu;
-extern const char* arg_boot_loader_entry;
-#endif
 #endif // 0
 static OutputMode arg_output = OUTPUT_SHORT;
 
@@ -1482,6 +1465,7 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
+#if 0 /// Replaced by systemctl daemon-reload
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
 static int reload_config(int argc, char *argv[], void *userdata) {
         _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
@@ -1507,6 +1491,7 @@ static int reload_config(int argc, char *argv[], void *userdata) {
         return 0;
 }
 #endif // 1
+#endif // 0
 
 static int help(int argc, char *argv[], void *userdata) {
         _cleanup_free_ char *link = NULL;
@@ -1598,8 +1583,6 @@ static int help(int argc, char *argv[], void *userdata) {
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                "     --boot-loader-menu=TIME\n"
                "                           Boot into boot loader menu on next boot\n"
                "     --boot-loader-entry=NAME\n"
@@ -1633,8 +1616,6 @@ static int parse_argv(int argc, char *argv[]) {
 #if 1 /// elogind supports controlling the reboot process
 #if ENABLE_EFI
                 ARG_FIRMWARE_SETUP,
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
 #endif
@@ -1670,8 +1651,6 @@ static int parse_argv(int argc, char *argv[]) {
 #if 1 /// elogind supports controlling the reboot process
 #if ENABLE_EFI
                 { "firmware-setup",    no_argument,       NULL, ARG_FIRMWARE_SETUP      },
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
 #endif
@@ -1803,13 +1782,13 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
-#if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can controll the reboot process
+#if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can control the reboot process
                 case 'c':
                         arg_action = ACTION_CANCEL_SHUTDOWN;
                         break;
 
                 case 'i':
-                        arg_ignore_inhibitors = true;
+                        arg_check_inhibitors = 0;;
                         break;
 
 #if ENABLE_EFI
@@ -1817,8 +1796,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_firmware_setup = true;
                         break;
 
-#endif
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
                 case ARG_BOOT_LOADER_MENU:
 
                         r = parse_sec(optarg, &arg_boot_loader_menu);
@@ -1828,6 +1805,14 @@ static int parse_argv(int argc, char *argv[]) {
                         break;
 
                 case ARG_BOOT_LOADER_ENTRY:
+
+                        if (streq(optarg, "help")) { /* Yes, this means, "help" is not a valid boot loader entry name we can deal with */
+                                r = help_boot_loader_entry();
+                                if (r < 0)
+                                        return r;
+
+                                return 0;
+                        }
 
                         arg_boot_loader_entry = empty_to_null(optarg);
                         break;
@@ -1874,22 +1859,26 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "attach",            3,        VERB_ANY, 0,            attach            },
                 { "flush-devices",     VERB_ANY, 1,        0,            flush_devices     },
                 { "terminate-seat",    2,        VERB_ANY, 0,            terminate_seat    },
-#if 1 /// elogind adds some system commands to loginctl
-                { "reload",            VERB_ANY, 1,        0,            reload_config     },
-                { "poweroff",          VERB_ANY, VERB_ANY, 0,            start_special     },
-                { "reboot",            VERB_ANY, VERB_ANY, 0,            start_special     },
-                { "suspend",           VERB_ANY, 1,        0,            start_special     },
-                { "hibernate",         VERB_ANY, 1,        0,            start_special     },
-                { "hybrid-sleep",      VERB_ANY, 1,        0,            start_special     },
-                { "suspend-then-hibernate", VERB_ANY, 1,   0,            start_special     },
-                { "cancel-shutdown",   VERB_ANY, 1,        0,            start_special     },
+#if 1 /// elogind adds some system commands to loginctl ( from systemctl/systemctl.c:1163 systemctl_main() )
+                { "daemon-reload",         1,        1,    VERB_ONLINE_ONLY, verb_daemon_reload           },
+                { "halt",                  VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "poweroff",              VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "reboot",                VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "kexec",                 VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "soft-reboot",           VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "sleep",                 VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "suspend",               VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "hibernate",             VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "hybrid-sleep",          VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "suspend-then-hibernate",VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
+                { "cancel-shutdown",       VERB_ANY, 1,    0,                verb_start_special     }, /* elogind only */
 #endif // 1
                 {}
         };
 
 #if 1 /// elogind can do shutdown and allows its cancellation
         if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
-                return elogind_cancel_shutdown(bus);
+                return logind_cancel_shutdown();
 #endif // 1
         return dispatch_verb(argc, argv, verbs, bus);
 }

@@ -69,8 +69,7 @@ loginctl_sources = files(
 #if 1 /// elogind has and needs some additional files:
 loginctl_sources += files(
         'eloginctl.c',
-        'eloginctl.h',
-)
+) + systemctl_sources
 #endif // 1
 
 executables += [
@@ -93,6 +92,9 @@ executables += [
                 'public' : true,
                 'conditions' : ['ENABLE_LOGIND'],
                 'sources' : loginctl_sources,
+#if 1 /// elogind adds some parts from systemctl to loginctl
+                'include_directories' : includes + systemctl_includes,
+#endif // 1
                 'dependencies' : [
                         liblz4_cflags,
                         libxz_cflags,

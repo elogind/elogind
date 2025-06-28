@@ -1745,7 +1745,7 @@ static int method_flush_devices(sd_bus_message *message, void *userdata, sd_bus_
 }
 
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
-static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_error *error) {
+static int method_reload(sd_bus_message *message, void *userdata, sd_bus_error *error) {
         Manager *m = userdata;
         int r;
 
@@ -1754,7 +1754,7 @@ static int method_reload_config(sd_bus_message *message, void *userdata, sd_bus_
 
         r = bus_verify_polkit_async_full(
                         message,
-                        "org.freedesktop.login1.reload-config",
+                        "org.freedesktop.login1.reload",
                         /* details= */ NULL,
                         /* good_user= */ UID_INVALID,
                         /* flags= */ 0,
@@ -4145,7 +4145,7 @@ static const sd_bus_vtable manager_vtable[] = {
         SD_BUS_PROPERTY("StopIdleSessionUSec", "t", NULL, offsetof(Manager, stop_idle_session_usec), SD_BUS_VTABLE_PROPERTY_CONST),
 
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
-        SD_BUS_METHOD("ReloadConfig", NULL, NULL, method_reload_config, SD_BUS_VTABLE_UNPRIVILEGED),
+        SD_BUS_METHOD("Reload", NULL, NULL, method_reload, SD_BUS_VTABLE_UNPRIVILEGED),
 #endif // 1
 #if 1 /// Add a command to prepare all subscribers for the system going to sleep or to wake up
         SD_BUS_METHOD_WITH_ARGS("SendPrepareForSleep",

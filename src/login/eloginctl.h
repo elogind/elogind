@@ -21,9 +21,14 @@
   along with elogind; If not, see <http://www.gnu.org/licenses/>.
 ***/
 
+#include "systemctl.h"
+#include "systemctl-daemon-reload.h"
+#include "systemctl-logind.h"
+#include "systemctl-start-special.h"
+#include "systemctl-util.h"
 
+#if 0 /// Replaced by systemctl.h (REMOVEME)
 #include "sd-bus.h"
-
 
 typedef enum elogind_action {
         _ACTION_INVALID,
@@ -38,11 +43,16 @@ typedef enum elogind_action {
         ACTION_CANCEL_SHUTDOWN,
         _ACTION_MAX
 } elogind_action;
+#endif // 0
 
-
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 int  elogind_cancel_shutdown(sd_bus *bus);
+#endif // 0
 void elogind_cleanup(void);
+#if 0 /// Replaced by systemctl-start-special.h (REMOVEME)
 int  start_special(int argc, char *argv[], void *userdata);
+#endif // 0
 
+void elogind_log_special(enum action a);
 
 #endif // ELOGIND_SRC_LOGIN_ELOGINCTL_H_INCLUDED

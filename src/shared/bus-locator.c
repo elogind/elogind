@@ -29,6 +29,14 @@ const BusLocator* const bus_login_mgr = &(BusLocator){
         .interface = "org.freedesktop.login1.Manager"
 };
 
+#if 1 /// Lets fake the systemd manager, as elogind includes a tiny subset of systemctl commands
+const BusLocator* const bus_systemd_mgr = &(BusLocator){
+        .destination = "org.freedesktop.login1",
+        .path = "/org/freedesktop/login1",
+        .interface = "org.freedesktop.login1.Manager"
+};
+#endif // 0
+
 #if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_machine_mgr = &(BusLocator){
         .destination ="org.freedesktop.machine1",
@@ -77,7 +85,6 @@ const BusLocator* const bus_timedate = &(BusLocator){
         .path = "/org/freedesktop/timedate1",
         .interface = "org.freedesktop.timedate1"
 };
-#endif // 0
 
 const BusLocator* const bus_timesync_mgr = &(BusLocator){
         .destination = "org.freedesktop.timesync1",
@@ -90,6 +97,7 @@ const BusLocator* const bus_hostname = &(BusLocator){
         .path = "/org/freedesktop/hostname1",
         .interface = "org.freedesktop.hostname1"
 };
+#endif // 0
 
 /* Shorthand flavors of the sd-bus convenience helpers with destination,path,interface strings encapsulated
  * within a single struct. */
@@ -134,7 +142,6 @@ int bus_call_method(
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_get_property(
                 sd_bus *bus,
                 const BusLocator *locator,
@@ -147,7 +154,6 @@ int bus_get_property(
 
         return sd_bus_get_property(bus, locator->destination, locator->path, locator->interface, member, error, reply, type);
 }
-#endif // 0
 
 int bus_get_property_trivial(
                 sd_bus *bus,
@@ -173,7 +179,6 @@ int bus_get_property_string(
         return sd_bus_get_property_string(bus, locator->destination, locator->path, locator->interface, member, error, ret);
 }
 
-#if 0 /// UNNEEDED by elogind
 int bus_get_property_strv(
                 sd_bus *bus,
                 const BusLocator *locator,
@@ -186,6 +191,7 @@ int bus_get_property_strv(
         return sd_bus_get_property_strv(bus, locator->destination, locator->path, locator->interface, member, error, ret);
 }
 
+#if 0 /// UNNEEDED by elogind
 int bus_set_property(
                 sd_bus *bus,
                 const BusLocator *locator,
