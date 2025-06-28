@@ -65,12 +65,13 @@ __pycache__/
 /.project
 
 # Development files that remain to be local
-_Deparsed_XSubs.pm
-.aiignore
 .idea/perl5shared.xml
 .opencode/
+.aiignore
 .perl*
+_Deparsed_XSubs.pm
 AGENTS.md
-cb/elogind.layout
 compile_commands.json
+talk_*.md
+TODO*.md
 #endif // 1

@@ -588,7 +588,6 @@ possible_link_flags = [
         '-Wl,--fatal-warnings',
         '-Wl,-z,now',
         '-Wl,-z,relro',
-        '-Wl,-z,gcs-report-dynamic=none',
 ]
 
 if get_option('b_sanitize') == 'none'
@@ -908,8 +907,9 @@ foreach prog : progs
         conf.set_quoted(name, path)
 endforeach
 
-#if 0 /// unneeded by elogind
-#endif // 0
+if run_command(ln, '--relative', '--help', check : false).returncode() != 0
+        error('ln does not support --relative (added in coreutils 8.16)')
+endif
 
 #####################################################################
 
@@ -1014,13 +1014,7 @@ conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 #         if time_epoch == ''
 #                 NEWS = files('NEWS')
 #                 time_epoch = run_command(stat, '-c', '%Y', NEWS,
-#                                          check : false)
-#                 if time_epoch.returncode() != 0
-#                         # If the above fails, maybe the stat(1) uses BSD-style syntax
-#                         time_epoch = run_command(stat, '-f', '%m', NEWS,
-#                                                  check : true)
-#                 endif
-#                 time_epoch = time_epoch.stdout()
+#                                          check : true).stdout()
 #         endif
 #         time_epoch = time_epoch.strip().to_int()
 # endif
@@ -2416,7 +2410,6 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #
 # conf.set10('HAVE_VMLINUX_H', use_provided_vmlinux_h or use_generated_vmlinux_h)
 #
-# conf.set10('ENABLE_SYSCTL_BPF', conf.get('HAVE_VMLINUX_H') == 1 and libbpf.version().version_compare('>= 0.7'))
 #else // 0
 conf.set10('HAVE_VMLINUX_H', false)
 #endif // 0
