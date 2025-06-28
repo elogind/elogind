@@ -55,8 +55,8 @@ static BusTransport arg_transport = BUS_TRANSPORT_LOCAL;
 static char *arg_host = NULL;
 static bool arg_ask_password = true;
 static unsigned arg_lines = 10;
-#endif // 0
 static OutputMode arg_output = OUTPUT_SHORT;
+#endif // 0
 
 STATIC_DESTRUCTOR_REGISTER(arg_property, strv_freep);
 
@@ -1535,24 +1535,31 @@ static int help(int argc, char *argv[], void *userdata) {
                "  attach NAME DEVICE...    Attach one or more devices to a seat\n"
                "  flush-devices            Flush all device associations\n"
                "  terminate-seat NAME...   Terminate all sessions on one or more seats\n"
-#if 1 /// elogind adds some system commands to loginctl
+#if 1 /// elogind adds some systemctl commands to loginctl
+               "\n%3$sManager State Commands:%4$s\n"
+               "  daemon-reload            Reload elogind manager configuration\n"
                "\n%3$sSystem Commands:%4$s\n"
-               "  reload                    Reload the elogind config file\n"
-               "  poweroff [TIME] [WALL...] Turn off the machine\n"
-               "  reboot   [TIME] [WALL...] Reboot the machine\n"
-               "  suspend                   Suspend the machine to memory\n"
-               "  hibernate                 Suspend the machine to disk\n"
-               "  hybrid-sleep              Suspend the machine to memory and disk\n"
-               "  suspend-then-hibernate    Suspend the system, wake after a period of\n"
-               "                            time and put it into hibernate\n"
+               "  halt                     Shut down and halt the system\n"
+               "  poweroff                 Shut down and power-off the system\n"
+               "  reboot                   Shut down and reboot the system\n"
+               "  kexec                    Shut down and reboot the system with kexec\n"
+               "  soft-reboot              Shut down and reboot userspace\n"
+               "  sleep                    Put the system to sleep (through one of\n"
+               "                           the operations below)\n"
+               "  suspend                  Suspend the system\n"
+               "  hibernate                Hibernate the system\n"
+               "  hybrid-sleep             Hibernate and suspend the system\n"
+               "  suspend-then-hibernate   Suspend the system, wake after a period of\n"
+               "                           time, and hibernate"
 #endif // 1
                "\n%3$sOptions:%4$s\n"
                "  -h --help                Show this help\n"
                "     --version             Show package version\n"
                "     --no-pager            Do not pipe output into a pager\n"
-#if 1 /// elogind supports --no-wall and --dry-run
+#if 1 /// elogind supports -f/--force, --no-wall and --dry-run
                "     --no-wall             Do not send wall messages\n"
                "     --dry-run             Only print what would be done\n"
+               "  -f --force               When shutting down, execute action immediately\n"
 #endif // 1
                "     --no-legend           Do not show the headers and footers\n"
                "     --no-ask-password     Don't prompt for password\n"
@@ -1570,16 +1577,18 @@ static int help(int argc, char *argv[], void *userdata) {
 #else // 0
                 /// elogind can cancel shutdowns and allows to ignore inhibitors
                "  -c                       Cancel a pending shutdown or reboot\n"
-               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n\n"
+               "  -i --ignore-inhibitors   When shutting down or sleeping, ignore inhibitors\n"
 #endif // 0
                "     --json=MODE           Generate JSON output for list-sessions/users/seats\n"
                "                             (takes one of pretty, short, or off)\n"
                "  -j                       Same as --json=pretty on tty, --json=short otherwise\n"
+#if 0 /// There is nothing in elogind that uses the output mode
                "  -o --output=MODE         Change journal output mode (short, short-precise,\n"
                "                             short-iso, short-iso-precise, short-full,\n"
                "                             short-monotonic, short-unix, short-delta,\n"
                "                             json, json-pretty, json-sse, json-seq, cat,\n"
                "                             verbose, export, with-unit)\n"
+#endif // 0
 #if 1 /// As elogind can reboot, it allows to control the reboot process
 #if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
@@ -1588,6 +1597,8 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --boot-loader-entry=NAME\n"
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
+               "     --when=TIME           Schedule halt/power-off/reboot/kexec action after\n"
+               "                           a certain timestamp\n"
 #endif // 1
                "\nSee the %2$s for details.\n",
                program_invocation_short_name,
@@ -1619,6 +1630,7 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
 #endif
+                ARG_WHEN,
 #endif // 1
         };
 
@@ -1630,9 +1642,10 @@ static int parse_argv(int argc, char *argv[]) {
                 { "value",           no_argument,       NULL, ARG_VALUE           },
                 { "full",            no_argument,       NULL, 'l'                 },
                 { "no-pager",        no_argument,       NULL, ARG_NO_PAGER        },
-#if 1 /// elogind supports --no-wall and --dry-run
+#if 1 /// elogind supports -f/--force, --no-wall and --dry-run
                 { "no-wall",         no_argument,       NULL, ARG_NO_WALL         },
                 { "dry-run",         no_argument,       NULL, ARG_DRY_RUN         },
+                { "force",           no_argument,       NULL, 'f'                 },
 #endif // 1
                 { "no-legend",       no_argument,       NULL, ARG_NO_LEGEND       },
                 { "json",            required_argument, NULL, ARG_JSON            },
@@ -1654,6 +1667,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
 #endif
+                { "when",              required_argument, NULL, ARG_WHEN                },
 #endif // 1
                 {}
         };
@@ -1666,7 +1680,7 @@ static int parse_argv(int argc, char *argv[]) {
 #if 0 /// elogind adds some system commands to loginctl
         while ((c = getopt_long(argc, argv, "hp:P:als:H:M:n:o:j", options, NULL)) >= 0)
 #else // 0
-        while ((c = getopt_long(argc, argv, "hp:P:als:H:M:n:o:ci", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:P:als:H:M:cfi", options, NULL)) >= 0)
 #endif // 0
 
                 switch (c) {
@@ -1711,7 +1725,6 @@ static int parse_argv(int argc, char *argv[]) {
                                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                                        "Failed to parse lines '%s'", optarg);
                         break;
-#endif // 0
 
                 case 'o':
                         if (streq(optarg, "help")) {
@@ -1724,8 +1737,9 @@ static int parse_argv(int argc, char *argv[]) {
                                 return log_error_errno(arg_output, "Unknown output '%s'.", optarg);
 
                         break;
+#endif // 0
 
-#if 1 /// elogind supports --no-wall and --dry-run
+#if 1 /// elogind supports -f/--force, --no-wall and --dry-run
                 case ARG_NO_WALL:
                         arg_no_wall = true;
                         break;
@@ -1734,6 +1748,10 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_dry_run = true;
                         arg_pager_flags |= PAGER_DISABLE;
                         break;
+                case 'f':
+                        arg_force++;
+                        break;
+
 #endif // 1
 
                 case 'j':
@@ -1817,6 +1835,32 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_boot_loader_entry = empty_to_null(optarg);
                         break;
 #endif
+                case ARG_WHEN:
+                        if (streq(optarg, "show")) {
+                                arg_action = ACTION_SYSTEMCTL_SHOW_SHUTDOWN;
+                                return 1;
+                        }
+
+                        if (STR_IN_SET(optarg, "", "cancel")) {
+                                arg_action = ACTION_CANCEL_SHUTDOWN;
+                                return 1;
+                        }
+
+                        if (streq(optarg, "auto")) {
+                                arg_when = USEC_INFINITY; /* logind chooses on server side */
+                                break;
+                        }
+
+                        r = parse_timestamp(optarg, &arg_when);
+                        if (r < 0)
+                                return log_error_errno(r, "Failed to parse --when= argument '%s': %m", optarg);
+
+                        if (!timestamp_is_set(arg_when))
+                                return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
+                                                       "Invalid timestamp '%s' specified for --when=.", optarg);
+
+                        break;
+
 #endif // 1
                 case '?':
                         return -EINVAL;
@@ -1871,15 +1915,17 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "hibernate",             VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "hybrid-sleep",          VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "suspend-then-hibernate",VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
-                { "cancel-shutdown",       VERB_ANY, 1,    0,                verb_start_special     }, /* elogind only */
 #endif // 1
                 {}
         };
 
-#if 1 /// elogind can do shutdown and allows its cancellation
+#if 1 /// elogind can show shutdown and allows its cancellation
+        if ((argc == optind) && (ACTION_SYSTEMCTL_SHOW_SHUTDOWN == arg_action))
+                return logind_show_shutdown();
         if ((argc == optind) && (ACTION_CANCEL_SHUTDOWN == arg_action))
                 return logind_cancel_shutdown();
 #endif // 1
+
         return dispatch_verb(argc, argv, verbs, bus);
 }
 
@@ -1908,7 +1954,6 @@ static int run(int argc, char *argv[]) {
 #else // 0
 #if ENABLE_DEBUG_ELOGIND
         log_set_max_level(LOG_DEBUG);
-        log_set_target(LOG_TARGET_SYSLOG_OR_KMSG);
 #endif // ENABLE_DEBUG_ELOGIND
         r = loginctl_main(argc, argv, bus);
 
