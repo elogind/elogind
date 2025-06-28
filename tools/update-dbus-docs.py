@@ -343,8 +343,8 @@ def main():
     stats = {page.split('/')[-1] : process(page, missing_version) for page in arguments.pages}
 
     ignore_list = open(os.path.join(os.path.dirname(__file__), 'dbus_ignorelist')).read().split()
-#if 1 /// elogind adds ReloadConfig(), which also has to be ignored
-    ignore_list.append( 'org.freedesktop.login1.Manager.ReloadConfig()' )
+#if 1 /// elogind adds Reload(), which also has to be ignored
+    ignore_list.append( 'org.freedesktop.login1.Manager.Reload()' )
 #endif // 1
     missing_version = [x for x in missing_version if x not in ignore_list]
 

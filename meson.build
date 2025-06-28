@@ -111,11 +111,13 @@ conf.set10('HAVE_SPLIT_BIN', split_bin,
 
 #if 0 /// UNNEEDED by elogind
 # have_standalone_binaries = get_option('standalone-binaries')
-#
-# sysvinit_path = get_option('sysvinit-path')
-# sysvrcnd_path = get_option('sysvrcnd-path')
-# conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
-#            description : 'SysV init scripts and rcN.d links are supported')
+#endif // 0
+
+sysvinit_path = get_option('sysvinit-path')
+sysvrcnd_path = get_option('sysvrcnd-path')
+conf.set10('HAVE_SYSV_COMPAT', sysvinit_path != '' and sysvrcnd_path != '',
+           description : 'SysV init scripts and rcN.d links are supported')
+#if 0 /// UNNEEDED by elogind
 # conf.set10('CREATE_LOG_DIRS', get_option('create-log-dirs'))
 #
 # if get_option('hibernate') and not get_option('initrd')
@@ -389,9 +391,9 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 #endif // 0
 conf.set_quoted('SYSTEM_SHUTDOWN_PATH',                       systemshutdowndir)
 conf.set_quoted('SYSTEM_SLEEP_PATH',                          systemsleepdir)
+conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
+conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEM_SYSVINIT_PATH',                       sysvinit_path)
-# conf.set_quoted('SYSTEM_SYSVRCND_PATH',                       sysvrcnd_path)
 # conf.set_quoted('SYSUSERS_DIR',                               sysusersdir)
 # conf.set_quoted('TMPFILES_DIR',                               tmpfilesdir)
 # conf.set_quoted('USER_TMPFILES_DIR',                          usertmpfilesdir)
@@ -2838,6 +2840,10 @@ subdir('src/cgroups-agent')
 subdir('src/uaccess-command')
 #endif // 1
 
+#if 1 /// elogind includes some parts from systemctl in loginctl
+subdir('src/systemctl')
+#endif // 1
+
 subdir('src/login')
 
 #if 0 /// UNNEEDED by elogind
@@ -3475,11 +3481,11 @@ summary({
 #if 1 /// Needed by elogind
         'libexec dir' :                     libexecdir,
 #endif // 1
+        'SysV init scripts' :               sysvinit_path,
+        'SysV rc?.d directories' :          sysvrcnd_path,
+        'PAM modules directory' :           pamlibdir,
+        'PAM configuration directory' :     pamconfdir,
 #if 0 /// UNNEEDED by elogind
-#         'SysV init scripts' :               sysvinit_path,
-#         'SysV rc?.d directories' :          sysvrcnd_path,
-#         'PAM modules directory' :           pamlibdir,
-#         'PAM configuration directory' :     pamconfdir,
 #         'ssh server configuration directory' : sshdconfdir,
 #         'ssh server privilege separation directory' : sshdprivsepdir,
 #         'ssh client configuration directory' : sshconfdir,

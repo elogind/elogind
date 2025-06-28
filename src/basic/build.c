@@ -251,13 +251,13 @@ const char* const elogind_features =
         " -UTMP"
 #endif
 
-#if 0 /// NOT used/available/supported in elogind
 #if HAVE_SYSV_COMPAT
         " +SYSVINIT"
 #else
         " -SYSVINIT"
 #endif
 
+#if 0 /// NOT used/available/supported in elogind
 #if HAVE_LIBARCHIVE
         " +LIBARCHIVE"
 #else

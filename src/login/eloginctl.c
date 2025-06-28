@@ -35,6 +35,7 @@
 #include "virt.h"
 
 
+#if 0 /// Replaced by systemctl.h (REMOVEME)
 elogind_action arg_action            = _ACTION_INVALID;
 bool           arg_ask_password      = true;
 bool           arg_dry_run           = false;
@@ -61,9 +62,13 @@ static const struct {
         [ACTION_SUSPEND_THEN_HIBERNATE] = { HANDLE_SUSPEND_THEN_HIBERNATE, "suspend-then-hibernate" }
         /* ACTION_CANCEL_SHUTDOWN is handled differently */
 };
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 static int elogind_set_wall_message(sd_bus* bus, const char* msg);
+#endif // 0
 
+#if 0 /// Replaced by systemctl-start-special.h (REMOVEME)
 static enum elogind_action verb_to_action(const char *verb) {
         enum elogind_action i;
 
@@ -73,7 +78,9 @@ static enum elogind_action verb_to_action(const char *verb) {
 
         return _ACTION_INVALID;
 }
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:3314:logind_check_inhibitors()
  */
@@ -187,7 +194,9 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
 
         return -EPERM;
 }
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:8683:logind_cancel_shutdown()
  */
@@ -212,15 +221,15 @@ int elogind_cancel_shutdown(sd_bus *bus) {
 
         return 0;
 }
+#endif // 0
 
 /* Only a little helper for cleaning up elogind specific extra stuff. */
 void elogind_cleanup(void) {
         polkit_agent_close();
-        strv_free(arg_wall);
 }
 
 /* Little debug log helper, helps debugging systemctl comands we mimic. */
-static void elogind_log_special(enum elogind_action a) {
+void elogind_log_special(enum action a) {
 #if ENABLE_DEBUG_ELOGIND
         switch (a) {
         case ACTION_HALT:
@@ -283,6 +292,7 @@ static void elogind_log_special(enum elogind_action a) {
 #endif // ENABLE_DEBUG_ELOGIND
 }
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:3242:logind_reboot()
  */
@@ -340,8 +350,7 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
                 return -EINVAL;
         }
 
-        /* No need for polkit_agent_open_maybe() in elogind. Do it directly. */
-        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
+        polkit_agent_open_maybe();
 
         if ( IN_SET(a, ACTION_HALT, ACTION_POWEROFF, ACTION_REBOOT) )
                 (void) elogind_set_wall_message(bus, table[a]);
@@ -369,7 +378,9 @@ static int elogind_reboot(sd_bus *bus, enum elogind_action a) {
 
         return 0;
 }
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:8553:logind_schedule_shutdown()
  */
@@ -421,7 +432,9 @@ static int elogind_schedule_shutdown(sd_bus *bus, enum elogind_action a) {
 
         return 0;
 }
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:3204:logind_set_wall_message()
  * (Tweaked to allow an extra message to be appended.)
@@ -459,8 +472,9 @@ static int elogind_set_wall_message(sd_bus* bus, const char* msg) {
 
         return 0;
 }
+#endif // 0
 
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:7956:help_boot_loader_entry()
  */
@@ -489,8 +503,9 @@ static int help_boot_loader_entry(sd_bus *bus) {
 
         return 0;
 }
-#endif // ENABLE_EFI_TODO
+#endif // 0
 
+#if 0 /// No longer needed (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:7743:parse_shutdown_time_spec()
  */
@@ -542,7 +557,9 @@ static int parse_shutdown_time_spec(const char *t, usec_t *_u) {
 
         return 0;
 }
+#endif // 0
 
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 #if ENABLE_EFI
 /* Original:
  * systemctl/systemctl.c:3383:prepare_firmware_setup()
@@ -574,8 +591,9 @@ static int prepare_firmware_setup(sd_bus* bus) {
         return 0;
 }
 #endif // ENABLE_EFI
+#endif // 0
 
-#ifdef ENABLE_EFI_TODO /// @todo EFI - needs change to support UEFI boot.
+#if 0 /// Replaced by systemctl-logind.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:3416:prepare_boot_loader_menu()
 **/
@@ -635,15 +653,9 @@ static int prepare_boot_loader_entry(sd_bus* bus) {
 
         return 0;
 }
-#else // 0
-static int prepare_boot_loader_menu(sd_bus* bus) {
-        return 0;
-}
-static int prepare_boot_loader_entry(sd_bus* bus) {
-        return 0;
-}
-#endif // ENABLE_EFI_TODO
+#endif // 0
 
+#if 0 /// Replaced by systemctl-start-special.h (REMOVEME)
 /* Original:
  * systemctl/systemctl.c:3482:start_special()
  * However, this elogind variant is very different from the original.
@@ -742,4 +754,4 @@ int start_special(int argc, char *argv[], void *userdata) {
 
         return -EOPNOTSUPP;
 }
-
+#endif // 0

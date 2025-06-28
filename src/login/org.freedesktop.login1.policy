@@ -418,7 +418,7 @@
         </action>
 
         <!-- 1 /// Aditional action for elogind to reload its configuration -->
-        <action id="org.freedesktop.login1.reload-config">
+        <action id="org.freedesktop.login1.reload">
                 <description gettext-domain="systemd">Reload the elogind configuration</description>
                 <message gettext-domain="systemd">Authentication is required to reload the elogind configuration.</message>
                 <defaults>
