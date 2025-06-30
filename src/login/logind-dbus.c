@@ -2031,8 +2031,10 @@ static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
                 case HANDLE_SUSPEND_THEN_HIBERNATE:
                         return do_sleep( m, SLEEP_SUSPEND_THEN_HIBERNATE );
                 default:
-                        return -EINVAL;
+                        assert_not_reached();
         }
+
+        return -EINVAL;
 }
 #endif // 1
 

@@ -29,7 +29,7 @@ const BusLocator* const bus_login_mgr = &(BusLocator){
         .interface = "org.freedesktop.login1.Manager"
 };
 
-#if 1 /// Lets fake the systemd manager, as elogind includes a tiny subset of systemctl commands
+#if 1 /// Lets fake the bus_systemd_mgr, as elogind includes a tiny subset of systemctl commands
 const BusLocator* const bus_systemd_mgr = &(BusLocator){
         .destination = "org.freedesktop.login1",
         .path = "/org/freedesktop/login1",

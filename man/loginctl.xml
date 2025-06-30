@@ -191,14 +191,18 @@
         <xi:include href="version-info.xml" xpointer="v233"/></listitem>
       </varlistentry>
 
-      <!-- 0 /// elogind does not spawn a user manager. Mask until lingeringin elogind is clarified.
       <varlistentry>
         <term><command>enable-linger</command> <optional><replaceable>USER</replaceable>…</optional></term>
         <term><command>disable-linger</command> <optional><replaceable>USER</replaceable>…</optional></term>
 
         <listitem><para>Enable/disable user lingering for one or more
+        <!-- 0 /// elogind does not spawn a user manager.
         users. If enabled for a specific user, a user manager is
         spawned for the user at boot and kept around after logouts.
+        --><!-- else // 0 -->
+        users. If enabled for a specific user, a lingeringe file 
+        for the user is written to disk and kept around after logouts.
+        <!-- // 0 -->
         This allows users who are not logged in to run long-running
         services. Takes one or more user names or numeric UIDs as
         argument. If no argument is specified, enables/disables
@@ -210,7 +214,6 @@
 
         <xi:include href="version-info.xml" xpointer="v233"/></listitem>
       </varlistentry>
-      // 0 -->
 
       <varlistentry>
         <term><command>terminate-user</command> <replaceable>USER</replaceable>…</term>
@@ -310,38 +313,161 @@
     </variablelist></refsect2>
 
     <!-- 1 /// elogind additionally supports a few systemctl commands. -->
+    <refsect2>
+      <title>Manager State Commands</title>
+
+      <variablelist>
+        <varlistentry>
+          <term><command>daemon-reload</command></term>
+
+          <listitem>
+            <para>Reload the elogind manager configuration.
+            While the daemon is being reloaded, all sockets elogind listens on behalf of user configuration will stay
+            accessible.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </refsect2>
+
     <refsect2><title>System Commands</title><variablelist>
 
         <varlistentry>
-          <term><command>reload</command></term>
+          <term><command>halt</command></term>
 
           <listitem>
-            <para>Reload the elogind configuration. While the daemon is being reloaded, all sockets elogind listens on
-            behalf of user configuration will stay accessible.</para>
+            <para>Shut down and halt the system. This is mostly equivalent to <command>shutdown -h -H</command>, and
+            also prints a wall message to all users.
+            This command is asynchronous; it will return after the halt operation is enqueued, without waiting for it
+            to complete.
+            Note that this operation will simply halt the OS kernel after shutting down, leaving the hardware powered
+            on. Use <command>loginctl poweroff</command> for powering off the system (see below).</para>
+
+            <para>If combined with <option>--force</option>, the halt is initialized ignoring all inhibitors.
+            If <option>--force</option> is specified twice, the operation is immediately executed without
+            terminating any processes or unmounting any file systems. This may result in data loss. Note that when
+            <option>--force</option> is specified twice the halt operation is executed by <command>loginctl</command>
+            itself, and the elogind manager is not contacted. This means the command should succeed even when the
+            elogind manager has crashed.</para>
+
+            <para>If combined with <option>--when=</option>, shutdown will be scheduled after the given timestamp.
+            And <option>--when=cancel</option> will cancel the shutdown.</para>
           </listitem>
         </varlistentry>
-
         <varlistentry>
           <term><command>poweroff</command></term>
 
           <listitem>
-            <para>Shut down and power-off the system. This is mostly equivalent to <command>shutdown -h</command>.
+            <para>Shut down and power-off the system. This is mostly equivalent to <command>shutdown -h -P</command>,
+            and also prints a wall message to all users.
             This command is asynchronous; it will return after the power-off operation is enqueued, without
             waiting for it to complete.</para>
+
+            <para>This command honors <option>--force</option> and <option>--when=</option> in a similar way
+            as <command>halt</command>.</para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><command>reboot</command></term>
+
+          <listitem>
+            <para>Shut down and reboot the system.</para>
+
+            <para>This command mostly equivalent to <command>shutdown -r</command>, and also prints a wall message to
+            all users. This command is asynchronous; it will return after the reboot operation is enqueued,
+            without waiting for it to complete.</para>
+
+            <para>If the switch <option>--reboot-argument=</option> is given, it will be passed as the optional
+            argument to the <citerefentry><refentrytitle>reboot</refentrytitle><manvolnum>2</manvolnum></citerefentry>
+            system call.</para>
+
+            <para>Options <option>--boot-loader-entry=</option>, <option>--boot-loader-menu=</option>, and
+            <option>--firmware-setup</option> can be used to select what to do <emphasis>after</emphasis> the
+            reboot. See the descriptions of those options for details.</para>
+
+            <para>This command honors <option>--force</option> and <option>--when=</option> in a similar way
+            as <command>halt</command>.</para>
+
+            <para>If a new kernel has been loaded via <command>kexec --load</command>, a
+            <command>kexec</command> will be performed instead of a reboot, unless
+            <literal>LOGINCTL_SKIP_AUTO_KEXEC=1</literal> has been set. If a new root file system has
+            been set up on <literal>/run/nextroot/</literal>, a <command>soft-reboot</command> will be
+            performed instead of a reboot, unless <literal>LOGINCTL_SKIP_AUTO_SOFT_REBOOT=1</literal> has
+            been set.</para>
+
+            <xi:include href="version-info.xml" xpointer="v246"/>
           </listitem>
         </varlistentry>
 
         <varlistentry>
-          <term><command>reboot</command> <optional>--firmware-setup</optional></term>
+          <term><command>kexec</command></term>
 
           <listitem>
-            <para>Shut down and reboot the system. This is mostly equivalent to <command>shutdown -r</command>.
-            This command is asynchronous; it will return after the reboot operation is enqueued, without waiting for it
-            to complete.</para>
+            <para>Shut down and reboot the system via <command>kexec</command>. This command will load a
+            kexec kernel if one was not loaded yet or fail. A kernel may be loaded earlier by a separate step,
+            this is particularly useful if a custom initrd or additional kernel command line options are
+            desired. The <option>--force</option> can be used to continue without a kexec kernel, i.e. to
+            perform a normal reboot. The final reboot step is equivalent to call <command>kexec</command>.
+            </para>
 
-            <para>If the optional argument <option>--firmware-setup</option> is given, indicate to the
-            system's firmware to reboot into the firmware setup interface. Note that this functionality is not available
-            on all systems.</para>
+            <para>To load a kernel, an enumeration is performed following the
+            <ulink url="https://uapi-group.org/specifications/specs/boot_loader_specification">Boot Loader Specification</ulink>,
+            and the default boot entry is loaded. For this step to succeed, the system must be using UEFI
+            and the boot loader entries must be configured appropriately. <command>efibootmgr list</command>
+            may be used to list boot entries, see
+            <citerefentry><refentrytitle>efibootmgr</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+            </para>
+
+            <para>This command is asynchronous; it will return after the reboot operation is enqueued,
+            without waiting for it to complete.</para>
+
+            <para>This command honors <option>--force</option> and <option>--when=</option> similarly
+            to <command>halt</command>.</para>
+
+            <para>If a new kernel has been loaded via <command>kexec --load</command>, a
+            <command>kexec</command> will be performed when <command>reboot</command> is invoked, unless
+            <literal>LOGINCTL_SKIP_AUTO_KEXEC=1</literal> has been set.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>soft-reboot</command></term>
+
+          <listitem>
+            <para>Shut down and reboot userspace. This is equivalent to <command>systemctl start
+            soft-reboot.target --job-mode=replace-irreversibly --no-block</command>. This command is
+            asynchronous; it will return after the reboot operation is enqueued, without waiting for it to
+            complete.</para>
+
+            <para>This command honors <option>--force</option> and <option>--when=</option> in a similar way
+            as <command>halt</command>.</para>
+
+            <para>This operation only reboots userspace, leaving the kernel running. See
+            <citerefentry><refentrytitle>systemd-soft-reboot.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+            for details.</para>
+
+            <para>If a new root file system has been set up on <literal>/run/nextroot/</literal>, a
+            <command>soft-reboot</command> will be performed when <command>reboot</command> is invoked,
+            unless <literal>LOGINCTL_SKIP_AUTO_SOFT_REBOOT=1</literal> has been set.</para>
+
+            <xi:include href="version-info.xml" xpointer="v254"/>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term><command>sleep</command></term>
+
+          <listitem>
+            <para>Put the system to sleep, through <command>suspend</command>, <command>hibernate</command>,
+            <command>hybrid-sleep</command>, or <command>suspend-then-hibernate</command>. The sleep operation
+            to use is automatically selected by <citerefentry>
+            <refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>.
+            By default, <command>suspend-then-hibernate</command> is used, and falls back to <command>suspend</command>
+            and then <command>hibernate</command> if not supported. Refer to <varname>SleepOperation=</varname>
+            setting in <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+            for more details. This command is asynchronous, and will return after the sleep operation is
+            successfully enqueued. It will not wait for the sleep/resume cycle to complete.</para>
+
+            <xi:include href="version-info.xml" xpointer="v256"/>
           </listitem>
         </varlistentry>
 
@@ -349,9 +475,11 @@
           <term><command>suspend</command></term>
 
           <listitem>
-            <para>Suspend the system. This will tell all processes registered via dbus to prepare for suspension. This
-            command is asynchronous, and will return after the suspend operation is successfully enqueued. It will not
-            wait for the suspend/resume cycle to complete.</para>
+            <para>Suspend the system. This command is asynchronous, and will return after the suspend
+            operation is successfully enqueued. It will not wait for the suspend/resume cycle to complete.</para>
+
+            <para>If <option>--force</option> is specified, and <command>elogind</command> returned
+            error for the operation, the error will be ignored and the operation will be tried again directly.</para>
           </listitem>
         </varlistentry>
 
@@ -359,9 +487,10 @@
           <term><command>hibernate</command></term>
 
           <listitem>
-            <para>Hibernate the system. This will tell all processes registered via dbus to prepare for hibernation.
-            This command is asynchronous, and will return after the hibernation operation is successfully enqueued. It
-            will not wait for the hibernate/thaw cycle to complete.</para>
+            <para>Hibernate the system. This command is asynchronous, and will return after the hibernation
+            operation is successfully enqueued. It will not wait for the hibernate/thaw cycle to complete.</para>
+
+            <para>This command honors <option>--force</option> in the same way as <command>suspend</command>.</para>
           </listitem>
         </varlistentry>
 
@@ -369,9 +498,12 @@
           <term><command>hybrid-sleep</command></term>
 
           <listitem>
-            <para>Hibernate and suspend the system. This will tell all processes registered via dbus to prepare for
-            hybrid-sleep. This command is asynchronous, and will return after the hybrid sleep operation is successfully
-            enqueued. It will not wait for the sleep/wake-up cycle to complete.</para>
+            <para>Hibernate and suspend the system. This command is asynchronous, and will return after the hybrid
+            sleep operation is successfully enqueued. It will not wait for the sleep/wake-up cycle to complete.</para>
+
+            <para>This command honors <option>--force</option> in the same way as <command>suspend</command>.</para>
+
+            <xi:include href="version-info.xml" xpointer="v196"/>
           </listitem>
         </varlistentry>
 
@@ -379,14 +511,19 @@
           <term><command>suspend-then-hibernate</command></term>
 
           <listitem>
-            <para>Suspend the system and hibernate it after the delay specified in <filename>/etc/elogind/sleep.conf</filename>.
-            This will tell all processes registered via dbus to prepare for suspend-then-hibernate. This command is
-            asynchronous, and will return after the hybrid sleep operation is successfully enqueued. It will not wait
-            for the sleep/wake-up or hibernate/thaw cycle to complete.</para>
+            <para>Suspend the system and hibernate it when the battery is low, or when the delay specified
+            in <filename>sleep.conf</filename> elapsed. his command is asynchronous,
+            and will return after the hybrid sleep operation is successfully enqueued.
+            It will not wait for the sleep/wake-up or hibernate/thaw cycle to complete.</para>
+
+            <para>This command honors <option>--force</option> in the same way as <command>suspend</command>.</para>
+
+            <xi:include href="version-info.xml" xpointer="v240"/>
           </listitem>
         </varlistentry>
       </variablelist>
     </refsect2>
+
     <refsect2><title>Hook directories</title>
       <variablelist>
         <varlistentry>

@@ -228,6 +228,11 @@
         non-zero rapid logout/login cycles are sped up, as the user's service manager is not constantly restarted. If
         set to <literal>infinity</literal> the per-user service for a user is never terminated again after first login,
         and continues to run until system shutdown. Defaults to 10s.</para>
+        --><!-- else // 0 -->
+        <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
+        set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
+        </para>
+        <!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v240"/></listitem>
       </varlistentry>
@@ -247,11 +252,6 @@
       </varlistentry>
 
       <varlistentry>
-        --><!-- else // 0 -->
-        <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
-        set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
-        </para></listitem>
-        <!-- // 0 -->
         <term><varname>HandlePowerKey=</varname></term>
         <term><varname>HandlePowerKeyLongPress=</varname></term>
         <term><varname>HandleRebootKey=</varname></term>
