@@ -392,6 +392,28 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
                 r = cg_pidref_get_unit(pid, &unit);
                 if (r >= 0)
                         s = hashmap_get(m->session_units, unit);
+        }
+
+        if (ret)
+                *ret = s;
+
+        return !!s;
+}
+
+int manager_get_session_by_leader(Manager *m, const PidRef *pid, Session **ret) {
+        Session *s;
+        int r;
+
+        assert(m);
+
+        if (!pidref_is_set(pid))
+                return -EINVAL;
+
+        s = hashmap_get(m->sessions_by_leader, pid);
+        if (s) {
+                r = pidref_verify(pid);
+                if (r < 0)
+                        return r;
 #else // 0
                 log_debug_elogind("Searching session for PID %d", pid->pid);
                 r = cg_pid_get_session(pid->pid, &session_name);
@@ -795,7 +817,7 @@ int manager_read_utmp(Manager *m) {
                 if (isempty(t))
                         continue;
 
-                if (manager_get_session_by_pidref(m, &PIDREF_MAKE_FROM_PID(u->ut_pid), &s) <= 0)
+                if (manager_get_session_by_leader(m, &PIDREF_MAKE_FROM_PID(u->ut_pid), &s) <= 0)
                         continue;
 
                 if (s->type != SESSION_TTY)
