@@ -24,6 +24,8 @@
 #include "userdb.h"
 #include "verbs.h"
 #include "virt.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 static enum {
         OUTPUT_CLASSIC,
@@ -1470,6 +1472,7 @@ static int run(int argc, char *argv[]) {
 
         int r;
 
+        elogind_set_program_name(argv[0]);
         log_setup();
 
         r = parse_argv(argc, argv);

@@ -21,6 +21,8 @@
 #include "userdb.h"
 #include "varlink-io.systemd.UserDatabase.h"
 #include "varlink-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 #define ITERATIONS_MAX 64U
 #define RUNTIME_MAX_USEC (5 * USEC_PER_MINUTE)
@@ -474,6 +476,7 @@ static int run(int argc, char *argv[]) {
         unsigned n_iterations = 0;
         int m, listen_fd, r;
 
+        elogind_set_program_name(argv[0]);
         log_setup();
 
         m = sd_listen_fds(false);
