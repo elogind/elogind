@@ -16,7 +16,9 @@ enum action {
         ACTION_POWEROFF,
         ACTION_REBOOT,
         ACTION_KEXEC,
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         ACTION_SOFT_REBOOT,
+#endif // 0
         ACTION_EXIT,
         ACTION_SLEEP,
         ACTION_SUSPEND,

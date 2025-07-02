@@ -109,9 +109,11 @@
 
       <programlisting><xi:include href="sd_bus_service_reconnect.c" parse="text"/></programlisting>
 
+      <!-- 0 /// elogind can not soft-reboot, the system/service manager could
       <para>This is particularly useful for services that are configured to survive a soft-reboot, see
       <citerefentry><refentrytitle>elogind-soft-reboot.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
       for more details.</para>
+      // 0 -->
     </example>
   </refsect1>
 
@@ -124,10 +126,6 @@
   <refsect1>
     <title>See Also</title>
 
-      <!-- 0 /// elogind is in section 8
-      --><!-- else // 0 -->
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <!-- // 0 -->
     <para><simplelist type="inline">
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>

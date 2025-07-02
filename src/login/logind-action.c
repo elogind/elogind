@@ -72,6 +72,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .message                         = "System is rebooting with kexec",
                 .log_verb                        = "kexec",
         },
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         [HANDLE_SOFT_REBOOT] = {
                 .handle                          = HANDLE_SOFT_REBOOT,
                 .target                          = SPECIAL_SOFT_REBOOT_TARGET,
@@ -84,6 +85,7 @@ static const HandleActionData handle_action_data_table[_HANDLE_ACTION_MAX] = {
                 .message                         = "System userspace is rebooting",
                 .log_verb                        = "soft-reboot",
         },
+#endif // 0
         [HANDLE_SUSPEND] = {
                 .handle                          = HANDLE_SUSPEND,
                 .target                          = SPECIAL_SUSPEND_TARGET,
@@ -210,7 +212,9 @@ static int handle_action_execute(
                 [HANDLE_REBOOT]                 = "Rebooting...",
                 [HANDLE_HALT]                   = "Halting...",
                 [HANDLE_KEXEC]                  = "Rebooting via kexec...",
+#if 0 /// elogind can not soft-reboot, the system/service manager could
                 [HANDLE_SOFT_REBOOT]            = "Rebooting userspace...",
+#endif // 0
                 [HANDLE_SUSPEND]                = "Suspending...",
                 [HANDLE_HIBERNATE]              = "Hibernating...",
                 [HANDLE_HYBRID_SLEEP]           = "Hibernating and suspending...",
@@ -412,7 +416,9 @@ static const char* const handle_action_verb_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_REBOOT]                 = "reboot",
         [HANDLE_HALT]                   = "halt",
         [HANDLE_KEXEC]                  = "kexec",
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         [HANDLE_SOFT_REBOOT]            = "soft-reboot",
+#endif // 0
         [HANDLE_SUSPEND]                = "suspend",
         [HANDLE_HIBERNATE]              = "hibernate",
         [HANDLE_HYBRID_SLEEP]           = "hybrid sleep",
@@ -433,7 +439,9 @@ static const char* const handle_action_table[_HANDLE_ACTION_MAX] = {
         [HANDLE_REBOOT]                 = "reboot",
         [HANDLE_HALT]                   = "halt",
         [HANDLE_KEXEC]                  = "kexec",
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         [HANDLE_SOFT_REBOOT]            = "soft-reboot",
+#endif // 0
         [HANDLE_SUSPEND]                = "suspend",
         [HANDLE_HIBERNATE]              = "hibernate",
         [HANDLE_HYBRID_SLEEP]           = "hybrid-sleep",
