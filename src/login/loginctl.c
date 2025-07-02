@@ -1592,13 +1592,11 @@ static int help(int argc, char *argv[], void *userdata) {
                "                             verbose, export, with-unit)\n"
 #endif // 0
 #if 1 /// As elogind can reboot, it allows to control the reboot process
-#if ENABLE_EFI
                "     --firmware-setup      Tell the firmware to show the setup menu on next boot\n"
                "     --boot-loader-menu=TIME\n"
                "                           Boot into boot loader menu on next boot\n"
                "     --boot-loader-entry=NAME\n"
                "                           Boot into a specific boot loader entry on next boot\n"
-#endif
                "     --reboot-argument=ARG\n"
                "                           Specify argument string to pass to reboot()\n"
                "     --when=TIME           Schedule halt/power-off/reboot/kexec action after\n"
@@ -1629,11 +1627,9 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_KILL_WHOM,
                 ARG_NO_ASK_PASSWORD,
 #if 1 /// elogind supports controlling the reboot process
-#if ENABLE_EFI
                 ARG_FIRMWARE_SETUP,
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
-#endif
                 ARG_REBOOT_ARG,
                 ARG_WHEN,
 #endif // 1
@@ -1667,11 +1663,9 @@ static int parse_argv(int argc, char *argv[]) {
                 { "ignore-inhibitors", no_argument,     NULL, 'i'                 },
 #endif // 0
 #if 1 /// elogind supports controlling the reboot process
-#if ENABLE_EFI
                 { "firmware-setup",    no_argument,       NULL, ARG_FIRMWARE_SETUP      },
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
-#endif
                 { "reboot-argument",   required_argument, NULL, ARG_REBOOT_ARG          },
                 { "when",              required_argument, NULL, ARG_WHEN                },
 #endif // 1
@@ -1815,7 +1809,6 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_check_inhibitors = 0;;
                         break;
 
-#if ENABLE_EFI
                 case ARG_FIRMWARE_SETUP:
                         arg_firmware_setup = true;
                         break;
@@ -1840,7 +1833,7 @@ static int parse_argv(int argc, char *argv[]) {
 
                         arg_boot_loader_entry = empty_to_null(optarg);
                         break;
-#endif
+
                 case ARG_REBOOT_ARG:
                         arg_reboot_argument = optarg;
                         break;
