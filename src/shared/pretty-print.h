@@ -11,16 +11,14 @@
 void draw_cylon(char buffer[], size_t buflen, unsigned width, unsigned pos);
 
 void print_separator(void);
+#endif // 0
 
 int file_url_from_path(const char *path, char **ret);
-#endif // 0
 
 bool urlify_enabled(void);
 
 int terminal_urlify(const char *url, const char *text, char **ret);
-#if 0 /// UNNEEDED by elogind
 int terminal_urlify_path(const char *path, const char *text, char **ret);
-#endif // 0
 int terminal_urlify_man(const char *page, const char *section, char **ret);
 
 #if 0 /// UNNEEDED by elogind

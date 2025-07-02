@@ -181,7 +181,6 @@ char ascii_tolower(char x) {
         return x;
 }
 
-#if 0 /// UNNEEDED by elogind
 char ascii_toupper(char x) {
 
         if (x >= 'a' && x <= 'z')
@@ -189,7 +188,6 @@ char ascii_toupper(char x) {
 
         return x;
 }
-#endif // 0
 
 char* ascii_strlower(char *t) {
         assert(t);
@@ -200,7 +198,6 @@ char* ascii_strlower(char *t) {
         return t;
 }
 
-#if 0 /// UNNEEDED by elogind
 char* ascii_strupper(char *t) {
         assert(t);
 
@@ -210,6 +207,7 @@ char* ascii_strupper(char *t) {
         return t;
 }
 
+#if 0 /// UNNEEDED by elogind
 char* ascii_strlower_n(char *t, size_t n) {
         if (n <= 0)
                 return t;

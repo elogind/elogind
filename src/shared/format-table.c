@@ -1280,7 +1280,6 @@ static const char* table_ersatz_string(const Table *t) {
         }
 }
 
-#if 0 /// UNNEEDED by elogind
 static int table_set_display_all(Table *t) {
         size_t *d;
 
@@ -1300,7 +1299,6 @@ static int table_set_display_all(Table *t) {
 
         return 0;
 }
-#endif // 0
 
 int table_set_display_internal(Table *t, size_t first_column, ...) {
         size_t column;
@@ -1359,7 +1357,6 @@ int table_set_sort_internal(Table *t, size_t first_column, ...) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_hide_column_from_display_internal(Table *t, ...) {
         size_t cur = 0;
         int r;
@@ -1401,7 +1398,6 @@ int table_hide_column_from_display_internal(Table *t, ...) {
 
         return 0;
 }
-#endif // 0
 
 static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t index_b) {
         int r;

@@ -1725,7 +1725,6 @@ UserStorage user_record_storage(UserRecord *h) {
         return USER_CLASSIC;
 }
 
-#if 0 /// UNNEEDED by elogind
 const char* user_record_file_system_type(UserRecord *h) {
         assert(h);
 
@@ -1743,7 +1742,6 @@ mode_t user_record_access_mode(UserRecord *h) {
 
         return h->access_mode != MODE_INVALID ? h->access_mode : 0700;
 }
-#endif // 0
 
 static const char *user_record_home_directory_real(UserRecord *h) {
         assert(h);
@@ -1760,7 +1758,6 @@ static const char *user_record_home_directory_real(UserRecord *h) {
         return "/";
 }
 
-#if 0 /// UNNEEDED by elogind
 const char* user_record_home_directory(UserRecord *h) {
         assert(h);
 
@@ -1769,7 +1766,6 @@ const char* user_record_home_directory(UserRecord *h) {
 
         return user_record_home_directory_real(h);
 }
-#endif // 0
 
 const char* user_record_image_path(UserRecord *h) {
         assert(h);
@@ -1784,13 +1780,13 @@ const char* user_record_image_path(UserRecord *h) {
                 user_record_home_directory_real(h) : NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 const char* user_record_cifs_user_name(UserRecord *h) {
         assert(h);
 
         return h->cifs_user_name ?: h->user_name;
 }
 
+#if 0 /// UNNEEDED by elogind
 unsigned long user_record_mount_flags(UserRecord *h) {
         assert(h);
 
@@ -1798,6 +1794,7 @@ unsigned long user_record_mount_flags(UserRecord *h) {
                 (h->noexec ? MS_NOEXEC : 0) |
                 (h->nodev ? MS_NODEV : 0);
 }
+#endif // 0
 
 static const char *user_record_shell_real(UserRecord *h) {
         assert(h);
@@ -1877,6 +1874,7 @@ bool user_record_luks_offline_discard(UserRecord *h) {
         return true;
 }
 
+#if 0 /// UNNEEDED by elogind
 const char* user_record_luks_cipher(UserRecord *h) {
         assert(h);
 
@@ -1964,6 +1962,7 @@ const char* user_record_luks_pbkdf_hash_algorithm(UserRecord *h) {
 
         return h->luks_pbkdf_hash_algorithm ?: "sha512";
 }
+#endif // 0
 
 gid_t user_record_gid(UserRecord *h) {
         assert(h);
@@ -1973,7 +1972,6 @@ gid_t user_record_gid(UserRecord *h) {
 
         return (gid_t) h->uid;
 }
-#endif // 0
 
 UserDisposition user_record_disposition(UserRecord *h) {
         assert(h);
@@ -1992,13 +1990,11 @@ UserDisposition user_record_disposition(UserRecord *h) {
         if (uid_is_system(h->uid))
                 return USER_SYSTEM;
 
-#if 0 /// UNNEEDED by elogind ; no dynamic or container uids here...
         if (uid_is_dynamic(h->uid))
                 return USER_DYNAMIC;
 
         if (uid_is_container(h->uid))
                 return USER_CONTAINER;
-#endif // 0
 
         if (h->uid > INT32_MAX)
                 return USER_RESERVED;
@@ -2022,7 +2018,6 @@ int user_record_removable(UserRecord *h) {
         return storage == USER_LUKS && path_startswith(user_record_image_path(h), "/dev/");
 }
 
-#if 0 /// UNNEEDED by elogind
 uint64_t user_record_ratelimit_interval_usec(UserRecord *h) {
         assert(h);
 
@@ -2041,6 +2036,7 @@ uint64_t user_record_ratelimit_burst(UserRecord *h) {
         return h->ratelimit_burst;
 }
 
+#if 0 /// UNNEEDED by elogind
 bool user_record_can_authenticate(UserRecord *h) {
         assert(h);
 
@@ -2054,6 +2050,7 @@ bool user_record_can_authenticate(UserRecord *h) {
 
         return !strv_isempty(h->hashed_password);
 }
+#endif // 0
 
 bool user_record_drop_caches(UserRecord *h) {
         assert(h);
@@ -2082,7 +2079,6 @@ uint64_t user_record_rebalance_weight(UserRecord *h) {
 
         return h->rebalance_weight;
 }
-#endif // 0
 
 static uint64_t parse_caps_strv(char **l) {
         uint64_t c = 0;
@@ -2142,7 +2138,6 @@ int user_record_languages(UserRecord *h, char ***ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 const char** user_record_self_modifiable_fields(UserRecord *h) {
         /* As a rule of thumb: a setting is safe if it cannot be used by a
          * user to give themselves some unfair advantage over other users on
@@ -2228,6 +2223,7 @@ const char** user_record_self_modifiable_privileged(UserRecord *h) {
         return user_record_disposition(h) == USER_REGULAR ? (const char**) default_fields : NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 static int remove_self_modifiable_json_fields_common(UserRecord *current, sd_json_variant **target) {
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *v = NULL, *blobs = NULL;
         char **allowed;
@@ -2393,6 +2389,7 @@ int user_record_self_changes_allowed(UserRecord *current, UserRecord *incoming) 
 
         return sd_json_variant_equal(vc, vi);
 }
+#endif // 0
 
 uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         assert(h);
@@ -2419,6 +2416,7 @@ uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         return usec_add(h->ratelimit_begin_usec, user_record_ratelimit_interval_usec(h));
 }
 
+#if 0 /// UNNEEDED by elogind
 bool user_record_equal(UserRecord *a, UserRecord *b) {
         assert(a);
         assert(b);
@@ -2457,6 +2455,7 @@ int user_record_compare_last_change(UserRecord *a, UserRecord *b) {
 
         return CMP(a->last_change_usec, b->last_change_usec);
 }
+#endif // 0
 
 int user_record_clone(UserRecord *h, UserRecordLoadFlags flags, UserRecord **ret) {
         _cleanup_(user_record_unrefp) UserRecord *c = NULL;
@@ -2477,6 +2476,7 @@ int user_record_clone(UserRecord *h, UserRecordLoadFlags flags, UserRecord **ret
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int user_record_masked_equal(UserRecord *a, UserRecord *b, UserRecordMask mask) {
         _cleanup_(user_record_unrefp) UserRecord *x = NULL, *y = NULL;
         int r;
@@ -2504,6 +2504,7 @@ int user_record_masked_equal(UserRecord *a, UserRecord *b, UserRecordMask mask) 
 
         return user_record_equal(a, b);
 }
+#endif // 0
 
 int user_record_test_blocked(UserRecord *h) {
         usec_t n;
@@ -2619,7 +2620,6 @@ int user_record_test_password_change_required(UserRecord *h) {
         /* No password changing necessary */
         return change_permitted ? 0 : -EROFS;
 }
-#endif // 0
 
 int user_record_is_root(const UserRecord *u) {
         assert(u);

@@ -8,29 +8,25 @@
 #include "dirent-util.h"
 //#include "dlfcn-util.h"
 #include "errno-util.h"
-//#include "fd-util.h"
-//#include "format-util.h"
+#include "fd-util.h"
+#include "format-util.h"
 #include "json-util.h"
 #include "missing_syscall.h"
-//#include "parse-util.h"
+#include "parse-util.h"
 #include "set.h"
-//#include "socket-util.h"
+#include "socket-util.h"
 #include "strv.h"
 #include "user-record-nss.h"
 #include "user-util.h"
-//#include "userdb-dropin.h"
+#include "userdb-dropin.h"
 #include "userdb.h"
 
-#if 0 /// UNNEEDED by elogind
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(link_hash_ops, void, trivial_hash_func, trivial_compare_func, sd_varlink, sd_varlink_unref);
-#endif // 0
 
 typedef enum LookupWhat {
         LOOKUP_USER,
-#if 0 /// Nowhere needed in elogind
         LOOKUP_GROUP,
         LOOKUP_MEMBERSHIP,
-#endif // 0
         _LOOKUP_WHAT_MAX,
 } LookupWhat;
 
@@ -43,22 +39,16 @@ struct UserDBIterator {
         bool dropin_covered:1;
         bool synthesize_root:1;
         bool synthesize_nobody:1;
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
         bool nss_systemd_blocked:1;
-#endif // 0
         char **dropins;
         size_t current_dropin;
         int error;
         unsigned n_found;
-#if 0 /// Nowhere needed in elogind
         sd_event *event;
-#endif // 0
         UserRecord *found_user;                   /* when .what == LOOKUP_USER */
-#if 0 /// Nowhere needed in elogind
         GroupRecord *found_group;                 /* when .what == LOOKUP_GROUP */
 
         char *found_user_name, *found_group_name; /* when .what == LOOKUP_MEMBERSHIP */
-#endif // 0
         char **members_of_group;
         size_t index_members_of_group;
         char *filter_user_name, *filter_group_name;
@@ -81,7 +71,6 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
 
                 break;
 
-#if 0 /// Nowhere needed in elogind
         case LOOKUP_GROUP:
                 group_record_unref(iterator->found_group);
 
@@ -101,18 +90,15 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
                         endgrent();
 
                 break;
-#endif // 0
 
         default:
                 assert_not_reached();
         }
 
-#if 0 /// Nowhere needed in elogind
         sd_event_unref(iterator->event);
-
+        
         if (iterator->nss_systemd_blocked)
                 assert_se(userdb_block_nss_systemd(false) >= 0);
-#endif // 0
 
         return mfree(iterator);
 }
@@ -137,7 +123,6 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         return i;
 }
 
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
 static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
         int r;
 
@@ -153,14 +138,12 @@ static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
         iterator->nss_systemd_blocked = true;
         return 1;
 }
-#endif // 0
 
 struct user_group_data {
         sd_json_variant *record;
         bool incomplete;
 };
 
-#if 0 /// UNNEEDED by elogind
 static void user_group_data_done(struct user_group_data *d) {
         sd_json_variant_unref(d->record);
 }
@@ -412,9 +395,7 @@ static int userdb_connect(
                 return log_debug_errno(r, "Failed to add varlink connection to set: %m");
         return r;
 }
-#endif // 0
 
-#if 0 /// Nothing in elogind ever sets up userdb, so this will always return -ESRCH
 static int userdb_start_query(
                 UserDBIterator *iterator,
                 const char *method,
@@ -535,9 +516,7 @@ static int userdb_start_query(
         /* We connected to some services, in this case, ignore the ones we failed on */
         return 0;
 }
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
 static int userdb_process(
                 UserDBIterator *iterator,
                 UserRecord **ret_user_record,
@@ -616,7 +595,6 @@ static int userdb_process(
                         return r;
         }
 }
-#endif // 0
 
 static int synthetic_root_user_build(UserRecord **ret) {
         return user_record_build(
@@ -655,7 +633,6 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-#if 0 /// Nothing in elogind sets up userdb, so r is always -ESRCH
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
@@ -668,7 +645,6 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                 if (r >= 0)
                         return r;
         }
-#endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
@@ -713,7 +689,6 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         if (!iterator)
                 return -ENOMEM;
 
-#if 0 /// Nothing in elogind sets up userdb, so r is always -ESRCH
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
         if (r >= 0) {
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
@@ -726,7 +701,6 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
                 if (r >= 0)
                         return r;
         }
-#endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
 #if 0 /// elogind does not ship its own libnss implementation, no block needed
@@ -753,7 +727,6 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
         _cleanup_(userdb_iterator_freep) UserDBIterator *iterator = NULL;
         int r, qr;
@@ -1445,6 +1418,7 @@ int membershipdb_iterator_get(
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret) {
         _cleanup_(userdb_iterator_freep) UserDBIterator *iterator = NULL;
         _cleanup_strv_free_ char **members = NULL;
@@ -1476,22 +1450,24 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         *ret = TAKE_PTR(members);
         return 0;
 }
+#endif // 0
 
 int userdb_block_nss_systemd(int b) {
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
         /* Note that we might be called from libnss_systemd.so.2 itself, but that should be fine, really. */
 
-        dl = dlopen(LIBDIR "/libnss_elogind.so.2", RTLD_NOW|RTLD_NODELETE);
+        dl = dlopen(LIBDIR "/libnss_systemd.so.2", RTLD_NOW|RTLD_NODELETE);
         if (!dl) {
                 /* If the file isn't installed, don't complain loudly */
                 log_debug("Failed to dlopen(libnss_systemd.so.2), ignoring: %s", dlerror());
                 return 0;
         }
 
-        call = dlsym(dl, "_nss_elogind_block");
-        log_debug("Loaded '%s' via dlopen()", LIBDIR "/libnss_elogind.so.2");
+        call = dlsym(dl, "_nss_systemd_block");
+        log_debug("Loaded '%s' via dlopen()", LIBDIR "/libnss_systemd.so.2");
 
         if (!call)
                 /* If the file is installed but lacks the symbol we expect, things are weird, let's complain */
@@ -1499,5 +1475,7 @@ int userdb_block_nss_systemd(int b) {
                                        "Unable to find symbol _nss_systemd_block in libnss_systemd.so.2: %s", dlerror());
 
         return call(b);
-}
+#else // 0
+        return b > 0 ? 1 : 0;
 #endif // 0
+}

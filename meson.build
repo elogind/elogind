@@ -294,13 +294,15 @@ endif
 #         sshconfdir = sysconfdir / 'ssh/ssh_config.d'
 # endif
 # conf.set10('LINK_SSH_PROXY_DROPIN', sshconfdir != 'no' and not sshconfdir.startswith('/usr/'))
-#
-# sshdconfdir = get_option('sshdconfdir')
-# if sshdconfdir == ''
-#         sshdconfdir = sysconfdir / 'ssh/sshd_config.d'
-# endif
-# conf.set10('LINK_SSHD_USERDB_DROPIN', sshdconfdir != 'no' and not sshdconfdir.startswith('/usr/'))
-#
+#endif // 0
+
+sshdconfdir = get_option('sshdconfdir')
+if sshdconfdir == ''
+        sshdconfdir = sysconfdir / 'ssh/sshd_config.d'
+endif
+conf.set10('LINK_SSHD_USERDB_DROPIN', sshdconfdir != 'no' and not sshdconfdir.startswith('/usr/'))
+
+#if 0 /// UNNEEDED by elogind
 # sshdprivsepdir = get_option('sshdprivsepdir')
 # conf.set10('CREATE_SSHDPRIVSEPDIR', sshdprivsepdir != 'no' and not sshdprivsepdir.startswith('/usr/'))
 # conf.set('SSHDPRIVSEPDIR', sshdprivsepdir, description : 'SSH privilege separation directory')
@@ -355,7 +357,9 @@ conf.set_quoted('PREFIX',                                     prefixdir)
 #endif // 0
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SSHCONFDIR',                                 sshconfdir)
-# conf.set_quoted('SSHDCONFDIR',                                sshdconfdir)
+#endif // 0
+conf.set_quoted('SSHDCONFDIR',                                sshdconfdir)
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SHELLPROFILEDIR',                            shellprofiledir)
 # conf.set_quoted('SYSCONF_DIR',                                sysconfdir)
 # conf.set_quoted('SYSCTL_DIR',                                 sysctldir)
@@ -383,7 +387,9 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 # conf.set_quoted('SYSTEMD_TEST_DATA',                          testdata_dir)
 # conf.set_quoted('SYSTEMD_TTY_ASK_PASSWORD_AGENT_BINARY_PATH', bindir / 'systemd-tty-ask-password-agent')
 # conf.set_quoted('SYSTEMD_UPDATE_HELPER_PATH',                 libexecdir / 'systemd-update-helper')
-# conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'systemd-userwork')
+#endif // 0
+conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'elogind-userwork')
+#if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_NSRESOURCEWORK_PATH',                libexecdir / 'elogind-nsresourcework')
 # conf.set_quoted('SYSTEMD_MOUNTWORK_PATH',                     libexecdir / 'elogind-mountwork')
 # conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   libexecdir / 'systemd-veritysetup')
@@ -1065,17 +1071,15 @@ if conf.get('SYSTEM_ALLOC_GID_MIN') >= conf.get('SYSTEM_GID_MAX')
         error('Invalid gid allocation range')
 endif
 
-#if 0 /// UNNEEDED by elogind
-# dynamic_uid_min = get_option('dynamic-uid-min')
-# dynamic_uid_max = get_option('dynamic-uid-max')
-# conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
-# conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
-#
-# container_uid_base_min = get_option('container-uid-base-min')
-# container_uid_base_max = get_option('container-uid-base-max')
-# conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
-# conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
-#endif // 0
+dynamic_uid_min = get_option('dynamic-uid-min')
+dynamic_uid_max = get_option('dynamic-uid-max')
+conf.set('DYNAMIC_UID_MIN', dynamic_uid_min)
+conf.set('DYNAMIC_UID_MAX', dynamic_uid_max)
+
+container_uid_base_min = get_option('container-uid-base-min')
+container_uid_base_max = get_option('container-uid-base-max')
+conf.set('CONTAINER_UID_BASE_MIN', container_uid_base_min)
+conf.set('CONTAINER_UID_BASE_MAX', container_uid_base_max)
 
 nobody_user = get_option('nobody-user')
 nobody_group = get_option('nobody-group')
@@ -1982,7 +1986,9 @@ conf.set10('ENABLE_HOMED', false)
 # conf.set10('ENABLE_VMSPAWN', feature.allowed())
 #
 # conf.set10('DEFAULT_MOUNTFSD_TRUSTED_DIRECTORIES', get_option('default-mountfsd-trusted-directories'))
-#
+#endif // 0
+
+#if 0 /// elogind can only support a small subset here
 # foreach term : ['analyze',
 #                 'backlight',
 #                 'binfmt',
@@ -2030,6 +2036,7 @@ conf.set10('ENABLE_HOMED', false)
 #else // 0
 foreach term : ['efi',
                 'smack',
+                'userdb',
                 'utmp']
 #endif // 0
         have = get_option(term)
@@ -2077,8 +2084,8 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 #
 # conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
-# conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 #endif // 0
+conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 
 conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 
@@ -2485,6 +2492,7 @@ libelogind_includes = [basic_includes, include_directories(
         'src/libelogind/sd-json',
         'src/libelogind/sd-netlink',
         'src/libelogind/sd-path',
+        'src/libelogind/sd-varlink',
         'src/sleep',
         'src/update-utmp')]
 libsystemd_includes = libelogind_includes
@@ -2827,7 +2835,7 @@ subdir('src/cgroups-agent')
 subdir('src/uaccess-command')
 #endif // 1
 
-#if 1 /// elogind includes some parts from systemctl in loginctl
+#if 1 /// elogind includes some parts from systemctl in loginctl, so subdir() it early.
 subdir('src/systemctl')
 #endif // 1
 
@@ -2889,7 +2897,9 @@ subdir('src/login')
 # subdir('src/update-done')
 # subdir('src/update-utmp')
 # subdir('src/user-sessions')
-# subdir('src/userdb')
+#endif // 0
+subdir('src/userdb')
+#if 0 /// UNNEEDED by elogind
 # subdir('src/varlinkctl')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
@@ -3472,8 +3482,8 @@ summary({
         'SysV rc?.d directories' :          sysvrcnd_path,
         'PAM modules directory' :           pamlibdir,
         'PAM configuration directory' :     pamconfdir,
+        'ssh server configuration directory' : sshdconfdir,
 #if 0 /// UNNEEDED by elogind
-#         'ssh server configuration directory' : sshdconfdir,
 #         'ssh server privilege separation directory' : sshdprivsepdir,
 #         'ssh client configuration directory' : sshconfdir,
 #         'libcryptsetup plugins directory' : libcryptsetup_plugins_dir,
@@ -3641,7 +3651,9 @@ foreach tuple : [
 #         ['timedated'],
 #         ['timesyncd'],
 #         ['tmpfiles'],
-#         ['userdb'],
+#endif // 0
+        ['userdb'],
+#if 0 /// UNNEEDED by elogind
 #         ['vconsole'],
 #         ['vmspawn'],
 #         ['xdg-autostart'],

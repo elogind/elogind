@@ -16,7 +16,6 @@
 
 #include "string-util.h"
 
-#if 0 /// elogind does not ship homed or anything related
 /* Users managed by systemd-homed. See https://systemd.io/UIDS-GIDS for details how this range fits into the rest of the world */
 #define HOME_UID_MIN ((uid_t) 60001)
 #define HOME_UID_MAX ((uid_t) 60513)
@@ -24,7 +23,6 @@
 /* Users mapped from host into a container */
 #define MAP_UID_MIN ((uid_t) 60514)
 #define MAP_UID_MAX ((uid_t) 60577)
-#endif // 0
 
 bool uid_is_valid(uid_t uid);
 
@@ -157,11 +155,11 @@ int is_this_me(const char *username);
 
 const char* get_home_root(void);
 
-#if 0 /// UNNEEDED by elogind
 static inline bool hashed_password_is_locked_or_invalid(const char *password) {
         return password && password[0] != '$';
 }
 
+#if 0 /// UNNEEDED by elogind
 /* A locked *and* invalid password for "struct spwd"'s .sp_pwdp and "struct passwd"'s .pw_passwd field */
 #define PASSWORD_LOCKED_AND_INVALID "!*"
 

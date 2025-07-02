@@ -73,9 +73,7 @@ int pidref_set_pidfd(PidRef *pidref, int fd);
 int pidref_set_pidfd_take(PidRef *pidref, int fd); /* takes ownership of the passed pidfd on success*/
 int pidref_set_pidfd_consume(PidRef *pidref, int fd); /* takes ownership of the passed pidfd in both success and failure */
 
-#if 0 /// UNNEEDED by elogind
 int pidref_set_parent(PidRef *ret);
-#endif // 0
 static inline int pidref_set_self(PidRef *pidref) {
         return pidref_set_pid(pidref, 0);
 }

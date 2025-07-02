@@ -72,12 +72,12 @@ static inline int touch(const char *path) {
         return touch_file(path, false, USEC_INFINITY, UID_INVALID, GID_INVALID, MODE_INVALID);
 }
 
-#if 0 /// UNNEEDED by elogind
 int symlinkat_idempotent(const char *from, int atfd, const char *to, bool make_relative);
 static inline int symlink_idempotent(const char *from, const char *to, bool make_relative) {
         return symlinkat_idempotent(from, AT_FDCWD, to, make_relative);
 }
 
+#if 0 /// UNNEEDED by elogind
 int symlinkat_atomic_full(const char *from, int atfd, const char *to, bool make_relative);
 static inline int symlink_atomic(const char *from, const char *to) {
         return symlinkat_atomic_full(from, AT_FDCWD, to, false);

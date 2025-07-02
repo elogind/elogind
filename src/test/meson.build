@@ -62,9 +62,7 @@ simple_tests += files(
 #         'test-blockdev-util.c',
 #endif // 0
         'test-bootspec.c',
-#if 0 /// UNNEEDED by elogind
-#         'test-build-path.c',
-#endif // 0
+        'test-build-path.c',
         'test-bus-util.c',
         'test-calendarspec.c',
 #if 0 /// UNNEEDED by elogind
