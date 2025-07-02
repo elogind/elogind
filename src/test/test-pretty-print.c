@@ -53,10 +53,8 @@ TEST(terminal_urlify) {
 
         formatted = mfree(formatted);
 
-#if 0 /// UNNEEDED by elogind
         assert_se(terminal_urlify_path("/etc/fstab", "this link to your /etc/fstab", &formatted) >= 0);
         printf("Or click on %s to have a look at it!\n", formatted);
-#endif // 0
 }
 
 #if 0 /// UNNEEDED by elogind

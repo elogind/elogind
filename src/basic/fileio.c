@@ -1312,7 +1312,6 @@ int search_and_fopen(
         return search_and_fopen_internal(path, mode, root, copy, ret_file, ret_path);
 }
 
-#if 0 /// UNNEEDED by elogind
 int search_and_fopen_nulstr(
                 const char *path,
                 const char *mode,
@@ -1332,7 +1331,6 @@ int search_and_fopen_nulstr(
 
         return search_and_fopen_internal(path, mode, root, l, ret_file, ret_path);
 }
-#endif // 0
 
 int fflush_and_check(FILE *f) {
         assert(f);

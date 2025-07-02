@@ -403,20 +403,20 @@ int user_record_build(UserRecord **ret, ...);
 
 const char* user_record_user_name_and_realm(UserRecord *h);
 UserStorage user_record_storage(UserRecord *h);
-#if 0 /// UNNEEDED by elogind
 const char* user_record_file_system_type(UserRecord *h);
 const char* user_record_skeleton_directory(UserRecord *h);
 mode_t user_record_access_mode(UserRecord *h);
 const char* user_record_home_directory(UserRecord *h);
-#endif // 0
 const char* user_record_image_path(UserRecord *h);
 #if 0 /// UNNEEDED by elogind
 unsigned long user_record_mount_flags(UserRecord *h);
+#endif // 0
 const char* user_record_cifs_user_name(UserRecord *h);
 const char* user_record_shell(UserRecord *h);
 const char* user_record_real_name(UserRecord *h);
 bool user_record_luks_discard(UserRecord *h);
 bool user_record_luks_offline_discard(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 const char* user_record_luks_cipher(UserRecord *h);
 const char* user_record_luks_cipher_mode(UserRecord *h);
 uint64_t user_record_luks_volume_key_size(UserRecord *h);
@@ -427,18 +427,18 @@ uint64_t user_record_luks_pbkdf_memory_cost(UserRecord *h);
 uint64_t user_record_luks_pbkdf_parallel_threads(UserRecord *h);
 uint64_t user_record_luks_sector_size(UserRecord *h);
 const char* user_record_luks_pbkdf_hash_algorithm(UserRecord *h);
-gid_t user_record_gid(UserRecord *h);
 #endif // 0
+gid_t user_record_gid(UserRecord *h);
 UserDisposition user_record_disposition(UserRecord *h);
 int user_record_removable(UserRecord *h);
-#if 0 /// UNNEEDED by elogind
 usec_t user_record_ratelimit_interval_usec(UserRecord *h);
 uint64_t user_record_ratelimit_burst(UserRecord *h);
+#if 0 /// UNNEEDED by elogind
 bool user_record_can_authenticate(UserRecord *h);
+#endif // 0
 bool user_record_drop_caches(UserRecord *h);
 AutoResizeMode user_record_auto_resize_mode(UserRecord *h);
 uint64_t user_record_rebalance_weight(UserRecord *h);
-#endif // 0
 uint64_t user_record_capability_bounding_set(UserRecord *h);
 uint64_t user_record_capability_ambient_set(UserRecord *h);
 int user_record_languages(UserRecord *h, char ***ret);
@@ -456,15 +456,17 @@ int user_record_build_image_path(UserStorage storage, const char *user_name_and_
 bool user_record_equal(UserRecord *a, UserRecord *b);
 bool user_record_compatible(UserRecord *a, UserRecord *b);
 int user_record_compare_last_change(UserRecord *a, UserRecord *b);
+#endif // 0
 
 usec_t user_record_ratelimit_next_try(UserRecord *h);
 
 int user_record_clone(UserRecord *h, UserRecordLoadFlags flags, UserRecord **ret);
+#if 0 /// UNNEEDED by elogind
 int user_record_masked_equal(UserRecord *a, UserRecord *b, UserRecordMask mask);
+#endif // 0
 
 int user_record_test_blocked(UserRecord *h);
 int user_record_test_password_change_required(UserRecord *h);
-#endif // 0
 
 int user_record_is_root(const UserRecord *u);
 int user_record_is_nobody(const UserRecord *u);

@@ -121,6 +121,7 @@ basic_sources = files(
         'audit-util.c',
         'btrfs.c',
         'build.c',
+        'build-path.c',
         'bus-label.c',
         'capability-util.c',
         'cgroup-util.c',

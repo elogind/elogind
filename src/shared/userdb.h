@@ -4,7 +4,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-//#include "group-record.h"
+#include "group-record.h"
 #include "user-record.h"
 
 /* Inquire local services for user/group records */
@@ -41,7 +41,6 @@ typedef enum UserDBFlags {
 
 int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret);
 int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret);
-#if 0 /// UNNEEDED by elogind
 int userdb_all(UserDBFlags flags, UserDBIterator **ret);
 int userdb_iterator_get(UserDBIterator *iterator, UserRecord **ret);
 
@@ -54,7 +53,8 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
 int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_all(UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_iterator_get(UserDBIterator *iterator, char **user, char **group);
+#if 0 /// UNNEEDED by elogind
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret);
+#endif // 0
 
 int userdb_block_nss_systemd(int b);
-#endif // 0

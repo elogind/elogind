@@ -53,8 +53,9 @@ USE_AUDIT   ?= enabled
 USE_EFI     ?= false
 USE_HTML    ?= auto
 USE_MAN     ?= auto
-USE_SELINUX ?= false
+USE_SELINUX ?= disabled
 USE_SMACK   ?= true
+USE_USERDB  ?= true
 USE_UTMP    ?= true
 USE_XENCTRL ?= auto
 
@@ -197,13 +198,13 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Daudit=$(USE_AUDIT) \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddbus=enabled \
-			-Ddefault-hierarchy=$(CGDEFAULT) \
 			-Defi=$(USE_EFI) \
 			-Dhtml=$(USE_HTML) \
 			-Dman=$(USE_MAN) \
 			-Dpam=enabled \
 			-Dselinux=$(USE_SELINUX) \
 			-Dsmack=$(USE_SMACK) \
+			-Duserdb=$(USE_USERDB) \
 			-Dutmp=$(USE_UTMP) \
 			-Dxenctrl=$(USE_XENCTRL) \
 			-Dmode=$(BUILDMODE) \

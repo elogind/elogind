@@ -1067,7 +1067,6 @@ int setenv_elogind_exec_pid(bool update_only) {
         return 1;
 }
 
-#if 0 /// UNNEEDED by elogind
 int setenv_elogind_log_level(void) {
         _cleanup_free_ char *val = NULL;
         int r;
@@ -1079,6 +1078,7 @@ int setenv_elogind_log_level(void) {
         return RET_NERRNO(setenv("SYSTEMD_LOG_LEVEL", val, /* overwrite= */ true));
 }
 
+#if 0 /// UNNEEDED by elogind
 int getenv_path_list(const char *name, char ***ret_paths) {
         _cleanup_strv_free_ char **l = NULL;
         const char *e;

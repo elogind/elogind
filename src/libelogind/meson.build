@@ -119,9 +119,7 @@ sd_varlink_sources = files(
         'sd-varlink/sd-varlink-idl.c',
         'sd-varlink/varlink-io.systemd.c',
         'sd-varlink/varlink-org.varlink.service.c',
-#if 0 /// Not used by elogind
-#         'sd-varlink/varlink-util.c',
-#endif // 0
+        'sd-varlink/varlink-util.c',
 )
 
 ############################################################

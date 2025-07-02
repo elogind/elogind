@@ -197,7 +197,6 @@ int pidref_set_pidfd_consume(PidRef *pidref, int fd) {
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int pidref_set_parent(PidRef *ret) {
         _cleanup_(pidref_done) PidRef parent = PIDREF_NULL;
         pid_t ppid;
@@ -229,7 +228,6 @@ int pidref_set_parent(PidRef *ret) {
         *ret = TAKE_PIDREF(parent);
         return 0;
 }
-#endif // 0
 
 void pidref_done(PidRef *pidref) {
         assert(pidref);

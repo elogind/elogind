@@ -13,7 +13,7 @@
 //#include "fd-util.h"
 //#include "fileio.h"
 #include "pager.h"
-//#include "path-util.h"
+#include "path-util.h"
 #include "pretty-print.h"
 #include "string-util.h"
 //#include "strv.h"
@@ -102,7 +102,6 @@ int terminal_urlify(const char *url, const char *text, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int file_url_from_path(const char *path, char **ret) {
         _cleanup_free_ char *absolute = NULL;
         struct utsname u;
@@ -157,7 +156,6 @@ int terminal_urlify_path(const char *path, const char *text, char **ret) {
 
         return terminal_urlify(url, text, ret);
 }
-#endif // 0
 
 int terminal_urlify_man(const char *page, const char *section, char **ret) {
         const char *url, *text;

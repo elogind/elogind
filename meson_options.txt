@@ -220,6 +220,8 @@ option('utmp', type : 'boolean',
 #else // 0
 option('efi', type : 'boolean',
        description : 'enable EFI support')
+option('userdb', type : 'boolean',
+       description : 'install the elogind-userdbd stack')
 #endif // 0
 option('man', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        value : 'disabled',
@@ -271,8 +273,10 @@ option('pamconfdir', type : 'string',
 #if 0 /// UNNEEDED by elogind
 # option('sshconfdir', type : 'string',
 #        description : 'directory for SSH client configuration ["no" disables]')
-# option('sshdconfdir', type : 'string',
-#        description : 'directory for SSH server configuration ["no" disables]')
+#endif // 0
+option('sshdconfdir', type : 'string',
+       description : 'directory for SSH server configuration ["no" disables]')
+#if 0 /// UNNEEDED by elogind
 # option('sshdprivsepdir', type : 'string',
 #        description : 'directory for SSH privilege separation ["no" disables]', value : '/run/sshd')
 # option('libcryptsetup-plugins-dir', type : 'string',
@@ -320,15 +324,15 @@ option('system-uid-max', type : 'integer', value : 0,
        description : 'maximum system UID')
 option('system-gid-max', type : 'integer', value : 0,
        description : 'maximum system GID')
+option('dynamic-uid-min', type : 'integer', value : 0x0000EF00,
+       description : 'minimum dynamic UID')
+option('dynamic-uid-max', type : 'integer', value : 0x0000FFEF,
+       description : 'maximum dynamic UID')
+option('container-uid-base-min', type : 'integer', value : 0x00080000,
+       description : 'minimum container UID base')
+option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
+       description : 'maximum container UID base')
 #if 0 /// UNNEEDED by elogind
-# option('dynamic-uid-min', type : 'integer', value : 0x0000EF00,
-#        description : 'minimum dynamic UID')
-# option('dynamic-uid-max', type : 'integer', value : 0x0000FFEF,
-#        description : 'maximum dynamic UID')
-# option('container-uid-base-min', type : 'integer', value : 0x00080000,
-#        description : 'minimum container UID base')
-# option('container-uid-base-max', type : 'integer', value : 0x6FFF0000,
-#        description : 'maximum container UID base')
 # option('adm-group', type : 'boolean',
 #        description : 'the ACL for adm group should be added')
 # option('wheel-group', type : 'boolean',

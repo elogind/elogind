@@ -428,7 +428,6 @@ int touch_file(const char *path, bool parents, usec_t stamp, uid_t uid, gid_t gi
 }
 
 
-#if 0 /// UNNEEDED by elogind
 int symlinkat_idempotent(const char *from, int atfd, const char *to, bool make_relative) {
         _cleanup_free_ char *relpath = NULL;
         int r;
@@ -463,6 +462,7 @@ int symlinkat_idempotent(const char *from, int atfd, const char *to, bool make_r
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int symlinkat_atomic_full(const char *from, int atfd, const char *to, bool make_relative) {
         _cleanup_free_ char *relpath = NULL, *t = NULL;
         int r;

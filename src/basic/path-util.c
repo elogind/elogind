@@ -101,7 +101,6 @@ int path_make_absolute_cwd(const char *p, char **ret) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int path_make_relative(const char *from, const char *to, char **ret) {
         _cleanup_free_ char *result = NULL;
         unsigned n_parents;
@@ -220,7 +219,6 @@ int path_make_relative_parent(const char *from_child, const char *to, char **ret
 
         return path_make_relative(from, to, ret);
 }
-#endif // 0
 
 char* path_startswith_strv(const char *p, char * const *strv) {
         assert(p);
