@@ -418,15 +418,16 @@
         <!-- // 0 -->
         <citerefentry><refentrytitle>epoll_ctl</refentrytitle><manvolnum>2</manvolnum></citerefentry>), then
         any <constant>EPOLLHUP</constant> or <constant>EPOLLERR</constant> event seen on them will result in
-        <!-- 0 /// Another wish for the service manager in use not provided by elogind
-        --><!-- else // 0 -->
-        messages, in which case the arrays are combined. Note that the service manager should remove duplicate
-        <!-- // 0 -->
         their automatic removal from the store.</para>
 
         <para>Multiple sets of file descriptors may be sent in separate messages, in which case the sets are
+        <!-- 0 /// Another wish for the service manager in use not provided by elogind
         combined. The service manager removes duplicate file descriptors (those pointing to the same object)
         before passing them to the service.</para>
+        --><!-- else // 0 -->
+        combined. The service manager should remove duplicate file descriptors (those pointing to the same
+        object) before passing them to the service.</para>
+        <!-- // 0 -->
 
         <para>This functionality should be used to implement services that can restart after an explicit
         request or a crash without losing state. Application state can either be serialized to a file in
