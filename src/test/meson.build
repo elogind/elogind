@@ -90,8 +90,8 @@ simple_tests += files(
 #         'test-creds.c',
 #endif // 0
         'test-daemon.c',
+        'test-data-fd-util.c',
 #if 0 /// UNNEEDED by elogind
-#         'test-data-fd-util.c',
 #         'test-date.c',
 #         'test-dev-setup.c',
 #         'test-device-nodes.c',
@@ -267,8 +267,8 @@ simple_tests += files(
         'test-unaligned.c',
 #if 0 /// UNNEEDED by elogind
 #         'test-unit-file.c',
-#         'test-user-record.c',
 #endif // 0
+        'test-user-record.c',
         'test-user-util.c',
         'test-utf8.c',
         'test-verbs.c',
@@ -533,15 +533,15 @@ executables += [
                 'sources' : files('test-utmp.c'),
                 'conditions' : ['ENABLE_UTMP'],
         },
-#if 0 /// elogind does not provide libudev
-#         test_template + {
-#                 'sources' : files('test-varlink.c'),
-#                 'dependencies' : threads,
-#         },
-#         test_template + {
-#                 'sources' : files('test-varlink-idl.c'),
-#                 'dependencies' : threads,
-#         },
+        test_template + {
+                'sources' : files('test-varlink.c'),
+                'dependencies' : threads,
+        },
+        test_template + {
+                'sources' : files('test-varlink-idl.c'),
+                'dependencies' : threads,
+        },
+#if 0 /// elogind does not provide a watchdog
 #         test_template + {
 #                 'sources' : files('test-watchdog.c'),
 #                 'type' : 'unsafe',
