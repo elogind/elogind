@@ -374,7 +374,7 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
 #else // 0
         _cleanup_free_ char *session_name = NULL;
 #endif // 0
-        Session *s;
+        Session *s = NULL;
         int r;
 
         assert(m);
@@ -382,17 +382,14 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
         if (!pidref_is_set(pid))
                 return -EINVAL;
 
-        s = hashmap_get(m->sessions_by_leader, pid);
-        if (s) {
-                r = pidref_verify(pid);
-                if (r < 0)
-                        return r;
-        } else {
 #if 0 /// elogind does not support systemd units, but its own session system
-                r = cg_pidref_get_unit(pid, &unit);
-                if (r >= 0)
-                        s = hashmap_get(m->session_units, unit);
-        }
+        r = manager_get_session_by_leader(m, pid, ret);
+        if (r != 0)
+                return r;
+
+        r = cg_pidref_get_unit(pid, &unit);
+        if (r >= 0)
+                s = hashmap_get(m->session_units, unit);
 
         if (ret)
                 *ret = s;
