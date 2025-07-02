@@ -5,7 +5,6 @@
 #include "fd-util.h"
 #include "log.h"
 #include "socket-util.h"
-
 /// Additional includes needed by elogind
 #include "musl_missing.h"
 

@@ -8,6 +8,8 @@
 #include "log.h"
 #include "main-func.h"
 #include "signal-util.h"
+/// Additional includes needed by elogind
+#include "musl_missing.h"
 
 /* This service offers two Varlink services, both implementing io.systemd.UserDatabase:
  *
@@ -27,6 +29,7 @@ static int run(int argc, char *argv[]) {
         _unused_ _cleanup_(notify_on_cleanup) const char *notify_stop = NULL;
         int r;
 
+        elogind_set_program_name(argv[0]);
         log_setup();
 
         umask(0022);
