@@ -2859,7 +2859,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                 (void) wall("System shutdown has been cancelled",
                             username, tty, logind_wall_tty_filter, m);
 #else // 0
-                r = asprintf(&l, "%s%sThe system shutdown has been cancelled!",
+                r = asprintf(&l, "%s%sSystem shutdown has been cancelled",
                              strempty(m->wall_message),
                              isempty(m->wall_message) ? "" : "\n");
                 if (r < 0) {
@@ -2867,7 +2867,7 @@ static int method_cancel_scheduled_shutdown(sd_bus_message *message, void *userd
                         return 0;
                 }
 
-                wall(l, username, tty, logind_wall_tty_filter, m);
+                (void) wall(l, username, tty, logind_wall_tty_filter, m);
 #endif // 0
         }
 
@@ -3730,7 +3730,6 @@ static int method_set_wall_message(
             m->enable_wall_messages == enable_wall_messages)
                 goto done;
 
-#if 0 /// elogind only calls this for shutdown/reboot, which already needs authorization.
         r = bus_verify_polkit_async(message,
                                     CAP_SYS_ADMIN,
                                     "org.freedesktop.login1.set-wall-message",
@@ -3743,7 +3742,6 @@ static int method_set_wall_message(
                 return r;
         if (r == 0)
                 return 1; /* Will call us back */
-#endif // 0
 
         r = free_and_strdup(&m->wall_message, empty_to_null(wall_message));
         if (r < 0)
