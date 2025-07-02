@@ -80,10 +80,8 @@ TEST(red_green_cross_check_mark) {
                COLOR_MARK_BOOL(!!!b));
 }
 
-#if 0 /// UNNEEDED by elogind
 TEST(print_separator) {
         print_separator();
 }
-#endif // 0
 
 DEFINE_TEST_MAIN(LOG_INFO);

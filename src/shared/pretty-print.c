@@ -286,6 +286,7 @@ int cat_files(const char *file, char **dropins, CatFlags flags) {
 
         return 0;
 }
+#endif // 0
 
 void print_separator(void) {
 
@@ -307,6 +308,7 @@ void print_separator(void) {
                 fputs("\n\n", stdout);
 }
 
+#if 0 /// UNNEEDED by elogind
 static int guess_type(const char **name, char ***ret_prefixes, bool *ret_is_collection, const char **ret_extension) {
         /* Try to figure out if name is like tmpfiles.d/ or systemd/system-presets/,
          * i.e. a collection of directories without a main config file.
