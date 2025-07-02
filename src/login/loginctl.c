@@ -1543,7 +1543,6 @@ static int help(int argc, char *argv[], void *userdata) {
                "  poweroff                 Shut down and power-off the system\n"
                "  reboot                   Shut down and reboot the system\n"
                "  kexec                    Shut down and reboot the system with kexec\n"
-               "  soft-reboot              Shut down and reboot userspace\n"
                "  sleep                    Put the system to sleep (through one of\n"
                "                           the operations below)\n"
                "  suspend                  Suspend the system\n"
@@ -1559,6 +1558,9 @@ static int help(int argc, char *argv[], void *userdata) {
 #if 1 /// elogind supports -f/--force, --no-wall and --dry-run
                "     --no-wall             Do not send wall messages\n"
                "     --dry-run             Only print what would be done\n"
+               "                           Currently supported by verbs: halt, poweroff, reboot,\n"
+               "                           kexec, suspend, hibernate, suspend-then-hibernate and\n"
+               "                           hybrid-sleep.\n"
                "  -f --force               When shutting down, execute action immediately\n"
 #endif // 1
                "     --no-legend           Do not show the headers and footers\n"
@@ -1909,7 +1911,6 @@ static int loginctl_main(int argc, char *argv[], sd_bus *bus) {
                 { "poweroff",              VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "reboot",                VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "kexec",                 VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
-                { "soft-reboot",           VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "sleep",                 VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "suspend",               VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },
                 { "hibernate",             VERB_ANY, 1,    VERB_ONLINE_ONLY, verb_start_system_special    },

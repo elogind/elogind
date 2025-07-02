@@ -50,7 +50,9 @@ int logind_reboot(enum action a) {
                 [ACTION_POWEROFF]               = "PowerOff",
                 [ACTION_REBOOT]                 = "Reboot",
                 [ACTION_KEXEC]                  = "Reboot",
+#if 0 /// elogind can not soft-reboot, the system/service manager could
                 [ACTION_SOFT_REBOOT]            = "Reboot",
+#endif // 0
                 [ACTION_HALT]                   = "Halt",
                 [ACTION_SUSPEND]                = "Suspend",
                 [ACTION_HIBERNATE]              = "Hibernate",
@@ -90,13 +92,15 @@ int logind_reboot(enum action a) {
         SET_FLAG(flags,
                  SD_LOGIND_REBOOT_VIA_KEXEC,
                  a == ACTION_KEXEC || (a == ACTION_REBOOT && getenv_bool("LOGINCTL_SKIP_AUTO_KEXEC") <= 0));
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         /* Try to soft-reboot if /run/nextroot/ is a valid OS tree, but only if it's also a mount point.
          * Otherwise, if people store new rootfs directly on /run/ tmpfs, 'systemctl reboot' would always
          * soft-reboot, as /run/nextroot/ can never go away. */
         SET_FLAG(flags,
                  SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP,
-                 a == ACTION_REBOOT && getenv_bool("LOGINCTL_SKIP_AUTO_SOFT_REBOOT") <= 0 && path_is_mount_point("/run/nextroot") > 0);
+                 a == ACTION_REBOOT && getenv_bool("SYSTEMCTL_SKIP_AUTO_SOFT_REBOOT") <= 0 && path_is_mount_point("/run/nextroot") > 0);
         SET_FLAG(flags, SD_LOGIND_SOFT_REBOOT, a == ACTION_SOFT_REBOOT);
+#endif // 0
 
         r = bus_call_method(bus, bus_login_mgr, method_with_flags, &error, NULL, "t", flags);
         if (r < 0 && FLAGS_SET(flags, SD_LOGIND_SKIP_INHIBITORS) &&
@@ -105,12 +109,14 @@ int logind_reboot(enum action a) {
                 flags &= ~SD_LOGIND_SKIP_INHIBITORS;
                 r = bus_call_method(bus, bus_login_mgr, method_with_flags, &error, NULL, "t", flags);
         }
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         if (r < 0 && FLAGS_SET(flags, SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP) &&
                         sd_bus_error_has_name(&error, SD_BUS_ERROR_INVALID_ARGS)) {
                 sd_bus_error_free(&error);
                 flags &= ~SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP;
                 r = bus_call_method(bus, bus_login_mgr, method_with_flags, &error, NULL, "t", flags);
         }
+#endif // 0
         if (r >= 0)
                 return 0;
         if (!sd_bus_error_has_name(&error, SD_BUS_ERROR_UNKNOWN_METHOD) || a == ACTION_SLEEP)

@@ -2459,17 +2459,21 @@ static int method_do_shutdown_or_sleep(
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS,
                                                 "Invalid flags parameter");
 
+#if 0 /// elogind can not soft-reboot, the system/service manager could
                 if (FLAGS_SET(flags, (SD_LOGIND_REBOOT_VIA_KEXEC|SD_LOGIND_SOFT_REBOOT)))
                         return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS,
                                                 "Both reboot via kexec and soft reboot selected, which is not supported");
+#endif // 0
 
                 if (action != HANDLE_REBOOT) {
                         if (FLAGS_SET(flags, SD_LOGIND_REBOOT_VIA_KEXEC))
                                 return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS,
                                                         "Reboot via kexec option is only applicable with reboot operations");
+#if 0 /// elogind can not soft-reboot, the system/service manager could
                         if (flags & (SD_LOGIND_SOFT_REBOOT|SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP))
                                 return sd_bus_error_set(error, SD_BUS_ERROR_INVALID_ARGS,
                                                         "Soft reboot option is only applicable with reboot operations");
+#endif // 0
                 }
         } else {
                 /* Old style method: no flags parameter, but interactive bool passed as boolean in
@@ -2486,11 +2490,16 @@ static int method_do_shutdown_or_sleep(
 
         const HandleActionData *a = NULL;
 
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         if (FLAGS_SET(flags, SD_LOGIND_SOFT_REBOOT) ||
             (FLAGS_SET(flags, SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP) && path_is_os_tree("/run/nextroot") > 0))
                 a = handle_action_lookup(HANDLE_SOFT_REBOOT);
         else if (FLAGS_SET(flags, SD_LOGIND_REBOOT_VIA_KEXEC) && kexec_loaded())
                 a = handle_action_lookup(HANDLE_KEXEC);
+#else // 0
+        if (FLAGS_SET(flags, SD_LOGIND_REBOOT_VIA_KEXEC) && kexec_loaded())
+                a = handle_action_lookup(HANDLE_KEXEC);
+#endif // 0
 
         if (action == HANDLE_SLEEP) {
                 HandleAction selected;

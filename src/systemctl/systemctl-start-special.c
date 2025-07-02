@@ -200,6 +200,7 @@ int verb_start_special(int argc, char *argv[], void *userdata) {
                 case ACTION_REBOOT:
                 case ACTION_KEXEC:
                 case ACTION_HALT:
+#if 0 /// elogind can not soft-reboot, the system/service manager could
                 case ACTION_SOFT_REBOOT:
                         if (arg_when == 0) {
                                 r = logind_reboot(a);
@@ -218,6 +219,7 @@ int verb_start_special(int argc, char *argv[], void *userdata) {
                          * for this, as logind's shutdown operations are always non-blocking. */
                         arg_no_block = true;
                         break;
+#endif // 0
 
                 case ACTION_SUSPEND:
                 case ACTION_HIBERNATE:

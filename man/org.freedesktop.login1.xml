@@ -675,6 +675,7 @@ node /org/freedesktop/login1 {
       <function>HibernateWithFlags()</function>, <function>HybridSleepWithFlags()</function>,
       <function>SuspendThenHibernateWithFlags()</function>, and <function>Sleep()</function> take
       <varname>flags</varname> to allow for extendability, defined as follows:</para>
+      <!-- 0 /// elogind can not soft-reboot, the system/service manager could
       <programlisting>
 #define SD_LOGIND_ROOT_CHECK_INHIBITORS          (UINT64_C(1) &lt;&lt; 0)
 #define SD_LOGIND_KEXEC_REBOOT                   (UINT64_C(1) &lt;&lt; 1)
@@ -682,18 +683,29 @@ node /org/freedesktop/login1 {
 #define SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP (UINT64_C(1) &lt;&lt; 3)
 #define SD_LOGIND_SKIP_INHIBITORS                (UINT64_C(1) &lt;&lt; 4)
 </programlisting>
+      --><!-- else // 0 -->
+      <programlisting>
+#define SD_LOGIND_ROOT_CHECK_INHIBITORS          (UINT64_C(1) &lt;&lt; 0)
+#define SD_LOGIND_KEXEC_REBOOT                   (UINT64_C(1) &lt;&lt; 1)
+#define SD_LOGIND_SKIP_INHIBITORS                (UINT64_C(1) &lt;&lt; 4)
+</programlisting>
+<!-- // 0 -->
       <para>When the <varname>flags</varname> is 0 then these methods behave just like the versions without
       flags. Since elogind version 257 active inhibitors are honoured by default for privileged users too.
       <constant>SD_LOGIND_ROOT_CHECK_INHIBITORS</constant> (0x01) now only applies to weak inhibitors, to
       request that they honoured for privileged users too, since they ignore them by default. A new flag
       <constant>SD_LOGIND_SKIP_INHIBITORS</constant> (0x04) can be specified to bypass all types of
       inhibitors. When <constant>SD_LOGIND_KEXEC_REBOOT</constant> (0x02) is set, then
+      <!-- 0 /// elogind can not soft-reboot, the system/service manager could
       <function>RebootWithFlags()</function> performs a kexec reboot if kexec kernel is loaded. When
       <constant>SD_LOGIND_SOFT_REBOOT</constant> (0x04) is set, or
       <constant>SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP</constant> (0x08) is set and a new root file system
       has been set up on <literal>/run/nextroot/</literal>, then <function>RebootWithFlags()</function>
       performs a userspace reboot only. <constant>SD_LOGIND_SOFT_REBOOT_IF_NEXTROOT_SET_UP</constant> and
       <constant>SD_LOGIND_KEXEC_REBOOT</constant> can be combined, with soft-reboot having precedence.
+      --><!-- else // 0 -->
+      <function>RebootWithFlags()</function> performs a kexec reboot if kexec kernel is loaded.
+      <!-- // 0 -->
       </para>
 
       <para><function>SetRebootParameter()</function> sets a parameter for a subsequent reboot operation.
@@ -786,8 +798,13 @@ node /org/freedesktop/login1 {
       <function>PrepareForShutdownWithMetadata()</function> signal additionally sends a list of key/value
       pair metadata fields. Currently it sends a <varname>type</varname> string which defines the type of
       shutdown. The type can be one of <literal>power-off</literal>, <literal>reboot</literal>,
+      <!-- 0 /// elogind can not soft-reboot, the system/service manager could
       <literal>halt</literal>, <literal>kexec</literal> or <literal>soft-reboot</literal>. This signal is
       sent first, followed by <function>PrepareForShutdown()</function> (for backward compatibility).</para>
+      --><!-- else // 0 -->
+      <literal>halt</literal> or <literal>kexec</literal>. This signal is sent first, followed by
+      <function>PrepareForShutdown()</function> (for backward compatibility).</para>
+      <!-- // 0 -->
     </refsect2>
 
     <refsect2>
@@ -837,9 +854,15 @@ node /org/freedesktop/login1 {
       metadata fields. Currently it lists a <varname>preparing</varname> boolean that corresponds to the
       <varname>PreparingForShutdown</varname> property, and, if a shutdown is being prepared, it will also
       contain a <varname>type</varname> string which defines the type of shutdown. The type can be one of
+      <!-- 0 /// elogind can not soft-reboot, the system/service manager could
       <literal>power-off</literal>, <literal>reboot</literal>, <literal>halt</literal>,
       <literal>kexec</literal> or <literal>soft-reboot</literal>. Note that these properties do not send out
       <function>PropertyChanged</function> signals.</para>
+      --><!-- else // 0 -->
+      <literal>power-off</literal>, <literal>reboot</literal>, <literal>halt</literal> or
+      <literal>kexec</literal>. Note that these properties do not send out <function>PropertyChanged</function>
+      signals.</para>
+      <!-- // 0 -->
 
       <para>The <varname>RebootParameter</varname> property shows the value set with the
       <function>SetRebootParameter()</function> method described above.</para>

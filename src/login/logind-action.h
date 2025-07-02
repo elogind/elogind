@@ -11,8 +11,12 @@ typedef enum HandleAction {
         HANDLE_REBOOT,
         HANDLE_HALT,
         HANDLE_KEXEC,
+#if 0 /// elogind can not soft-reboot, the system/service manager could
         HANDLE_SOFT_REBOOT,
         _HANDLE_ACTION_SHUTDOWN_LAST = HANDLE_SOFT_REBOOT,
+#else // 0
+        _HANDLE_ACTION_SHUTDOWN_LAST = HANDLE_KEXEC,
+#endif // 0
 
         HANDLE_SUSPEND,
         _HANDLE_ACTION_SLEEP_FIRST = HANDLE_SUSPEND,
