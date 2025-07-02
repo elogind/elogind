@@ -814,6 +814,7 @@ int table_set_rgap_underline(Table *t, TableCell *cell, bool b) {
         d->rgap_underline = b;
         return 1;
 }
+#endif // 0
 
 int table_set_url(Table *t, TableCell *cell, const char *url) {
         _cleanup_free_ char *copy = NULL;
@@ -834,7 +835,6 @@ int table_set_url(Table *t, TableCell *cell, const char *url) {
 
         return free_and_replace(table_get_data(t, cell)->url, copy);
 }
-#endif // 0
 
 int table_set_uppercase(Table *t, TableCell *cell, bool b) {
         TableData *d;
@@ -1193,13 +1193,13 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         r = table_set_rgap_underline(t, last_cell, u);
                         goto check;
                 }
+#endif // 0
 
                 case TABLE_SET_URL: {
                         const char *u = va_arg(ap, const char*);
                         r = table_set_url(t, last_cell, u);
                         goto check;
                 }
-#endif // 0
 
                 case TABLE_SET_UPPERCASE: {
                         int u = va_arg(ap, int);

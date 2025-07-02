@@ -44,6 +44,7 @@ endif
 #          ['_timedatectl',              'ENABLE_TIMEDATED']]
 #else // 0
 items = [['_busctl',            ''],
+         ['_varlinkctl',        ''],
          ['_loginctl',          ''],
          ['_elogind-inhibit',   '']]
 #endif // 0

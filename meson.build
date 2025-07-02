@@ -2899,8 +2899,8 @@ subdir('src/login')
 # subdir('src/user-sessions')
 #endif // 0
 subdir('src/userdb')
+subdir('src/varlinkctl')
 #if 0 /// UNNEEDED by elogind
-# subdir('src/varlinkctl')
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
 # subdir('src/vmspawn')
