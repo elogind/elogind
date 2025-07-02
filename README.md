@@ -24,9 +24,10 @@ instead if you like elogind and want to say thanks.
 
 Build Status
 ------------
-* CI Status main       : [![elogind CI Status main](https://github.com/elogind/elogind/workflows/Build_on_Ubuntu/badge.svg?branch=main)](https://github.com/elogind/elogind/actions)
-* CI Status v246-stable: [![elogind CI Status v246-stable](https://github.com/elogind/elogind/workflows/Build_on_Ubuntu/badge.svg?branch=v246-stable)](https://github.com/elogind/elogind/actions)
-* CI Status v252-stable: [![elogind CI Status v252-stable](https://github.com/elogind/elogind/workflows/Build_on_Ubuntu/badge.svg?branch=v252-stable)](https://github.com/elogind/elogind/actions)
+* CI Status main       : [![elogind CI Status main](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/elogind/elogind/actions)
+* CI Status v252-stable: [![elogind CI Status v252-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v252-stable)](https://github.com/elogind/elogind/actions)
+* CI Status v255-stable: [![elogind CI Status v255-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v255-stable)](https://github.com/elogind/elogind/actions)
+* CI Status v257-stable: [![elogind CI Status v257-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v257-stable)](https://github.com/elogind/elogind/actions)
 
 Contributing
 ============
@@ -171,10 +172,10 @@ LGPLv2.1+ for all code
 Dependencies
 ============
 
-  * glibc >= 2.16 (*or* musl-libc >= 1.1.20)
+  * glibc >= 2.19 (*or* musl-libc >= 1.1.20)
   * libcap
   * libudev
-  * PAM >= 1.1.2 (optional)
+  * PAM >= 1.7.0 (optional)
   * libacl (optional)
   * libselinux (optional)
   * libaudit (optional)
@@ -220,7 +221,7 @@ Useful commands:
   * `DESTDIR=... ninja install`
   * `make DEBUG=YES`  
     The Makefile is a full convenience wrapper, that allows to use meson/ninja in  
-    Makefile compatible IDEs like CLion.  
+    Makefile compatible IDEs like CLion or vscode.
     Note: For maximum control you should use meson/ninja directly instead.  
 
 A tarball can be created with:  

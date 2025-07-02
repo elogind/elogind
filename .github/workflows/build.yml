@@ -4,14 +4,16 @@ on:
   push:
     branches:
       - main
-      - v246-stable
       - v252-stable
+      - v255-stable
+      - v257-stable
       - github-actions-test
   pull_request:
     branches:
       - main
-      - v246-stable
       - v252-stable
+      - v255-stable
+      - v257-stable
       - github-actions-test
 
 env:
