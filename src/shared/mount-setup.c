@@ -116,8 +116,8 @@ static const MountPoint mount_table[] = {
 #if ENABLE_PSTORE
         { "pstore",      "/sys/fs/pstore",            "pstore",     NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           NULL,          MNT_NONE                   },
-#endif // 0
 #endif
+#endif // 0
 #if ENABLE_EFI
         { "efivarfs",    "/sys/firmware/efi/efivars", "efivarfs",   NULL,                                       MS_NOSUID|MS_NOEXEC|MS_NODEV,
           is_efi_boot,   MNT_NONE                   },
