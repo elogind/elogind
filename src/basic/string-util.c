@@ -1032,7 +1032,7 @@ char* strextendn(char **x, const char *s, size_t l) {
 
         return *x;
 }
-
+#endif // 0
 char* strrep(const char *s, unsigned n) {
         char *r, *p;
         size_t l;
@@ -1051,6 +1051,7 @@ char* strrep(const char *s, unsigned n) {
         return r;
 }
 
+#if 0 /// UNNEEDED by elogind
 int split_pair(const char *s, const char *sep, char **l, char **r) {
         char *x, *a, *b;
 

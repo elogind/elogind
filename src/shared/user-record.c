@@ -2223,7 +2223,6 @@ const char** user_record_self_modifiable_privileged(UserRecord *h) {
         return user_record_disposition(h) == USER_REGULAR ? (const char**) default_fields : NULL;
 }
 
-#if 0 /// UNNEEDED by elogind
 static int remove_self_modifiable_json_fields_common(UserRecord *current, sd_json_variant **target) {
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *v = NULL, *blobs = NULL;
         char **allowed;
@@ -2389,7 +2388,6 @@ int user_record_self_changes_allowed(UserRecord *current, UserRecord *incoming) 
 
         return sd_json_variant_equal(vc, vi);
 }
-#endif // 0
 
 uint64_t user_record_ratelimit_next_try(UserRecord *h) {
         assert(h);

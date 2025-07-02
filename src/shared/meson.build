@@ -234,6 +234,7 @@ shared_sources = files(
         'copy.c',
         'creds-util.c',
         'daemon-util.c',
+        'data-fd-util.c',
         'dns-domain.c',
         'efi-api.c',
         'efi-loader.c',

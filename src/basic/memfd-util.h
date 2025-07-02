@@ -11,8 +11,8 @@ int memfd_create_wrapper(const char *name, unsigned mode);
 int memfd_new(const char *name);
 #if 0 /// UNNEEDED by elogind
 int memfd_new_and_map(const char *name, size_t sz, void **p);
-int memfd_new_and_seal(const char *name, const void *data, size_t sz);
 #endif // 0
+int memfd_new_and_seal(const char *name, const void *data, size_t sz);
 
 int memfd_add_seals(int fd, unsigned int seals);
 #if 0 /// UNNEEDED by elogind
