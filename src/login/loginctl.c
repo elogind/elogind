@@ -1599,6 +1599,8 @@ static int help(int argc, char *argv[], void *userdata) {
                "     --boot-loader-entry=NAME\n"
                "                           Boot into a specific boot loader entry on next boot\n"
 #endif
+               "     --reboot-argument=ARG\n"
+               "                           Specify argument string to pass to reboot()\n"
                "     --when=TIME           Schedule halt/power-off/reboot/kexec action after\n"
                "                           a certain timestamp\n"
 #endif // 1
@@ -1632,6 +1634,7 @@ static int parse_argv(int argc, char *argv[]) {
                 ARG_BOOT_LOADER_MENU,
                 ARG_BOOT_LOADER_ENTRY,
 #endif
+                ARG_REBOOT_ARG,
                 ARG_WHEN,
 #endif // 1
         };
@@ -1669,6 +1672,7 @@ static int parse_argv(int argc, char *argv[]) {
                 { "boot-loader-menu",  required_argument, NULL, ARG_BOOT_LOADER_MENU    },
                 { "boot-loader-entry", required_argument, NULL, ARG_BOOT_LOADER_ENTRY   },
 #endif
+                { "reboot-argument",   required_argument, NULL, ARG_REBOOT_ARG          },
                 { "when",              required_argument, NULL, ARG_WHEN                },
 #endif // 1
                 {}
@@ -1837,6 +1841,10 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_boot_loader_entry = empty_to_null(optarg);
                         break;
 #endif
+                case ARG_REBOOT_ARG:
+                        arg_reboot_argument = optarg;
+                        break;
+
                 case ARG_WHEN:
                         if (streq(optarg, "show")) {
                                 arg_action = ACTION_SYSTEMCTL_SHOW_SHUTDOWN;
