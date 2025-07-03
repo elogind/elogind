@@ -81,26 +81,25 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
                 log_debug_elogind("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
                 free(t);
 #endif // elogind debug
-                if (r < 0)
-                        return 0;
-
-                // Find one with a VT (Really, sessions should hold only one active session anyway!)
-                STRV_FOREACH(session, sessions) {
-                        int k;
-                        k = sd_session_get_vt(*session, &vt);
-                        if (k >= 0) {
-                                log_debug_elogind("Active session %s with VT %u found", *session, vt);
-                                break;
+                if (r > 0) {
+                        // Find one with a VT (Really, sessions should hold only one active session anyway!)
+                        STRV_FOREACH(session, sessions) {
+                                int k;
+                                k = sd_session_get_vt(*session, &vt);
+                                if (k >= 0) {
+                                        log_debug_elogind("Active session %s with VT %u found", *session, vt);
+                                        break;
+                                }
                         }
-                }
 
-                strv_free(sessions);
+                        strv_free(sessions);
 
-                // Get to a safe non-gui VT
-                if ( (vt > 0) && (vt < 63) ) {
-                        log_debug_elogind("Storing VT %u and switching to VT %d", vt, 63);
-                        *vtnr = vt;
-                        (void) chvt(63);
+                        // Get to a safe non-gui VT
+                        if ( (vt > 0) && (vt < 63) ) {
+                                log_debug_elogind("Storing VT %u and switching to VT %d", vt, 63);
+                                *vtnr = vt;
+                                (void) chvt(63);
+                        }
                 }
 
                 // Okay, go to sleep.
@@ -117,7 +116,10 @@ static int nvidia_sleep(Manager* m, SleepOperation operation, unsigned* vtnr) {
         } else {
                 // Wakeup the device
                 log_debug_elogind("Writing 'resume' into %s", drv_suspend);
-                (void) write_string_file(drv_suspend, "resume", WRITE_STRING_FILE_DISABLE_BUFFER);
+                r = write_string_file(drv_suspend, "resume", WRITE_STRING_FILE_DISABLE_BUFFER);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to write '%s' to %s: %m", "resume", drv_suspend);
+
                 // Then try to change back
                 if (*vtnr > 0) {
                         log_debug_elogind("Switching back to VT %u", *vtnr);
