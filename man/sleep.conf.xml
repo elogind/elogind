@@ -259,7 +259,47 @@
 <!-- // 0 -->
           Defaults to 1h.</para></listitem>
       </varlistentry>
-<!-- /// 1 elogind has two extra values -->
+
+<!-- /// 1 elogind has several extra values -->
+      <varlistentry>
+        <term><varname>AllowPowerOffInterrupts=</varname></term>
+        <term><varname>AllowSuspendInterrupts=</varname></term>
+
+        <listitem><para>Allow hook scripts to interrupt a poweroff operation by setting <literal>AllowPowerOffInterrupts</literal>
+            to <literal>yes</literal> and/or to interrupt a sleep operation by setting <literal>AllowSuspendInterrupts</literal> to
+            <literal>yes</literal>.
+            The default value is <literal>no</literal>.
+            Please see
+            <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more information about
+            hook scripts.</para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>BroadcastPowerOffInterrupts=</varname></term>
+        <term><varname>BroadcastSuspendInterrupts=</varname></term>
+
+          <listitem><para>By default an interrupt of a power off or a suspend is broadcasted. If you do not whish these broadcasts
+            to happen, change <literal>BroadcastPowerOffInterrupts</literal> and/or <literal>BroadcastSuspendInterrupts</literal>
+            to <literal>no</literal> in <filename>/etc/elogind/sleep.conf</filename>.
+            Please see
+            <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more information about
+            hook scripts.</para></listitem>
+          </para></listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term><varname>HandleNvidiaSleep=</varname></term>
+
+        <listitem><para>If you have an Nvidia graphics card that needs an old driver which does not yet install its own hook script
+        like <filename>/lib/elogind/system-sleep/nvidia</filename> or similar, you might set <literal>HandleNvidiaSleep</literal> to
+        <literal>yes</literal> in <filename>/etc/elogind/sleep.conf</filename> to have elogind try to suspend/hibernate your Nvidia
+        graphics card.
+        Please note that this can only work if your nvidia kernel module was loaded with the
+        <literal>NVreg_PreserveVideoMemoryAllocations</literal> module option set to <literal>1</literal>.
+        Also please do not set <literal>HandleNvidiaSleep</literal> to <literal>yes</literal> if the driver has installed a hook
+        script, as the script will always be executed.</para></listitem>
+      </varlistentry>
+
       <varlistentry>
         <term><varname>SuspendByUsing=</varname></term>
         <term><varname>HibernateByUsing=</varname></term>
