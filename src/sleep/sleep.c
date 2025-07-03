@@ -85,10 +85,9 @@ static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* 
                 // Wakeup the device
                 log_debug_elogind("Writing 'resume' into %s", drv_suspend);
                 k = write_string_stream(f, "resume", WRITE_STRING_FILE_DISABLE_BUFFER);
-                if (k >= 0) {
-                        return 1;
+                if (k < 0) {
+                        RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to %s: %m", "resume", drv_suspend));
                 }
-                RET_GATHER(r, log_debug_errno(k, "Failed to write '%s' to %s: %m", "resume", drv_suspend));
 
                 // Then try to change back
                 if (*vtnr > 0) {
@@ -102,20 +101,21 @@ static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* 
         // Find the (active) sessions of the sleep sender
         *vtnr = 0;
         r = sd_uid_get_sessions(m ? m->scheduled_sleep_uid : 0, 1, &sessions);
+
 #if ENABLE_DEBUG_ELOGIND
         char *t = strv_join(sessions, " ");
         log_debug_elogind("sd_uid_get_sessions() returned %d, result is: %s", r, strnull(t));
         free(t);
 #endif // elogind debug
-        if (r < 0)
-                return 0;
 
-        // Find one with a VT (Really, sessions should hold only one active session anyway!)
-        STRV_FOREACH(session, sessions) {
-                int s = sd_session_get_vt(*session, &vt);
-                if (s >= 0) {
-                        log_debug_elogind("Active session %s with VT %u found", *session, vt);
-                        break;
+        if (r > 0) {
+                // Find one with a VT (Really, sessions should hold only one active session anyway!)
+                STRV_FOREACH(session, sessions) {
+                        int s = sd_session_get_vt(*session, &vt);
+                        if (s >= 0) {
+                                log_debug_elogind("Active session %s with VT %u found", *session, vt);
+                                break;
+                        }
                 }
         }
 
