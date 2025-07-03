@@ -48,16 +48,17 @@ VERSION    ?= 9999
 # -----------------------------------------------------------------------------------
 # --- Package configuration
 # -----------------------------------------------------------------------------------
-USE_ACL     ?= enabled
-USE_AUDIT   ?= enabled
-USE_EFI     ?= false
-USE_HTML    ?= auto
-USE_MAN     ?= auto
-USE_SELINUX ?= disabled
-USE_SMACK   ?= true
-USE_USERDB  ?= true
-USE_UTMP    ?= true
-USE_XENCTRL ?= auto
+USE_ACL      ?= enabled
+USE_AUDIT    ?= enabled
+USE_AUTOKILL ?= false
+USE_EFI      ?= false
+USE_HTML     ?= auto
+USE_MAN      ?= auto
+USE_SELINUX  ?= disabled
+USE_SMACK    ?= true
+USE_USERDB   ?= true
+USE_UTMP     ?= true
+USE_XENCTRL  ?= auto
 
 # -----------------------------------------------------------------------------------
 # Tools needed by the wrapper
@@ -198,6 +199,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Daudit=$(USE_AUDIT) \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddbus=enabled \
+			-Ddefault-kill-user-processes=$(USE_AUTOKILL) \
 			-Defi=$(USE_EFI) \
 			-Dhtml=$(USE_HTML) \
 			-Dman=$(USE_MAN) \
