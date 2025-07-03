@@ -144,9 +144,9 @@ int bus_introspect_implementations(
                 return log_error_errno(r, "Failed to write introspection data: %m");
 
         /* Check if there is a non-fallback path that applies to the given interface, also
-         * print it. This is useful in the case of units: o.fd.elogind1.Service is declared
-         * as a fallback vtable for o/fd/elogind1/unit, and we also want to print
-         * o.fd.elogind1.Unit, which is the non-fallback implementation. */
+         * print it. This is useful in the case of units: o.fd.systemd1.Service is declared
+         * as a fallback vtable for o/fd/systemd1/unit, and we also want to print
+         * o.fd.systemd1.Unit, which is the non-fallback implementation. */
         if (impl->fallback_vtables && is_interface)
                 main_impl = find_implementation(impl->path, bus_objects);
 

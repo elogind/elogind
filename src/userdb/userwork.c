@@ -551,9 +551,9 @@ static int run(int argc, char *argv[]) {
                         break;
                 }
 
-                (void) rename_process("systemd-userwork: waiting...");
+                (void) rename_process("elogind-userwork: waiting...");
                 fd = RET_NERRNO(accept4(listen_fd, NULL, NULL, SOCK_NONBLOCK|SOCK_CLOEXEC));
-                (void) rename_process("systemd-userwork: processing...");
+                (void) rename_process("elogind-userwork: processing...");
 
                 if (fd == -EAGAIN)
                         continue; /* The listening socket has SO_RECVTIMEO set, hence a timeout is expected

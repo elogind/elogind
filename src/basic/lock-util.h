@@ -25,12 +25,10 @@ void release_lock_file(LockFile *f);
 
 /* POSIX locks with the same interface as flock(). */
 int posix_lock(int fd, int operation);
-#if 0 /// UNNEEDED by elogind
 void posix_unlockpp(int **fd);
 
 #define CLEANUP_POSIX_UNLOCK(fd)                                   \
         _cleanup_(posix_unlockpp) _unused_ int *CONCATENATE(_cleanup_posix_unlock_, UNIQ) = &(fd)
-#endif // 0
 
 /* Open File Description locks with the same interface as flock(). */
 int unposix_lock(int fd, int operation);

@@ -281,15 +281,15 @@ _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_varlink, sd_varlink_flush_close_unref);
 _SD_DEFINE_POINTER_CLEANUP_FUNC(sd_varlink_server, sd_varlink_server_unref);
 
 /* These are local errors that never cross the wire, and are our own invention */
-#define SD_VARLINK_ERROR_DISCONNECTED "io.elogind.Disconnected"
-#define SD_VARLINK_ERROR_TIMEOUT "io.elogind.TimedOut"
-#define SD_VARLINK_ERROR_PROTOCOL "io.elogind.Protocol"
+#define SD_VARLINK_ERROR_DISCONNECTED "io.systemd.Disconnected"
+#define SD_VARLINK_ERROR_TIMEOUT "io.systemd.TimedOut"
+#define SD_VARLINK_ERROR_PROTOCOL "io.systemd.Protocol"
 
 /* This one we invented, and use for generically propagating system errors (errno) to clients */
-#define SD_VARLINK_ERROR_SYSTEM "io.elogind.System"
+#define SD_VARLINK_ERROR_SYSTEM "io.systemd.System"
 
 /* This one we invented and is a weaker version of "org.varlink.service.PermissionDenied", and indicates that if user would allow interactive auth, we might allow access */
-#define SD_VARLINK_ERROR_INTERACTIVE_AUTHENTICATION_REQUIRED "io.elogind.InteractiveAuthenticationRequired"
+#define SD_VARLINK_ERROR_INTERACTIVE_AUTHENTICATION_REQUIRED "io.systemd.InteractiveAuthenticationRequired"
 
 /* These are errors defined in the Varlink spec */
 #define SD_VARLINK_ERROR_INTERFACE_NOT_FOUND "org.varlink.service.InterfaceNotFound"

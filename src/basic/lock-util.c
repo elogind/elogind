@@ -162,7 +162,6 @@ int unposix_lock(int fd, int operation) {
         return fcntl_lock(fd, operation, /*ofd=*/ true);
 }
 
-#if 0 /// UNNEEDED by elogind
 void posix_unlockpp(int **fd) {
         assert(fd);
 
@@ -173,6 +172,7 @@ void posix_unlockpp(int **fd) {
         *fd = NULL;
 }
 
+#if 0 /// UNNEEDED by elogind
 void unposix_unlockpp(int **fd) {
         assert(fd);
 

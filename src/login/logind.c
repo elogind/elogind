@@ -40,6 +40,8 @@
 #include "terminal-util.h"
 #include "udev-util.h"
 /// Additional includes needed by elogind
+#include "core-varlink.h"
+#include "dynamic-user.h"
 #include "elogind.h"
 #include "musl_missing.h"
 #include "user-util.h"
@@ -132,7 +134,15 @@ static Manager* manager_free(Manager *m) {
         if (!m)
                 return NULL;
 
-        log_debug_elogind("%s", "Tearing down all references (manager_unref) ...");
+#if 1 /// elogind provides the varlink server it needs, plus dynamic users
+        log_debug_elogind("%s", "Shutding down varlink server ...");
+        manager_varlink_done(m);
+
+        dynamic_user_vacuum(m, false);
+        hashmap_free(m->dynamic_users);
+#endif // 1
+
+        log_debug_elogind("%s", "Freeing hashmaps ...");
         hashmap_free(m->devices);
         hashmap_free(m->seats);
         hashmap_free(m->sessions);
@@ -151,6 +161,7 @@ static Manager* manager_free(Manager *m) {
         hashmap_free(m->session_units);
 #endif // 0
 
+        log_debug_elogind("%s", "Unreferencing event sources ...");
         sd_event_source_unref(m->idle_action_event_source);
         sd_event_source_unref(m->inhibit_timeout_source);
         sd_event_source_unref(m->scheduled_shutdown_timeout_source);
@@ -1225,13 +1236,19 @@ static int manager_startup(Manager *m) {
         /* Remove stale objects before we start them */
         manager_gc(m, false);
 
-        /* Reserve the special reserved VT */
 #if 0 /// elogind does not support autospawning of vts
+        /* Reserve the special reserved VT */
         manager_reserve_vt(m);
 #endif // 0
 
         /* Read in utmp if it exists */
         manager_read_utmp(m);
+
+#if 1 /// As systemd does not provide a varlink server, elogind has to do it itslf
+        r = manager_varlink_init(m);
+        if (r < 0)
+                log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
+#endif // 1
 
         /* And start everything */
         HASHMAP_FOREACH(seat, m->seats)
