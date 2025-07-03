@@ -177,7 +177,7 @@ static int userdb_on_query_reply(
                  * completely invalid user name. */
                 if (STR_IN_SET(error_id,
                                "io.systemd.UserDatabase.NoRecordFound",
-                               "io.elogind.UserDatabase.ConflictingRecordFound") ||
+                               "io.systemd.UserDatabase.ConflictingRecordFound") ||
                     sd_varlink_error_is_invalid_parameter(error_id, parameters, "userName") ||
                     sd_varlink_error_is_invalid_parameter(error_id, parameters, "groupName"))
                         r = -ESRCH;
@@ -439,7 +439,7 @@ static int userdb_start_query(
             (!only || strv_contains(only, "io.systemd.Multiplexer"))) {
                 _cleanup_(sd_json_variant_unrefp) sd_json_variant *patched_query = sd_json_variant_ref(query);
 
-                r = sd_json_variant_set_field_string(&patched_query, "service", "io.elogind.Multiplexer");
+                r = sd_json_variant_set_field_string(&patched_query, "service", "io.systemd.Multiplexer");
                 if (r < 0)
                         return log_debug_errno(r, "Unable to set service JSON field: %m");
 
@@ -622,26 +622,32 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *query = NULL;
         int r;
 
+        log_debug_elogind("Username '%s' is valid: %s", name, valid_user_group_name(name, VALID_USER_RELAX) ? "true" : "false");
         if (!valid_user_group_name(name, VALID_USER_RELAX))
                 return -EINVAL;
 
         r = sd_json_buildo(&query, SD_JSON_BUILD_PAIR("userName", SD_JSON_BUILD_STRING(name)));
+        log_debug_elogind("sd_json_buildo returned: %d", r);
         if (r < 0)
                 return r;
 
         iterator = userdb_iterator_new(LOOKUP_USER, flags);
+        log_debug_elogind("userdb_iterator_new succeeded: %s", iterator ? "true" : "false");
         if (!iterator)
                 return -ENOMEM;
 
         r = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", false, query, flags);
+        log_debug_elogind("userdb_start_query returned: %d", r);
         if (r >= 0) {
                 r = userdb_process(iterator, ret, NULL, NULL, NULL);
+                log_debug_elogind("userdb_process returned: %d", r);
                 if (r >= 0)
                         return r;
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_DROPIN) && !iterator->dropin_covered) {
                 r = dropin_user_record_by_name(name, NULL, flags, ret);
+                log_debug_elogind("dropin_user_record_by_name returned: %d", r);
                 if (r >= 0)
                         return r;
         }
@@ -653,6 +659,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                 if (r >= 0) {
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
+                        log_debug_elogind("nss_user_record_by_name returned: %d", r);
                         if (r >= 0)
                                 return r;
                 }
@@ -665,6 +672,8 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                 if (streq(name, NOBODY_USER_NAME) && synthesize_nobody())
                         return synthetic_nobody_user_build(ret);
         }
+
+        log_debug_elogind("userdb_by_name will return: %d", r);
 
         return r;
 }

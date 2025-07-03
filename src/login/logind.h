@@ -25,6 +25,7 @@ typedef struct Manager Manager;
 
 /// Additional includes needed by elogind
 #include "cgroup-util.h"
+#include "sd-varlink.h"
 #include "sleep-config.h"
 
 #if 1 /// elogind has to ident itself and needs some systemd manager flags
@@ -108,6 +109,11 @@ struct Manager {
 
         /* To wake up sleeping consumers using the right operation, the manager must know what is going on. */
         const HandleActionData *sleep_fork_action;
+
+        /* Dynamic users/groups, indexed by their name */
+        Hashmap *dynamic_users;
+
+        sd_varlink_server *varlink_server;
 #endif // 1
 
         Seat *seat0;
@@ -258,10 +264,25 @@ int manager_read_efi_boot_loader_entries(Manager *m);
 #if 1 /// elogind needs a few priority enums from the systemd manager.h
 enum {
         /* most important … */
-        EVENT_PRIORITY_CGROUP_AGENT      = SD_EVENT_PRIORITY_NORMAL-10, /* cgroupv1 */
+        //EVENT_PRIORITY_USER_LOOKUP       = SD_EVENT_PRIORITY_NORMAL-12,
+        //EVENT_PRIORITY_MOUNT_TABLE       = SD_EVENT_PRIORITY_NORMAL-11,
+        //EVENT_PRIORITY_SWAP_TABLE        = SD_EVENT_PRIORITY_NORMAL-11,
+        //EVENT_PRIORITY_CGROUP_AGENT      = SD_EVENT_PRIORITY_NORMAL-10, /* cgroupv1 */
         EVENT_PRIORITY_CGROUP_INOTIFY    = SD_EVENT_PRIORITY_NORMAL-10, /* cgroupv2 */
-        EVENT_PRIORITY_CGROUP_OOM        = SD_EVENT_PRIORITY_NORMAL-9,
-        EVENT_PRIORITY_CGROUP_EMPTY      = SD_EVENT_PRIORITY_NORMAL-2,
+        //EVENT_PRIORITY_CGROUP_OOM        = SD_EVENT_PRIORITY_NORMAL-9,
+        //EVENT_PRIORITY_PIDREF            = SD_EVENT_PRIORITY_NORMAL-8,
+        //EVENT_PRIORITY_HANDOFF_TIMESTAMP = SD_EVENT_PRIORITY_NORMAL-7,
+        //EVENT_PRIORITY_EXEC_FD           = SD_EVENT_PRIORITY_NORMAL-6,
+        //EVENT_PRIORITY_NOTIFY            = SD_EVENT_PRIORITY_NORMAL-5,
+        //EVENT_PRIORITY_SIGCHLD           = SD_EVENT_PRIORITY_NORMAL-4,
+        //EVENT_PRIORITY_SIGNALS           = SD_EVENT_PRIORITY_NORMAL-3,
+        //EVENT_PRIORITY_CGROUP_EMPTY      = SD_EVENT_PRIORITY_NORMAL-2,
+        //EVENT_PRIORITY_TIME_CHANGE       = SD_EVENT_PRIORITY_NORMAL-1,
+        //EVENT_PRIORITY_TIME_ZONE         = SD_EVENT_PRIORITY_NORMAL-1,
+        EVENT_PRIORITY_IPC               = SD_EVENT_PRIORITY_NORMAL,
+        // EVENT_PRIORITY_REWATCH_PIDS      = SD_EVENT_PRIORITY_IDLE,
+        //EVENT_PRIORITY_SERVICE_WATCHDOG  = SD_EVENT_PRIORITY_IDLE+1,
+        //EVENT_PRIORITY_RUN_QUEUE         = SD_EVENT_PRIORITY_IDLE+2,
         /* … to least important */
 };
 #endif // 1

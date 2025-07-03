@@ -74,7 +74,9 @@
 # endif
 #else // 0
 libcore_sources = files(
-        'cgroup.c'
+        'cgroup.c',
+        'core-varlink.c',
+        'dynamic-user.c',
 )
 #endif // 0
 

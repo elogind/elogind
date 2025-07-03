@@ -1036,6 +1036,7 @@ ssize_t send_many_fds_iov_sa(
 
         return k;
 }
+#endif // 0
 
 ssize_t send_one_fd_iov_sa(
                 int transport_fd,
@@ -1092,6 +1093,7 @@ int send_one_fd_sa(
         return (int) send_one_fd_iov_sa(transport_fd, fd, NULL, 0, sa, len, flags);
 }
 
+#if 0 /// UNNEEDED by elogind
 ssize_t receive_many_fds_iov(
                 int transport_fd,
                 struct iovec *iov, size_t iovlen,
@@ -1159,6 +1161,7 @@ int receive_many_fds(int transport_fd, int **ret_fds_array, size_t *ret_n_fds_ar
         assert(k < 0);
         return (int) k;
 }
+#endif // 0
 
 ssize_t receive_one_fd_iov(
                 int transport_fd,
@@ -1208,6 +1211,7 @@ ssize_t receive_one_fd_iov(
         return k;
 }
 
+#if 0 /// UNNEEDED by elogind
 int receive_one_fd(int transport_fd, int flags) {
         int fd;
         ssize_t k;
