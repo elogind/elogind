@@ -135,8 +135,8 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         return i;
 }
 
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
 static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
         int r;
 
         assert(iterator);
@@ -150,8 +150,10 @@ static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
 
         iterator->nss_systemd_blocked = true;
         return 1;
-}
+#else // 0
+        return 0;
 #endif // 0
+}
 
 struct user_group_data {
         JsonVariant *record;
@@ -666,17 +668,13 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
 
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
-#endif // 0
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 }
-#endif // 0
         }
 
         if (!FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE)) {
@@ -723,17 +721,13 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
 #endif // 0
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 r = userdb_iterator_block_nss_systemd(iterator);
                 if (r >= 0) {
-#endif // 0
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
                                 return r;
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
                 }
-#endif // 0
         }
 
         if (!FLAGS_SET(flags, USERDB_DONT_SYNTHESIZE)) {
