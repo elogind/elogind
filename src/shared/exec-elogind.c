@@ -60,7 +60,7 @@ static int gather_output_generate(int const fd, void *arg) {
                         break;
                 ++line;
                 if (r == -ENOBUFS) {
-                        log_error_errno(r, "ERROR: Line %u too long", line);
+                        log_error_errno(r, "ERROR: Line %u too long: %m", line);
                         if (m->callback_must_succeed)
                                 m->callback_failed = true;
                         return r;

@@ -205,8 +205,25 @@ static int do_execute(
                                         return log_error_errno(errno, "Failed to seek on serialization fd: %m");
 
                                 r = callbacks[STDOUT_GENERATE](TAKE_FD(fd), callback_args[STDOUT_GENERATE]);
+#if 0 /// elogind allows scripts to cancel the running operation
                                 if (r < 0)
                                         return log_error_errno(r, "Failed to process output from %s: %m", *path);
+#else // 0
+                                if (r) {
+                                        if (ECANCELED == r) {
+                                                /* The operation was cancelled by the script, but elogind is
+                                                 * configured to proceed anyway.
+                                                 * gather_output_generate() already logged the scripts output. */
+                                                log_warning_errno(r, "%s: %m", *path);
+                                        } else if (-ECANCELED == r) {
+                                                /* The operation was cancelled by the script, and elogind is
+                                                 * configured to break off of that happens. */
+                                                log_error_errno(r, "%s: %m", *path);
+                                                skip_remaining = true;
+                                        } else
+                                                return log_error_errno(r, "Failed to process output from %s: %m", *path);
+                                }
+#endif // 0
                         }
 
                         if (skip_remaining)
