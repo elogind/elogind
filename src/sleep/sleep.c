@@ -508,7 +508,8 @@ static int execute(
         log_debug_elogind("Executing suspend hook scripts... (Must succeed: %s)",
                           m->callback_must_succeed ? "YES" : "no");
 
-        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL, EXEC_DIR_NONE);
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, arguments, NULL,
+                                sleep_config->callback_must_succeed ? EXEC_DIR_NONE : EXEC_DIR_IGNORE_ERRORS);
 
         log_debug_elogind("Result is %d (callback_failed: %s)", r, m->callback_failed ? "true" : "false");
 
