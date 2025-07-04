@@ -192,11 +192,7 @@ static int acquire_user_record(
 
         /* If pam_systemd_homed (or some other module) already acquired the user record we can reuse it
          * here. */
-#if 0 /// Let's give it an elogind name
          field = strjoin("systemd-user-record-", username);
-#else // 0
-         field = strjoin("elogind-user-record-", username);
-#endif // 0
          if (!field)
                 return pam_log_oom(handle);
 
@@ -834,7 +830,12 @@ static uint64_t pick_default_capability_ambient_set(
 
         return ur &&
                 user_record_disposition(ur) == USER_REGULAR &&
+#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
                 (streq_ptr(service, "systemd-user") || !isempty(seat)) ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+#else // 0
+                (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user") || !isempty(seat))
+                        ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+#endif // 0
 }
 
 typedef struct SessionContext {
@@ -1023,7 +1024,11 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
         incomplete = getenv_harder_bool(handle, "XDG_SESSION_INCOMPLETE", false);
 
+#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
         if (streq_ptr(service, "systemd-user")) {
+#else // 0
+        if (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user")) {
+#endif // 0
                 /* If we detect that we are running in the "systemd-user" PAM stack, then let's patch the class to
                  * 'manager' if not set, simply for robustness reasons. */
                 type = "unspecified";
