@@ -19,7 +19,7 @@ int varlink_many_notifyb(Set *s, ...);
 int varlink_many_reply(Set *s, sd_json_variant *parameters);
 int varlink_many_error(Set *s, const char *error_id, sd_json_variant *parameters);
 
-int varlink_set_info_systemd(sd_varlink_server *server);
+int varlink_set_info_elogind(sd_varlink_server *server);
 
 int varlink_server_new(
                 sd_varlink_server **ret,

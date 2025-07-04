@@ -137,19 +137,19 @@ int varlink_many_error(Set *s, const char *error_id, sd_json_variant *parameters
         return r;
 }
 
-int varlink_set_info_systemd(sd_varlink_server *server) {
+int varlink_set_info_elogind(sd_varlink_server *server) {
         _cleanup_free_ char *product = NULL;
 
-        product = strjoin("systemd (", program_invocation_short_name, ")");
+        product = strjoin("elogind (", program_invocation_short_name, ")");
         if (!product)
                 return -ENOMEM;
 
         return sd_varlink_server_set_info(
                         server,
-                        "The systemd Project",
+                        "The elogind Project",
                         product,
                         PROJECT_VERSION_FULL " (" GIT_VERSION ")",
-                        "https://systemd.io/");
+                        "https://github.com/elogind/elogind");
 }
 
 int varlink_server_new(
@@ -164,7 +164,7 @@ int varlink_server_new(
         if (r < 0)
                 return log_debug_errno(r, "Failed to allocate varlink server object: %m");
 
-        r = varlink_set_info_systemd(s);
+        r = varlink_set_info_elogind(s);
         if (r < 0)
                 return log_debug_errno(r, "Failed to configure varlink server object: %m");
 

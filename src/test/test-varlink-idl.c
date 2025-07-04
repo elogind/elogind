@@ -383,7 +383,7 @@ static void* server_thread(void *userdata) {
         _cleanup_(sd_event_unrefp) sd_event *event = NULL;
 
         assert_se(sd_varlink_server_new(&server, 0) >= 0);
-        assert_se(varlink_set_info_systemd(server) >= 0);
+        assert_se(varlink_set_info_elogind(server) >= 0);
         assert_se(sd_varlink_server_add_interface(server, &vl_interface_xyz) >= 0);
         assert_se(sd_varlink_server_bind_method(server, "xyz.TestMethod", test_method) >= 0);
         assert_se(sd_varlink_server_bind_method(server, "xyz.Done", done_method) >= 0);

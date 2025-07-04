@@ -366,7 +366,7 @@ TEST(chat) {
 
         assert_se(varlink_server_new(&s, SD_VARLINK_SERVER_ACCOUNT_UID, NULL) >= 0);
         assert_se(sd_varlink_server_set_info(s, "Vendor", "Product", "Version", "URL") >= 0);
-        assert_se(varlink_set_info_systemd(s) >= 0);
+        assert_se(varlink_set_info_elogind(s) >= 0);
         assert_se(sd_varlink_server_set_description(s, "our-server") >= 0);
 
         assert_se(sd_varlink_server_bind_method(s, "io.test.PassFD", method_passfd) >= 0);
