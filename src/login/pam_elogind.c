@@ -749,7 +749,18 @@ _public_ PAM_EXTERN int pam_sm_open_session(
 
         tty = strempty(tty);
 
+#if 0 /// Make it a background manager class if elogind is called by the openrc-user pam stack
         if (strchr(tty, ':')) {
+#else // 0
+        if (streq_ptr(service, "openrc-user")) {
+                /* If we detect that we are running in the "openrc-user" PAM stack, then let's patch the class to
+                 * 'manager' if not set, simply for robustness reasons. */
+                type = "unspecified";
+                class = IN_SET(user_record_disposition(ur), USER_INTRINSIC, USER_SYSTEM, USER_DYNAMIC) ?
+                        "manager-early" : "manager";
+                tty = NULL;
+        } else if (strchr(tty, ':')) {
+#endif // 0
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */
                 if (isempty(display))
