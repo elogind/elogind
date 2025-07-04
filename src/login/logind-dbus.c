@@ -1950,7 +1950,8 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         sleep_config->callback_failed       = false;
         sleep_config->callback_must_succeed = sleep_config->allow_poweroff_interrupts;
 
-        r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL, 0 );
+        r = execute_directories(dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL,
+                                sleep_config->callback_must_succeed ? 0 : EXEC_DIR_IGNORE_ERRORS);
 
         if ( sleep_config->callback_must_succeed && ( ( r < 0 ) || sleep_config->callback_failed ) ) {
                 e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
@@ -2012,6 +2013,8 @@ static int strdup_job(sd_bus_message *reply, char **ret) {
 #if 1 /// elogind specific executor
 static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
         log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
+
+        m->scheduled_shutdown_action = action;
 
         switch ( action ) {
                 case HANDLE_POWEROFF:
