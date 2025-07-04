@@ -61,7 +61,7 @@ static int gather_output_generate(int const fd, void *arg) {
                         break;
                 ++line;
                 if (r == -ENOBUFS) {
-                        log_error_errno(r, "ERROR: Line %u too long", line);
+                        log_error_errno(r, "ERROR: Line %u too long: %m", line);
                         if (sleep_config->callback_must_succeed)
                                 sleep_config->callback_failed = true;
                         return r;
@@ -79,7 +79,7 @@ static int gather_output_generate(int const fd, void *arg) {
                   || startswith_no_case(buf, "critical" )
                   || startswith_no_case(buf, "error"    )
                   || startswith_no_case(buf, "failed"   ) ) {
-                        log_error_errno(ECANCELED, "Script failed at line %u: %s", line, buf);
+                        log_error_errno(ECANCELED, "Script reported: %s (%m)", buf);
                         if (sleep_config->callback_must_succeed) {
                                 sleep_config->callback_failed = true;
                                 return -ECANCELED;
