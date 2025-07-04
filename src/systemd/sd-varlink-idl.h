@@ -113,7 +113,7 @@ struct sd_varlink_symbol {
         const char *name; /* most symbols have a name, but sometimes they are created on-the-fly for fields, in which case they are anonymous */
         sd_varlink_symbol_type_t symbol_type;
         sd_varlink_symbol_flags_t symbol_flags;
-#if __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
         sd_varlink_field fields[];
 #else
         sd_varlink_field fields[1];
@@ -124,7 +124,7 @@ struct sd_varlink_symbol {
 struct sd_varlink_interface {
         const char *name;
         sd_varlink_interface_flags_t interface_flags;
-#if __STDC_VERSION__ >= 199901L
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
         const sd_varlink_symbol *symbols[];
 #else
         const sd_varlink_symbol *symbols[1];
