@@ -8,7 +8,7 @@
 
   <refentryinfo>
     <title>varlinkctl</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -319,6 +319,7 @@
     <example>
       <title>Investigating a Service</title>
 
+      <!-- 0 /// Let's use an example that elogind can actually provide
       <para>The following three commands inspect the <literal>io.systemd.Resolve</literal> service
       implemented by
       <citerefentry><refentrytitle>systemd-resolved.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
@@ -342,13 +343,46 @@ interface io.systemd.Resolve
 type ResolvedAddress(
         ifindex: ?int,
         …</programlisting>
+      --><!-- else // 0 -->
+      <para>The following three commands inspect the <literal>io.systemd.Multiplexer</literal> service
+      implemented by
+      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
+      listing general service information and implemented interfaces, and then displaying the interface
+      definition of its primary interface:</para>
 
-    <para>(Interface definition has been truncated in the example above, in the interest of brevity.)</para>
+      <programlisting>$ varlinkctl info /run/systemd/userdb/io.systemd.Multiplexer 
+    Vendor: The elogind Project
+   Product: elogind (elogind-userwork)
+   Version: 257.6 (-g37c61f2)
+       URL: https://github.com/elogind/elogind/       
+Interfaces: io.systemd
+            io.systemd.UserDatabase
+            org.varlink.service
+$ varlinkctl list-interfaces /run/systemd/userdb/io.systemd.Multiplexer 
+io.systemd
+io.systemd.UserDatabase
+org.varlink.service
+$ varlinkctl introspect /run/systemd/userdb/io.systemd.Multiplexer io.systemd.UserDatabase
+interface io.systemd.UserDatabase
+
+# [Supports 'more' flag]
+method GetUserRecord(
+        uid: ?int,
+        userName: ?string,
+        service: string
+) -> (
+        record: object,
+        incomplete: ?bool
+)
+…</programlisting>
+      <!-- // 0 -->    
+      <para>(Interface definition has been truncated in the example above, in the interest of brevity.)</para>
     </example>
 
     <example>
       <title>Invoking a Method</title>
 
+      <!-- 0 /// Let's use an example that elogind can actually provide
       <para>The following command resolves a hostname via <citerefentry><refentrytitle>systemd-resolved.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s <function>ResolveHostname</function>  method call.</para>
 
       <programlisting>$ varlinkctl call /run/systemd/resolve/io.systemd.Resolve io.systemd.Resolve.ResolveHostname '{"name":"systemd.io","family":2}' -j
@@ -368,8 +402,34 @@ type ResolvedAddress(
         "name" : "systemd.io",
         "flags" : 1048577
 }</programlisting>
+      --><!-- else // 0 -->
+      <para>The following command resolves a hostname via <citerefentry><refentrytitle>systemd-resolved.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>'s <function>ResolveHostname</function>  method call.</para>
+
+      <programlisting>$ varlinkctl call /run/systemd/userdb/io.systemd.Multiplexer io.systemd.UserDatabase.GetGroupRecord '{"groupName":"users","service":"io.systemd.Multiplexer"}' -j
+{
+        "record" : {
+                "groupName" : "users",
+                "gid" : 100,
+                "members" : [
+                        "sed"
+                ],
+                "privileged" : {
+                        "hashedPassword" : [
+                                ""
+                        ]
+                },
+                "status" : {
+                        "085fc5c85e7c14d2b8a57e4c68669974" : {
+                                "service" : "io.systemd.NameServiceSwitch"
+                        }
+                }
+        },
+        "incomplete" : true
+}</programlisting>
+      <!-- // 0 -->    
     </example>
 
+    <!-- 0 /// The following examples would not work with elogind
     <example>
       <title>Investigating a Service Executable</title>
 
@@ -411,6 +471,7 @@ method Extend(
 
       <programlisting># varlinkctl call ssh-exec:somehost:/usr/bin/systemd-creds org.varlink.service.GetInfo '{}'</programlisting>
     </example>
+    // 0 -->
 
   </refsect1>
 
