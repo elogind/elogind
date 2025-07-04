@@ -1024,7 +1024,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
         incomplete = getenv_harder_bool(handle, "XDG_SESSION_INCOMPLETE", false);
 
-#if 0 /// Although elogind should never witness systemd-user calling, openrc-user can call if OpenRC runs the system
+#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
         if (streq_ptr(service, "systemd-user")) {
 #else // 0
         if (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user")) {
