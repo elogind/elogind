@@ -8,7 +8,7 @@
 
   <refentryinfo>
     <title>userdbctl</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -336,6 +336,7 @@
         <xi:include href="version-info.xml" xpointer="v245"/></listitem>
       </varlistentry>
 
+      <!-- 0 /// elogind does not provide systemd-homed
       <varlistentry>
         <term><constant>io.systemd.Home</constant></term>
 
@@ -346,7 +347,9 @@
 
         <xi:include href="version-info.xml" xpointer="v245"/></listitem>
       </varlistentry>
+      -->
 
+      <!-- 0 /// elogind does not provide systemd-machined
       <varlistentry>
         <term><constant>io.systemd.Machine</constant></term>
 
@@ -357,6 +360,7 @@
 
         <xi:include href="version-info.xml" xpointer="v246"/></listitem>
       </varlistentry>
+      -->
 
       <varlistentry>
         <term><constant>io.systemd.Multiplexer</constant></term>
@@ -448,10 +452,14 @@ AuthorizedKeysCommandUser root
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
-      <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <!-- 0 /// elogind is in man page section 8 and has no homed and nss-service
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-userdbd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      --><!-- else // 0 -->
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <!-- // 0 -->
       <member><citerefentry project='man-pages'><refentrytitle>getent</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
     </simplelist></para>
   </refsect1>
