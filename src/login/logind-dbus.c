@@ -1666,7 +1666,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
         m->callback_must_succeed = m->allow_poweroff_interrupts;
 
         r = execute_directories( dirs, DEFAULT_TIMEOUT_USEC, gather_output, gather_args, verb_args, NULL,
-                                sleep_config->callback_must_succeed ? EXEC_DIR_NONE : EXEC_DIR_IGNORE_ERRORS);
+                                m->callback_must_succeed ? EXEC_DIR_NONE : EXEC_DIR_IGNORE_ERRORS);
 
         if ( m->callback_must_succeed && ( ( r < 0 ) || m->callback_failed ) ) {
                 e = asprintf( &l, "A shutdown script in %s or %s failed! [%d]\nThe system %s has been cancelled!",
@@ -1711,7 +1711,7 @@ static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
 
         log_debug_elogind( "Called for '%s'", handle_action_to_string( action ) );
 
-        m->scheduled_shutdown_action = action;
+        m->scheduled_shutdown_action = handle_action_lookup( action );
 
         switch ( action ) {
                 case HANDLE_POWEROFF:

@@ -135,8 +135,8 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         return i;
 }
 
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
 static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
+#if 0 /// elogind does not ship its own libnss implementation, no block needed
         int r;
 
         assert(iterator);
@@ -150,8 +150,10 @@ static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
 
         iterator->nss_systemd_blocked = true;
         return 1;
-}
+#else // 0
+        return 0;
 #endif // 0
+}
 
 struct user_group_data {
         JsonVariant *record;

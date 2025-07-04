@@ -284,7 +284,6 @@
             Please see
             <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> for more information about
             hook scripts.</para></listitem>
-          </para></listitem>
       </varlistentry>
 
       <varlistentry>

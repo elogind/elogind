@@ -337,9 +337,8 @@ int log_open(void) {
 #else // 0
         bool log_to_console = (LOG_TARGET_CONSOLE == log_target);
         bool log_to_auto    = (LOG_TARGET_AUTO == log_target);
-        bool is_run_on_tty  = isatty_safe(STDOUT_FILENO) && isatty_safe(STDERR_FILENO);
 
-        if (!log_to_console && !(log_to_auto && is_run_on_tty)) {
+        if (!log_to_console && !(log_to_auto && on_tty())) {
                 if (IN_SET(log_target, LOG_TARGET_AUTO,
                                        LOG_TARGET_SYSLOG_OR_KMSG,
                                        LOG_TARGET_SYSLOG)) {
