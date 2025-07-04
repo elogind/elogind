@@ -597,8 +597,10 @@ int manager_setup_varlink_server(Manager *m) {
         if (m->varlink_server)
                 return 0;
 
+#if 0 /// elogind has no user instance and is always "system" for itself
         if (!MANAGER_IS_SYSTEM(m))
                 return -EINVAL;
+#endif // 0
 
         r = varlink_server_new(&s, SD_VARLINK_SERVER_ACCOUNT_UID|SD_VARLINK_SERVER_INHERIT_USERDATA, m);
         if (r < 0)
@@ -651,8 +653,10 @@ static int manager_varlink_init_system(Manager *m) {
 
         assert(m);
 
+#if 0 /// elogind has no user instance and is always "system" for itself
         if (!MANAGER_IS_SYSTEM(m))
                 return 0;
+#endif // 0
 
         r = manager_setup_varlink_server(m);
         if (r < 0)
@@ -662,7 +666,12 @@ static int manager_varlink_init_system(Manager *m) {
         if (!MANAGER_IS_TEST_RUN(m)) {
                 (void) mkdir_label("/run/systemd/userdb", 0755);
 
+#if 0 /// elogind does not support the systemd userspace oomd killer
                 FOREACH_STRING(address, "/run/systemd/userdb/io.systemd.DynamicUser", VARLINK_ADDR_PATH_MANAGED_OOM_SYSTEM) {
+#else // 0
+                const char *address = "/run/systemd/userdb/io.systemd.DynamicUser";
+                for (int i=0; i<1; ++i) {
+#endif // 0
                         if (!fresh) {
                                 /* We might have got sockets through deserialization. Do not bind to them twice. */
 
@@ -686,6 +695,7 @@ static int manager_varlink_init_system(Manager *m) {
         return 1;
 }
 
+#if 0 /// eligind has no user instances
 static int manager_varlink_init_user(Manager *m) {
         assert(m);
 
@@ -695,15 +705,16 @@ static int manager_varlink_init_user(Manager *m) {
         if (MANAGER_IS_TEST_RUN(m))
                 return 0;
 
-#if 0 /// elogind does not support the systemd userspace oomd killer
         return manager_varlink_managed_oom_connect(m);
-#else // 0
-        return 1;
-#endif // 0
 }
+#endif // 0
 
 int manager_varlink_init(Manager *m) {
+#if 0 /// elogind uses is_system to determine whether to be its own cgroup controller or not
         return MANAGER_IS_SYSTEM(m) ? manager_varlink_init_system(m) : manager_varlink_init_user(m);
+#else // 0
+        return manager_varlink_init_system(m);
+#endif // 0
 }
 
 void manager_varlink_done(Manager *m) {
