@@ -8,7 +8,7 @@
 
   <refentryinfo>
     <title>sd-varlink</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -48,12 +48,12 @@
     makes the functionality implemented by sd-varlink available from the command line.</para>
   </refsect1>
 
-  <xi:include href="libsystemd-pkgconfig.xml" />
+  <xi:include href="libelogind-pkgconfig.xml" />
 
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
-      <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-event</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-json</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>varlinkctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
