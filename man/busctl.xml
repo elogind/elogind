@@ -641,9 +641,7 @@ a(so) 1 "seat0" "/org/freedesktop/login1/seat/seat0"</programlisting>
     <title>See Also</title>
 
     <para><simplelist type="inline">
-      <!-- 0 /// elogind does not have these
       <member><citerefentry project='dbus'><refentrytitle>dbus-daemon</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
-      // 0 -->
       <member><ulink url="https://www.freedesktop.org/wiki/Software/dbus">D-Bus</ulink></member>
       <member><citerefentry><refentrytitle>sd-bus</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>varlinkctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
