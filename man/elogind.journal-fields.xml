@@ -5,7 +5,7 @@
 
 
 <!-- 0 // Rewrite for elogind
-<refentry id="elogind.journal-fields" xmlns:xi="http://www.w3.org/2001/XInclude">
+<refentry id="systemd.journal-fields" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <refentryinfo>
     <title>systemd.journal-fields</title>
@@ -721,16 +721,14 @@
 
   <refsect1>
       <title>See Also</title>
-        <!-- 0 /// elogind does not have these
-        --><!-- else // 0 -->
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>
-        <!-- // 0 -->
       <para><simplelist type="inline">
         <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+        <!-- 0 /// elogind does not have these
         <member><citerefentry><refentrytitle>journald.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>coredumpctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>elogind.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
+        -->
       </simplelist></para>
   </refsect1>
 
