@@ -324,6 +324,7 @@
     this list:</para>
 
     <variablelist>
+      <!-- 0 // elogind does not support systemd units, and thus no synthesized users and groups
       <varlistentry>
         <term><constant>io.systemd.DynamicUser</constant></term>
 
@@ -335,6 +336,7 @@
 
         <xi:include href="version-info.xml" xpointer="v245"/></listitem>
       </varlistentry>
+      // 0 -->
 
       <!-- 0 /// elogind does not provide systemd-homed
       <varlistentry>
@@ -347,7 +349,7 @@
 
         <xi:include href="version-info.xml" xpointer="v245"/></listitem>
       </varlistentry>
-      -->
+      // 0 -->
 
       <!-- 0 /// elogind does not provide systemd-machined
       <varlistentry>
@@ -360,7 +362,7 @@
 
         <xi:include href="version-info.xml" xpointer="v246"/></listitem>
       </varlistentry>
-      -->
+      // 0 -->
 
       <varlistentry>
         <term><constant>io.systemd.Multiplexer</constant></term>
@@ -453,7 +455,7 @@ AuthorizedKeysCommandUser root
     <title>See Also</title>
     <para><simplelist type="inline">
       <!-- 0 /// elogind is in man page section 8 and has no homed and nss-service
-      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-userdbd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
