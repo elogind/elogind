@@ -11,9 +11,9 @@ test_hashmap_ordered_c = custom_target(
 
 path = run_command(sh, '-c', 'echo "$PATH"', check: true).stdout().strip()
 test_env = environment()
-#if 0 /// UNNEEDED in elogind
-# test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
-#endif // 0
+if conf.get('ENABLE_LOCALED') == 1
+        test_env.set('SYSTEMD_LANGUAGE_FALLBACK_MAP', language_fallback_map)
+endif
 test_env.set('PATH', meson.project_build_root() + ':' + path)
 test_env.set('PROJECT_BUILD_ROOT', meson.project_build_root())
 test_env.set('SYSTEMD_SLOW_TESTS', want_slow_tests ? '1' : '0')
@@ -31,8 +31,8 @@ generate_sym_test_py = find_program('generate-sym-test.py')
 
 test_libelogind_sym_c = custom_target(
         'test-libelogind-sym.c',
-        output : 'test-libelogind-sym.c',
         input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
+        output : 'test-libelogind-sym.c',
         command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
         capture : true,
         build_by_default : want_tests != 'false')
@@ -719,8 +719,8 @@ executables += [
         test_template + {
                 'sources' : files('../libelogind/sd-device/test-sd-device-thread.c'),
                 'link_with' : [
-                        libelogind,
                         libbasic_static,
+                        libelogind,
                 ],
                 'dependencies' : threads,
         },
