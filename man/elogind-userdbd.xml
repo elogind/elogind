@@ -7,7 +7,7 @@
 
   <refentryinfo>
     <title>systemd-userdbd.service</title>
-    <productname>systemd</productname>
+    <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
@@ -65,7 +65,7 @@
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
-      <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>userdbctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
