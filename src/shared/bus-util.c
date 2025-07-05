@@ -800,15 +800,16 @@ static int method_dump_memory_state_by_fd(sd_bus_message *message, void *userdat
         _cleanup_close_ int fd = -EBADF;
         size_t dump_size;
         FILE *f;
-        int r;
+        int r = 0;
 
         assert(message);
 
         f = memstream_init(&m);
         if (!f)
                 return -ENOMEM;
-
+#ifdef __GLIBC__
         r = RET_NERRNO(malloc_info(/* options= */ 0, f));
+#endif
         if (r < 0)
                 return r;
 
