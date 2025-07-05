@@ -45,7 +45,6 @@
       <citerefentry><refentrytitle>systemd.slice</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd.scope</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para></listitem>
-      // 0 -->
 
       <listitem><para>link files, see
       <citerefentry><refentrytitle>elogind.link</refentrytitle><manvolnum>5</manvolnum></citerefentry>
@@ -55,6 +54,7 @@
       <citerefentry><refentrytitle>elogind.netdev</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>elogind.network</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para></listitem>
+      // 0 -->
 
       <listitem><para>daemon config files, see
       <!-- 0 /// Completely irrelevant for elogind
@@ -68,7 +68,9 @@
       <citerefentry><refentrytitle>journal-upload.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>systemd-sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
       <citerefentry><refentrytitle>timesyncd.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
-      // 0 -->
+      // 0 --><!-- else // 0 -->
+      <citerefentry><refentrytitle>sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <!-- // 0 -->
       </para></listitem>
 
       <!-- 0 /// Completely irrelevant for elogind
@@ -234,7 +236,9 @@ KeyThree=value 3\
     <title>See Also</title>
     <para><simplelist type="inline">
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <!-- 0 /// UNNEEDED by elogind
       <member><citerefentry><refentrytitle>elogind.time</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
+      // 0 -->
     </simplelist></para>
   </refsect1>
 
