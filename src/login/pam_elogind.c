@@ -1024,7 +1024,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
         incomplete = getenv_harder_bool(handle, "XDG_SESSION_INCOMPLETE", false);
 
-#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
+#if 0 /// Although elogind should never witness systemd-user calling, openrc-user can call if OpenRC runs the system
         if (streq_ptr(service, "systemd-user")) {
 #else // 0
         if (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user")) {
@@ -1036,7 +1036,8 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                         "manager-early" : "manager";
                 tty = NULL;
 #if 1 /// elogind has no user instances like systemd-user, so let's log if someone asks for it or acts like they were it
-                pam_debug_syslog(handle, debug, "Invalid service '%s' called!", service);
+                if (!streq_ptr(service, "openrc-user"))
+                        pam_debug_syslog(handle, debug, "Service '%s' called!", service);
 #endif // 1
         } else if (tty && strchr(tty, ':')) {
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
