@@ -40,8 +40,6 @@
 #include "terminal-util.h"
 #include "udev-util.h"
 /// Additional includes needed by elogind
-#include "core-varlink.h"
-#include "dynamic-user.h"
 #include "elogind.h"
 #include "musl_missing.h"
 #include "user-util.h"
@@ -132,14 +130,6 @@ static int manager_new(Manager **ret) {
 static Manager* manager_free(Manager *m) {
         if (!m)
                 return NULL;
-
-#if 1 /// elogind provides the varlink server it needs, plus dynamic users
-        log_debug_elogind("%s", "Shutding down varlink server ...");
-        manager_varlink_done(m);
-
-        dynamic_user_vacuum(m, false);
-        hashmap_free(m->dynamic_users);
-#endif // 1
 
         log_debug_elogind("%s", "Freeing hashmaps ...");
         hashmap_free(m->devices);
@@ -1242,12 +1232,6 @@ static int manager_startup(Manager *m) {
 
         /* Read in utmp if it exists */
         manager_read_utmp(m);
-
-#if 1 /// As systemd does not provide a varlink server, elogind has to do it itslf
-        r = manager_varlink_init(m);
-        if (r < 0)
-                log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
-#endif // 1
 
         /* And start everything */
         HASHMAP_FOREACH(seat, m->seats)

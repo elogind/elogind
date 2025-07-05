@@ -109,11 +109,6 @@ struct Manager {
 
         /* To wake up sleeping consumers using the right operation, the manager must know what is going on. */
         const HandleActionData *sleep_fork_action;
-
-        /* Dynamic users/groups, indexed by their name */
-        Hashmap *dynamic_users;
-
-        sd_varlink_server *varlink_server;
 #endif // 1
 
         Seat *seat0;
