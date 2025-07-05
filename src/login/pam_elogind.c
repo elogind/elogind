@@ -192,8 +192,8 @@ static int acquire_user_record(
 
         /* If pam_systemd_homed (or some other module) already acquired the user record we can reuse it
          * here. */
-         field = strjoin("systemd-user-record-", username);
-         if (!field)
+        field = strjoin("systemd-user-record-", username);
+        if (!field)
                 return pam_log_oom(handle);
 
         r = pam_get_data(handle, field, (const void**) &json);
