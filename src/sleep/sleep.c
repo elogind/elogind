@@ -527,6 +527,7 @@ static int execute(
 
 #if 0 /// elogind allows admins to configure that hook scripts must succeed. The systemd default does not cut it here
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
+        (void) lock_all_homes();
 #else // 0
         m->callback_failed = false;
         m->callback_must_succeed = m->allow_suspend_interrupts;
@@ -593,13 +594,10 @@ static int execute(
 #if 1 /// if put to sleep, elogind also has to wakeup an nvidia card
         if (have_nvidia)
                 nvidia_sleep(m, driver_fd, _SLEEP_OPERATION_MAX, &vtnr);
-#endif // 1
 
-#if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
+        /* Before performing the hook scripts, tell subscribers that we are back, so needed services are up again */
         (void) prepare_for_sleep(false);
-#endif // 0
-
-
+#endif // 1
         arguments[1] = "post";
 #if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
