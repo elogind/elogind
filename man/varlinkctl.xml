@@ -343,6 +343,7 @@ interface io.systemd.Resolve
 type ResolvedAddress(
         ifindex: ?int,
         …</programlisting>
+
       --><!-- else // 0 -->
       <para>The following three commands inspect the <literal>io.systemd.Multiplexer</literal> service
       implemented by
@@ -376,7 +377,7 @@ method GetUserRecord(
 )
 …</programlisting>
       <!-- // 0 -->    
-      <para>(Interface definition has been truncated in the example above, in the interest of brevity.)</para>
+    <para>(Interface definition has been truncated in the example above, in the interest of brevity.)</para>
     </example>
 
     <example>

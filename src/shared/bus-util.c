@@ -537,12 +537,12 @@ int bus_connect_transport_elogind(
                                 /* Print a friendly message when the local system is actually not running systemd as PID 1. */
                                 return log_error_errno(SYNTHETIC_ERRNO(EHOSTDOWN),
                                                        "System has not been booted with systemd as init system (PID 1). Can't operate.");
-                        return bus_connect_system_systemd(ret_bus);
 
                         /* If we are root then let's talk directly to the system instance, instead of
                          * going via the bus. */
                         if (geteuid() == 0)
 #endif // 0
+                                return bus_connect_system_elogind(ret_bus);
 
                         return sd_bus_default_system(ret_bus);
 

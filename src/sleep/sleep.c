@@ -568,8 +568,6 @@ static int execute(
         /* Before performing the hook scripts, tell subscribers that we are back, so needed services are up again */
         (void) prepare_for_sleep(false);
 #endif // 1
-
-
         arguments[1] = "post";
 #if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);

@@ -2773,6 +2773,7 @@ int unit_watch_cgroup(Unit *u) {
 
         return 0;
 }
+
 #else // 0
 int session_watch_cgroup(Session *s) {
         Manager* m = ASSERT_PTR(s->manager);
@@ -3573,6 +3574,7 @@ void unit_release_cgroup(Unit *u, bool drop_cgroup_runtime) {
         if (drop_cgroup_runtime)
                 *(CGroupRuntime**) ((uint8_t*) u + UNIT_VTABLE(u)->cgroup_runtime_offset) = cgroup_runtime_free(crt);
 }
+
 #else // 0
 void session_release_cgroup(Session *s) {
         assert(s);

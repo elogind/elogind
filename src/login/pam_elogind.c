@@ -1014,9 +1014,6 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         if (r != PAM_SUCCESS)
                 return pam_syslog_pam_error(handle, LOG_ERR, r, "Failed to get PAM items: @PAMERR@");
 
-        /* Make sure we don't enter a loop by talking to systemd-logind when it is actually waiting for the
-         * background to finish start-up. If the service is "systemd-user" we simply set XDG_RUNTIME_DIR and
-         * leave. */
         seat = getenv_harder(handle, "XDG_SEAT", NULL);
         cvtnr = getenv_harder(handle, "XDG_VTNR", NULL);
         type = getenv_harder(handle, "XDG_SESSION_TYPE", type_pam);
@@ -1039,6 +1036,7 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (!streq_ptr(service, "openrc-user"))
                         pam_debug_syslog(handle, debug, "Service '%s' called!", service);
 #endif // 1
+
         } else if (tty && strchr(tty, ':')) {
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */

@@ -936,7 +936,7 @@ bool show_preset_for_state(UnitFileState state) {
 #endif // 0
 
 #if 0 /// elogind does not support systemd units
-nitFileFlags unit_file_flags_from_args(void) {
+UnitFileFlags unit_file_flags_from_args(void) {
         return (arg_runtime ? UNIT_FILE_RUNTIME : 0) |
                (arg_force   ? UNIT_FILE_FORCE   : 0);
 }

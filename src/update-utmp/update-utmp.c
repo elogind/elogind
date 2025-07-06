@@ -107,8 +107,8 @@ static int get_current_runlevel(Context *c) {
                         (void) usleep_safe(usec);
                 }
 
-                        r = bus_connect_system_systemd(&c->bus);
                 if (!c->bus) {
+                        r = bus_connect_system_systemd(&c->bus);
                         if (r == -ECONNREFUSED && n_attempts < 64) {
                                 log_debug_errno(r, "Failed to %s to system bus, retrying after a slight delay: %m",
                                                 n_attempts <= 1 ? "connect" : "reconnect");

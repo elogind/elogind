@@ -149,7 +149,7 @@ int varlink_set_info_elogind(sd_varlink_server *server) {
                         "The elogind Project",
                         product,
                         PROJECT_VERSION_FULL " (" GIT_VERSION ")",
-                        "https://github.com/elogind/elogind");
+                        "https://github.com/elogind/elogind/");
 }
 
 int varlink_server_new(

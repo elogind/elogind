@@ -101,7 +101,7 @@ bool can_memlock(void);
         } else {                                                    \
                 printf("systemd not booted, skipping '%s'\n", #x);  \
         }
-#else
+#else // 0
 #define TEST_REQ_RUNNING_SYSTEMD(x) { printf("systemd not booted, skipping '%s'\n", #x); }
 #endif // 0
 
