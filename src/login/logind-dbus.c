@@ -1674,7 +1674,7 @@ static int method_send_prepare_for_sleep(sd_bus_message *message, void *userdata
 
         return sd_bus_reply_method_return(message, NULL);
 }
-#endif // 0
+#endif // 1
 
 static int have_multiple_sessions(
                 Manager *m,
@@ -1983,7 +1983,6 @@ static int execute_shutdown_or_sleep(
         int r;
 
         assert(m);
-        assert(!m->action_job);
         assert(a);
 
         if (a->inhibit_what == INHIBIT_SHUTDOWN)
@@ -3935,14 +3934,14 @@ static const sd_bus_vtable manager_vtable[] = {
 
 #if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
         SD_BUS_METHOD("ReloadConfig", NULL, NULL, method_reload_config, SD_BUS_VTABLE_UNPRIVILEGED),
-#endif // 1
-#if 1 /// Add a command to prepare all subscribers for the system going to sleep or to wake up
+
+        /* also add a command to prepare all subscribers for the system going to sleep or to wake up */
         SD_BUS_METHOD_WITH_ARGS("SendPrepareForSleep",
                                 SD_BUS_ARGS("b", state),
                                 SD_BUS_NO_RESULT,
                                 method_send_prepare_for_sleep,
                                 0),
-#endif // 0
+#endif // 1
         SD_BUS_METHOD_WITH_ARGS("GetSession",
                                 SD_BUS_ARGS("s", session_id),
                                 SD_BUS_RESULT("o", object_path),
