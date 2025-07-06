@@ -11,7 +11,7 @@ import sys
 
 import requests
 
-BASE_URL = "https://www.freedesktop.org/software/elogind/man/"
+BASE_URL = "https://www.freedesktop.org/software/systemd/man/"
 JQUERY_URL = "https://code.jquery.com/jquery-3.7.1.min.js"
 SCRIPT_TAG = '<script src="{}"></script>'
 
@@ -25,7 +25,7 @@ $(document).ready(function() {
         var items = [];
         $.each( data, function(_, version) {
             if (version == dirname) {
-                items.push( "<option selected value='" + version + "'>" + "systemd " + version + "</option>");
+                items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
             } else if (dirname == "latest" && version == data[0]) {
                 items.push( "<option selected value='" + version + "'>" + "elogind " + version + "</option>");
             } else {
