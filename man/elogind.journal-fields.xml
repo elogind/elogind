@@ -728,7 +728,7 @@
         <member><citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>coredumpctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
         <member><citerefentry><refentrytitle>elogind.directives</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
-        -->
+        // 0 -->
       </simplelist></para>
   </refsect1>
 

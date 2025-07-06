@@ -1465,34 +1465,6 @@ static int terminate_seat(int argc, char *argv[], void *userdata) {
         return 0;
 }
 
-#if 0 /// Replaced by systemctl daemon-reload
-#if 1 /// Add a reload command for reloading the elogind configuration, like systemctl has it.
-static int reload_config(int argc, char *argv[], void *userdata) {
-        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
-        sd_bus *bus = userdata;
-        int r;
-
-        assert(bus);
-        assert(argv);
-
-        polkit_agent_open_if_enabled(arg_transport, arg_ask_password);
-
-        r = sd_bus_call_method(
-                        bus,
-                        "org.freedesktop.login1",
-                        "/org/freedesktop/login1",
-                        "org.freedesktop.login1.Manager",
-                        "ReloadConfig",
-                        &error, NULL,
-                        NULL);
-        if (r < 0)
-                return log_error_errno(r, "Could not reload configuration: %s", bus_error_message(&error, -r));
-
-        return 0;
-}
-#endif // 1
-#endif // 0
-
 static int help(int argc, char *argv[], void *userdata) {
         _cleanup_free_ char *link = NULL;
         int r;

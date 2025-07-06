@@ -76,6 +76,7 @@
 libcore_sources = files(
         'cgroup.c',
 )
+#endif // 0
 
 #if 0 /// Almost the rest is not needed by elogind, we use the sources directly in login
 #

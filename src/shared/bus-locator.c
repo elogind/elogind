@@ -35,7 +35,7 @@ const BusLocator* const bus_systemd_mgr = &(BusLocator){
         .path = "/org/freedesktop/login1",
         .interface = "org.freedesktop.login1.Manager"
 };
-#endif // 0
+#endif // 1
 
 #if 0 /// UNNEEDED by elogind
 const BusLocator* const bus_machine_mgr = &(BusLocator){

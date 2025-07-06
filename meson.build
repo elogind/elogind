@@ -3289,7 +3289,7 @@ install_data('LICENSE.GPL2',
 #                install_dir : docdir)
 #endif // 0
 
-# if 0 /// elogind needs its own
+#if 0 /// elogind needs its own
 # install_emptydir(systemdstatedir)
 #else // 0
 install_emptydir(elogindstatedir)
