@@ -3148,6 +3148,7 @@ void unit_release_cgroup(Unit *u) {
                 u->cgroup_memory_inotify_wd = -1;
         }
 }
+
 #else // 0
 void session_release_cgroup(Session *s) {
         assert(s);
