@@ -541,8 +541,8 @@ int bus_connect_transport_elogind(
                         /* If we are root then let's talk directly to the system instance, instead of
                          * going via the bus. */
                         if (geteuid() == 0)
+                                return bus_connect_system_systemd(ret_bus);
 #endif // 0
-                                return bus_connect_system_elogind(ret_bus);
 
                         return sd_bus_default_system(ret_bus);
 
