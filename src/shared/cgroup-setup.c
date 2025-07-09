@@ -389,8 +389,8 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
         if (r > 0 && streq(controller, SYSTEMD_CGROUP_CONTROLLER)) {
                 r = cg_attach(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, pid);
 #if 0 /// elogind supports other controllers
-                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat elogind cgroup '%s', ignoring: %m", pid, path);
                 if (r < 0)
+                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat elogind cgroup '%s', ignoring: %m", pid, path);
 #else // 0
                 if (r < 0)
                         log_warning_errno(r, "Failed to attach "PID_FMT" to compat %s cgroup %s: %m", pid, CGROUP_CONTROLLER_NAME, path);
@@ -680,6 +680,8 @@ int cg_migrate(
                         if (r < 0)
                                 return RET_GATHER(ret, r);
                 }
+                if (r == -ENODEV)
+                        continue;
                 if (r < 0)
                         return RET_GATHER(ret, r);
         } while (!done);
