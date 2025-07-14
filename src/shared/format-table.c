@@ -17,7 +17,7 @@
 #include "glyph-util.h"
 #include "gunicode.h"
 //#include "id128-util.h"
-//#include "in-addr-util.h"
+#include "in-addr-util.h"
 #include "memory-util.h"
 #include "memstream-util.h"
 #include "pager.h"
@@ -107,9 +107,7 @@ typedef struct TableData {
                 uint64_t uint64;
                 int percent;        /* we use 'int' as datatype for percent values in order to match the result of parse_percent() */
                 int ifindex;
-#if 0 /// UNNEEDED by elogind
                 union in_addr_union address;
-#endif // 0
                 sd_id128_t id128;
                 uid_t uid;
                 gid_t gid;
@@ -337,19 +335,15 @@ static size_t table_data_size(TableDataType type, const void *data) {
         case TABLE_INT:
         case TABLE_UINT:
         case TABLE_PERCENT:
-#if 0 /// UNNEEDED by elogind
         case TABLE_IFINDEX:
-#endif // 0
         case TABLE_SIGNAL:
                 return sizeof(int);
 
-#if 0 /// UNNEEDED by elogind
         case TABLE_IN_ADDR:
                 return sizeof(struct in_addr);
 
         case TABLE_IN6_ADDR:
                 return sizeof(struct in6_addr);
-#endif // 0
 
         case TABLE_UUID:
         case TABLE_ID128:
@@ -656,7 +650,6 @@ static TableData *table_get_data(Table *t, TableCell *cell) {
         return t->data[i];
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         int r;
 
@@ -673,7 +666,6 @@ int table_set_minimum_width(Table *t, TableCell *cell, size_t minimum_width) {
         table_get_data(t, cell)->minimum_width = minimum_width;
         return 0;
 }
-#endif // 0
 
 int table_set_maximum_width(Table *t, TableCell *cell, size_t maximum_width) {
         int r;
@@ -725,7 +717,6 @@ int table_set_align_percent(Table *t, TableCell *cell, unsigned percent) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         int r;
 
@@ -744,7 +735,6 @@ int table_set_ellipsize_percent(Table *t, TableCell *cell, unsigned percent) {
         table_get_data(t, cell)->ellipsize_percent = percent;
         return 0;
 }
-#endif // 0
 
 int table_set_color(Table *t, TableCell *cell, const char *color) {
         int r;
@@ -760,7 +750,6 @@ int table_set_color(Table *t, TableCell *cell, const char *color) {
         return 0;
 }
 
-#if 0 /// UNNEEDED by elogind
 int table_set_rgap_color(Table *t, TableCell *cell, const char *color) {
         int r;
 
@@ -814,7 +803,6 @@ int table_set_rgap_underline(Table *t, TableCell *cell, bool b) {
         d->rgap_underline = b;
         return 1;
 }
-#endif // 0
 
 int table_set_url(Table *t, TableCell *cell, const char *url) {
         _cleanup_free_ char *copy = NULL;
@@ -932,9 +920,7 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         int percent;
                         int ifindex;
                         bool b;
-#if 0 /// UNNEEDED by elogind
                         union in_addr_union address;
-#endif // 0
                         sd_id128_t id128;
                         uid_t uid;
                         gid_t gid;
@@ -1061,7 +1047,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.percent;
                         break;
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_IFINDEX:
                         buffer.ifindex = va_arg(ap, int);
                         data = &buffer.ifindex;
@@ -1076,7 +1061,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         buffer.address = *va_arg(ap, union in_addr_union *);
                         data = &buffer.address.in6;
                         break;
-#endif // 0
 
                 case TABLE_UUID:
                 case TABLE_ID128:
@@ -1105,7 +1089,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         data = &buffer.mode;
                         break;
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_DEVNUM:
                         buffer.devnum = va_arg(ap, dev_t);
                         data = &buffer.devnum;
@@ -1141,7 +1124,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         r = table_set_ellipsize_percent(t, last_cell, p);
                         goto check;
                 }
-#endif // 0
 
                 case TABLE_SET_COLOR: {
                         const char *c = va_arg(ap, const char*);
@@ -1149,7 +1131,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         goto check;
                 }
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_SET_RGAP_COLOR: {
                         const char *c = va_arg(ap, const char*);
                         r = table_set_rgap_color(t, last_cell, c);
@@ -1193,7 +1174,6 @@ int table_add_many_internal(Table *t, TableDataType first_type, ...) {
                         r = table_set_rgap_underline(t, last_cell, u);
                         goto check;
                 }
-#endif // 0
 
                 case TABLE_SET_URL: {
                         const char *u = va_arg(ap, const char*);
@@ -1485,7 +1465,6 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
                 case TABLE_PERCENT:
                         return CMP(a->percent, b->percent);
 
-#if 0 /// UNNEEDED by elogind
                 case TABLE_IFINDEX:
                         return CMP(a->ifindex, b->ifindex);
 
@@ -1494,7 +1473,6 @@ static int cell_data_compare(TableData *a, size_t index_a, TableData *b, size_t 
 
                 case TABLE_IN6_ADDR:
                         return memcmp(&a->address.in6, &b->address.in6, FAMILY_ADDRESS_SIZE(AF_INET6));
-#endif // 0
 
                 case TABLE_UUID:
                 case TABLE_ID128:
@@ -2864,7 +2842,6 @@ static int table_data_to_json(TableData *d, sd_json_variant **ret) {
         case TABLE_PERCENT:
                 return sd_json_variant_new_integer(ret, d->percent);
 
-#if 0 /// UNNEEDED by elogind
         case TABLE_IFINDEX:
                 if (d->ifindex <= 0)
                         return sd_json_variant_new_null(ret);
@@ -2876,7 +2853,6 @@ static int table_data_to_json(TableData *d, sd_json_variant **ret) {
 
         case TABLE_IN6_ADDR:
                 return sd_json_variant_new_array_bytes(ret, &d->address, FAMILY_ADDRESS_SIZE(AF_INET6));
-#endif // 0
 
         case TABLE_ID128:
                 return sd_json_variant_new_id128(ret, d->id128);

@@ -192,12 +192,14 @@ int in_addr_prefix_from_string_auto_full(const char *p, InAddrPrefixLenMode mode
 static inline int in_addr_prefix_from_string_auto(const char *p, int *ret_family, union in_addr_union *ret_prefix, unsigned char *ret_prefixlen) {
         return in_addr_prefix_from_string_auto_full(p, PREFIXLEN_FULL, ret_family, ret_prefix, ret_prefixlen);
 }
+#endif // 0
 
 static inline size_t FAMILY_ADDRESS_SIZE(int family) {
         assert(IN_SET(family, AF_INET, AF_INET6));
         return family == AF_INET6 ? 16 : 4;
 }
 
+#if 0 /// UNNEEDED by elogind
 #define FAMILY_ADDRESS_SIZE_SAFE(f)                                     \
         ({                                                              \
                 int _f = (f);                                           \
