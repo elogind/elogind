@@ -2209,11 +2209,21 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #                 target_triplet_cmd = run_command('gcc', '-print-multiarch', check: false)
 #         endif
 #         if target_triplet_cmd.returncode() == 0
+#                 sysroot = meson.get_external_property('sys_root', '/')
 #                 target_triplet = target_triplet_cmd.stdout().strip()
-#                 bpf_o_unstripped_cmd += [
-#                         '-isystem',
-#                         '/usr/include/@0@'.format(target_triplet)
-#                 ]
+#                 target_include_dir = sysroot / 'usr' / 'include'
+#                 target_triple_include_dir = target_include_dir / target_triplet
+#                 isystem_dir = ''
+#                 if fs.is_dir(target_triple_include_dir)
+#                         isystem_dir = target_triple_include_dir
+#                 elif fs.is_dir(target_include_dir)
+#                         isystem_dir = target_include_dir
+#                 endif
+#                 if isystem_dir != ''
+#                         bpf_o_unstripped_cmd += [
+#                                 '-isystem', isystem_dir
+#                         ]
+#                 endif
 #         endif
 #
 #         bpf_o_unstripped_cmd += [
