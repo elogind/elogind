@@ -31,10 +31,10 @@
 #include &lt;elogind/sd-hwdb.h&gt;
 #include &lt;elogind/sd-id128.h&gt;
 #include &lt;elogind/sd-journal.h&gt;
+#include &lt;elogind/sd-json.h&gt;
 #include &lt;elogind/sd-login.h&gt;
 #include &lt;elogind/sd-messages.h&gt;
 #include &lt;elogind/sd-path.h&gt;
-#include &lt;elogind/sd-json.h&gt;
 #include &lt;elogind/sd-varlink.h&gt;
 </programlisting>
 
@@ -62,7 +62,8 @@
     <citerefentry><refentrytitle>sd-id128</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
     <citerefentry><refentrytitle>sd-journal</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
     <citerefentry><refentrytitle>sd-json</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
-    <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>sd-login</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
+    <citerefentry><refentrytitle>sd-path</refentrytitle><manvolnum>3</manvolnum></citerefentry>,
     and
     <citerefentry><refentrytitle>sd-varlink</refentrytitle><manvolnum>3</manvolnum></citerefentry>
     for information about different parts of the library interface.</para>
