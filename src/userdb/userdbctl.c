@@ -496,7 +496,7 @@ static int display_user(int argc, char *argv[], void *userdata) {
                 if (!table_isempty(table)) {
                         r = table_print_with_pager(table, arg_json_format_flags, arg_pager_flags, arg_legend);
                         if (r < 0)
-                                return table_log_print_error(r);
+                                return r;
                 }
 
                 if (arg_legend) {
@@ -831,7 +831,7 @@ static int display_group(int argc, char *argv[], void *userdata) {
                 if (!table_isempty(table)) {
                         r = table_print_with_pager(table, arg_json_format_flags, arg_pager_flags, arg_legend);
                         if (r < 0)
-                                return table_log_print_error(r);
+                                return r;
                 }
 
                 if (arg_legend) {
@@ -980,7 +980,7 @@ static int display_memberships(int argc, char *argv[], void *userdata) {
                 if (!table_isempty(table)) {
                         r = table_print_with_pager(table, arg_json_format_flags, arg_pager_flags, arg_legend);
                         if (r < 0)
-                                return table_log_print_error(r);
+                                return r;
                 }
 
                 if (arg_legend) {
@@ -1045,7 +1045,7 @@ static int display_services(int argc, char *argv[], void *userdata) {
         if (!table_isempty(t)) {
                 r = table_print_with_pager(t, arg_json_format_flags, arg_pager_flags, arg_legend);
                 if (r < 0)
-                        return table_log_print_error(r);
+                        return r;
         }
 
         if (arg_legend && arg_output != OUTPUT_JSON) {
