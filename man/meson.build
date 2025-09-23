@@ -259,6 +259,7 @@ update_dbus_docs = custom_target(
 #              suite : 'dist',
 #              args : source_xml_files)
 # endif
+#endif // 0
 
 update_man_rules = custom_target(
         'update-man-rules-impl',
