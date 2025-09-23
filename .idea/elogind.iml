@@ -2,7 +2,7 @@
 <module version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python facet">
-      <configuration sdkName="Python 3.12 (elogind)" />
+      <configuration sdkName="Python 3.12 (sys)" />
     </facet>
   </component>
 </module>
