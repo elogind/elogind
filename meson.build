@@ -2354,7 +2354,8 @@ check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 
 #####################################################################
 
-check_version_history_py = find_program('tools/check-version-history.py')
+#if 0 /// UNUSED by elogind
+# check_version_history_py = find_program('tools/check-version-history.py')
 #if 0 /// UNUSED by elogind
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0

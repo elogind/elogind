@@ -246,18 +246,19 @@ update_dbus_docs = custom_target(
         command : [update_dbus_docs_py, '--build-dir', project_build_root, '@INPUT@'],
         input : dbus_docs)
 
-if conf.get('BUILD_MODE_DEVELOPER') == 1
-        test('dbus-docs-fresh',
-             update_dbus_docs_py,
-             suite : 'dist',
-             args : ['--build-dir', project_build_root, '--test', dbus_docs],
-             depends : dbus_programs)
-
-        test('check-version-history',
-             check_version_history_py,
-             suite : 'dist',
-             args : source_xml_files)
-endif
+#if 0 /// Not suitable for elogind - We use a subset and those tools therefore always fail
+# if conf.get('BUILD_MODE_DEVELOPER') == 1
+#         test('dbus-docs-fresh',
+#              update_dbus_docs_py,
+#              suite : 'dist',
+#              args : ['--build-dir', project_build_root, '--test', dbus_docs],
+#              depends : dbus_programs)
+# 
+#         test('check-version-history',
+#              check_version_history_py,
+#              suite : 'dist',
+#              args : source_xml_files)
+# endif
 
 update_man_rules = custom_target(
         'update-man-rules-impl',
