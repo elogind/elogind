@@ -408,10 +408,10 @@ static void test_format_timestamp_impl(usec_t x) {
         yy = FORMAT_TIMESTAMP(y);
         assert_se(yy);
 
-        /* Workaround for https://github.com/elogind/elogind/issues/28472
         x_sec = x / USEC_PER_SEC;
         y_sec = y / USEC_PER_SEC;
         success = (x_sec == y_sec) && streq(xx, yy);
+        /* Workaround for https://github.com/systemd/systemd/issues/28472
          * and https://github.com/systemd/systemd/pull/35471. */
         override = !success &&
                    (STRPTR_IN_SET(tzname[0], "CAT", "EAT", "WET") ||
@@ -436,7 +436,7 @@ static void test_format_timestamp_loop(void) {
         test_format_timestamp_impl(USEC_TIMESTAMP_FORMATTABLE_MAX-1);
         test_format_timestamp_impl(USEC_TIMESTAMP_FORMATTABLE_MAX);
 
-        /* Two cases which trigger https://github.com/elogind/elogind/issues/28472 */
+        /* Two cases which trigger https://github.com/systemd/systemd/issues/28472 */
         test_format_timestamp_impl(1504938962980066);
         test_format_timestamp_impl(1509482094632752);
 
