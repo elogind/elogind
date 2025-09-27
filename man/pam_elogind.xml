@@ -153,7 +153,7 @@
         (i.e. usually contains the full set of capabilities). The default ambient set is set to
         <constant>CAP_WAKE_ALARM</constant> for regular users if the PAM session is associated with a local
 <!-- 0 /// elogind has no user instances like systemd-user
-        seat or if it is invoked for the <literal>systemd-user</literal> service. Otherwise, defaults to the
+        seat or if it is invoked for the <literal>systemd-user</literal> service. Otherwise defaults to the
 --><!-- else // 0 -->
         seat. Otherwise, defaults to the
 <!-- // 0 -->
