@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
 
         /* Enumerate the specified dirs in full, once via nftw(), and once via recurse_dir(), and ensure the
          * results are identical. nftw() sometimes skips symlinks (see
-         * https://github.com/elogind/elogind/issues/29603), so ignore them to avoid bogus errors. */
+         * https://github.com/systemd/systemd/issues/29603), so ignore them to avoid bogus errors. */
 
         t1 = now(CLOCK_MONOTONIC);
         assert_se(recurse_dir(fd, p, 0, UINT_MAX, RECURSE_DIR_SORT|RECURSE_DIR_ENSURE_TYPE|RECURSE_DIR_SAME_MOUNT, recurse_dir_callback, &list_recurse_dir) >= 0);
