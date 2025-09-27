@@ -246,7 +246,7 @@ update_dbus_docs = custom_target(
 #              suite : 'dist',
 #              args : ['--build-dir', project_build_root, '--test', dbus_docs],
 #              depends : dbus_programs)
-# 
+#
 #         test('check-version-history',
 #              check_version_history_py,
 #              suite : 'dist',
