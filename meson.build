@@ -3014,8 +3014,8 @@ install_data('LICENSE.GPL2',
 # install_subdir('LICENSES',
 #                install_dir : docdir)
 #endif // 0
-install_emptydir(elogindstatedir)
 
+install_emptydir(elogindstatedir)
 
 ############################################################
 
