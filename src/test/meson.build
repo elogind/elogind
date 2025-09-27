@@ -30,8 +30,8 @@ generate_sym_test_py = find_program('generate-sym-test.py')
 
 test_libelogind_sym_c = custom_target(
         'test-libelogind-sym.c',
-        output : 'test-libelogind-sym.c',
         input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
+        output : 'test-libelogind-sym.c',
         command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
         capture : true,
         build_by_default : want_tests != 'false')
