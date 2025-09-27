@@ -23,8 +23,8 @@ int write_string_file_atomic_label_ts(const char *fn, const char *line, struct t
 int create_shutdown_run_nologin_or_warn(void) {
         int r;
 
-        /* This is used twice: once in elogind-user-sessions.service, in order to block logins when we
-         * actually go down, and once in elogind.service when shutdowns are scheduled, and logins are
+        /* This is used twice: once in systemd-user-sessions.service, in order to block logins when we
+         * actually go down, and once in systemd-logind.service when shutdowns are scheduled, and logins are
          * to be turned off a bit in advance. We use the same wording of the message in both cases.
          *
          * Traditionally, there was only /etc/nologin, and we managed that. Then, in PAM 1.1
