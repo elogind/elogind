@@ -170,8 +170,8 @@ libcore_sources = files(
 #         ] : [
 #                 libcore_static,
 #                 libshared_static,
-#                 libelogind_static,
 #                 libbasic,
+#                 libelogind_static,
 #         ]
 #
 # executables += [
