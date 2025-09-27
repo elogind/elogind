@@ -605,6 +605,8 @@
         <term><varname>OBJECT_SYSTEMD_UNIT=</varname></term>
         <term><varname>OBJECT_SYSTEMD_USER_UNIT=</varname></term>
         <listitem>
+          <para>These are additional fields added automatically by <command>systemd-journald</command>.
+          Their meaning is the same as
           <varname>_UID=</varname>,
           <varname>_GID=</varname>,
           <varname>_COMM=</varname>,
@@ -628,6 +630,8 @@
       <varlistentry>
         <term><varname>OBJECT_SYSTEMD_INVOCATION_ID=</varname></term>
         <listitem>
+          <para>An additional field added automatically by <command>systemd-journald</command>. The meaning
+          is mostly the same as <varname>_SYSTEMD_INVOCATION_ID=</varname>, with the difference described
           above.</para>
 
           <xi:include href="version-info.xml" xpointer="v235"/>
