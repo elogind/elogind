@@ -32,6 +32,8 @@ bool invoked_as(char *argv[], const char *token) {
 bool invoked_by_systemd(void) {
         int r;
 
+        /* If the process is directly executed by PID1 (e.g. ExecStart= or generator), systemd-importd,
+         * or systemd-homed, then $SYSTEMD_EXEC_PID= is set, and read the command line. */
         const char *e = getenv("SYSTEMD_EXEC_PID");
         if (!e)
                 return false;
