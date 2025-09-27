@@ -4710,7 +4710,7 @@ _public_ int sd_event_wait(sd_event *e, uint64_t timeout) {
                  * triggered just after process_epoll() call but before process_child(), and the new IO
                  * events may have higher priority than the child events. To salvage these events,
                  * let's call epoll_wait() again, but accepts only events with higher priority than the
-                 * previous. See issue https://github.com/elogind/elogind/issues/18190 and comments
+                 * previous. See issue https://github.com/systemd/systemd/issues/18190 and comments
                  * https://github.com/systemd/systemd/pull/18750#issuecomment-785801085
                  * https://github.com/systemd/systemd/pull/18922#issuecomment-792825226 */
 
