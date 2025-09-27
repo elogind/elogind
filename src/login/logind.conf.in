@@ -12,6 +12,8 @@
 # recommended. Defaults can be restored by simply deleting the main
 # configuration file and all drop-ins located in /etc/.
 #
+# Use 'systemd-analyze cat-config systemd/logind.conf' to display the full config.
+#
 # See logind.conf(5) for details.
 
 [Login]
