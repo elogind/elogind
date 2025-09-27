@@ -67,8 +67,8 @@ msgstr ""
 # msgstr "无速率限制地转储 elogind 状态"
 #
 # #: src/core/org.freedesktop.systemd1.policy.in:75
-# msgstr "无限制地转储 elogind 状态需要身份验证。"
 # msgid "Authentication is required to dump the elogind state without rate limits."
+# msgstr "无限制地转储 elogind 状态需要身份验证。"
 #
 # #: src/home/org.freedesktop.home1.policy:13
 # msgid "Create a home area"
