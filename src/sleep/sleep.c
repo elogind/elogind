@@ -571,7 +571,7 @@ static int execute(
 
 #if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
         (void) prepare_for_sleep(false);
-#endif // 0
+#endif // 1
 
         arguments[1] = (char*) "post";
 

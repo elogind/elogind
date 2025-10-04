@@ -1542,7 +1542,7 @@ static int method_send_prepare_for_sleep(sd_bus_message *message, void *userdata
 
         return sd_bus_reply_method_return(message, NULL);
 }
-#endif // 0
+#endif // 1
 
 static int have_multiple_sessions(
                 Manager *m,
@@ -3733,7 +3733,7 @@ static const sd_bus_vtable manager_vtable[] = {
                                 SD_BUS_NO_RESULT,
                                 method_send_prepare_for_sleep,
                                 0),
-#endif // 0
+#endif // 1
         SD_BUS_METHOD_WITH_ARGS("GetSession",
                                 SD_BUS_ARGS("s", session_id),
                                 SD_BUS_RESULT("o", object_path),
