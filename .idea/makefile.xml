@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="MakefileBuildTargetsManager">
+    <user-build-targets>
+      <build-target name="test DEBUG=YES BUILDMODE=release PREFIX=/tmp/elogind_test_d JUST_PRINT=NO">
+        <build-configurations>
+          <build-configuration>
+            <make-targets>
+              <make-target>test</make-target>
+              <make-target>DEBUG=YES</make-target>
+              <make-target>BUILDMODE=release</make-target>
+              <make-target>PREFIX=/tmp/elogind_test_d</make-target>
+              <make-target>JUST_PRINT=NO</make-target>
+            </make-targets>
+          </build-configuration>
+        </build-configurations>
+      </build-target>
+      <build-target name="test DEBUG=NO BUILDMODE=release PREFIX=/tmp/elogind_test_r JUST_PRINT=NO">
+        <build-configurations>
+          <build-configuration>
+            <make-targets>
+              <make-target>test</make-target>
+              <make-target>DEBUG=NO</make-target>
+              <make-target>BUILDMODE=release</make-target>
+              <make-target>PREFIX=/tmp/elogind_test_r</make-target>
+              <make-target>JUST_PRINT=NO</make-target>
+            </make-targets>
+          </build-configuration>
+        </build-configurations>
+      </build-target>
+      <build-target name="clean DEBUG=YES">
+        <build-configurations>
+          <build-configuration>
+            <make-targets>
+              <make-target>clean</make-target>
+              <make-target>DEBUG=YES</make-target>
+            </make-targets>
+          </build-configuration>
+        </build-configurations>
+      </build-target>
+      <build-target name="clean DEBUG=NO">
+        <build-configurations>
+          <build-configuration>
+            <make-targets>
+              <make-target>clean</make-target>
+              <make-target>DEBUG=NO</make-target>
+            </make-targets>
+          </build-configuration>
+        </build-configurations>
+      </build-target>
+    </user-build-targets>
+  </component>
+</project>
