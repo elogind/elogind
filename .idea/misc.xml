@@ -51,4 +51,7 @@
       </profile-state>
     </entry>
   </component>
+  <component name="ProjectResources">
+    <resource url="http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" location="/usr/share/sgml/docbook/xml-dtd-4.2/docbookx.dtd" />
+  </component>
 </project>
