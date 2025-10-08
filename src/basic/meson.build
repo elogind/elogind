@@ -646,8 +646,6 @@ filesystem_list_h = custom_target(
 #         command : [generate_filesystem_switch_case_h,
 #                    '@INPUT@'],
 #         capture : true)
-# else
-# filesystem_switch_case_h = files()
 #endif // 0
 
 basic_sources += [filesystem_list_h, filesystem_switch_case_h, filesystems_gperf_h]
