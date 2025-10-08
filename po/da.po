@@ -9,7 +9,7 @@ msgstr ""
 "POT-Creation-Date: 2022-10-20 10:35+0200\n"
 "PO-Revision-Date: 2021-06-02 16:03+0000\n"
 "Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
-"Language-Team: Danish <https://translate.fedoraproject.org/projects/elogind/"
+"Language-Team: Danish <https://translate.fedoraproject.org/projects/systemd/"
 "master/da/>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -362,7 +362,7 @@ msgstr "Der kræves godkendelse for at montere en enhed til en arbejdsstation."
 msgid "Flush device to seat attachments"
 msgstr "Nulstil enhed monteret til en arbejdsstation"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:160
 msgid "Authentication is required to reset how devices are attached to seats."
 msgstr ""
@@ -534,7 +534,7 @@ msgstr ""
 msgid "Manage active sessions, users and seats"
 msgstr "Håndter aktive sessioner, brugere og arbejdsstationer"
 
-# https://www.freedesktop.org/software/elogind/man/sd-login.html
+# https://www.freedesktop.org/software/systemd/man/sd-login.html
 #: src/login/org.freedesktop.login1.policy:333
 msgid "Authentication is required to manage active sessions, users and seats."
 msgstr ""
