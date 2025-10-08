@@ -569,7 +569,7 @@ static int execute(
                 nvidia_sleep(m, _SLEEP_OPERATION_MAX, &vtnr);
 #endif // 1
 
-#if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
+#if 1 /// Before performing the hook scripts, elogind tells subscribers that we are back, so needed services are up again
         (void) prepare_for_sleep(false);
 #endif // 1
 
