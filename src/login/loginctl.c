@@ -1499,6 +1499,7 @@ static int parse_argv(int argc, char *argv[]) {
                                 arg_legend = false;
 
                         break;
+
 #if 1 /// elogind supports --no-wall and --dry-run
                 case ARG_NO_WALL:
                         arg_no_wall = true;
@@ -1540,6 +1541,7 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
+
 #if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can controll the reboot process
                 case 'c':
                         arg_action = ACTION_CANCEL_SHUTDOWN;
