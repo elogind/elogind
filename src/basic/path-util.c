@@ -410,8 +410,8 @@ char* path_simplify_full(char *path, PathSimplifyFlags flags) {
         return path;
 }
 
-char* path_startswith_full(const char *original_path, const char *prefix, PathStartWithFlags flags) {
-        assert(original_path);
+char* path_startswith_full(const char *path, const char *prefix, bool accept_dot_dot) {
+        assert(path);
         assert(prefix);
 
         /* Returns a pointer to the start of the first component after the parts matched by
@@ -424,45 +424,28 @@ char* path_startswith_full(const char *original_path, const char *prefix, PathSt
          * Returns NULL otherwise.
          */
 
-        const char *path = original_path;
-
         if ((path[0] == '/') != (prefix[0] == '/'))
                 return NULL;
 
         for (;;) {
                 const char *p, *q;
-                int m, n;
+                int r, k;
 
-                m = path_find_first_component(&path, !FLAGS_SET(flags, PATH_STARTSWITH_REFUSE_DOT_DOT), &p);
-                if (m < 0)
+                r = path_find_first_component(&path, accept_dot_dot, &p);
+                if (r < 0)
                         return NULL;
 
-                n = path_find_first_component(&prefix, !FLAGS_SET(flags, PATH_STARTSWITH_REFUSE_DOT_DOT), &q);
-                if (n < 0)
+                k = path_find_first_component(&prefix, accept_dot_dot, &q);
+                if (k < 0)
                         return NULL;
 
-                if (n == 0) {
-                        if (!p)
-                                p = path;
+                if (k == 0)
+                        return (char*) (p ?: path);
 
-                        if (FLAGS_SET(flags, PATH_STARTSWITH_RETURN_LEADING_SLASH)) {
-
-                                if (p <= original_path)
-                                        return NULL;
-
-                                p--;
-
-                                if (*p != '/')
-                                        return NULL;
-                        }
-
-                        return (char*) p;
-                }
-
-                if (m != n)
+                if (r != k)
                         return NULL;
 
-                if (!strneq(p, q, m))
+                if (!strneq(p, q, r))
                         return NULL;
         }
 }
