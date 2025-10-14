@@ -420,8 +420,8 @@
         If applications want to react to these system commands, they should rather use the
         <ulink url="https://www.freedesktop.org/wiki/Software/systemd/inhibit">Inhibitor interface</ulink>.</para>
     </refsect2>
-  </refsect1>
   <!-- // 1 -->
+  </refsect1>
 
   <refsect1>
     <title>Options</title>
