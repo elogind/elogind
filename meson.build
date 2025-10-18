@@ -2211,7 +2211,7 @@ update_man_rules_py = find_program('tools/update-man-rules.py')
 update_syscall_tables_sh = find_program('tools/update-syscall-tables.sh')
 xml_helper_py = find_program('tools/xml_helper.py')
 
-# ############################################################
+############################################################
 #if 1 /// These are not needed by elogind, but meson wants them although they are commented out.
 conf.set_quoted('CERTIFICATE_ROOT',                 '/dev/null')
 conf.set_quoted('MEMORY_ACCOUNTING_DEFAULT_YES_NO', 'N/A')
