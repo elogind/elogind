@@ -268,10 +268,6 @@
 <!-- add Index link at top of page -->
 <xsl:template name="user.header.content">
   <style>
-    :root {
-      color-scheme: light dark;
-    }
-
     a.headerlink {
       color: #c60f0f;
       font-size: 0.8em;
@@ -314,13 +310,6 @@
   <xsl:text>"</xsl:text>
   <xsl:call-template name="inline.monoseq"/>
   <xsl:text>"</xsl:text>
-</xsl:template>
-
-<!-- copied from docbook to remove the static color declarations -->
-<xsl:template name="body.attributes">
-  <xsl:if test="starts-with($writing.mode, 'rl')">
-    <xsl:attribute name="dir">rtl</xsl:attribute>
-  </xsl:if>
 </xsl:template>
 
 <!-- Switch things to UTF-8, ISO-8859-1 is soo yesteryear -->
