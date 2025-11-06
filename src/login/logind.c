@@ -490,13 +490,13 @@ static int deliver_session_device_fd(Session *s, const char *fdname, int fd, dev
         return 0;
 }
 
-static int deliver_session_leader_fd_consume(Session *s, const char *fdname, int fd) {
+static int deliver_session_leader_fd_consume(Session *s, const char *fdname, int fd_consume) {
+        _cleanup_close_ int fd = ASSERT_FD(fd_consume);
         _cleanup_(pidref_done) PidRef leader_fdstore = PIDREF_NULL;
         int r;
 
         assert(s);
         assert(fdname);
-        assert(fd >= 0);
 
         if (!pid_is_valid(s->deserialized_pid)) {
                 r = log_warning_errno(SYNTHETIC_ERRNO(EOWNERDEAD),
@@ -519,6 +519,7 @@ static int deliver_session_leader_fd_consume(Session *s, const char *fdname, int
                         log_warning_errno(r, "Failed to create reference to leader of session '%s': %m", s->id);
                 goto fail_close;
         }
+        TAKE_FD(fd);
 
         if (leader_fdstore.pid != s->deserialized_pid)
                 log_warning("Leader from pidfd (" PID_FMT ") doesn't match with LEADER=" PID_FMT " for session '%s', proceeding anyway.",
@@ -531,7 +532,7 @@ static int deliver_session_leader_fd_consume(Session *s, const char *fdname, int
         return 0;
 
 fail_close:
-        close_and_notify_warn(fd, fdname);
+        close_and_notify_warn(TAKE_FD(fd), fdname);
         return r;
 }
 
@@ -1356,6 +1357,7 @@ static int run(int argc, char *argv[]) {
         r = mac_init();
         if (r < 0)
                 return elogind_notify_daemon_parent(r);
+                return r;
 
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         /* Always create the directories people can create inotify watches in. Note that some applications
@@ -1417,7 +1419,6 @@ static int run(int argc, char *argv[]) {
         r = manager_startup(m);
 #if 0 /// elogind does not just log an error, but also reports it to its forking main process
         if (r < 0)
-                return log_error_errno(r, "Failed to allocate manager object: %m");
 #else // 0
         if (r < 0) {
                 (void)elogind_notify_daemon_parent(r);
@@ -1425,7 +1426,7 @@ static int run(int argc, char *argv[]) {
         }
 #endif // 0
 
-
+                return log_error_errno(r, "Failed to fully start up daemon: %m");
 #if 1 /// elogind reports its daemonizing startup
         (void) elogind_notify_daemon_parent(0);
 #endif // 1
