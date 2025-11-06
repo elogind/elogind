@@ -730,7 +730,7 @@ enum nss_status _nss_elogind_getgrent_r(
                 int *errnop) {
 
         _cleanup_(group_record_unrefp) GroupRecord *gr = NULL;
-        _cleanup_free_ char **members = NULL;
+        _cleanup_strv_free_ char **members = NULL;
         int r;
 
         PROTECT_ERRNO;
@@ -1082,90 +1082,22 @@ _public_ int _nss_elogind_block(bool b) {
 _public_ bool _nss_elogind_is_blocked(void) {
         return _blocked > 0;
 }
-
-/* Aliases for using nss-eloignd as a drop-in replacement for nss-systemd */
-NSS_GETPW_PROTOTYPES(systemd);
-NSS_GETSP_PROTOTYPES(systemd);
-NSS_GETGR_PROTOTYPES(systemd);
-NSS_GETSG_PROTOTYPES(systemd);
-NSS_PWENT_PROTOTYPES(systemd);
-NSS_SPENT_PROTOTYPES(systemd);
-NSS_GRENT_PROTOTYPES(systemd);
-NSS_SGENT_PROTOTYPES(systemd);
-NSS_INITGROUPS_PROTOTYPE(systemd);
-
-enum nss_status _nss_systemd_getpwnam_r(const char *name, struct passwd *pwd, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getpwnam_r(name, pwd, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_getspnam_r(const char *name, struct spwd *spwd, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getspnam_r(name,spwd,buffer, buflen,errnop);
-}
-
-enum nss_status _nss_systemd_getpwuid_r(uid_t uid,struct passwd *pwd, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getpwuid_r(uid, pwd, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_endpwent(void) {
         return nss_elogind_endent(&getpwent_data);
-}
-
-enum nss_status _nss_systemd_endspent(void) {
         return nss_elogind_endent(&getspent_data);
-}
-
-enum nss_status _nss_systemd_endgrent(void) {
         return nss_elogind_endent(&getgrent_data);
-}
-
-enum nss_status _nss_systemd_endsgent(void) {
         return nss_elogind_endent(&getsgent_data);
-}
-
-enum nss_status _nss_systemd_setpwent(int stayopen) {
         return _nss_elogind_setpwent(stayopen);
-}
-
-enum nss_status _nss_systemd_getpwent_r(struct passwd *result, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getpwent_r(result, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_setspent(int stayopen) {
         return _nss_elogind_setspent(stayopen);
-}
-
-enum nss_status _nss_systemd_getspent_r(struct spwd *result, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getspent_r(result, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_getgrnam_r(const char *name, struct group *gr, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getgrnam_r(name, gr, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_getsgnam_r(const char *name, struct sgrp *sgrp, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getsgnam_r(name, sgrp, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_getgrgid_r(gid_t gid, struct group *gr, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getgrgid_r(gid, gr, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_setgrent(int stayopen) {
         return _nss_elogind_setgrent(stayopen);
-}
-
-enum nss_status _nss_systemd_setsgent(int stayopen) {
         return _nss_elogind_setsgent(stayopen);
-}
-
-enum nss_status _nss_systemd_getgrent_r(struct group *result, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getgrent_r(result, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_getsgent_r(struct sgrp *result, char *buffer, size_t buflen, int *errnop) {
         return _nss_elogind_getsgent_r(result, buffer, buflen, errnop);
-}
-
-enum nss_status _nss_systemd_initgroups_dyn(const char *user_name, gid_t gid, long *start, long *size, gid_t **groupsp, long int limit, int *errnop) {
         return _nss_elogind_initgroups_dyn(user_name, gid, start, size, groupsp, limit, errnop);
-}
