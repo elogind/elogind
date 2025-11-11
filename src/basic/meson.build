@@ -646,9 +646,11 @@ filesystem_list_h = custom_target(
 #         command : [generate_filesystem_switch_case_h,
 #                    '@INPUT@'],
 #         capture : true)
+#
+# basic_sources += [filesystem_list_h, filesystem_switch_case_h, filesystems_gperf_h]
+#else // 0
+basic_sources += [filesystem_list_h, filesystems_gperf_h]
 #endif // 0
-
-basic_sources += [filesystem_list_h, filesystem_switch_case_h, filesystems_gperf_h]
 
 libbasic = static_library(
         'basic',
