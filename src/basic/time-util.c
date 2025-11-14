@@ -1131,7 +1131,9 @@ static const char* extract_multiplier(const char *p, usec_t *ret) {
         assert(ret);
 
         FOREACH_ELEMENT(i, table) {
-                const char *e = startswith(p, i->suffix);
+                char *e;
+
+                e = startswith(p, i->suffix);
                 if (e) {
                         *ret = i->usec;
                         return e;
@@ -1312,7 +1314,9 @@ static const char* extract_nsec_multiplier(const char *p, nsec_t *ret) {
         assert(ret);
 
         FOREACH_ELEMENT(i, table) {
-                const char *e = startswith(p, i->suffix);
+                char *e;
+
+                e = startswith(p, i->suffix);
                 if (e) {
                         *ret = i->nsec;
                         return e;
@@ -1748,38 +1752,6 @@ bool in_utc_timezone(void) {
 }
 #endif // 0
 
-int usleep_safe(usec_t usec) {
-        int r;
-
-        /* usleep() takes useconds_t that is (typically?) uint32_t. Also, usleep() may only support the
-         * range [0, 1000000]. See usleep(3). Let's override usleep() with clock_nanosleep().
-         *
-         * ⚠️ Note we are not using plain nanosleep() here, since that operates on CLOCK_REALTIME, not
-         *    CLOCK_MONOTONIC! */
-
-        if (usec == 0)
-                return 0;
-
-        if (usec == USEC_INFINITY)
-                return RET_NERRNO(pause());
-
-        struct timespec t;
-        timespec_store(&t, usec);
-
-        for (;;) {
-                struct timespec remaining;
-
-                /* `clock_nanosleep()` does not use `errno`, but returns positive error codes. */
-                r = -clock_nanosleep(CLOCK_MONOTONIC, /* flags= */ 0, &t, &remaining);
-                if (r == -EINTR) {
-                        /* Interrupted. Continue sleeping for the remaining time. */
-                        t = remaining;
-                        continue;
-                }
-
-                return r;
-        }
-}
 
 #if 0 /// UNNEEDED by elogind
 int time_change_fd(void) {
