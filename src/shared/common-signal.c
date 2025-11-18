@@ -65,12 +65,14 @@ int sigrtmin18_handler(sd_event_source *s, const struct signalfd_siginfo *si, vo
                         log_oom();
                         break;
                 }
+
 #ifdef __GLIBC__
                 if (malloc_info(0, f) < 0) {
                         log_error_errno(errno, "Failed to invoke malloc_info(): %m");
                         break;
                 }
-#endif
+#endif // __GLIBC__
+
                 (void) memstream_dump(LOG_INFO, &m);
                 break;
         }
