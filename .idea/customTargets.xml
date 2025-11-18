@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="3b587314-842f-47a6-a273-943cab3dd19d" name="test DEBUG" defaultType="MAKE">
+      <configuration id="77afdec8-ac78-4fda-b9f1-e135507574bf" name="test DEBUG">
+        <build type="MAKE">
+          <make targetName="test DEBUG=YES BUILDMODE=release PREFIX=/tmp/elogind_test_d JUST_PRINT=NO" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean DEBUG=YES" />
+        </clean>
+      </configuration>
+    </target>
+    <target id="cd3b4e0e-837f-4f0d-9f12-2e1f59d4ce33" name="test RELEASE" defaultType="MAKE">
+      <configuration id="da992a88-4622-4071-a226-4fbb568e641a" name="test RELEASE">
+        <build type="MAKE">
+          <make targetName="test DEBUG=NO BUILDMODE=release PREFIX=/tmp/elogind_test JUST_PRINT=NO" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean DEBUG=NO" />
+        </clean>
+      </configuration>
+    </target>
+  </component>
+</project>
