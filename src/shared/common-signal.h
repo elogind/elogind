@@ -25,6 +25,8 @@
  *
  * or:
  *
+ *         systemctl kill --kill-value=0x300 -s RTMIN+18 systemd-journald
+ *
  *         (This will tell journald to trim its memory use.)
  */
 
