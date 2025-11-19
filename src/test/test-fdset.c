@@ -80,19 +80,19 @@ TEST(fdset_cloexec) {
         _cleanup_fdset_free_ FDSet *fdset = NULL;
         int flags = -1;
         _cleanup_(unlink_tempfilep) char name[] = "/tmp/test-fdset_cloexec.XXXXXX";
-        
+
         fd = mkostemp_safe(name);
         assert_se(fd >= 0);
-        
+
         fdset = fdset_new();
         assert_se(fdset);
         assert_se(fdset_put(fdset, fd));
-        
+
         assert_se(fdset_cloexec(fdset, false) >= 0);
         flags = fcntl(fd, F_GETFD);
         assert_se(flags >= 0);
         assert_se(!(flags & FD_CLOEXEC));
-        
+
         assert_se(fdset_cloexec(fdset, true) >= 0);
         flags = fcntl(fd, F_GETFD);
         assert_se(flags >= 0);
@@ -149,16 +149,16 @@ TEST(fdset_iterate) {
         _cleanup_(unlink_tempfilep) char name[] = "/tmp/test-fdset_iterate.XXXXXX";
         int c = 0;
         int a;
-        
+
         fd = mkostemp_safe(name);
         assert_se(fd >= 0);
-        
+
         fdset = fdset_new();
         assert_se(fdset);
         assert_se(fdset_put(fdset, fd) >= 0);
         assert_se(fdset_put(fdset, fd) >= 0);
         assert_se(fdset_put(fdset, fd) >= 0);
-        
+
         FDSET_FOREACH(a, fdset) {
                 c++;
                 assert_se(a == fd);
