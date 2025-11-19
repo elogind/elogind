@@ -435,6 +435,7 @@
   <refsect1>
     <title>Signals</title>
 
+    <!-- 0 /// elogind does not have anything to do with system boot
     <para>The service listens to various UNIX process signals that can be used to request various actions
     asynchronously. The signal handling is enabled very early during boot, before any further processes are
     invoked. However, a supervising container manager or similar that intends to request these operations via
@@ -442,6 +443,10 @@
     initialization phase. An <function>sd_notify()</function> notification message carrying the
     <varname>X_SYSTEMD_SIGNALS_LEVEL=2</varname> field is emitted once the signal handlers are enabled, see
     below. This may be used to schedule submission of these signals correctly.</para>
+    --><!-- else // 0 -->
+    <para>The service listens to various UNIX process signals that can be used to request various actions
+    asynchronously. The signal handling is enabled very early during startup of the elogind daemon.</para>
+    <!-- // 0 -->
 
     <variablelist>
       <varlistentry>
