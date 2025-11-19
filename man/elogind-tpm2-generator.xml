@@ -45,8 +45,8 @@
     for it yet. The latter might be useful in environments where a suitable TPM2 driver for the available
     hardware is not available.</para>
 
-    <citerefentry><refentrytitle>elogind.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
     <para><command>elogind-tpm2-generator</command> implements
+    <citerefentry><refentrytitle>elogind.generator</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
   </refsect1>
 
   <refsect1>
