@@ -96,7 +96,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
         }
 
         sd_event_unref(iterator->event);
-        
+
         if (iterator->nss_systemd_blocked)
                 assert_se(userdb_block_nss_systemd(false) >= 0);
 
@@ -674,7 +674,6 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         }
 
         log_debug_elogind("userdb_by_name will return: %d", r);
-
         return r;
 }
 
