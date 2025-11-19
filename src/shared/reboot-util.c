@@ -212,7 +212,7 @@ int create_shutdown_run_nologin_or_warn(void) {
 
 #if 0 /// elogind has no user instances like systemd-user, or service files
         /* This is used twice: once in systemd-user-sessions.service, in order to block logins when we
-         * actually go down, and once in systemd.service when shutdowns are scheduled, and logins are
+         * actually go down, and once in systemd-logind.service when shutdowns are scheduled, and logins are
          * to be turned off a bit in advance. We use the same wording of the message in both cases.
          *
          * Traditionally, there was only /etc/nologin, and we managed that. Then, in PAM 1.1
