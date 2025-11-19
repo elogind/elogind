@@ -57,8 +57,8 @@
     listed directories in order of priority, only the first file found is used:
     <filename>/etc/elogind/</filename>,
     <filename>/run/systemd/</filename>,
-    <filename>/usr/lib/elogind/</filename>.
     <filename>/usr/local/lib/elogind/</filename> <xi:include xpointer="usr-local-footnote" />,
+    <filename>/usr/lib/elogind/</filename>.
     The vendor version of the file contains commented out entries showing the defaults as a guide to the
     administrator. Local overrides can also be created by creating drop-ins, as described below. The main
     configuration file can also be edited for this purpose (or a copy in <filename>/etc/</filename> if it is
