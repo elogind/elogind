@@ -75,13 +75,13 @@
         the rest is optional. <replaceable>family</replaceable> may be either <option>ipv4</option> or
         <option>ipv6</option>.</para>
       </listitem>
-      
+
       <listitem>
         <para>An executable to spawn specified as
         <literal>unixexec:guid=<replaceable>guid</replaceable>,path=<replaceable>path</replaceable>,argv1=<replaceable>argument</replaceable>,argv2=<replaceable>argument</replaceable>,...</literal>.
         The <varname>path=</varname> key must be present, while <varname>guid=</varname> is optional.</para>
       </listitem>
-      
+
       <listitem>
         <para>A machine (container) to connect to specified as
         <literal>x-machine-unix:guid=<replaceable>guid</replaceable>,machine=<replaceable>machine</replaceable>,pid=<replaceable>pid</replaceable></literal>.
