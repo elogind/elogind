@@ -24,6 +24,7 @@ available functionality:
 2. Run the full integration test suite as described in
    [test/integration-tests/README.md](/../test/integration-tests/README.md).
    This will build OS images with a number of integration tests and run them
+   using `systemd-nspawn` and `qemu`. Requires root.
 
 3. Use `./coccinelle/run-coccinelle.sh` to run all
    [Coccinelle](http://coccinelle.lip6.fr/) semantic patch scripts we ship. The
