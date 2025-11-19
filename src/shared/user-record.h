@@ -353,10 +353,10 @@ typedef struct UserRecord {
         int auto_login;
         int drop_caches;
 
-        uint64_t stop_delay_usec;   /* How long to leave elogind --user around on log-out */
         char *preferred_session_type;
         char *preferred_session_launcher;
 
+        uint64_t stop_delay_usec;   /* How long to leave systemd --user around on log-out */
         int kill_processes;         /* Whether to kill user processes forcibly on log-out */
 
         /* The following exist mostly so that we can cover the full /etc/shadow set of fields */
