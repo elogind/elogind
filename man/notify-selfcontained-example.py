@@ -4,7 +4,7 @@
 # Implement the elogind notify protocol without external dependencies.
 # Supports both readiness notification on startup and on reloading,
 # according to the protocol defined at:
-# https://www.freedesktop.org/software/elogind/man/latest/sd_notify.html
+# https://www.freedesktop.org/software/systemd/man/latest/sd_notify.html
 # This protocol is guaranteed to be stable as per:
 # https://systemd.io/PORTABILITY_AND_STABILITY/
 
