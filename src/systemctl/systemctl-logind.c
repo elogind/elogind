@@ -152,8 +152,6 @@ int logind_check_inhibitors(enum action a) {
 #if 1 /// elogind adds an additional debug log message if its debug mode was enabled
         elogind_log_special(a);
 #endif // 1
-
-
         if (arg_check_inhibitors == 0 || arg_force > 0)
                 return 0;
 
