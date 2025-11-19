@@ -235,10 +235,10 @@ KeyThree=value 3\
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
-      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <!-- 0 /// UNNEEDED by elogind
       <member><citerefentry><refentrytitle>elogind.time</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
       // 0 -->
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
     </simplelist></para>
   </refsect1>
 
