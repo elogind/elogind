@@ -132,18 +132,18 @@ int fdset_consume(FDSet *s, int fd) {
 int fdset_put_dup(FDSet *s, int fd) {
         _cleanup_close_ int copy = -EBADF;
         int r;
-        
+
         assert(s);
         assert(fd >= 0);
-        
+
         copy = fcntl(fd, F_DUPFD_CLOEXEC, 3);
         if (copy < 0)
                 return -errno;
-        
+
         r = fdset_put(s, copy);
         if (r < 0)
                 return r;
-        
+
         return TAKE_FD(copy);
 }
 #endif // 0
@@ -287,9 +287,9 @@ int fdset_new_listen_fds(FDSet **ret, bool unset) {
 int fdset_to_array(FDSet *fds, int **ret) {
         unsigned j = 0, m;
         int *a;
-        
+
         assert(ret);
-        
+
         m = fdset_size(fds);
         if (m > INT_MAX) /* We want to be able to return an "int" */
                 return -ENOMEM;
@@ -297,17 +297,17 @@ int fdset_to_array(FDSet *fds, int **ret) {
                 *ret = NULL; /* suppress array allocation if empty */
                 return 0;
         }
-        
+
         a = new(int, m);
         if (!a)
                 return -ENOMEM;
-        
+
         int fd;
         FDSET_FOREACH(fd, fds)
                 a[j++] = fd;
-        
+
         assert(j == m);
-        
+
         *ret = TAKE_PTR(a);
         return (int) m;
 }
@@ -315,11 +315,11 @@ int fdset_to_array(FDSet *fds, int **ret) {
 int fdset_close_others(FDSet *fds) {
         _cleanup_free_ int *a = NULL;
         int n;
-        
+
         n = fdset_to_array(fds, &a);
         if (n < 0)
                 return n;
-        
+
         return close_all_fds(a, n);
 }
 
@@ -333,10 +333,10 @@ bool fdset_isempty(FDSet *fds) {
 
 int fdset_iterate(FDSet *s, Iterator *i) {
         void *p;
-        
+
         if (!set_iterate(MAKE_SET(s), i, &p))
                 return -ENOENT;
-        
+
         return PTR_TO_FD(p);
 }
 #endif // 0
