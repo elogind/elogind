@@ -1772,6 +1772,7 @@ static int parse_argv(int argc, char *argv[]) {
                         arg_transport = BUS_TRANSPORT_MACHINE;
                         arg_host = optarg;
                         break;
+
 #if 1 /// elogind can cancel shutdowns, allows to ignore inhibitors and can control the reboot process
                 case 'c':
                         arg_action = ACTION_CANCEL_SHUTDOWN;
