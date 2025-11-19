@@ -87,10 +87,10 @@
     network device. It also sets up and mounts various API file systems, such as <filename>/sys/</filename>,
     <filename>/proc/</filename>, and <filename>/dev/</filename>.</para>
 
-    <para>Note that some but not all interfaces provided by elogind are covered by the
     <para><command>elogind</command> will also reset the system clock during early boot if it appears to be
     set incorrectly. See "System clock epoch" section below.</para>
 
+    <para>Note that some but not all interfaces provided by elogind are covered by the
     <ulink url="https://systemd.io/PORTABILITY_AND_STABILITY/">Interface Portability and Stability Promise</ulink>.</para>
 
     <para>The D-Bus API of <command>elogind</command> is described in
