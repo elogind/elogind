@@ -345,14 +345,14 @@ int pidref_kill(const PidRef *pidref, int sig) {
 
 int pidref_kill_and_sigcont(const PidRef *pidref, int sig) {
         int r;
-        
+
         r = pidref_kill(pidref, sig);
         if (r < 0)
                 return r;
-        
+
         if (!IN_SET(sig, SIGCONT, SIGKILL))
                 (void) pidref_kill(pidref, SIGCONT);
-        
+
         return 0;
 }
 
