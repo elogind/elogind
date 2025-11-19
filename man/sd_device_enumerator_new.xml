@@ -51,6 +51,8 @@
   <refsect1>
     <title>Description</title>
     <para>The <function>sd_device_enumerator</function> family of functions provides a way to iterate
+    over devices recognized by <citerefentry><refentrytitle>systemd-udevd</refentrytitle><manvolnum>8</manvolnum>
+    </citerefentry>. The enumerator allows filtering and matching devices by subsystem, properties and
     other attributes.</para>
 
     <para><function>sd_device_enumerator_new()</function> creates a new device enumerator object and
