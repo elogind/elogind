@@ -27,8 +27,8 @@ The code that is shared between components is split into a few directories, each
 
 - `src/libelogind/` implements the `libelogind.so` shared library (also available as static `libelogind.a`).
   This code may use anything in `src/basic/` or `src/fundamental/`.
-- `src/shared/` provides various utilities and code shared between other components that is exposed as the `libelogind-shared-<nnn>.so` shared library.
 
+- `src/shared/` provides various utilities and code shared between other components that is exposed as the `libelogind-shared-<nnn>.so` shared library.
 
 The other subdirectories implement individual components.
 They may depend only on `src/fundamental/` + `src/basic/`, or also on `src/libelogind/`, or also on `src/shared/`.
@@ -119,6 +119,8 @@ For testing and debugging, fuzzers can be executed as any other program, includi
 
 Sources in `test/TEST-*` implement system-level testing for executables, libraries and daemons that are shipped by the project.
 
+Most of those tests should be able to run via `systemd-nspawn`, which is orders-of-magnitude faster than `qemu`, but some tests require privileged operations like using `dm-crypt` or `loopdev`.
+They are clearly marked if that is the case.
 
 See [`test/integration-tests/README.md`](https://github.com/systemd/systemd/blob/main/test/integration-tests/README.md) for more specific details.
 
