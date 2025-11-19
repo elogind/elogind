@@ -1,4 +1,6 @@
 # shellcheck shell=bash
+# systemd-creds(1) completion                   -*- shell-script -*-
+# SPDX-License-Identifier: LGPL-2.1-or-later
 #
 # This file is part of elogind.
 #
@@ -32,8 +34,12 @@ __get_tpm2_devices() {
 __get_creds() {
     local a b c
     local mode=$1; shift 1
+    systemd-creds list $mode --no-legend --no-pager $1 2>/dev/null | \
+        { while read -r a b c; do echo " $a"; done }
 }
 
+_systemd_creds() {
+    local verb comps mode i
     local cur=${COMP_WORDS[COMP_CWORD]} prev=${COMP_WORDS[COMP_CWORD-1]} words cword
     local -A OPTS=(
         [STANDALONE]='-h --help --version --no-pager --no-legend
@@ -120,6 +126,8 @@ __get_creds() {
                 comps="auto list $(__get_tpm2_devices)"
                 ;;
             --json)
+                comps=$( systemd-creds --json=help 2>/dev/null )
+                ;;
             --transcode)
                 comps='base64 unbase64 hex unhex'
                 ;;
@@ -173,3 +181,5 @@ __get_creds() {
     COMPREPLY=( $(compgen -W '${comps-}' -- "$cur") )
     return 0
 }
+
+complete -F _systemd_creds systemd-creds
