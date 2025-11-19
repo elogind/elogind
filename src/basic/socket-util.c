@@ -1546,13 +1546,13 @@ ssize_t recvmsg_safe(int sockfd, struct msghdr *msg, int flags) {
 int socket_get_family(int fd) {
         int af;
         socklen_t sl = sizeof(af);
-        
+
         if (getsockopt(fd, SOL_SOCKET, SO_DOMAIN, &af, &sl) < 0)
                 return -errno;
-        
+
         if (sl != sizeof(af))
                 return -EINVAL;
-        
+
         return af;
 }
 
