@@ -308,6 +308,8 @@ typedef struct CGroupRuntime {
         /* Most recently read value of memory accounting metrics */
         uint64_t memory_accounting_last[_CGROUP_MEMORY_ACCOUNTING_METRIC_CACHED_LAST + 1];
 
+        /* The current counter of OOM kills initiated by systemd-oomd */
+        uint64_t managed_oom_kill_last;
 
         /* The current counter of the oom_kill field in the memory.events cgroup attribute */
         uint64_t oom_kill_last;
