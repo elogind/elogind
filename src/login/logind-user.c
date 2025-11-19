@@ -559,7 +559,7 @@ int user_start(User *u) {
                         log_debug("Tracking new user %s.", u->user_record->user_name);
 
                 /* Save the user data so far, because pam_elogind will read the XDG_RUNTIME_DIR out of it
-                 * while starting up elogind --user. We need to do user_save_internal() because we have not
+                 * while starting up systemd --user. We need to do user_save_internal() because we have not
                  * "officially" started yet. */
                 user_save_internal(u);
 
