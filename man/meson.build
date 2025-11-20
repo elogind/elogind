@@ -124,14 +124,12 @@ if not have_lxml
         message('python-lxml not available, not making man page indices')
 endif
 
-        'elogind.directives.xml',
 elogind_directives_xml = custom_target(
         input : ['directives-template.xml', source_xml_files],
         output : 'elogind.directives.xml',
         depends : man_page_depends,
         command : [make_directive_index_py, '@OUTPUT@', '@INPUT@'])
 
-        'elogind.index.xml',
 nonindex_xml_files = source_xml_files + [elogind_directives_xml]
 elogind_index_xml = custom_target(
         input : nonindex_xml_files,
