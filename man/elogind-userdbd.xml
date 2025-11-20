@@ -3,41 +3,49 @@
   "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <!-- SPDX-License-Identifier: LGPL-2.1-or-later -->
 
-<refentry id="systemd-userdbd.service" conditional='ENABLE_USERDB'>
+<refentry id="elogind-userdbd" conditional='ENABLE_USERDB'>
 
   <refentryinfo>
-    <title>systemd-userdbd.service</title>
+    <title>elogind-userdbd</title>
     <productname>elogind</productname>
   </refentryinfo>
 
   <refmeta>
-    <refentrytitle>systemd-userdbd.service</refentrytitle>
+    <refentrytitle>elogind-userdbd</refentrytitle>
     <manvolnum>8</manvolnum>
   </refmeta>
 
   <refnamediv>
-    <refname>systemd-userdbd.service</refname>
+    <refname>elogind-userdbd</refname>
+    <!-- 0 /// no double documentation; systemd-userdbd.service became elogind-userdbd
     <refname>systemd-userdbd</refname>
+    // 0 -->
     <refpurpose>JSON User/Group Record Query Multiplexer/NSS Compatibility</refpurpose>
   </refnamediv>
 
   <refsynopsisdiv>
-    <para><filename>systemd-userdbd.service</filename></para>
-    <para><filename>/usr/lib/systemd/systemd-userdbd</filename></para>
+    <para><filename>elogind-userdbd</filename></para>
+    <para><filename>/usr/lib/elogind/elogind-userdbd</filename></para>
   </refsynopsisdiv>
 
   <refsect1>
     <title>Description</title>
 
-    <para><command>systemd-userdbd</command> is a system service that multiplexes user/group lookups to all
+    <para><command>elogind-userdbd</command> is a system service that multiplexes user/group lookups to all
     local services that provide JSON user/group record definitions to the system. In addition it synthesizes
     JSON user/group records from classic UNIX/glibc NSS user/group records in order to provide full backwards
     compatibility. It may also pick up statically defined JSON user/group records from files in
     <filename>/etc/userdb/</filename>, <filename>/run/userdb/</filename>,
     <filename>/run/host/userdb/</filename> and <filename>/usr/lib/userdb/</filename> with the
-    <literal>.user</literal> extension.</para>
+    <!-- 0 /// elogind has no nss module (, yet)
+    <literal>.user</literal> or <literal>.group</literal> extension. For more details about the extensions
+    read the <citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    manpage.</para>
+    --><!-- else // 0 -->
+    <literal>.user</literal> or <literal>.group</literal> extension.</para>
+    <!-- // 0 -->
 
-    <para>Most of <command>systemd-userdbd</command>'s functionality is accessible through the
+    <para>Most of <command>elogind-userdbd</command>'s functionality is accessible through the
     <citerefentry><refentrytitle>userdbctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
     command.</para>
 
@@ -66,9 +74,13 @@
     <title>See Also</title>
     <para><simplelist type="inline">
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <!-- 0 /// elogind has no nss service
       <member><citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      // 0 -->
       <member><citerefentry><refentrytitle>userdbctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
+      <!-- 0 /// elogind has no homed
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      // 0 -->
     </simplelist></para>
   </refsect1>
 </refentry>
