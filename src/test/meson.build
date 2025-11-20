@@ -15,18 +15,16 @@ test_env = {
         'SYSTEMD_SLOW_TESTS' : want_slow_tests ? '1' : '0',
         'PYTHONDONTWRITEBYTECODE' : '1',
 }
-if conf.get('ENABLE_LOCALED') == 1
-        test_env += {'SYSTEMD_LANGUAGE_FALLBACK_MAP' : language_fallback_map}
-endif
-
 #if 0 /// UNNEEDED in elogind
+# if conf.get('ENABLE_LOCALED') == 1
+#         test_env += {'SYSTEMD_LANGUAGE_FALLBACK_MAP' : language_fallback_map}
+# endif
 #endif // 0
 
 ############################################################
 
 generate_sym_test_py = find_program('generate-sym-test.py')
 
-        'test-libelogind-sym.c',
 test_libelogind_sym_c = custom_target(
         input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
         output : 'test-libelogind-sym.c',
