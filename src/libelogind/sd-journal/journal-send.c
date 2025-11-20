@@ -424,7 +424,12 @@ static int fill_iovec_perror_and_send(const char *message, int skip, struct iove
                 char* j;
 
                 errno = 0;
+#ifndef __GLIBC__
+                strerror_r(_saved_errno_, buffer + 8 + k, n - 8 - k);
+                j = buffer + 8 + k;
+#else // __GLIBC__
                 j = strerror_r(_saved_errno_, buffer + 8 + k, n - 8 - k);
+#endif // __GLIBC__
                 if (errno == 0) {
                         char error[STRLEN("ERRNO=") + DECIMAL_STR_MAX(int) + 1];
 

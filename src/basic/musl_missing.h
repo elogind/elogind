@@ -26,8 +26,6 @@ void elogind_set_program_name(const char* pcall);
 #include <unistd.h>
 #include <pthread.h> /* for pthread_atfork */
 
-#define strerror_r(e, m, k) (strerror_r(e, m, k) < 0 ? strdup("strerror_r() failed") : m);
-
 /*
  * Possibly TODO according to http://man7.org/linux/man-pages/man3/getenv.3.html
  * + test if the process's effective user ID does not match its real user ID or
