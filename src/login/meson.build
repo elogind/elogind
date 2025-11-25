@@ -194,10 +194,11 @@ custom_target(
 #endif // 0
 
 if enable_logind
+        install_data(
+                'org.freedesktop.login1.conf',
+                install_dir : dbuspolicydir)
+
 #if 0 /// Works a bit differently here, as elogind allows dbus activation.
-#         install_data(
-#                 'org.freedesktop.login1.conf',
-#                 install_dir : dbuspolicydir)
 #         install_data(
 #                 'org.freedesktop.login1.service',
 #                 install_dir : dbussystemservicedir)
@@ -207,7 +208,6 @@ if enable_logind
                 input: 'org.freedesktop.login1.service.in',
                 output: 'org.freedesktop.login1.service',
                 command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-                install: enable_logind,
                 install_dir : dbussystemservicedir)
 #endif // 0
 
