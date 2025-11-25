@@ -1131,9 +1131,7 @@ static const char* extract_multiplier(const char *p, usec_t *ret) {
         assert(ret);
 
         FOREACH_ELEMENT(i, table) {
-                char *e;
-
-                e = startswith(p, i->suffix);
+                const char *e = startswith(p, i->suffix);
                 if (e) {
                         *ret = i->usec;
                         return e;
@@ -1314,9 +1312,7 @@ static const char* extract_nsec_multiplier(const char *p, nsec_t *ret) {
         assert(ret);
 
         FOREACH_ELEMENT(i, table) {
-                char *e;
-
-                e = startswith(p, i->suffix);
+                const char *e = startswith(p, i->suffix);
                 if (e) {
                         *ret = i->nsec;
                         return e;

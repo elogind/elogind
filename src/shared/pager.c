@@ -305,7 +305,7 @@ bool pager_have(void) {
 #if 0 /// UNNEEDED by elogind
 int show_man_page(const char *desc, bool null_stdio) {
         const char *args[4] = { "man", NULL, NULL, NULL };
-        char *e = NULL;
+        const char *e = NULL;
         pid_t pid;
         size_t k;
         int r;

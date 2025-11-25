@@ -1437,8 +1437,7 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
         _cleanup_free_ char *e = NULL;
-        const char *m = NULL, *c = NULL, *rbracket = NULL, *p = NULL;
-        char *a;
+        const char *m = NULL, *c = NULL, *a, *rbracket = NULL, *p = NULL;
 
         assert(b);
         assert(host);
@@ -1454,7 +1453,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                 e = bus_address_escape(t);
                 if (!e)
                         return -ENOMEM;
-        } else if ((a = (char*)strchr(host, '@'))) {
+        } else if ((a = strchr(host, '@'))) {
                 if (*(a + 1) == '[') {
                         _cleanup_free_ char *t = NULL;
 
@@ -1522,14 +1521,15 @@ interpret_port_as_machine_old_syntax:
         if (!ssh_escaped)
                 return -ENOMEM;
 
-        a = strjoin("unixexec:path=", ssh_escaped, ",argv1=-xT",
-                    p ? ",argv2=-p,argv3=" : "", strempty(p),
-                    ",argv", p ? "4" : "2", "=--,argv", p ? "5" : "3", "=", e,
-                    ",argv", p ? "6" : "4", "=elogind-stdio-bridge", c);
-        if (!a)
+        char *address = strjoin(
+                        "unixexec:path=", ssh_escaped, ",argv1=-xT",
+                        p ? ",argv2=-p,argv3=" : "", strempty(p),
+                        ",argv", p ? "4" : "2", "=--,argv", p ? "5" : "3", "=", e,
+                        ",argv", p ? "6" : "4", "=elogind-stdio-bridge", c);
+        if (!address)
                 return -ENOMEM;
 
-        return free_and_replace(b->address, a);
+        return free_and_replace(b->address, address);
 }
 
 _public_ int sd_bus_open_system_remote(sd_bus **ret, const char *host) {

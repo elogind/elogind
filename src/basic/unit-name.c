@@ -219,7 +219,7 @@ UnitType unit_name_to_type(const char *n) {
 int unit_name_change_suffix(const char *n, const char *suffix, char **ret) {
         _cleanup_free_ char *s = NULL;
         size_t a, b;
-        char *e;
+        const char *e;
 
         assert(n);
         assert(suffix);
@@ -529,7 +529,7 @@ int unit_name_template(const char *f, char **ret) {
 }
 
 bool unit_name_is_hashed(const char *name) {
-        char *s;
+        const char *s;
 
         if (!unit_name_is_valid(name, UNIT_NAME_PLAIN))
                 return false;
@@ -552,7 +552,7 @@ bool unit_name_is_hashed(const char *name) {
 
 int unit_name_hash_long(const char *name, char **ret) {
         _cleanup_free_ char *n = NULL, *hash = NULL;
-        char *suffix;
+        const char *suffix;
         le64_t h;
         size_t len;
 
@@ -843,7 +843,7 @@ int slice_build_subslice(const char *slice, const char *name, char **ret) {
         if (streq(slice, SPECIAL_ROOT_SLICE))
                 subslice = strjoin(name, ".slice");
         else {
-                char *e;
+                const char *e;
 
                 assert_se(e = endswith(slice, ".slice"));
 
