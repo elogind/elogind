@@ -387,7 +387,7 @@
         and converts classic NSS/glibc user and group records to JSON user/group records, providing full
         backwards compatibility. Use <option>--with-nss=no</option> to disable this compatibility, see
         above. Note that compatibility is actually provided in both directions:
-        <citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry> will
+        <citerefentry><refentrytitle>nss-elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry> will
         automatically synthesize classic NSS/glibc user/group records from all JSON user/group records
         provided to the system, thus using both APIs is mostly equivalent and provides access to the same
         data, however the NSS/glibc APIs necessarily expose a more reduced set of fields
@@ -454,14 +454,14 @@ AuthorizedKeysCommandUser root
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
-      <!-- 0 /// elogind is in man page section 8 and has no homed and nss-service
+      <!-- 0 /// elogind is in man page section 8 and has no homed
       <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-userdbd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
-      <member><citerefentry><refentrytitle>nss-systemd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       --><!-- else // 0 -->
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <!-- // 0 -->
+      <member><citerefentry><refentrytitle>nss-elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry project='man-pages'><refentrytitle>getent</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
     </simplelist></para>
   </refsect1>
