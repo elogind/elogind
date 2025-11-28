@@ -159,7 +159,6 @@ static inline bool hashed_password_is_locked_or_invalid(const char *password) {
         return password && password[0] != '$';
 }
 
-#if 0 /// UNNEEDED by elogind
 /* A locked *and* invalid password for "struct spwd"'s .sp_pwdp and "struct passwd"'s .pw_passwd field */
 #define PASSWORD_LOCKED_AND_INVALID "!*"
 
@@ -168,7 +167,6 @@ static inline bool hashed_password_is_locked_or_invalid(const char *password) {
 
 /* A password indicating "hey, no password required for login" */
 #define PASSWORD_NONE ""
-#endif // 0
 
 /* Used by sysusers to indicate that the password should be filled in by firstboot.
  * Also see https://github.com/systemd/systemd/pull/24680#pullrequestreview-1439464325.
