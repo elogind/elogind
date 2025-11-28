@@ -2050,6 +2050,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'xdg-autostart']
 #else // 0
 foreach term : ['efi',
+                'nss-elogind',
                 'smack',
                 'userdb',
                 'utmp']
@@ -2099,6 +2100,17 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 #
 # conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
+#else // 0
+enable_nss = false
+foreach term : ['ENABLE_NSS_MYHOSTNAME',
+                'ENABLE_NSS_MYMACHINES',
+                'ENABLE_NSS_RESOLVE']
+        conf.set10(term, false)
+endforeach
+if conf.get('ENABLE_NSS_ELOGIND') == 1
+        enable_nss = true
+endif
+conf.set10('ENABLE_NSS', enable_nss)
 #endif // 0
 conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 
@@ -2898,7 +2910,9 @@ subdir('src/login')
 # subdir('src/nss-myhostname')
 # subdir('src/nss-mymachines')
 # subdir('src/nss-resolve')
-# subdir('src/nss-systemd')
+#endif // 0
+subdir('src/nss-elogind')
+#if 0 /// UNNEEDED by elogind
 # subdir('src/oom')
 # subdir('src/path')
 # subdir('src/pcrextend')
@@ -3627,7 +3641,9 @@ foreach tuple : [
 #         ['nss-myhostname'],
 #         ['nss-mymachines'],
 #         ['nss-resolve'],
-#         ['nss-systemd'],
+#endif // 0
+        ['nss-elogind'],
+#if 0 /// UNNEEDED by elogind
 #         ['oomd'],
 #         ['portabled'],
 #         ['pstore'],

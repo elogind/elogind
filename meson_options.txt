@@ -220,6 +220,8 @@ option('utmp', type : 'boolean',
 #else // 0
 option('efi', type : 'boolean',
        description : 'enable EFI support')
+option('nss-elogind', type : 'boolean',
+       description : 'install nss-elogind module')
 option('userdb', type : 'boolean',
        description : 'install the elogind-userdbd stack')
 #endif // 0

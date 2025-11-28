@@ -54,6 +54,7 @@ USE_AUTOKILL ?= false
 USE_EFI      ?= false
 USE_HTML     ?= auto
 USE_MAN      ?= auto
+USE_NSS      ?= true
 USE_SELINUX  ?= disabled
 USE_SMACK    ?= true
 USE_USERDB   ?= true
@@ -203,6 +204,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Defi=$(USE_EFI) \
 			-Dhtml=$(USE_HTML) \
 			-Dman=$(USE_MAN) \
+			-Dnss-elogind=$(USE_NSS) \
 			-Dpam=enabled \
 			-Dselinux=$(USE_SELINUX) \
 			-Dsmack=$(USE_SMACK) \
