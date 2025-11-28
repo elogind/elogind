@@ -452,14 +452,16 @@ executables += [
 #                 'conditions' : ['ENABLE_NSS'],
 #                 'timeout' : 120,
 #         },
-#         test_template + {
-#                 'sources' : files(
-#                         'test-nss-users.c',
-#                         'nss-test-util.c',
-#                 ),
-#                 'dependencies' : libdl,
-#                 'conditions' : ['ENABLE_NSS'],
-#         },
+#endif // 0
+        test_template + {
+                'sources' : files(
+                        'test-nss-users.c',
+                        'nss-test-util.c',
+                ),
+                'dependencies' : libdl,
+                'conditions' : ['ENABLE_NSS'],
+        },
+#if 0 /// UNNEEDED by elogind
 #         test_template + {
 #                 'sources' : files('test-openssl.c'),
 #                 'dependencies' : libopenssl,
