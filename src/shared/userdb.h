@@ -53,8 +53,6 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
 int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_all(UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_iterator_get(UserDBIterator *iterator, char **user, char **group);
-#if 0 /// UNNEEDED by elogind
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret);
-#endif // 0
 
 int userdb_block_nss_systemd(int b);

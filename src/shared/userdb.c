@@ -6,7 +6,7 @@
 
 #include "conf-files.h"
 #include "dirent-util.h"
-//#include "dlfcn-util.h"
+#include "dlfcn-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
 #include "format-util.h"
@@ -39,7 +39,7 @@ struct UserDBIterator {
         bool dropin_covered:1;
         bool synthesize_root:1;
         bool synthesize_nobody:1;
-        bool nss_systemd_blocked:1;
+        bool nss_elogind_blocked:1;
         char **dropins;
         size_t current_dropin;
         int error;
@@ -97,7 +97,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
 
         sd_event_unref(iterator->event);
 
-        if (iterator->nss_systemd_blocked)
+        if (iterator->nss_elogind_blocked)
                 assert_se(userdb_block_nss_systemd(false) >= 0);
 
         return mfree(iterator);
@@ -128,14 +128,14 @@ static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
 
         assert(iterator);
 
-        if (iterator->nss_systemd_blocked)
+        if (iterator->nss_elogind_blocked)
                 return 0;
 
         r = userdb_block_nss_systemd(true);
         if (r < 0)
                 return r;
 
-        iterator->nss_systemd_blocked = true;
+        iterator->nss_elogind_blocked = true;
         return 1;
 }
 
@@ -1419,7 +1419,6 @@ int membershipdb_iterator_get(
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret) {
         _cleanup_(userdb_iterator_freep) UserDBIterator *iterator = NULL;
         _cleanup_strv_free_ char **members = NULL;
@@ -1451,32 +1450,27 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         *ret = TAKE_PTR(members);
         return 0;
 }
-#endif // 0
 
 int userdb_block_nss_systemd(int b) {
-#if 0 /// elogind does not ship its own libnss implementation, no block needed
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
-        /* Note that we might be called from libnss_systemd.so.2 itself, but that should be fine, really. */
+        /* Note that we might be called from libnss_elogind.so.2 itself, but that should be fine, really. */
 
-        dl = dlopen(LIBDIR "/libnss_systemd.so.2", RTLD_NOW|RTLD_NODELETE);
+        dl = dlopen(LIBDIR "/libnss_elogind.so.2", RTLD_NOW|RTLD_NODELETE);
         if (!dl) {
                 /* If the file isn't installed, don't complain loudly */
-                log_debug("Failed to dlopen(libnss_systemd.so.2), ignoring: %s", dlerror());
+                log_debug("Failed to dlopen(libnss_elogind.so.2), ignoring: %s", dlerror());
                 return 0;
         }
 
-        log_debug("Loaded '%s' via dlopen()", LIBDIR "/libnss_systemd.so.2");
+        log_debug("Loaded '%s' via dlopen()", LIBDIR "/libnss_elogind.so.2");
 
         call = dlsym(dl, "_nss_systemd_block");
         if (!call)
                 /* If the file is installed but lacks the symbol we expect, things are weird, let's complain */
                 return log_debug_errno(SYNTHETIC_ERRNO(ELIBBAD),
-                                       "Unable to find symbol _nss_systemd_block in libnss_systemd.so.2: %s", dlerror());
+                                       "Unable to find symbol _nss_systemd_block in libnss_elogind.so.2: %s", dlerror());
 
         return call(b);
-#else // 0
-        return b > 0 ? 1 : 0;
-#endif // 0
 }
