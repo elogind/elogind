@@ -126,9 +126,8 @@ TEST(cg_create) {
         ASSERT_OK_ZERO(cg_kill_recursive(test_a, 0, 0, NULL, NULL, NULL));
         ASSERT_OK_POSITIVE(cg_kill_recursive(test_b, 0, 0, NULL, NULL, NULL));
 
-#if 0 /// Not supported by elogind, which should not act as a cgroup controller
+#if 0 /// Not supported by elogind, which does not migrate cgroups, as it is not a full cgroup controller
         ASSERT_OK_POSITIVE(cg_migrate_recursive(SYSTEMD_CGROUP_CONTROLLER, test_b, SYSTEMD_CGROUP_CONTROLLER, test_a, 0));
-#endif // 0
 
         ASSERT_OK_ZERO(cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, test_a));
         ASSERT_OK_POSITIVE(cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, test_b));
@@ -137,6 +136,9 @@ TEST(cg_create) {
         ASSERT_OK_ZERO(cg_kill_recursive(test_b, 0, 0, NULL, NULL, NULL));
 
         ASSERT_OK(cg_trim(SYSTEMD_CGROUP_CONTROLLER, test_b, true));
+#else // 0
+        ASSERT_OK(cg_trim(SYSTEMD_CGROUP_CONTROLLER, test_a, true));
+#endif // 0
 
         ASSERT_OK_ZERO(cg_attach(SYSTEMD_CGROUP_CONTROLLER, here, 0));
         ASSERT_OK(cg_trim(SYSTEMD_CGROUP_CONTROLLER, test_b, true));
