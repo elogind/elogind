@@ -17,6 +17,7 @@ static inline void dlclosep(void **dlp) {
         safe_dlclose(*dlp);
 }
 
+#if 0 /// UNNEEDED by elogind
 int dlsym_many_or_warn_sentinel(void *dl, int log_level, ...) _sentinel_;
 int dlopen_many_sym_or_warn_sentinel(void **dlp, const char *filename, int log_level, ...) _sentinel_;
 
@@ -78,3 +79,4 @@ int dlopen_many_sym_or_warn_sentinel(void **dlp, const char *filename, int log_l
  * _SONAME_ARRAY<X+1> will need to be added). */
 #define ELF_NOTE_DLOPEN(feature, description, priority, ...) \
         _ELF_NOTE_DLOPEN("[{\"feature\":\"" feature "\",\"description\":\"" description "\",\"priority\":\"" priority "\",\"soname\":" _SONAME_ARRAY(__VA_ARGS__) "}]", UNIQ_T(s, UNIQ))
+#endif // 0

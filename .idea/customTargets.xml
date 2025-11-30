@@ -21,5 +21,15 @@
         </clean>
       </configuration>
     </target>
+    <target id="9b409a38-fcdc-4d83-a799-2be4b13002ca" name="build DEBUG" defaultType="MAKE">
+      <configuration id="e6920f0b-2f23-4cdb-8687-857579dc85b7" name="build DEBUG">
+        <build type="MAKE">
+          <make targetName="all DEBUG=YES BUILDMODE=release PREFIX=/tmp/elogind_test_d JUST_PRINT=NO" />
+        </build>
+        <clean type="MAKE">
+          <make targetName="clean DEBUG=YES" />
+        </clean>
+      </configuration>
+    </target>
   </component>
 </project>

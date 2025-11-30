@@ -28,6 +28,19 @@
           </build-configuration>
         </build-configurations>
       </build-target>
+      <build-target name="all DEBUG=YES BUILDMODE=release PREFIX=/tmp/elogind_test_d JUST_PRINT=NO">
+        <build-configurations>
+          <build-configuration>
+            <make-targets>
+              <make-target>all</make-target>
+              <make-target>DEBUG=YES</make-target>
+              <make-target>BUILDMODE=release</make-target>
+              <make-target>PREFIX=/tmp/elogind_test_d</make-target>
+              <make-target>JUST_PRINT=NO</make-target>
+            </make-targets>
+          </build-configuration>
+        </build-configurations>
+      </build-target>
       <build-target name="clean DEBUG=YES">
         <build-configurations>
           <build-configuration>
