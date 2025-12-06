@@ -898,9 +898,6 @@ foreach prog : progs
 endforeach
 
 #if 0 /// unneeded by elogind
-# if run_command(ln, '--relative', '--help', check : false).returncode() != 0
-#         error('ln does not support --relative (added in coreutils 8.16)')
-# endif
 #endif // 0
 
 #####################################################################
