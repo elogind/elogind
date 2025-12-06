@@ -123,7 +123,7 @@ static UserDBIterator* userdb_iterator_new(LookupWhat what, UserDBFlags flags) {
         return i;
 }
 
-static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
+static int userdb_iterator_block_nss_elogind(UserDBIterator *iterator) {
         int r;
 
         assert(iterator);
@@ -655,7 +655,7 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
                 /* Make sure the NSS lookup doesn't recurse back to us. */
 
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
@@ -707,7 +707,7 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !iterator->nss_covered) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
                         r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
@@ -740,7 +740,7 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetUserRecord", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r < 0)
                         return r;
 
@@ -927,7 +927,7 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         r = nss_group_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
@@ -976,7 +976,7 @@ int groupdb_by_gid(gid_t gid, UserDBFlags flags, GroupRecord **ret) {
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         r = nss_group_record_by_gid(gid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
                         if (r >= 0)
@@ -1008,7 +1008,7 @@ int groupdb_all(UserDBFlags flags, UserDBIterator **ret) {
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetGroupRecord", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r < 0)
                         return r;
 
@@ -1176,7 +1176,7 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, query, flags);
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r < 0)
                         return r;
 
@@ -1223,7 +1223,7 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
                 _cleanup_(group_record_unrefp) GroupRecord *gr = NULL;
 
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r < 0)
                         return r;
 
@@ -1267,7 +1267,7 @@ int membershipdb_all(UserDBFlags flags, UserDBIterator **ret) {
         qr = userdb_start_query(iterator, "io.systemd.UserDatabase.GetMemberships", true, NULL, flags);
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && (qr < 0 || !iterator->nss_covered)) {
-                r = userdb_iterator_block_nss_systemd(iterator);
+                r = userdb_iterator_block_nss_elogind(iterator);
                 if (r < 0)
                         return r;
 
