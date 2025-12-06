@@ -78,7 +78,7 @@ enum nss_status userdb_getpwnam(
         assert(pwd);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = userdb_by_name(name, nss_glue_userdb_flags()|USERDB_SUPPRESS_SHADOW, &hr);
@@ -111,7 +111,7 @@ enum nss_status userdb_getpwuid(
         assert(pwd);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = userdb_by_uid(uid, nss_glue_userdb_flags()|USERDB_SUPPRESS_SHADOW, &hr);
@@ -187,7 +187,7 @@ enum nss_status userdb_getspnam(
         assert(spwd);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = userdb_by_name(name, nss_glue_userdb_flags(), &hr);
@@ -287,7 +287,7 @@ enum nss_status userdb_getgrnam(
         assert(gr);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = groupdb_by_name(name, nss_glue_userdb_flags()|USERDB_SUPPRESS_SHADOW, &g);
@@ -313,9 +313,9 @@ enum nss_status userdb_getgrnam(
                  * acquire it, so that we can extend it (that's because glibc's group merging feature will
                  * merge groups only if both GID and name match and thus we need to have both first). It
                  * sucks behaving recursively likely this, but it's apparently what everybody does. We break
-                 * the recursion for ourselves via the _nss_systemd_block_nss() lock. */
+                 * the recursion for ourselves via the _nss_elogind_block_nss() lock. */
 
-                r = _nss_systemd_block(true);
+                r = _nss_elogind_block(true);
                 if (r < 0)
                         return r;
 
@@ -354,7 +354,7 @@ enum nss_status userdb_getgrgid(
         assert(gr);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = groupdb_by_gid(gid, nss_glue_userdb_flags()|USERDB_SUPPRESS_SHADOW, &g);
@@ -370,7 +370,7 @@ enum nss_status userdb_getgrgid(
                  * to do this we need to know the group name first. The group didn't exist via non-NSS
                  * queries though, hence let's try to acquire it here recursively via NSS. */
 
-                r = _nss_systemd_block(true);
+                r = _nss_elogind_block(true);
                 if (r < 0)
                         return r;
 
@@ -453,7 +453,7 @@ enum nss_status userdb_getsgnam(
         assert(sgrp);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = groupdb_by_name(name, nss_glue_userdb_flags(), &hr);
