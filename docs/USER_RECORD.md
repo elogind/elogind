@@ -13,9 +13,6 @@ pairs, encoded as JSON.
 
 Specifically:
 
-[ if 0 /// This part must be audited after any updates, as elogind has neither homed nor is it a service manager
-Unfortunately the "hidden text" technique does not work with (un)ordered lists.
-endif // 0]: #
 1. [`pam_elogind`](file:///usr/share/doc/elogind/html/pam_elogind.html)
    processes these JSON records for users that log in, and applies various
    settings to the activated session, including environment variables, nice
@@ -180,20 +177,6 @@ A service that uses a separate, private channel for authenticating users (or tha
 does not need to be concerned with the `secret` section of user records, as
 the fields included therein are only useful when executing authentication
 operations natively against JSON user records.
-
-[ if 0 /// elogind does not ship systemd-homed
-The `systemd-homed` manager uses all seven sections for various purposes.
-Inside the home directories (and if the LUKS2 backend is used, also
-in the LUKS2 header) a user record containing the `regular`, `privileged`,
-`perMachine` and `signature` sections is stored. `systemd-homed` also stores a
-version of the record on the host, with the same four sections and augmented
-with an additional, fifth `binding` section.
-When a local client enquires about a user record managed by `systemd-homed` the service will add in some
-additional information about the user and home directory in the `status`
-section — this version is only transferred via IPC and never written to disk.
-Finally the `secret` section is used during authentication operations via
-IPC to transfer the user record along with its authentication tokens in one go.
-endif // 0 ]: #
 
 ## Fields in the `regular` section
 

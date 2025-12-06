@@ -113,7 +113,7 @@ For example, introspection is not available, and the resolver logic is not used.
 Two-way compatibility with classic UNIX/glibc NSS user/group records is provided.
 When using the Varlink API, lookups into databases provided only via
 NSS (and not natively via Varlink) are handled by the `io.systemd.NameServiceSwitch` service (see above).
-When using the NSS API (i.e. `getpwnam()` and friends) the `nss-systemd` module will automatically
+When using the NSS API (i.e. `getpwnam()` and friends) the `nss-elogind` module will automatically
 synthesize NSS records for users/groups natively defined via a Varlink API.
 Special care is taken to avoid recursion between these two compatibility mechanisms.
 

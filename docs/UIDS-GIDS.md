@@ -56,15 +56,9 @@ Distributions generally split the available UID range in two:
 Some older systems placed the boundary at 499/500, or even 99/100,
 and some distributions allow the boundary between system and regular users to be changed via local configuration.
 
-[ if 0 /// elogind always looks into login.defs.
-In `systemd`, the boundary is configurable during compilation time
-and is also queried from `/etc/login.defs` at runtime,
-if the `-Dcompat-mutable-uid-boundaries=true` compile-time setting is used.
-else // 0]: #
 In `elogind`, the boundary is configurable during compilation time
 and is also queried from `/etc/login.defs` at runtime.
 
-[ endif // 0 ]: #
 We strongly discourage downstreams from changing the boundary from the upstream default of 999/1000.
 
 Also note that programs such as `adduser` tend to allocate from a subset of the
@@ -117,7 +111,7 @@ possible.
    affected by `adduser` allocations (see above).
    And we leave some room upwards for other purposes.
    (And if you wonder why precisely these numbers: if you write them in hexadecimal, they might make more sense: 0xEF00 and 0xFFEF).
-   The `nss-systemd` module will synthesize user records implicitly
+   The `nss-elogind` module will synthesize user records implicitly
    for all currently allocated dynamic users from this range.
    Thus, NSS-based user record resolving works correctly without those users being in `/etc/passwd`.
 
@@ -252,21 +246,21 @@ i.e. somewhere below `/var/` or similar.
 ## Summary
 
 |               UID/GID | Purpose               | Defined By    | Listed in                     |
-|-----------------------|-----------------------|---------------|-------------------------------|
-|                     0 | `root` user           | Linux         | `/etc/passwd` + `nss-systemd` |
+|----------------------:|-----------------------|---------------|-------------------------------|
+|                     0 | `root` user           | Linux         | `/etc/passwd` + `nss-elogind` |
 |                   1…4 | System users          | Distributions | `/etc/passwd`                 |
 |                     5 | `tty` group           | `systemd`     | `/etc/passwd`                 |
 |                 6…999 | System users          | Distributions | `/etc/passwd`                 |
 |            1000…60000 | Regular users         | Distributions | `/etc/passwd` + LDAP/NIS/…    |
-|           60001…60513 | Human users (homed)   | `systemd`     | `nss-systemd`                 |
+|           60001…60513 | Human users (homed)   | `systemd`     | `nss-elogind`                 |
 |           60514…60577 | Host users mapped into containers | `systemd` | `systemd-nspawn`      |
 |           60578…61183 | Unused                |               |                               |
-|           61184…65519 | Dynamic service users | `systemd`     | `nss-systemd`                 |
+|           61184…65519 | Dynamic service users | `systemd`     | `nss-elogind`                 |
 |           65520…65533 | Unused                |               |                               |
-|                 65534 | `nobody` user         | Linux         | `/etc/passwd` + `nss-systemd` |
+|                 65534 | `nobody` user         | Linux         | `/etc/passwd` + `nss-elogind` |
 |                 65535 | 16-bit `(uid_t) -1`   | Linux         |                               |
 |          65536…524287 | Unused                |               |                               |
-|     524288…1879048191 | Container UID ranges  | `systemd`     | `nss-systemd`                 |
+|     524288…1879048191 | Container UID ranges  | `systemd`     | `nss-elogind`                 |
 | 1879048192…2147483647 | Unused                |               |                               |
 | 2147483648…4294967294 | HIC SVNT LEONES       |               |                               |
 |            4294967295 | 32-bit `(uid_t) -1`   | Linux         |                               |

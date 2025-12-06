@@ -95,16 +95,9 @@ files, as long as:
 
 ## Examples
 
-[ if 0 /// elogind has its own pages, but not yet on the internet
-The simplest way to define a user record is via the drop-in directories (as documented
-in \[nss-systemd(8)\](https://www.freedesktop.org/software/systemd/man/latest/nss-systemd.html)
-and \[systemd-userdb.service(8)\](https://www.freedesktop.org/software/systemd/man/latest/systemd-userdbd.service.html)).
-else // 0]: #
 The simplest way to define a user record is via the drop-in directories (as documented
 in [nss-elogind(8)](file:///usr/share/doc/elogind/html/nss-elogind.html)
 and [elogind-userdbd(8)](file:///usr/share/doc/elogind/html/elogind-userdbd.html)).
-
-[ endif // 0]: #
 
 Such records can have blob directories by simply referring to some persistent
 place from the record, possibly next to the record itself. For instance,
@@ -121,18 +114,3 @@ place from the record, possibly next to the record itself. For instance,
 
 In this case, `/etc/userdb/grobie.blob/` will be the blob directory for the
 user `grobie`.
-
-[ if 0 /// elogind does not have a homed service and does not support systemd-homed
-A more complicated case is a home directory managed by `systemd-homed.service`.
-When it manages a home directory, it maintains and synchronizes two separate
-blob directories: one belonging to the system in `/var/cache/systemd/home`,
-and another belonging to the home directory in `~/.identity-blob`. The system
-blob directory ensures that the blob data is available while the home directory
-is encrypted or otherwise unavailable, and the home blob directory ensures that
-the user account remains portable between systems. To implement this behavior,
-`systemd-homed.service` always sets `blobDirectory` to the system blob directory
-in the `binding` section of the user record (i.e. this is _not_ persisted to
-`~/.identity`). If some client tries to update the user record with a new blob
-directory, `systemd-homed.service` will copy the updated blob directory into both
-the system and home blob locations.
-endif // 0]: #
