@@ -303,7 +303,7 @@ enum nss_status userdb_getgrnam(
         }
 
         if (!g) {
-                _unused_ _cleanup_(_nss_systemd_unblockp) bool blocked = false;
+                _unused_ _cleanup_(_nss_elogind_unblockp) bool blocked = false;
 
                 if (strv_isempty(members))
                         return NSS_STATUS_NOTFOUND;
@@ -364,7 +364,7 @@ enum nss_status userdb_getgrgid(
         }
 
         if (!g) {
-                _unused_ _cleanup_(_nss_systemd_unblockp) bool blocked = false;
+                _unused_ _cleanup_(_nss_elogind_unblockp) bool blocked = false;
 
                 /* So, quite possibly we have to extend an existing group record with additional members. But
                  * to do this we need to know the group name first. The group didn't exist via non-NSS

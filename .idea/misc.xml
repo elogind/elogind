@@ -3,6 +3,12 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.12 (elogind)" />
   </component>
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/build_debug" />
+      <file path="$PROJECT_DIR$/build_release" />
+    </excludeRoots>
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">

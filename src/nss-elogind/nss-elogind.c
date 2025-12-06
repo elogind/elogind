@@ -126,15 +126,15 @@ static void setup_logging_once(void) {
         BLOCK_SIGNALS(NSS_SIGNALS_BLOCK);       \
         setup_logging_once()
 
-NSS_GETPW_PROTOTYPES(systemd);
-NSS_GETSP_PROTOTYPES(systemd);
-NSS_GETGR_PROTOTYPES(systemd);
-NSS_GETSG_PROTOTYPES(systemd);
-NSS_PWENT_PROTOTYPES(systemd);
-NSS_SPENT_PROTOTYPES(systemd);
-NSS_GRENT_PROTOTYPES(systemd);
-NSS_SGENT_PROTOTYPES(systemd);
-NSS_INITGROUPS_PROTOTYPE(systemd);
+NSS_GETPW_PROTOTYPES(elogind);
+NSS_GETSP_PROTOTYPES(elogind);
+NSS_GETGR_PROTOTYPES(elogind);
+NSS_GETSG_PROTOTYPES(elogind);
+NSS_PWENT_PROTOTYPES(elogind);
+NSS_SPENT_PROTOTYPES(elogind);
+NSS_GRENT_PROTOTYPES(elogind);
+NSS_SGENT_PROTOTYPES(elogind);
+NSS_INITGROUPS_PROTOTYPE(elogind);
 
 /* Since our NSS functions implement reentrant glibc APIs, we have to guarantee
  * all the string pointers we return point into the buffer provided by the
@@ -283,7 +283,7 @@ static enum nss_status copy_synthesized_sgrp(
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_getpwnam_r(
+enum nss_status _nss_elogind_getpwnam_r(
                 const char *name,
                 struct passwd *pwd,
                 char *buffer, size_t buflen,
@@ -335,7 +335,7 @@ enum nss_status _nss_systemd_getpwnam_r(
         return status;
 }
 
-enum nss_status _nss_systemd_getpwuid_r(
+enum nss_status _nss_elogind_getpwuid_r(
                 uid_t uid,
                 struct passwd *pwd,
                 char *buffer, size_t buflen,
@@ -383,7 +383,7 @@ enum nss_status _nss_systemd_getpwuid_r(
         return status;
 }
 
-enum nss_status _nss_systemd_getspnam_r(
+enum nss_status _nss_elogind_getspnam_r(
                 const char *name,
                 struct spwd *spwd,
                 char *buffer, size_t buflen,
@@ -430,7 +430,7 @@ enum nss_status _nss_systemd_getspnam_r(
 
 #pragma GCC diagnostic ignored "-Wsizeof-pointer-memaccess"
 
-enum nss_status _nss_systemd_getgrnam_r(
+enum nss_status _nss_elogind_getgrnam_r(
                 const char *name,
                 struct group *gr,
                 char *buffer, size_t buflen,
@@ -475,7 +475,7 @@ enum nss_status _nss_systemd_getgrnam_r(
         return status;
 }
 
-enum nss_status _nss_systemd_getgrgid_r(
+enum nss_status _nss_elogind_getgrgid_r(
                 gid_t gid,
                 struct group *gr,
                 char *buffer, size_t buflen,
@@ -519,7 +519,7 @@ enum nss_status _nss_systemd_getgrgid_r(
         return status;
 }
 
-enum nss_status _nss_systemd_getsgnam_r(
+enum nss_status _nss_elogind_getsgnam_r(
                 const char *name,
                 struct sgrp *sgrp,
                 char *buffer, size_t buflen,
@@ -579,29 +579,29 @@ static enum nss_status nss_elogind_endent(GetentData *p) {
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_endpwent(void) {
+enum nss_status _nss_elogind_endpwent(void) {
         return nss_elogind_endent(&getpwent_data);
 }
 
-enum nss_status _nss_systemd_endspent(void) {
+enum nss_status _nss_elogind_endspent(void) {
         return nss_elogind_endent(&getspent_data);
 }
 
-enum nss_status _nss_systemd_endgrent(void) {
+enum nss_status _nss_elogind_endgrent(void) {
         return nss_elogind_endent(&getgrent_data);
 }
 
-enum nss_status _nss_systemd_endsgent(void) {
+enum nss_status _nss_elogind_endsgent(void) {
         return nss_elogind_endent(&getsgent_data);
 }
 
-enum nss_status _nss_systemd_setpwent(int stayopen) {
+enum nss_status _nss_elogind_setpwent(int stayopen) {
         int r;
 
         PROTECT_ERRNO;
         NSS_ENTRYPOINT_BEGIN;
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getpwent_data.mutex);
@@ -619,13 +619,13 @@ enum nss_status _nss_systemd_setpwent(int stayopen) {
         return r < 0 ? NSS_STATUS_UNAVAIL : NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_setgrent(int stayopen) {
+enum nss_status _nss_elogind_setgrent(int stayopen) {
         int r;
 
         PROTECT_ERRNO;
         NSS_ENTRYPOINT_BEGIN;
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getgrent_data.mutex);
@@ -634,18 +634,18 @@ enum nss_status _nss_systemd_setgrent(int stayopen) {
         getgrent_data.iterator = userdb_iterator_free(getgrent_data.iterator);
         getgrent_data.by_membership = false;
 
-        /* See _nss_systemd_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
+        /* See _nss_elogind_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
         r = groupdb_all(nss_glue_userdb_flags() | USERDB_DONT_SYNTHESIZE, &getgrent_data.iterator);
         return r < 0 ? NSS_STATUS_UNAVAIL : NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_setspent(int stayopen) {
+enum nss_status _nss_elogind_setspent(int stayopen) {
         int r;
 
         PROTECT_ERRNO;
         NSS_ENTRYPOINT_BEGIN;
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getspent_data.mutex);
@@ -654,18 +654,18 @@ enum nss_status _nss_systemd_setspent(int stayopen) {
         getspent_data.iterator = userdb_iterator_free(getspent_data.iterator);
         getspent_data.by_membership = false;
 
-        /* See _nss_systemd_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
+        /* See _nss_elogind_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
         r = userdb_all(nss_glue_userdb_flags() | USERDB_DONT_SYNTHESIZE, &getspent_data.iterator);
         return r < 0 ? NSS_STATUS_UNAVAIL : NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_setsgent(int stayopen) {
+enum nss_status _nss_elogind_setsgent(int stayopen) {
         int r;
 
         PROTECT_ERRNO;
         NSS_ENTRYPOINT_BEGIN;
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getsgent_data.mutex);
@@ -674,12 +674,12 @@ enum nss_status _nss_systemd_setsgent(int stayopen) {
         getsgent_data.iterator = userdb_iterator_free(getsgent_data.iterator);
         getsgent_data.by_membership = false;
 
-        /* See _nss_systemd_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
+        /* See _nss_elogind_setpwent() for an explanation why we use USERDB_DONT_SYNTHESIZE here */
         r = groupdb_all(nss_glue_userdb_flags() | USERDB_DONT_SYNTHESIZE, &getsgent_data.iterator);
         return r < 0 ? NSS_STATUS_UNAVAIL : NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_getpwent_r(
+enum nss_status _nss_elogind_getpwent_r(
                 struct passwd *result,
                 char *buffer, size_t buflen,
                 int *errnop) {
@@ -693,7 +693,7 @@ enum nss_status _nss_systemd_getpwent_r(
         assert(result);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getpwent_data.mutex);
@@ -724,7 +724,7 @@ enum nss_status _nss_systemd_getpwent_r(
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_getgrent_r(
+enum nss_status _nss_elogind_getgrent_r(
                 struct group *result,
                 char *buffer, size_t buflen,
                 int *errnop) {
@@ -739,7 +739,7 @@ enum nss_status _nss_systemd_getgrent_r(
         assert(result);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getgrent_data.mutex);
@@ -785,7 +785,7 @@ enum nss_status _nss_systemd_getgrent_r(
         }
 
         if (getgrent_data.by_membership) {
-                _cleanup_(_nss_systemd_unblockp) bool blocked = false;
+                _cleanup_(_nss_elogind_unblockp) bool blocked = false;
 
                 if (!getgrent_data.iterator)
                         return NSS_STATUS_NOTFOUND;
@@ -809,7 +809,7 @@ enum nss_status _nss_systemd_getgrent_r(
 
                         /* We are about to recursively call into NSS, let's make sure we disable recursion into our own code. */
                         if (!blocked) {
-                                r = _nss_systemd_block(true);
+                                r = _nss_elogind_block(true);
                                 if (r < 0) {
                                         UNPROTECT_ERRNO;
                                         *errnop = -r;
@@ -851,7 +851,7 @@ enum nss_status _nss_systemd_getgrent_r(
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_getspent_r(
+enum nss_status _nss_elogind_getspent_r(
                 struct spwd *result,
                 char *buffer, size_t buflen,
                 int *errnop) {
@@ -865,7 +865,7 @@ enum nss_status _nss_systemd_getspent_r(
         assert(result);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getspent_data.mutex);
@@ -903,7 +903,7 @@ enum nss_status _nss_systemd_getspent_r(
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_getsgent_r(
+enum nss_status _nss_elogind_getsgent_r(
                 struct sgrp *result,
                 char *buffer, size_t buflen,
                 int *errnop) {
@@ -917,7 +917,7 @@ enum nss_status _nss_systemd_getsgent_r(
         assert(result);
         assert(errnop);
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         _cleanup_(pthread_mutex_unlock_assertp) pthread_mutex_t *_l = pthread_mutex_lock_assert(&getsgent_data.mutex);
@@ -955,7 +955,7 @@ enum nss_status _nss_systemd_getsgent_r(
         return NSS_STATUS_SUCCESS;
 }
 
-enum nss_status _nss_systemd_initgroups_dyn(
+enum nss_status _nss_elogind_initgroups_dyn(
                 const char *user_name,
                 gid_t gid,
                 long *start,
@@ -984,7 +984,7 @@ enum nss_status _nss_systemd_initgroups_dyn(
         if (STR_IN_SET(user_name, root_passwd.pw_name, nobody_passwd.pw_name))
                 return NSS_STATUS_NOTFOUND;
 
-        if (_nss_systemd_is_blocked())
+        if (_nss_elogind_is_blocked())
                 return NSS_STATUS_NOTFOUND;
 
         r = membershipdb_by_user(user_name, nss_glue_userdb_flags(), &iterator);
@@ -1059,7 +1059,7 @@ enum nss_status _nss_systemd_initgroups_dyn(
 
 static thread_local unsigned _blocked = 0;
 
-_public_ int _nss_systemd_block(bool b) {
+_public_ int _nss_elogind_block(bool b) {
 
         /* This blocks recursively: it's blocked for as many times this function is called with `true` until
          * it is called an equal time with `false`. */
@@ -1079,6 +1079,93 @@ _public_ int _nss_systemd_block(bool b) {
         return b; /* Return what is passed in, i.e. the new state from the PoV of the caller */
 }
 
-_public_ bool _nss_systemd_is_blocked(void) {
+_public_ bool _nss_elogind_is_blocked(void) {
         return _blocked > 0;
+}
+
+/* Aliases for using nss-eloignd as a drop-in replacement for nss-systemd */
+NSS_GETPW_PROTOTYPES(systemd);
+NSS_GETSP_PROTOTYPES(systemd);
+NSS_GETGR_PROTOTYPES(systemd);
+NSS_GETSG_PROTOTYPES(systemd);
+NSS_PWENT_PROTOTYPES(systemd);
+NSS_SPENT_PROTOTYPES(systemd);
+NSS_GRENT_PROTOTYPES(systemd);
+NSS_SGENT_PROTOTYPES(systemd);
+NSS_INITGROUPS_PROTOTYPE(systemd);
+
+enum nss_status _nss_systemd_getpwnam_r(const char *name, struct passwd *pwd, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getpwnam_r(name, pwd, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_getspnam_r(const char *name, struct spwd *spwd, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getspnam_r(name,spwd,buffer, buflen,errnop);
+}
+
+enum nss_status _nss_systemd_getpwuid_r(uid_t uid,struct passwd *pwd, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getpwuid_r(uid, pwd, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_endpwent(void) {
+        return nss_elogind_endent(&getpwent_data);
+}
+
+enum nss_status _nss_systemd_endspent(void) {
+        return nss_elogind_endent(&getspent_data);
+}
+
+enum nss_status _nss_systemd_endgrent(void) {
+        return nss_elogind_endent(&getgrent_data);
+}
+
+enum nss_status _nss_systemd_endsgent(void) {
+        return nss_elogind_endent(&getsgent_data);
+}
+
+enum nss_status _nss_systemd_setpwent(int stayopen) {
+        return _nss_elogind_setpwent(stayopen);
+}
+
+enum nss_status _nss_systemd_getpwent_r(struct passwd *result, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getpwent_r(result, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_setspent(int stayopen) {
+        return _nss_elogind_setspent(stayopen);
+}
+
+enum nss_status _nss_systemd_getspent_r(struct spwd *result, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getspent_r(result, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_getgrnam_r(const char *name, struct group *gr, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getgrnam_r(name, gr, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_getsgnam_r(const char *name, struct sgrp *sgrp, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getsgnam_r(name, sgrp, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_getgrgid_r(gid_t gid, struct group *gr, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getgrgid_r(gid, gr, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_setgrent(int stayopen) {
+        return _nss_elogind_setgrent(stayopen);
+}
+
+enum nss_status _nss_systemd_setsgent(int stayopen) {
+        return _nss_elogind_setsgent(stayopen);
+}
+
+enum nss_status _nss_systemd_getgrent_r(struct group *result, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getgrent_r(result, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_getsgent_r(struct sgrp *result, char *buffer, size_t buflen, int *errnop) {
+        return _nss_elogind_getsgent_r(result, buffer, buflen, errnop);
+}
+
+enum nss_status _nss_systemd_initgroups_dyn(const char *user_name, gid_t gid, long *start, long *size, gid_t **groupsp, long int limit, int *errnop) {
+        return _nss_elogind_initgroups_dyn(user_name, gid, start, size, groupsp, limit, errnop);
 }
