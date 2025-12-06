@@ -514,7 +514,7 @@ static int run(int argc, char *argv[]) {
                 return log_error_errno(r, "Failed to parse USERDB_FIXED_WORKER: %m");
         listen_idle_usec = r ? USEC_INFINITY : LISTEN_IDLE_USEC;
 
-        r = userdb_block_nss_systemd(true);
+        r = userdb_block_nss_elogind(true);
         if (r < 0)
                 return log_error_errno(r, "Failed to disable userdb NSS compatibility: %m");
 

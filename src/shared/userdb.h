@@ -55,4 +55,4 @@ int membershipdb_all(UserDBFlags flags, UserDBIterator **ret);
 int membershipdb_iterator_get(UserDBIterator *iterator, char **user, char **group);
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret);
 
-int userdb_block_nss_systemd(int b);
+int userdb_block_nss_elogind(int b);

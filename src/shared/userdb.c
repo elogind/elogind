@@ -98,7 +98,7 @@ UserDBIterator* userdb_iterator_free(UserDBIterator *iterator) {
         sd_event_unref(iterator->event);
 
         if (iterator->nss_elogind_blocked)
-                assert_se(userdb_block_nss_systemd(false) >= 0);
+                assert_se(userdb_block_nss_elogind(false) >= 0);
 
         return mfree(iterator);
 }
@@ -131,7 +131,7 @@ static int userdb_iterator_block_nss_systemd(UserDBIterator *iterator) {
         if (iterator->nss_elogind_blocked)
                 return 0;
 
-        r = userdb_block_nss_systemd(true);
+        r = userdb_block_nss_elogind(true);
         if (r < 0)
                 return r;
 
@@ -1451,7 +1451,7 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         return 0;
 }
 
-int userdb_block_nss_systemd(int b) {
+int userdb_block_nss_elogind(int b) {
         _cleanup_(dlclosep) void *dl = NULL;
         int (*call)(bool b);
 
