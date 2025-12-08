@@ -30,6 +30,7 @@
 
     <para><command>nss-elogind</command> is a plug-in module for the GNU Name Service Switch (NSS)
     functionality of the GNU C Library (<command>glibc</command>), providing UNIX user and group name
+    <!-- 0 /// elogind is not a service manager and does not ship homed or machined.
     resolution for services implementing the <ulink url="https://systemd.io/USER_GROUP_API">User/Group Record
     Lookup API via Varlink</ulink>, such as the system and service manager
     <citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry> (for its
@@ -37,20 +38,24 @@
     <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
     details),
     <citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>, or <citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>.</para>
+    --><!-- else // 0 -->
+    resolution for services implementing the <ulink url="https://systemd.io/USER_GROUP_API">User/Group Record
+    Lookup API via Varlink</ulink>.</para>
+    <!-- // 0 -->
 
     <para>This module also ensures that the root and nobody users and groups (i.e. the users/groups with the UIDs/GIDs
     0 and 65534) remain resolvable at all times, even if they are not listed in <filename>/etc/passwd</filename> or
     <filename>/etc/group</filename>, or if these files are missing.</para>
 
     <para>This module preferably utilizes
-    <citerefentry><refentrytitle>systemd-userdbd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry>
+    <citerefentry><refentrytitle>elogind-userdbd</refentrytitle><manvolnum>8</manvolnum></citerefentry>
     for resolving users and groups, but also works without the service running.</para>
 
-    <para>To activate the NSS module, add <literal>systemd</literal> to the lines starting with
+    <para>To activate the NSS module, add <literal>elogind</literal> to the lines starting with
     <literal>passwd:</literal>, <literal>group:</literal>, <literal>shadow:</literal> and
     <literal>gshadow:</literal> in <filename>/etc/nsswitch.conf</filename>.</para>
 
-    <para>It is recommended to place <literal>systemd</literal> after the <literal>files</literal> entry of
+    <para>It is recommended to place <literal>elogind</literal> after the <literal>files</literal> entry of
     the <filename>/etc/nsswitch.conf</filename> lines so that <filename>/etc/passwd</filename>,
     <filename>/etc/group</filename>, <filename>/etc/shadow</filename> and <filename>/etc/gshadow</filename>
     based mappings take precedence.</para>
@@ -117,10 +122,10 @@ lrwxrwxrwx. 1 root root   19 May 10 4711.user-privileged -> foobar.user-privileg
     <command>nss-elogind</command> correctly:</para>
 
     <!-- synchronize with other nss-* man pages and factory/etc/nsswitch.conf -->
-    <programlisting>passwd:         files <command>systemd</command>
-group:          files <command>[SUCCESS=merge] systemd</command>
-shadow:         files <command>systemd</command>
-gshadow:        files <command>systemd</command>
+    <programlisting>passwd:         files <command>elogind</command>
+group:          files <command>[SUCCESS=merge] elogind</command>
+shadow:         files <command>elogind</command>
+gshadow:        files <command>elogind</command>
 
 hosts:          mymachines resolve [!UNAVAIL=return] files myhostname dns
 networks:       files
@@ -134,6 +139,7 @@ netgroup:       nis</programlisting>
 
   </refsect1>
 
+  <!-- 0 /// elogind does not ship machined
   <refsect1>
     <title>Example: Mappings provided by <filename>systemd-machined.service</filename></title>
 
@@ -141,12 +147,12 @@ netgroup:       nis</programlisting>
     <citerefentry><refentrytitle>systemd-nspawn</refentrytitle><manvolnum>1</manvolnum></citerefentry>:
     </para>
 
-    <programlisting># systemd-nspawn -M rawhide --boot --network-veth --private-users=pick
+    <programlisting># systemd-nspawn -M rawhide \-\-boot \-\-network-veth \-\-private-users=pick
 Spawning container rawhide on /var/lib/machines/rawhide.
 Selected user namespace base 20119552 and range 65536.
 ...
 
-$ machinectl --max-addresses=3
+$ machinectl \-\-max-addresses=3
 MACHINE CLASS     SERVICE        OS     VERSION ADDRESSES
 rawhide container systemd-nspawn fedora 30      169.254.40.164 fe80::94aa:3aff:fe7b:d4b9
 
@@ -164,20 +170,22 @@ vu-rawhide-0      731 ?        /usr/lib/systemd/systemd-journald
 vu-rawhide-192    734 ?        /usr/lib/systemd/systemd-networkd
 vu-rawhide-193    738 ?        /usr/lib/systemd/systemd-resolved
 vu-rawhide-0      742 ?        /usr/lib/systemd/systemd-logind
-vu-rawhide-81     744 ?        /usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation --syslog-only
+vu-rawhide-81     744 ?        /usr/bin/dbus-daemon \-\-system \-\-address=systemd: \-\-nofork \-\-nopidfile \-\-systemd-activation \-\-syslog-only
 vu-rawhide-0      746 ?        /usr/sbin/sshd -D ...
-vu-rawhide-0      752 ?        /usr/lib/systemd/systemd --user
+vu-rawhide-0      752 ?        /usr/lib/systemd/systemd \-\-user
 vu-rawhide-0      753 ?        (sd-pam)
-vu-rawhide-0     1628 ?        login -- zbyszek
-vu-rawhide-1000  1630 ?        /usr/lib/systemd/systemd --user
+vu-rawhide-0     1628 ?        login \-\- zbyszek
+vu-rawhide-1000  1630 ?        /usr/lib/systemd/systemd \-\-user
 vu-rawhide-1000  1631 ?        (sd-pam)
 vu-rawhide-1000  1637 pts/8    -zsh
 </programlisting>
   </refsect1>
+  // 0 -->
 
   <refsect1>
     <title>See Also</title>
     <para><simplelist type="inline">
+      <!-- 0 /// elogind is in section 8 and does not ship further nss facilities
       <member><citerefentry><refentrytitle>systemd</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>nss-resolve</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
@@ -186,6 +194,10 @@ vu-rawhide-1000  1637 pts/8    -zsh
       <member><citerefentry><refentrytitle>systemd-userdbd.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-homed.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>systemd-machined.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      --><!-- else // 0 -->
+      <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>elogind-userdbd</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+      <!-- // 0 -->
       <member><citerefentry project='man-pages'><refentrytitle>nsswitch.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
       <member><citerefentry project='man-pages'><refentrytitle>getent</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
     </simplelist></para>
