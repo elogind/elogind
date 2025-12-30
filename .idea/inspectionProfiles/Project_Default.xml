@@ -1,0 +1,17 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="ClangTidy" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="clangTidyChecks" value="-*,mpi-buffer-deref,mpi-type-mismatch,openmp-use-default-none,performance-faster-string-find,performance-for-range-copy,performance-implicit-conversion-in-loop,performance-inefficient-algorithm,performance-inefficient-string-concatenation,performance-inefficient-vector-operation,performance-move-const-arg,performance-move-constructor-init,performance-no-automatic-move,performance-noexcept-move-constructor,performance-trivially-destructible,performance-type-promotion-in-math-fn,performance-unnecessary-copy-initialization,performance-unnecessary-value-param,bugprone-*,clang-analyzer-*,cppcoreguidelines-*,google-*,llvm-*,misc-*,modernize-*,readability-*,cert-err52-cpp,cert-err60-cpp,cert-err34-c,cert-err33-c,cert-str34-c,cert-mem57-cpp,cert-msc50-cpp,cert-env33-c,cert-oop58-cpp,cert-oop57-cpp,cert-msc51-cpp,cert-dcl58-cpp,cert-flp30-c,concurrency-*,portability-std-allocator-const,portability-simd-intrinsics,altera-*,-altera-single-work-item-barrier,-altera-kernel-name-restriction,hicpp-multiway-paths-covered,hicpp-undelegated-constructor,hicpp-ignored-remove-result,hicpp-exception-baseclass,hicpp-signed-bitwise" />
+    </inspection_tool>
+    <inspection_tool class="Clazy" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="clazyChecks" value="level0,level1,ifndef-define-typo,isempty-vs-count,rule-of-three" />
+    </inspection_tool>
+    <inspection_tool class="CppEnforceDoStatementBraces" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CppEnforceForStatementBraces" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CppEnforceIfStatementBraces" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CppEnforceWhileStatementBraces" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="CppLocalVariableWithNonTrivialDtorIsNeverUsed" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="Misra" enabled="true" level="WARNING" enabled_by_default="true" />
+  </profile>
+</component>
