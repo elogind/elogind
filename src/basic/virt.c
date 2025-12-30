@@ -13,7 +13,7 @@
 #include "alloc-util.h"
 #include "cgroup-util.h"
 //#include "dirent-util.h"
-//#include "env-util.h"
+#include "env-util.h"
 #include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
@@ -945,7 +945,6 @@ int running_in_userns(void) {
 int running_in_chroot(void) {
         int r;
 
-#if 0 /// elogind does not allow to ignore chroots, we are never init!
         /* If we're PID1, /proc may not be mounted (and most likely we're not in a chroot). But PID1 will
          * mount /proc, so all other programs can assume that if /proc is *not* available, we're in some
          * chroot. */
@@ -956,6 +955,7 @@ int running_in_chroot(void) {
         if (r != -ENXIO)
                 log_debug_errno(r, "Failed to parse $SYSTEMD_IN_CHROOT, ignoring: %m");
 
+#if 0 /// elogind does not allow to ignore chroots, we are never init!
         /* Deprecated but kept for backwards compatibility. */
         if (getenv_bool("SYSTEMD_IGNORE_CHROOT") > 0)
                 return 0;
