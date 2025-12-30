@@ -153,4 +153,6 @@ int show_boot_entries(
 
 int boot_filename_extract_tries(const char *fname, char **ret_stripped, unsigned *ret_tries_left, unsigned *ret_tries_done);
 
+#if 0 /// UNNEEDED by elogind
 int boot_entry_to_json(const BootConfig *c, size_t i, sd_json_variant **ret);
+#endif // 0
