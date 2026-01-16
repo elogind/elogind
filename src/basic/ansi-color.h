@@ -23,7 +23,7 @@
 #define ANSI_BRIGHT_CYAN    "\x1B[0;96m"
 #define ANSI_BRIGHT_WHITE   "\x1B[0;97m"
 
-#define ANSI_GREY    "\x1B[0;38;5;245m"
+#define ANSI_GREY    "\x1B[0;38:5:245m"
 
 /* Bold/highlighted */
 #define ANSI_HIGHLIGHT_BLACK    "\x1B[0;1;30m"
