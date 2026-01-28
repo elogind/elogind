@@ -20,7 +20,6 @@
 #include "string-util.h"
 /// Additional includes needed by elogind
 #include "strv.h"
-#include <linux/ipv6.h> // Re-add here to fix #352
 
 int parse_boolean(const char *v) {
         if (!v)
