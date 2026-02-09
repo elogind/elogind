@@ -3571,17 +3571,9 @@ void unit_release_cgroup(Unit *u, bool drop_cgroup_runtime) {
 void session_release_cgroup(Session *s) {
         assert(s);
         Manager* m = ASSERT_PTR(s->manager);
-        _cleanup_free_ char *fs = NULL;
-        int r;
 
-        /* forward a session to manager_notify_cgroup_empty() we got an empty inotify about */
-
-        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
-        if (r)
-                return;
-
-        (void) hashmap_remove(m->cgroup_control_inotify_wd_session, s->id);
-
+        /* forward a session to manager_notify_cgroup_empty() we got an empty inotify about.
+         * That function is responsible for the cleanup and the necessary checks. */
         manager_notify_cgroup_empty(m, s->id);
 }
 #endif // 0
@@ -4585,17 +4577,25 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
 
         s = hashmap_get(m->sessions, cgroup);
 
-        if (s) {
-                /* Let's verify that the cgroup is really empty */
-                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
-                if (r < 0)
-                        return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
-                if (cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path) > 0) {
-                        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
-                        session_add_to_gc_queue(s);
-                }
-        } else
+        if (!s) {
                 log_warning("Session not found: %s", cgroup);
+                return 0;
+        }
+
+        /* Let's verify that the cgroup is really empty */
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
+        if (r)
+                return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
+
+        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path);
+        if (r < 0) {
+                log_debug_elogind_errno(r, "Failed to determine whether cgroup %s is empty: %m", empty_to_root(path));
+                return 0;
+        }
+
+        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
+        session_add_to_gc_queue(s);
+        (void) hashmap_remove(m->cgroup_control_inotify_wd_session, s->id);
 
         return 0;
 }
