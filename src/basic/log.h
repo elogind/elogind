@@ -309,14 +309,21 @@ int log_emergency_level(void);
 #endif
 
 #if ENABLE_DEBUG_ELOGIND
-#  define log_debug_elogind_full(...) do { \
-        log_set_max_level(LOG_DEBUG);      \
-        log_full(LOG_DEBUG, __VA_ARGS__);  \
-} while(0)
+#  define log_debug_elogind_full(...) ({ \
+        log_set_max_level(LOG_DEBUG);    \
+        log_debug(__VA_ARGS__);          \
+})
+#  define log_debug_elogind_full_errno(error, ...) ({ \
+        log_set_max_level(LOG_DEBUG);                 \
+        log_debug_errno(error, __VA_ARGS__);          \
+})
 #  define log_debug_elogind(fmt, ...) \
-          log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
+        log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
+#  define log_debug_elogind_errno(fmt, ...) \
+        log_debug_elogind_full_errno(errno, "(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
+#  define log_debug_elogind_errno(...) do {} while (0)
 #endif // ENABLE_DEBUG_ELOGIND
 
 /* Structured logging */
