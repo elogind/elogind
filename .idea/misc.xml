@@ -7,12 +7,15 @@
   <component name="MakefileSettings">
     <option name="linkedExternalProjectsSettings">
       <MakefileProjectSettings>
+        <option name="buildOptions" value="-j1" />
+        <option name="buildTarget" value="justprint" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
           </set>
         </option>
+        <option name="switches" value="DEBUG=YES BUILDMODE=release" />
         <option name="version" value="2" />
       </MakefileProjectSettings>
     </option>
