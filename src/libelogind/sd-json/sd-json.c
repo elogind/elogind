@@ -137,7 +137,7 @@ struct sd_json_variant {
 
 /* Let's make sure this structure isn't increased in size accidentally. This check is only for our most relevant arch
  * (x86-64). */
-#if defined(__x86_64__) && __SIZEOF_POINTER__ == 8
+#if defined(__x86_64__) && __SIZEOF_POINTER__ == 8 && !defined(__EDG__)
 assert_cc(sizeof(sd_json_variant) == 40U);
 assert_cc(INLINE_STRING_MAX == 7U);
 #endif
