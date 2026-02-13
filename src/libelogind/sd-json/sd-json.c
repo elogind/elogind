@@ -61,7 +61,7 @@ typedef struct JsonSource {
         char name[];
 } JsonSource;
 
-/* On x86-64 this whole structure should have a size of 6 * 64 bit = 48 bytes */
+/* On x86-64 this whole structure should have a size of 5 * 64 bit = 40 bytes */
 struct sd_json_variant {
         union {
                 /* We either maintain a reference counter for this variant itself, or we are embedded into an
