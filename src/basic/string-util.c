@@ -314,9 +314,11 @@ static size_t ansi_sequence_length(const char *s, size_t len) {
 static bool string_has_ansi_sequence(const char *s, size_t len) {
         const char *t = s;
 
-        while ((t = memchr(s, 0x1B, len - (t - s))))
+        while ((t = memchr(t, 0x1B, len - (t - s)))) {
                 if (ansi_sequence_length(t, len - (t - s)) > 0)
                         return true;
+                t++;
+        }
         return false;
 }
 
@@ -1416,7 +1418,7 @@ char* find_line_startswith(const char *haystack, const char *needle) {
         /* Finds the first line in 'haystack' that starts with the specified string. Returns a pointer to the
          * first character after it */
 
-        p = strstr_ptr(haystack, needle);
+        p = strstr(haystack, needle);
         if (!p)
                 return NULL;
 
@@ -1529,7 +1531,7 @@ char* strrstr(const char *haystack, const char *needle) {
         /* Special case: for the empty string we return the very last possible occurrence, i.e. *after* the
          * last char, not before. */
         if (*needle == 0)
-                return (char*)strchr(haystack, 0);
+                return strchr(haystack, 0);
 
         for (const char *p = strstr(haystack, needle), *q; p; p = q) {
                 q = strstr(p + 1, needle);
