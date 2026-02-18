@@ -999,7 +999,7 @@ static int pe_find_uki_sections(
                 }
 
                 /* Permit "masking" of sections in the base profile */
-                if (found->VirtualSize == 0)
+                if (le32toh(found->VirtualSize) == 0)
                         continue;
 
                 r = pe_read_section_data(fd, found, PE_SECTION_SIZE_MAX, (void**) t->data, /* ret_data= */ NULL);
