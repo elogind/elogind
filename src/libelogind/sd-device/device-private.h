@@ -63,6 +63,7 @@ int device_add_propertyf(sd_device *device, const char *key, const char *format,
 int device_add_tag(sd_device *device, const char *tag, bool both);
 #if 0 /// UNNEEDED by elogind
 void device_remove_tag(sd_device *device, const char *tag);
+int device_copy_all_tags(sd_device *dest, sd_device *src);
 void device_cleanup_tags(sd_device *device);
 void device_cleanup_devlinks(sd_device *device);
 
