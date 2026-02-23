@@ -3787,8 +3787,10 @@ _public_ int sd_varlink_server_shutdown(sd_varlink_server *s) {
 static void varlink_server_test_exit_on_idle(sd_varlink_server *s) {
         assert(s);
 
-        if (s->exit_on_idle && s->event && s->n_connections == 0)
+        if (s->exit_on_idle && s->event && s->n_connections == 0) {
+                varlink_server_log(s, "Exit-on-idle triggered.");
                 (void) sd_event_exit(s->event, 0);
+        }
 }
 
 _public_ int sd_varlink_server_set_exit_on_idle(sd_varlink_server *s, int b) {
