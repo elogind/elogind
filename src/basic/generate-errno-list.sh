@@ -3,9 +3,13 @@
 set -eu
 set -o pipefail
 
-# In kernel's arch/parisc/include/uapi/asm/errno.h, ECANCELLED and EREFUSED are defined as aliases of
-# ECANCELED and ECONNREFUSED, respectively. Let's drop them.
+# In kernel's arch/parisc/include/uapi/asm/errno.h, The following aliases are defined:
+# ECANCELLED → ECANCELED
+# EREFUSED → ECONNREFUSED
+# EFSBADCRC → EBADMSG
+# EFSCORRUPTED → EUCLEAN
+# Let's drop them.
 
 ${1:?} -dM -include errno.h - </dev/null | \
-       grep -Ev '^#define[[:space:]]+(ECANCELLED|EREFUSED)' | \
+       grep -Ev '^#define[[:space:]]+(ECANCELLED|EREFUSED|EFSBADCRC|EFSCORRUPTED)' | \
        awk '/^#define[ \t]+E[^ _]+[ \t]+/ { print $2; }'
