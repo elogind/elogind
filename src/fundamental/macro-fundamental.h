@@ -518,3 +518,10 @@ static inline uint64_t ALIGN_OFFSET_U64(uint64_t l, uint64_t ali) {
 #else
         #define DECLARE_SBAT(text)
 #endif
+
+/* This macro is used to have a const-returning and non-const returning version of a function based on
+ * whether its first argument is const or not (e.g. strstr()). */
+#define const_generic(ptr, call)                              \
+        _Generic(0 ? (ptr) : (void*) 1,                       \
+                 const void*: (const typeof(*call)*) (call),  \
+                 void*: (call))
