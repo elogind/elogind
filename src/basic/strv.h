@@ -229,7 +229,7 @@ static inline void strv_print(char * const *l) {
                 const char *_p = (p);                           \
                 char *_found = NULL;                            \
                 STRV_FOREACH(_i, STRV_MAKE(__VA_ARGS__)) {      \
-                        _found = endswith(_p, *_i);             \
+                        _found = (char*)endswith(_p, *_i);      \
                         if (_found)                             \
                                 break;                          \
                 }                                               \
