@@ -1409,16 +1409,14 @@ char *strdupcspn(const char *a, const char *reject) {
         return strndup(a, strcspn(a, reject));
 }
 
-char *find_line_startswith(const char *haystack, const char *needle) {
-        char *p;
-
+char *find_line_startswith_internal(const char *haystack, const char *needle) {
         assert(haystack);
         assert(needle);
 
         /* Finds the first line in 'haystack' that starts with the specified string. Returns a pointer to the
          * first character after it */
 
-        p = strstr(haystack, needle);
+        char *p = (char*)strstr(haystack, needle);
         if (!p)
                 return NULL;
 
@@ -1436,7 +1434,7 @@ char *startswith_strv(const char *string, char **strv) {
         char *found = NULL;
 
         STRV_FOREACH(i, strv) {
-                found = startswith(string, *i);
+                found = (char*)startswith(string, *i);
                 if (found)
                         break;
         }
