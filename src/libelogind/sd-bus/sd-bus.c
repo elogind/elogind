@@ -1416,14 +1416,14 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
         if (*host == '[') {
                 char *t;
 
-                rbracket = strchr(host, ']');
+                rbracket = (char*)strchr(host, ']');
                 if (!rbracket)
                         return -EINVAL;
                 t = strndupa_safe(host + 1, rbracket - host - 1);
                 e = bus_address_escape(t);
                 if (!e)
                         return -ENOMEM;
-        } else if ((a = strchr(host, '@'))) {
+        } else if ((a = (char*)strchr(host, '@'))) {
                 if (*(a + 1) == '[') {
                         _cleanup_free_ char *t = NULL;
 
@@ -1443,7 +1443,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
         }
 
         /* Let's see if a port was given */
-        m = strchr(rbracket ? rbracket + 1 : host, ':');
+        m = (char*)strchr(rbracket ? rbracket + 1 : host, ':');
         if (m) {
                 char *t;
                 bool got_forward_slash = false;
@@ -1466,7 +1466,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
         }
 
         /* Let's see if a machine was given */
-        m = strchr(rbracket ? rbracket + 1 : host, '/');
+        m = (char*)strchr(rbracket ? rbracket + 1 : host, '/');
         if (m) {
                 m++;
 interpret_port_as_machine_old_syntax:
