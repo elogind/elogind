@@ -1724,13 +1724,13 @@ int socket_address_parse_vsock(SocketAddress *ret_address, const char *s) {
         assert(ret_address);
         assert(s);
 
-        if ((cid_start = startswith(s, "vsock:")))
+        if ((cid_start = (char*)startswith(s, "vsock:")))
                 type = 0;
-        else if ((cid_start = startswith(s, "vsock-dgram:")))
+        else if ((cid_start = (char*)startswith(s, "vsock-dgram:")))
                 type = SOCK_DGRAM;
-        else if ((cid_start = startswith(s, "vsock-seqpacket:")))
+        else if ((cid_start = (char*)startswith(s, "vsock-seqpacket:")))
                 type = SOCK_SEQPACKET;
-        else if ((cid_start = startswith(s, "vsock-stream:")))
+        else if ((cid_start = (char*)startswith(s, "vsock-stream:")))
                 type = SOCK_STREAM;
         else
                 return -EPROTO;
