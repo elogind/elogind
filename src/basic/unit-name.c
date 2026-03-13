@@ -845,7 +845,7 @@ int slice_build_subslice(const char *slice, const char *name, char **ret) {
         else {
                 char *e;
 
-                assert_se(e = endswith(slice, ".slice"));
+                assert_se(e = (char*)endswith(slice, ".slice"));
 
                 subslice = new(char, (e - slice) + 1 + strlen(name) + 6 + 1);
                 if (!subslice)
