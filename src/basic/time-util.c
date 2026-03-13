@@ -1140,7 +1140,7 @@ static const char* extract_multiplier(const char *p, usec_t *ret) {
         for (size_t i = 0; i < ELEMENTSOF(table); i++) {
                 char *e;
 
-                e = startswith(p, table[i].suffix);
+                e = (char*)startswith(p, table[i].suffix);
                 if (e) {
                         *ret = table[i].usec;
                         return e;
