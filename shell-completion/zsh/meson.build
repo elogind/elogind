@@ -28,7 +28,7 @@ endif
 #          ['_sd_hosts_or_user_at_host', ''],
 #          ['_sd_outputmodes',           ''],
 #          ['_sd_unit_files',            ''],
-#          ['_sd_machines',              ''],
+#          ['_sd_machines',              'ENABLE_MACHINED'],
 #          ['_bootctl',                  ''],
 #          ['_coredumpctl',              'ENABLE_COREDUMP'],
 #          ['_hostnamectl',              'ENABLE_HOSTNAMED'],
