@@ -2110,7 +2110,7 @@ static int elogind_execute_shutdown_or_sleep(
 
         log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
-        log_info("Operation '%s' finished.", handle_action_to_string(m->delayed_action->handle));
+        log_info("Operation '%s' finished.", handle_action_to_string(a->handle));
 
         m->action_job = mfree(m->action_job);
         m->delayed_action = NULL;
