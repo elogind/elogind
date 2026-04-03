@@ -30,7 +30,7 @@
 static inline char* strstr_ptr(const char *haystack, const char *needle) {
         if (!haystack || !needle)
                 return NULL;
-        return strstr(haystack, needle);
+        return (char*)strstr(haystack, needle);
 }
 
 static inline char* strstrafter(const char *haystack, const char *needle) {

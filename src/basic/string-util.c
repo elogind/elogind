@@ -1415,7 +1415,7 @@ char* find_line_startswith(const char *haystack, const char *needle) {
         /* Finds the first line in 'haystack' that starts with the specified string. Returns a pointer to the
          * first character after it */
 
-        p = strstr(haystack, needle);
+        p = strstr_ptr(haystack, needle);
         if (!p)
                 return NULL;
 
