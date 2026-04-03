@@ -319,8 +319,8 @@ int log_emergency_level(void);
 })
 #  define log_debug_elogind(fmt, ...) \
         log_debug_elogind_full("(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
-#  define log_debug_elogind_errno(fmt, ...) \
-        log_debug_elogind_full_errno(errno, "(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
+#  define log_debug_elogind_errno(error, fmt, ...) \
+        log_debug_elogind_full_errno(error, "(DEBUG) %s:%d:%s: " fmt, PROJECT_FILE, __LINE__, __func__, __VA_ARGS__)
 #else
 #  define log_debug_elogind(...) do {} while (0)
 #  define log_debug_elogind_errno(...) do {} while (0)
