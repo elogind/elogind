@@ -1437,7 +1437,8 @@ _public_ int sd_bus_open_user(sd_bus **ret) {
 
 int bus_set_address_system_remote(sd_bus *b, const char *host) {
         _cleanup_free_ char *e = NULL;
-        char *m = NULL, *c = NULL, *a, *rbracket = NULL, *p = NULL;
+        const char *m = NULL, *c = NULL, *rbracket = NULL, *p = NULL;
+        char *a;
 
         assert(b);
         assert(host);
@@ -1453,7 +1454,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
                 e = bus_address_escape(t);
                 if (!e)
                         return -ENOMEM;
-        } else if ((a = strchr(host, '@'))) {
+        } else if ((a = (char*)strchr(host, '@'))) {
                 if (*(a + 1) == '[') {
                         _cleanup_free_ char *t = NULL;
 
@@ -1475,7 +1476,7 @@ int bus_set_address_system_remote(sd_bus *b, const char *host) {
         /* Let's see if a port was given */
         m = strchr(rbracket ? rbracket + 1 : host, ':');
         if (m) {
-                char *t;
+                const char *t;
                 bool got_forward_slash = false;
 
                 p = m + 1;
