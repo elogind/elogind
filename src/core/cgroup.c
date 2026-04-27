@@ -2393,7 +2393,7 @@ int unit_watch_cgroup(Unit *u) {
 int session_watch_cgroup(Session *s) {
         Manager* m = ASSERT_PTR(s->manager);
         _cleanup_free_ char *events = NULL;
-        int r;
+        int wd, r;
 
         assert(s);
 
@@ -2410,13 +2410,30 @@ int session_watch_cgroup(Session *s) {
         if (r < 0)
                 return log_oom();
 
+        /* Do not create multiple watches */
+        if (s->cgroup_control_inotify_wd > -1)
+                return 0;
+
         r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, "cgroup.events", &events);
         if (r < 0)
                 return 0;
 
-        r = hashmap_put(m->cgroup_control_inotify_wd_session, s->id, s);
-        if (r < 0)
+        wd = inotify_add_watch(m->cgroup_inotify_fd, events, IN_MODIFY);
+        if (wd < 0) {
+                if (errno == ENOENT)
+                        return 0;
+
+                return log_error_errno(errno,
+                                       "Failed to add cgroup inotify watch for session %s: %m",
+                                       s->id);
+        }
+
+        r = hashmap_put(m->cgroup_control_inotify_wd_session, INT_TO_PTR(wd), s);
+        if (r < 0) {
+                (void) inotify_rm_watch(m->cgroup_inotify_fd, wd);
                 return log_error_errno(r, "Failed to add session %s to hash map: %m", strna(s->id));
+        }
+        s->cgroup_control_inotify_wd = wd;
 
         return 0;
 }
@@ -3120,7 +3137,7 @@ int unit_realize_cgroup(Unit *u) {
 }
 #endif // 0
 
-#if 0 /// elogind does not support systemd units, but sessions
+#if 0 /// elogind does not support systemd units but sessions
 void unit_release_cgroup(Unit *u) {
         assert(u);
 
@@ -3621,7 +3638,9 @@ static void unit_add_to_cgroup_oom_queue(Unit *u) {
         if (r < 0)
                 log_error_errno(r, "Failed to enable cgroup oom event source: %m");
 }
+#endif // 0
 
+#if 0 /// elogind does not support systemd units but sessions
 static int unit_check_cgroup_events(Unit *u) {
         char *values[2] = {};
         int r;
@@ -3659,6 +3678,24 @@ static int unit_check_cgroup_events(Unit *u) {
 
         return 0;
 }
+#else // 0
+static int session_check_cgroup_events(Session *s) {
+        _cleanup_free_ char *populated = NULL;
+        int r;
+
+        assert(s);
+
+        r = cg_read_event(SYSTEMD_CGROUP_CONTROLLER, s->id, "populated", &populated);
+        if (r == -ENOENT)
+                return 0;
+        if (r < 0)
+                return r;
+
+        if (streq(populated, "0"))
+                return manager_notify_cgroup_empty(s->manager, s->id);
+
+        return 0;
+}
 #endif // 0
 
 static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents, void *userdata) {
@@ -3683,7 +3720,7 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
 #if 0 /// elogind does not support system units, but sessions
                         Unit *u;
 #else // 0
-                        Session *u; /* s is taken by the sd_event_source argumen */
+                        Session *session; /* s is taken by the sd_event_source argument */
 #endif // 0
 
                         if (e->wd < 0)
@@ -3706,22 +3743,9 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         if (u)
                                 unit_add_to_cgroup_oom_queue(u);
 #else // 0
-                        u = hashmap_get(m->cgroup_control_inotify_wd_session, INT_TO_PTR(e->wd));
-                        if (u)
-                                session_release_cgroup(u);
-
-                        /*
-                                struct inotify_event
-                                {
-                                int wd;		* Watch descriptor.  *
-                                uint32_t mask;	* Watch mask.  *
-                                uint32_t cookie;	* Cookie to synchronize two events.  *
-                                uint32_t len;		* Length (including NULs) of name.  *
-                                char name __flexarr;	* Name.  *
-                                };
-                        */
-                        log_notice("(TODO) inotify event: id %d (mask %u; cookie %u; len %u): '%s'",
-                                e->wd, e->mask, e->cookie, e->len, strna(e->name));
+                        session = hashmap_get(m->cgroup_control_inotify_wd_session, INT_TO_PTR(e->wd));
+                        if (session)
+                                (void) session_check_cgroup_events(session);
 #endif // 0
                 }
         }
@@ -4130,16 +4154,14 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
                 return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
 
         r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path);
-        if (r < 0) {
-                log_debug_elogind_errno(r, "Failed to determine whether cgroup %s is empty: %m", empty_to_root(path));
+        if (r <= 0) {
+                if (r < 0 )
+                        log_debug_elogind_errno(r, "Failed to determine whether cgroup %s is empty: %m", empty_to_root(path));
                 return 0;
         }
 
-        log_debug_elogind("Queing session %s for gc, its cgroup is empty!", s->id);
-        session_add_to_gc_queue(s);
-        (void) hashmap_remove(m->cgroup_control_inotify_wd_session, s->id);
-
-        return 0;
+        log_debug_elogind("Releasing session %s, its cgroup is empty.", s->id);
+        return session_release(s);
 }
 #endif // 0
 
