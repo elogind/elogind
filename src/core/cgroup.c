@@ -3174,7 +3174,7 @@ void session_release_cgroup(Session *s) {
 
         m = ASSERT_PTR(s->manager);
 
-        if (m->cgroup_inotify_fd >= 0) {
+        if (m->cgroup_inotify_fd >= 0 && s->cgroup_control_inotify_wd >= 0) {
                 if (inotify_rm_watch(m->cgroup_inotify_fd, s->cgroup_control_inotify_wd) < 0)
                         log_debug_elogind_errno(errno,
                                                  "Failed to remove cgroup inotify watch %i for session %s, ignoring: %m",
@@ -3186,10 +3186,6 @@ void session_release_cgroup(Session *s) {
 
                 s->cgroup_control_inotify_wd = -1;
         }
-
-        /* forward the session to manager_notify_cgroup_empty() we got an empty inotify about.
-         * That function is responsible for further cleanup and the necessary checks. */
-        manager_notify_cgroup_empty(m, s->id);
 }
 #endif // 0
 
@@ -4180,7 +4176,8 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         s = hashmap_get(m->sessions, cgroup);
 
         if (!s) {
-                log_warning("Session not found: %s", cgroup);
+                // elogind: stale cgroup notifications after restart are not fatal
+                log_debug_elogind("Ignoring empty notification for unknown session: %s", cgroup);
                 return 0;
         }
 

@@ -769,15 +769,28 @@ static int session_start_cgroup(Session *s) {
 
         assert(s);
         assert(s->user);
-        assert(s->leader.pid > 0);
 
         r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
         if (r < 0)
                 return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
 
-        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader.pid);
-        if (r < 0)
-                log_warning_errno(r, "Failed to attach PID %d to cgroup %s: %m", s->leader.pid, s->id);
+        // elogind: restored sessions may have no live leader during daemon restart
+        if (pidref_is_set(&s->leader)) {
+                r = pidref_is_alive(&s->leader);
+                if (r > 0) {
+                        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader.pid);
+                        if (r < 0)
+                                log_warning_errno(r,
+                                                  "Failed to attach PID " PID_FMT " to cgroup %s: %m",
+                                                  s->leader.pid,
+                                                  s->id);
+                } else if (r < 0)
+                        log_debug_errno(r,
+                                        "Leader PID " PID_FMT " of session %s is not alive, not attaching: %m",
+                                        s->leader.pid,
+                                        s->id);
+        } else
+                log_debug_elogind("Session %s has no leader PID, not attaching leader to cgroup.", s->id);
 
         r = session_watch_cgroup(s);
         if (r < 0)
