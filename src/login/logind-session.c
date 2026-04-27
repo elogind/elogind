@@ -75,6 +75,9 @@ int session_new(Manager *m, const char *id, Session **ret) {
                 .audit_id = AUDIT_SESSION_INVALID,
                 .tty_validity = _TTY_VALIDITY_INVALID,
                 .leader = PIDREF_NULL,
+#if 1 /// elogind adds cgroup watches for its session, like systemd does for its units
+                .cgroup_control_inotify_wd = -1,
+#endif // 1
         };
         if (!s->id || !s->state_file)
                 return -ENOMEM;
@@ -221,14 +224,16 @@ Session* session_free(Session *s) {
 
 #if 1 /// elogind does not rely on external cgroup controllers to clean up after ourselves
         if (s->id) {
-                _cleanup_free_ char *fs = NULL;
                 int r;
-                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
-                log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
-                if (0 == r)
-                        r = cg_kill_recursive (fs, SIGTERM, CGROUP_IGNORE_SELF, NULL, NULL, NULL);
-                if (0 == r)
-                        cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
+
+                r = cg_kill_recursive(s->id,
+                                      SIGTERM,
+                                      CGROUP_IGNORE_SELF,
+                                      NULL,
+                                      NULL,
+                                      NULL);
+                if (r >= 0)
+                        (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
         }
 #endif // 1
 
@@ -984,8 +989,6 @@ static int session_stop_scope(Session *s, bool force) {
         }
 
         s->scope_job = mfree(s->scope_job);
-#else // 0
-        session_add_to_gc_queue(s);
 #endif // 0
 
         /* Optionally, let's kill everything that's left now. */
@@ -999,8 +1002,16 @@ static int session_stop_scope(Session *s, bool force) {
 #else // 0
                 // elogind must not kill lingering user processes alive, until forced to
                 r = 0;
-                if (force || (user_check_linger_file(s->user) < 1))
+                if (force || (user_check_linger_file(s->user) < 1)) {
+                        // Remove elogind session cgroup inotify watch if it is still enabled
+                        if (s->manager && s->cgroup_control_inotify_wd > -1) {
+                                (void) inotify_rm_watch(s->manager->cgroup_inotify_fd, s->cgroup_control_inotify_wd);
+                                s->cgroup_control_inotify_wd = -1;
+                        }
+
+                        // Now the cgroup can be killed, it won't trigger inotify events
                         r = session_kill(s, KILL_ALL, SIGTERM, &error);
+                }
 #endif // 0
                 if (r < 0) {
                         if (force)
@@ -1035,11 +1046,11 @@ int session_stop(Session *s, bool force) {
 
         if (!s->user)
                 return -ESTALE;
-        log_debug_elogind("Stopping session %s %s ...", s->id, force ? "(forced)" : "");
         if (!s->started)
                 return 0;
         if (s->stopping)
                 return 0;
+        log_debug_elogind("Stopping session %s %s ...", s->id, force ? "(forced)" : "");
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
@@ -1551,7 +1562,12 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
                 r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
                 log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
                 if (0 == r)
-                        r = cg_kill_recursive (fs, signo, CGROUP_IGNORE_SELF, NULL, NULL, NULL);
+                        return cg_kill_recursive (s->id,
+                                                  signo,
+                                                  CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                                  NULL,
+                                                  NULL,
+                                                  NULL);
                 return r;
 #endif // 0
 

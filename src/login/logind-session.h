@@ -157,6 +157,10 @@ struct Session {
         /* Set up when a client requested to release the session via the bus */
         sd_event_source *timer_event_source;
 
+#if 1 /// elogind adds cgroup watches for its session, like systemd does for its units
+        int cgroup_control_inotify_wd;
+#endif // 1
+
         char *controller;
         Hashmap *devices;
         sd_bus_track *track;
