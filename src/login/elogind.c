@@ -173,7 +173,7 @@ static int elogind_daemonize( void ) {
                                         program_invocation_short_name);
 
         r = safe_fork("elogind-forker",
-                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
+                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_REARRANGE_STDIO|FORK_WAIT,
                         &child );
         if ( r < 0 )
                 return log_error_errno( r, "%s: Failed to fork daemon leader: %m", program_invocation_short_name );
@@ -189,10 +189,23 @@ static int elogind_daemonize( void ) {
                 // Close the write end of the pipe, we only read here
                 notify_pipe[1] = safe_close(notify_pipe[1]);
 
-                n = read(notify_pipe[0], &status, sizeof(status));
+                do {
+                        n = read(notify_pipe[0], &status, sizeof(status));
+                } while (n < 0 && errno == EINTR);
+
+                if (n == 0)
+                        return log_error_errno(SYNTHETIC_ERRNO(EPIPE),
+                                                "%s: Daemon exited before reporting startup status",
+                                                program_invocation_short_name);
+
+                if (n < 0)
+                        return log_error_errno(errno,
+                                                "%s: Failed to read daemon startup status: %m",
+                                                program_invocation_short_name);
+
                 if (n != (ssize_t) sizeof(status))
-                        return log_error_errno(SYNTHETIC_ERRNO(EIO),
-                                                "%s: Daemon did not report successful startup",
+                        return log_error_errno(SYNTHETIC_ERRNO(EPROTO),
+                                                "%s: Received incomplete daemon startup status",
                                                 program_invocation_short_name);
 
                 if (status < 0)
@@ -224,7 +237,12 @@ static int elogind_daemonize( void ) {
                 log_debug_elogind("Fork 2 returned: %5d", r);
                 log_debug_elogind("Grandchild PID : %5d", grandchild);
 
-                // Exit immediately!
+                // Close the still open write end of the pipe in the child.
+                r = close_all_fds(&notify_pipe[1], 1);
+                if (r < 0)
+                        _exit(log_error_errno(r, "%s: Failed to close inherited file descriptors: %m", program_invocation_short_name));
+
+                // Exit successfully!
                 _exit( EXIT_SUCCESS );
         }
 
@@ -277,7 +295,7 @@ int elogind_notify_daemon_parent(int status) {
         ssize_t n;
 
         if (daemon_notify_fd < 0)
-                return 0;
+                return status;
 
         n = write(daemon_notify_fd, &status, sizeof(status));
         daemon_notify_fd = safe_close(daemon_notify_fd);
@@ -285,7 +303,7 @@ int elogind_notify_daemon_parent(int status) {
         if (n != (ssize_t) sizeof(status))
                 return -EIO;
 
-        return 0;
+        return status;
 }
 
 static int manager_dispatch_cgroups_agent_fd( sd_event_source* source, int fd, uint32_t revents, void* userdata ) {
