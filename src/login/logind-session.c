@@ -176,6 +176,7 @@ Session* session_free(Session *s) {
         if (s->id) {
                 int r;
 
+                session_release_cgroup(s);
                 r = cg_kill_recursive(s->id,
                                       SIGTERM,
                                       CGROUP_IGNORE_SELF,
@@ -960,10 +961,8 @@ static int session_stop_cgroup(Session *s, bool force) {
         if ( (force || manager_shall_kill(s->manager, s->user->user_record->user_name) )
           && (user_check_linger_file(s->user) < 1) ) {
                 // Remove elogind session cgroup inotify watch if it is still enabled
-                if (s->manager && s->cgroup_control_inotify_wd > -1) {
-                        (void) inotify_rm_watch(s->manager->cgroup_inotify_fd, s->cgroup_control_inotify_wd);
-                        s->cgroup_control_inotify_wd = -1;
-                }
+                session_release_cgroup(s);
+
                 // Now the cgroup can be killed, it won't trigger inotify events
                 r = session_kill(s, KILL_ALL, SIGTERM);
                 if (r < 0)
@@ -1026,6 +1025,10 @@ int session_finalize(Session *s) {
 
         if (!s->user)
                 return -ESTALE;
+
+#if 1 /// cleanup elogind session watch on its cgroup
+        session_release_cgroup(s);
+#endif // 1
 
         if (s->started)
                 log_struct(s->class == SESSION_BACKGROUND ? LOG_DEBUG : LOG_INFO,
