@@ -3983,6 +3983,10 @@ int manager_setup_cgroup(Manager *m) {
                 scope_path = strjoina(m->cgroup_root, "/elogind");
         r = cg_create_and_attach(SYSTEMD_CGROUP_CONTROLLER, scope_path, 0);
         if (r >= 0) {
+                // elogind remembers the daemon cgroup separately from PID 1's root
+                r = free_and_strdup(&m->cgroup_self, scope_path);
+                if (r < 0)
+                        return r;
 #endif // 0
                 log_debug_elogind("Created control group \"%s\"", scope_path);
 
@@ -4023,10 +4027,16 @@ int manager_setup_cgroup(Manager *m) {
 void manager_shutdown_cgroup(Manager *m, bool delete) {
         assert(m);
 
+#if 0 /// elogind: never trim PID 1's cgroup root during daemon shutdown
         /* We can't really delete the group, since we are in it. But
          * let's trim it. */
         if (delete && m->cgroup_root && !FLAGS_SET(m->test_run_flags, MANAGER_TEST_RUN_MINIMAL))
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, false);
+#else // 0
+        // Only trim our cgroup
+        if (delete && m->cgroup_self && !FLAGS_SET(m->test_run_flags, MANAGER_TEST_RUN_MINIMAL))
+                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_self, false);
+#endif // 0
 
 #if 0 /// elogind does not support systemd units, but sessions
         m->cgroup_empty_event_source = sd_event_source_disable_unref(m->cgroup_empty_event_source);
@@ -4042,6 +4052,9 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
 
         m->pin_cgroupfs_fd = safe_close(m->pin_cgroupfs_fd);
 
+#if 1 /// elogind: free remembered daemon cgroup path
+        m->cgroup_self = mfree(m->cgroup_self);
+#endif // 1
         m->cgroup_root = mfree(m->cgroup_root);
 }
 

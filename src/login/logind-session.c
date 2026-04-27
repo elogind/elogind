@@ -173,19 +173,7 @@ Session* session_free(Session *s) {
         safe_close(s->fifo_fd);
 
 #if 1 /// elogind does not rely on external cgroup controllers to clean up after ourselves
-        if (s->id) {
-                int r;
-
-                session_release_cgroup(s);
-                r = cg_kill_recursive(s->id,
-                                      SIGTERM,
-                                      CGROUP_IGNORE_SELF,
-                                      NULL,
-                                      NULL,
-                                      NULL);
-                if (r >= 0)
-                        (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
-        }
+        session_release_cgroup(s);
 #endif // 1
 
         /* Note that we remove neither the state file nor the fifo path here, since we want both to survive
@@ -973,10 +961,7 @@ static int session_stop_cgroup(Session *s, bool force) {
         // elogind must not kill lingering user processes alive
         if ( (force || manager_shall_kill(s->manager, s->user->user_record->user_name) )
           && (user_check_linger_file(s->user) < 1) ) {
-                // Remove elogind session cgroup inotify watch if it is still enabled
-                session_release_cgroup(s);
-
-                // Now the cgroup can be killed, it won't trigger inotify events
+                // Kill the cgroup!
                 r = session_kill(s, KILL_ALL, SIGTERM);
                 if (r < 0)
                         return r;
@@ -1041,6 +1026,8 @@ int session_finalize(Session *s) {
 
 #if 1 /// cleanup elogind session watch on its cgroup
         session_release_cgroup(s);
+        if (s->id)
+                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
 #endif // 1
 
         if (s->started)
