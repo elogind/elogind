@@ -42,5 +42,8 @@ int elogind_manager_new(Manager* m);
 /// Add-On for manager_startup()
 int elogind_manager_startup(Manager* m);
 
+/// Send a message to the daemonizing main program, that the daemon is ready or broken.
+int elogind_notify_daemon_parent(int status);
+
 
 #endif // ELOGIND_SRC_LOGIN_ELOGIN_H_INCLUDED
