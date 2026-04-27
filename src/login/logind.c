@@ -1279,7 +1279,7 @@ static int run(int argc, char *argv[]) {
 
         r = mac_init();
         if (r < 0)
-                return r;
+                return elogind_notify_daemon_parent(r);
 
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         /* Always create the directories people can create inotify watches in. Note that some applications
@@ -1291,22 +1291,27 @@ static int run(int argc, char *argv[]) {
 #else // 0
         r = mkdir_label("/run/systemd", 0755);
         if ((r < 0) && (-EEXIST != r)) {
+                (void)elogind_notify_daemon_parent(r);
                 return log_error_errno(r, "Failed to create /run/systemd : %m");
         }
         r = mkdir_label("/run/systemd/seats", 0755);
         if (r < 0 && (-EEXIST != r)) {
+                (void)elogind_notify_daemon_parent(r);
                 return log_error_errno(r, "Failed to create /run/systemd/seats : %m");
         }
         r = mkdir_label("/run/systemd/users", 0755);
         if (r < 0 && (-EEXIST != r)) {
+                (void)elogind_notify_daemon_parent(r);
                 return log_error_errno(r, "Failed to create /run/systemd/users : %m");
         }
         r = mkdir_label("/run/systemd/sessions", 0755);
         if (r < 0 && (-EEXIST != r)) {
+                (void)elogind_notify_daemon_parent(r);
                 return log_error_errno(r, "Failed to create /run/systemd/sessions : %m");
         }
         r = mkdir_label("/run/systemd/machines", 0755);
         if (r < 0 && (-EEXIST != r)) {
+                (void)elogind_notify_daemon_parent(r);
                 return log_error_errno(r, "Failed to create /run/systemd/machines : %m");
         }
 #endif // 0
@@ -1320,18 +1325,33 @@ static int run(int argc, char *argv[]) {
 #endif // 0
 
         r = manager_new(&m);
+#if 0 /// elogind does not just log an error, but also reports it to its forking main process
         if (r < 0)
                 return log_error_errno(r, "Failed to allocate manager object: %m");
+#else // 0
+        if (r < 0) {
+                (void)elogind_notify_daemon_parent(r);
+                return log_error_errno(r, "Failed to allocate manager object: %m");
+        }
+#endif // 0
 
         (void) manager_parse_config_file(m);
 
         log_debug_elogind("%s", "Starting manager...");
         r = manager_startup(m);
+#if 0 /// elogind does not just log an error, but also reports it to its forking main process
         if (r < 0)
-                return log_error_errno(r, "Failed to fully start up daemon: %m");
+                return log_error_errno(r, "Failed to allocate manager object: %m");
+#else // 0
+        if (r < 0) {
+                (void)elogind_notify_daemon_parent(r);
+                return log_error_errno(r, "Failed to allocate manager object: %m");
+        }
+#endif // 0
+
 
 #if 1 /// elogind reports its daemonizing startup
-        (void) elogind_notify_daemon_parent(r < 0 ? r : 0);
+        (void) elogind_notify_daemon_parent(0);
 #endif // 1
 
         notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
