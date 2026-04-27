@@ -2801,7 +2801,7 @@ int session_watch_cgroup(Session *s) {
 
         r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, "cgroup.events", &events);
         if (r < 0)
-                return 0;
+                return r;
 
         wd = inotify_add_watch(m->cgroup_inotify_fd, events, IN_MODIFY);
         if (wd < 0) {
@@ -3594,11 +3594,27 @@ void unit_release_cgroup(Unit *u, bool drop_cgroup_runtime) {
 
 #else // 0
 void session_release_cgroup(Session *s) {
-        assert(s);
-        Manager* m = ASSERT_PTR(s->manager);
+        Manager *m;
 
-        /* forward a session to manager_notify_cgroup_empty() we got an empty inotify about.
-         * That function is responsible for the cleanup and the necessary checks. */
+        assert(s);
+
+        m = ASSERT_PTR(s->manager);
+
+        if (m->cgroup_inotify_fd >= 0) {
+                if (inotify_rm_watch(m->cgroup_inotify_fd, s->cgroup_control_inotify_wd) < 0)
+                        log_debug_elogind_errno(errno,
+                                                 "Failed to remove cgroup inotify watch %i for session %s, ignoring: %m",
+                                                 s->cgroup_control_inotify_wd,
+                                                 s->id);
+
+                (void) hashmap_remove(m->cgroup_control_inotify_wd_session,
+                                      INT_TO_PTR(s->cgroup_control_inotify_wd));
+
+                s->cgroup_control_inotify_wd = -1;
+        }
+
+        /* forward the session to manager_notify_cgroup_empty() we got an empty inotify about.
+         * That function is responsible for further cleanup and the necessary checks. */
         manager_notify_cgroup_empty(m, s->id);
 }
 #endif // 0
@@ -4146,16 +4162,36 @@ static int unit_check_cgroup_events(Unit *u) {
 }
 #else // 0
 static int session_check_cgroup_events(Session *s) {
+        _cleanup_free_ char *path      = NULL;
         _cleanup_free_ char *populated = NULL;
         int r;
 
         assert(s);
 
         r = cg_read_event(SYSTEMD_CGROUP_CONTROLLER, s->id, "populated", &populated);
-        if (r == -ENOENT)
+        if (r == -ENOENT) {
+                // Does the path itself exist?
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &path);
+                if (r < 0) {
+                        // We can assume that this session went away and did not get cleaned up properly.
+                        log_debug_elogind_errno(r, "Cannot determine filesystem path for session %s cgroup: %m", s->id);
+                        return manager_notify_cgroup_empty(s->manager, s->id);
+                }
+
+                // The session might be in mid-start/-setup, so act like it was populated for now.
                 return 0;
+        }
         if (r < 0)
                 return r;
+
+        if (streq(populated, "1")) {
+                if (!s->stopping && s->timer_event_source) {
+                        log_debug_elogind("Cancelling release of session %s, its cgroup is populated again.", s->id);
+                        s->timer_event_source = sd_event_source_unref(s->timer_event_source);
+                }
+
+                return 0;
+        }
 
         if (streq(populated, "0"))
                 return manager_notify_cgroup_empty(s->manager, s->id);
@@ -4615,14 +4651,16 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         }
 
         /* Let's verify that the cgroup is really empty */
-        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, m->cgroup_root, s->id, &path);
-        if (r)
-                return log_error_errno(r, "Cannot find session %s cgroup path: %m", s->id);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &path);
+        if (r < 0)
+                log_debug_elogind_errno(r, "Cannot determine filesystem path for session %s cgroup: %m", s->id);
 
-        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, path);
+        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, s->id);
         if (r <= 0) {
-                if (r < 0 )
-                        log_debug_elogind_errno(r, "Failed to determine whether cgroup %s is empty: %m", empty_to_root(path));
+                if (r < 0)
+                        log_debug_elogind_errno(r,
+                                                "Failed to determine whether session %s cgroup %s is empty: %m",
+                                                s->id, strna(path));
                 return 0;
         }
 
