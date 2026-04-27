@@ -1579,7 +1579,7 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
                 if (0 == r)
                         return cg_kill_recursive (s->id,
                                                   signo,
-                                                  CGROUP_IGNORE_SELF | CGROUP_REMOVE,
+                                                  CGROUP_IGNORE_SELF,
                                                   NULL,
                                                   NULL,
                                                   NULL);
