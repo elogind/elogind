@@ -1387,6 +1387,10 @@ static int run(int argc, char *argv[]) {
         if (r < 0)
                 return log_error_errno(r, "Failed to fully start up daemon: %m");
 
+#if 1 /// elogind reports its daemonizing startup
+        (void) elogind_notify_daemon_parent(r < 0 ? r : 0);
+#endif // 1
+
         notify_message = notify_start(NOTIFY_READY, NOTIFY_STOPPING);
         return manager_run(m);
 }

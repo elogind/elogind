@@ -45,6 +45,9 @@
 #endif // ELOGIND_PID_FILE
 
 
+static int daemon_notify_fd = -EBADF;
+
+
 /* The elogind specific signal handler sends an exit event, so elogind can
    gracefully shutdown.
    Caught are SIGINT, SIGQUIT and SIGTERM.
@@ -152,8 +155,10 @@ static void write_pid_file( void ) {
   * On error, a value < 0 is returned.
 **/
 static int elogind_daemonize( void ) {
-        pid_t child      = 0;
-        pid_t grandchild = 0;
+        _cleanup_close_pair_
+        int notify_pipe[2] = EBADF_PAIR;
+        pid_t child        = 0;
+        pid_t grandchild   = 0;
         pid_t SID;
         int   r;
 
@@ -161,60 +166,76 @@ static int elogind_daemonize( void ) {
         log_debug_elogind("Parent PID     : %5d", getpid_cached());
         log_debug_elogind("Parent SID     : %5d", getsid(getpid_cached()));
 
-        r = safe_fork( "elogind-forker",
-                       FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
-                       &child );
+        r = pipe2(notify_pipe, O_CLOEXEC);
+        if (r < 0)
+                return log_error_errno(errno,
+                                        "%s: Failed to create daemon notification pipe: %m",
+                                        program_invocation_short_name);
 
-        if ( r ) {
-                // This is the main process
-                log_debug_elogind("Fork 1 returned: %5d", r);
-                log_debug_elogind("Fork child PID : %5d", child);
-        } else {
-                // This is the child, which has no stdout/stderr any more
-                log_debug_elogind("Child PID      : %5d", getpid_cached());
-                log_debug_elogind("Child SID      : %5d", getsid(getpid_cached()));
-        }
-
+        r = safe_fork("elogind-forker",
+                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO|FORK_WAIT,
+                        &child );
         if ( r < 0 )
                 return log_error_errno( r, "%s: Failed to fork daemon leader: %m", program_invocation_short_name );
 
-        /* safe_fork() Has waited for the child to terminate, so we
-         * are safe to return here. The child already has forked off the
-         * daemon itself.
-         */
-        if ( r )
-                return r;
+        if ( r ) {
+                // This is the main process
+                int status = 0;
+                ssize_t n;
+
+                log_debug_elogind("Fork 1 returned: %5d", r);
+                log_debug_elogind("Fork child PID : %5d", child);
+
+                // Close the write end of the pipe, we only read here
+                notify_pipe[1] = safe_close(notify_pipe[1]);
+
+                n = read(notify_pipe[0], &status, sizeof(status));
+                if (n != (ssize_t) sizeof(status))
+                        return log_error_errno(SYNTHETIC_ERRNO(EIO),
+                                                "%s: Daemon did not report successful startup",
+                                                program_invocation_short_name);
+
+                if (status < 0)
+                        return log_error_errno(status, "%s: Daemon startup failed: %m", program_invocation_short_name);
+
+                return child;
+        }
+
+        // This is the child, which has no stdout/stderr any more
+        log_debug_elogind("Child PID      : %5d", getpid_cached());
+        log_debug_elogind("Child SID      : %5d", getsid(getpid_cached()));
+
+        // Close the read end of the pipe, we only write here
+        notify_pipe[0] = safe_close(notify_pipe[0]);
 
         SID = setsid();
-        if ( ( pid_t ) - 1 == SID )
+        if ( -1 == SID )
                 return log_error_errno( errno, "%s: Failed to create new SID: %m", program_invocation_short_name );
 
         log_debug_elogind("Child new SID  : %5d", getsid(getpid_cached()));
 
-        umask( 0022 );
-
         /* Now the grandchild, the true daemon, can be created. */
         r = safe_fork( "elogind-daemon", FORK_LOG|FORK_REOPEN_LOG, &grandchild );
+        if ( r < 0 )
+                _exit( log_error_errno( r, "%s: Failed to fork daemon: %m", program_invocation_short_name ) );
 
         if ( r ) {
                 // This is the child, aka "daemon leader"
                 log_debug_elogind("Fork 2 returned: %5d", r);
                 log_debug_elogind("Grandchild PID : %5d", grandchild);
-        } else {
-                // This is the grandchild, aka "elogind-daemon"
-                log_debug_elogind("Grand child PID: %5d", getpid_cached());
-                log_debug_elogind("Grand child SID: %5d", getsid(getpid_cached()));
+
+                // Exit immediately!
+                _exit( EXIT_SUCCESS );
         }
 
-        if ( r < 0 )
-                _exit( log_error_errno( r, "%s: Failed to fork daemon: %m", program_invocation_short_name ) );
+        // This is the grandchild, aka "elogind-daemon"
+        log_debug_elogind("Grand child PID: %5d", getpid_cached());
+        log_debug_elogind("Grand child SID: %5d", getsid(getpid_cached()));
 
-        if ( r )
-                /* Exit immediately! */
-                _exit( EXIT_SUCCESS );
+        // Store the write-end of the notification pipe globally
+        daemon_notify_fd = TAKE_FD(notify_pipe[1]);
 
         umask( 0022 );
-
         return 0;
 }
 
@@ -252,6 +273,20 @@ static pid_t elogind_is_already_running( void ) {
         return 0;
 }
 
+int elogind_notify_daemon_parent(int status) {
+        ssize_t n;
+
+        if (daemon_notify_fd < 0)
+                return 0;
+
+        n = write(daemon_notify_fd, &status, sizeof(status));
+        daemon_notify_fd = safe_close(daemon_notify_fd);
+
+        if (n != (ssize_t) sizeof(status))
+                return -EIO;
+
+        return 0;
+}
 
 static int manager_dispatch_cgroups_agent_fd( sd_event_source* source, int fd, uint32_t revents, void* userdata ) {
         Manager* m = userdata;
