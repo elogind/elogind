@@ -76,6 +76,9 @@ DEFINE_HASH_OPS_WITH_KEY_DESTRUCTOR(
 
 int manager_new(Manager **ret) {
         _cleanup_(manager_freep) Manager *m = NULL;
+#if 1 /// elogind: rate-limit automatic memory pressure trimming
+        _cleanup_(sd_event_source_unrefp) sd_event_source *memory_pressure_source = NULL;
+#endif // 1
         int r;
 
         m = new(Manager, 1);
@@ -102,9 +105,24 @@ int manager_new(Manager **ret) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind: configure memory pressure source before making it floating
         r = sd_event_add_memory_pressure(m->event, NULL, NULL, NULL);
         if (r < 0)
                 log_debug_errno(r, "Failed allocate memory pressure event source, ignoring: %m");
+#else // 0
+        r = sd_event_add_memory_pressure(m->event, &memory_pressure_source, NULL, NULL);
+        if (r < 0)
+                log_debug_errno(r, "Failed allocate memory pressure event source, ignoring: %m");
+        else {
+                r = sd_event_source_set_ratelimit(memory_pressure_source, 10 * USEC_PER_SEC, 1);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to rate-limit memory pressure event source, ignoring: %m");
+
+                r = sd_event_source_set_floating(memory_pressure_source, true);
+                if (r < 0)
+                        return r;
+        }
+#endif // 0
 
         r = sd_event_set_watchdog(m->event, true);
         if (r < 0)
