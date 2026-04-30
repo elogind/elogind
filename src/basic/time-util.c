@@ -1746,6 +1746,7 @@ bool in_utc_timezone(void) {
 
         return timezone == 0 && daylight == 0;
 }
+#endif // 0
 
 int usleep_safe(usec_t usec) {
         int r;
@@ -1780,6 +1781,7 @@ int usleep_safe(usec_t usec) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 int time_change_fd(void) {
 
         /* We only care for the cancellation event, hence we set the timeout to the latest possible value. */
