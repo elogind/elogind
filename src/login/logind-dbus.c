@@ -892,6 +892,7 @@ static int create_session(
                 if (asprintf(&id, "%"PRIu32, audit_id) < 0)
                         return -ENOMEM;
 
+#if 0 /// elogind: ignore inherited audit IDs that already belong to another session
                 /* Wut? There's already a session by this name and we didn't find it above? Weird, then let's
                  * not trust the audit data and let's better register a new ID */
                 if (hashmap_contains(m->sessions, id)) {
@@ -899,6 +900,44 @@ static int create_session(
                         audit_id = AUDIT_SESSION_INVALID;
                         id = mfree(id);
                 }
+#else // 0
+                Session *existing_session = hashmap_get(m->sessions, id);
+                if (existing_session) {
+                        uid_t existing_uid = existing_session->user ? existing_session->user->user_record->uid : UID_INVALID;
+
+                        if (uid != existing_uid) {
+#if ENABLE_DEBUG_ELOGIND
+                                // Add more diagnosis output in debug mode
+                                log_warning("PID " PID_FMT " for service '%s' uid " UID_FMT
+                                            " carries audit session %" PRIu32
+                                            ", already known as elogind session %s for uid " UID_FMT
+                                            "; type=%s class=%s tty=%s vtnr=%" PRIu32 " ; ignoring...",
+                                            leader.pid,
+                                            strempty(service),
+                                            uid,
+                                            audit_id,
+                                            existing_session->id,
+                                            existing_session->user ? existing_session->user->user_record->uid : UID_INVALID,
+                                            strempty(type),
+                                            strempty(class),
+                                            strempty(tty),
+                                            vtnr);
+#else
+                                log_warning("Audit session ID %s of PID " PID_FMT
+                                            " is already used by session %s of UID " UID_FMT
+                                            ", while creating a session for UID " UID_FMT "; ignoring inherited audit ID.",
+                                            id,
+                                            leader.pid,
+                                            existing_session->id,
+                                            existing_uid,
+                                            uid);
+#endif // ENABLE_DEBUG_ELOGIND
+
+                                audit_id = AUDIT_SESSION_INVALID;
+                                id = mfree(id);
+                        }
+                }
+#endif // 0
         }
 
         if (!id) {
