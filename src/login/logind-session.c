@@ -1433,21 +1433,21 @@ int session_create_fifo(Session *s) {
 }
 
 static void session_remove_fifo(Session *s) {
-#if 1 /// Don't keep invalid FIFOs on elogind restart
-        int current_fifo_fd = s->fifo_fd;
+#if 1 /// Keep valid FIFOs on elogind restart
+        int current_fifo_fd = s ? s->fifo_fd : -1;
 #endif // 1
         assert(s);
 
         s->fifo_event_source = sd_event_source_unref(s->fifo_event_source);
         s->fifo_fd = safe_close(s->fifo_fd);
+
 #if 1 /// Do not remove the fifo if elogind is to be restarted
-                if (s->manager->do_interrupt && (current_fifo_fd >= 0)) {
-                        log_debug_elogind("Keeping FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
-                } else {
-                        log_debug_elogind("Removing FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
-#endif // 1
-#if 1 /// end elogind extra if
-                }
+        if (s->manager->do_interrupt && (current_fifo_fd >= 0)) {
+                log_debug_elogind("Keeping FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
+                return;
+        }
+
+        log_debug_elogind("Removing FIFO %d at %s for session %s", current_fifo_fd, s->fifo_path, s->id);
 #endif // 1
 
         s->fifo_path = unlink_and_free(s->fifo_path);
@@ -1467,8 +1467,22 @@ bool session_may_gc(Session *s, bool drop_not_started) {
                           s->fifo_fd < 0           ? "No FIFO opened"   :
                           pipe_eof(s->fifo_fd) > 0 ? "FIFO reached EOF" :
                           "FIFO up and running!");
+
+#if 0 /// elogind: do not GC a not-yet-started session while its leader still exists
         if (drop_not_started && !s->started)
                 return true;
+#else // 0
+        if (drop_not_started && !s->started) {
+                r = pidref_is_alive(&s->leader);
+                if (r > 0)
+                        return false;
+
+                if (s->fifo_fd >= 0 && pipe_eof(s->fifo_fd) <= 0)
+                        return false;
+
+                return true;
+        }
+#endif // 0
 
         if (!s->user)
                 return true;
