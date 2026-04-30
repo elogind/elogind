@@ -710,6 +710,9 @@ static int create_session(
         Manager *m = ASSERT_PTR(userdata);
         _cleanup_free_ char *id = NULL;
         Session *session = NULL;
+#if 1 /// elogind has to make sure, that only newly created sessions ar gc'ed on failure
+        bool session_created = false;
+#endif // 1
         uint32_t audit_id = 0;
         User *user = NULL;
         Seat *seat = NULL;
@@ -905,37 +908,35 @@ static int create_session(
                 if (existing_session) {
                         uid_t existing_uid = existing_session->user ? existing_session->user->user_record->uid : UID_INVALID;
 
-                        if (uid != existing_uid) {
 #if ENABLE_DEBUG_ELOGIND
-                                // Add more diagnosis output in debug mode
-                                log_warning("PID " PID_FMT " for service '%s' uid " UID_FMT
-                                            " carries audit session %" PRIu32
-                                            ", already known as elogind session %s for uid " UID_FMT
-                                            "; type=%s class=%s tty=%s vtnr=%" PRIu32 " ; ignoring...",
-                                            leader.pid,
-                                            strempty(service),
-                                            uid,
-                                            audit_id,
-                                            existing_session->id,
-                                            existing_session->user ? existing_session->user->user_record->uid : UID_INVALID,
-                                            strempty(type),
-                                            strempty(class),
-                                            strempty(tty),
-                                            vtnr);
+                        // Add more diagnosis output in debug mode
+                        log_warning("PID " PID_FMT " for service '%s' uid " UID_FMT
+                                    " carries audit session %" PRIu32
+                                    ", already known as elogind session %s for uid " UID_FMT
+                                    "; type=%s class=%s tty=%s vtnr=%" PRIu32 " ; ignoring...",
+                                    leader.pid,
+                                    strempty(service),
+                                    uid,
+                                    audit_id,
+                                    existing_session->id,
+                                    existing_uid,
+                                    strempty(type),
+                                    strempty(class),
+                                    strempty(tty),
+                                    vtnr);
 #else
-                                log_warning("Audit session ID %s of PID " PID_FMT
-                                            " is already used by session %s of UID " UID_FMT
-                                            ", while creating a session for UID " UID_FMT "; ignoring inherited audit ID.",
-                                            id,
-                                            leader.pid,
-                                            existing_session->id,
-                                            existing_uid,
-                                            uid);
+                        log_warning("Audit session ID %s of PID " PID_FMT
+                                    " is already used by session %s of UID " UID_FMT
+                                    ", while creating a session for UID " UID_FMT "; ignoring inherited audit ID.",
+                                    id,
+                                    leader.pid,
+                                    existing_session->id,
+                                    existing_uid,
+                                    uid);
 #endif // ENABLE_DEBUG_ELOGIND
 
-                                audit_id = AUDIT_SESSION_INVALID;
-                                id = mfree(id);
-                        }
+                        audit_id = AUDIT_SESSION_INVALID;
+                        id = mfree(id);
                 }
 #endif // 0
         }
@@ -964,6 +965,14 @@ static int create_session(
         r = manager_add_session(m, id, &session);
         if (r < 0)
                 goto fail;
+
+#if 1 /// elogind might be called to create a new session for a user off an existing session
+        if (session->user)
+                return sd_bus_error_setf(error, BUS_ERROR_SESSION_BUSY,
+                                         "Session ID '%s' already exists", id);
+
+        session_created = true;
+#endif // 1
 
         session_set_user(session, user);
         r = session_set_leader_consume(session, TAKE_PIDREF(leader));
@@ -1059,8 +1068,13 @@ static int create_session(
         return 1;
 
 fail:
+#if 0 /// elogind might fail on an inherited (active) session which must not be gc'ed
         if (session)
                 session_add_to_gc_queue(session);
+#else // 0
+        if (session_created)
+                session_add_to_gc_queue(session);
+#endif // 0
 
         if (user)
                 user_add_to_gc_queue(user);
