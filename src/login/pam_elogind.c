@@ -823,6 +823,7 @@ static uint64_t pick_default_capability_ambient_set(
                 const char *service,
                 const char *seat) {
 
+#if 0 /// elogind has no user instances like systemd-user
         /* If not configured otherwise, let's enable CAP_WAKE_ALARM for regular users when logging in on a
          * seat (i.e. when they are present physically on the device), or when invoked for the systemd --user
          * instances. This allows desktops to install CAP_WAKE_ALARM to implement alarm clock apps without
@@ -830,11 +831,15 @@ static uint64_t pick_default_capability_ambient_set(
 
         return ur &&
                 user_record_disposition(ur) == USER_REGULAR &&
-#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
                 (streq_ptr(service, "systemd-user") || !isempty(seat)) ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
 #else // 0
-                (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user") || !isempty(seat))
-                        ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
+        /* If not configured otherwise, let's enable CAP_WAKE_ALARM for regular users when logging in on a
+         * seat (i.e. when they are present physically on the device).
+         * This allows desktops to install CAP_WAKE_ALARM to implement alarm clock apps without
+         * much fuss. */
+
+        return ur && user_record_disposition(ur) == USER_REGULAR && (!isempty(seat))
+                ? (UINT64_C(1) << CAP_WAKE_ALARM) : UINT64_MAX;
 #endif // 0
 }
 
@@ -1024,22 +1029,9 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
         incomplete = getenv_harder_bool(handle, "XDG_SESSION_INCOMPLETE", false);
 
-#if 0 /// There certainly won't be a systemd-user were elogind is running, but an openrc-user if OpenRC is used.
-        if (streq_ptr(service, "systemd-user")) {
-#else // 0
-        if (streq_ptr(service, "openrc-user") || streq_ptr(service, "systemd-user")) {
-#endif // 0
-                /* If we detect that we are running in the "systemd-user" PAM stack, then let's patch the class to
-                 * 'manager' if not set, simply for robustness reasons. */
-                type = "unspecified";
-                class = IN_SET(user_record_disposition(ur), USER_INTRINSIC, USER_SYSTEM, USER_DYNAMIC) ?
-                        "manager-early" : "manager";
-                tty = NULL;
-#if 1 /// elogind has no user instances like systemd-user, so let's log if someone asks for it or acts like they were it
-                if (!streq_ptr(service, "openrc-user"))
-                        pam_debug_syslog(handle, debug, "Service '%s' called!", service);
-#endif // 1
-        } else if (tty && strchr(tty, ':')) {
+        tty = strempty(tty);
+
+        if (strchr(tty, ':')) {
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */
                 if (isempty(display))
