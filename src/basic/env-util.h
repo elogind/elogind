@@ -77,9 +77,9 @@ int set_unset_env(const char *name, const char *value, bool overwrite);
 #if 0 /// UNNEEDED by elogind
 /* Like putenv, but duplicates the memory like setenv. */
 int putenv_dup(const char *assignment, bool override);
-#endif // 0
 
-int setenv_elogind_exec_pid(bool update_only);
+int setenv_systemd_exec_pid(bool update_only);
+#endif // 0
 int setenv_elogind_log_level(void);
 
 #if 0 /// UNNEEDED by elogind

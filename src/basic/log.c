@@ -1465,9 +1465,12 @@ static bool should_parse_proc_cmdline(void) {
         if (getpid_cached() == 1)
                 return true;
 
-                /* We know that elogind sets the variable correctly. Something else must have set it. */
+#if 0 /// elogind is certainly not invoked by systemd
         /* Otherwise, parse the command line if invoked directly by systemd. */
-        return invoked_by_elogind();
+        return invoked_by_systemd();
+#else // 0
+        return false;
+#endif // 0
 }
 
 void log_parse_environment_variables(void) {

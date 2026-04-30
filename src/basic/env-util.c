@@ -1045,9 +1045,8 @@ int putenv_dup(const char *assignment, bool override) {
         /* This is like putenv(), but uses setenv() so that our memory doesn't become part of environ[]. */
         return RET_NERRNO(setenv(n, e + 1, override));
 }
-#endif // 0
 
-int setenv_elogind_exec_pid(bool update_only) {
+int setenv_systemd_exec_pid(bool update_only) {
         const char *e;
         int r;
 
@@ -1066,6 +1065,7 @@ int setenv_elogind_exec_pid(bool update_only) {
 
         return 1;
 }
+#endif // 0
 
 int setenv_elogind_log_level(void) {
         _cleanup_free_ char *val = NULL;

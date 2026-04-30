@@ -41,7 +41,7 @@ static int do_spawn(
                 const char *path,
                 char *argv[],
                 int stdout_fd,
-                bool set_elogind_exec_pid,
+                bool set_systemd_exec_pid,
                 pid_t *ret_pid) {
 
         int r;
@@ -66,11 +66,15 @@ static int do_spawn(
         if (r == 0) {
                 char *_argv[2];
 
-                if (set_elogind_exec_pid) {
-                        r = setenv_elogind_exec_pid(false);
+#if 0 /// elogind is never PID 1 and never sets the SYSTEMD EXEC PID.
+                if (set_systemd_exec_pid) {
+                        r = setenv_systemd_exec_pid(false);
                         if (r < 0)
                                 log_warning_errno(r, "Failed to set $SYSTEMD_EXEC_PID, ignoring: %m");
                 }
+#else // 0
+                (void)set_systemd_exec_pid;
+#endif // 0
 
                 if (!argv) {
                         _argv[0] = (char*) path;
@@ -175,7 +179,11 @@ static int do_execute(
                                             "permission bits. Proceeding anyway.", t);
                 }
 
+#if 0 /// elogind never sets the SYSTEMD_EXEC_PID, as it is never PID 1
                 r = do_spawn(t, argv, fd, FLAGS_SET(flags, EXEC_DIR_SET_SYSTEMD_EXEC_PID), &pid);
+#else // 0
+                r = do_spawn(t, argv, fd, false, &pid);
+#endif // 0
                 if (r <= 0)
                         continue;
 
