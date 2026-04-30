@@ -1357,7 +1357,6 @@ static int run(int argc, char *argv[]) {
         r = mac_init();
         if (r < 0)
                 return elogind_notify_daemon_parent(r);
-                return r;
 
 #if 0 /// elogind can not rely on systemd to help, so we need a bit more effort than this
         /* Always create the directories people can create inotify watches in. Note that some applications
