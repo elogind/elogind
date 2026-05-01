@@ -1418,14 +1418,14 @@ static int run(int argc, char *argv[]) {
         r = manager_startup(m);
 #if 0 /// elogind does not just log an error, but also reports it to its forking main process
         if (r < 0)
+                return log_error_errno(r, "Failed to fully start up daemon: %m");
 #else // 0
         if (r < 0) {
                 (void)elogind_notify_daemon_parent(r);
-                return log_error_errno(r, "Failed to allocate manager object: %m");
+                return log_error_errno(r, "Failed to fully start up daemon: %m");
         }
 #endif // 0
 
-                return log_error_errno(r, "Failed to fully start up daemon: %m");
 #if 1 /// elogind reports its daemonizing startup
         (void) elogind_notify_daemon_parent(0);
 #endif // 1
