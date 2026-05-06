@@ -835,6 +835,40 @@ static int method_list_inhibitors(sd_bus_message *message, void *userdata, sd_bu
         return sd_bus_send(NULL, reply, NULL);
 }
 
+#if 1 /// elogind: reject audit sessions inherited from contaminated daemon parents
+static int audit_session_id_is_inherited_from_parent(
+                const PidRef *leader,
+                uint32_t audit_id) {
+        _cleanup_(pidref_done) PidRef parent = PIDREF_NULL;
+        uint32_t parent_audit_id = AUDIT_SESSION_INVALID;
+        pid_t ppid;
+        int r;
+
+        assert(leader);
+        assert(pidref_is_set(leader));
+
+        r = get_process_ppid(leader->pid, &ppid);
+        if (r < 0)
+                return r;
+        if (ppid <= 1 || ppid == getpid_cached())
+                return false;
+
+        r = pidref_set_pid(&parent, ppid);
+        if (r < 0)
+                return r;
+
+        r = audit_session_from_pid(&parent, &parent_audit_id);
+        if (r < 0)
+                return r;
+
+        r = pidref_verify(leader);
+        if (r < 0)
+                return r;
+
+        return parent_audit_id == audit_id;
+}
+#endif // 1
+
 static int create_session(
                 sd_bus_message *message,
                 void *userdata,
@@ -1018,6 +1052,29 @@ static int create_session(
                                          m->sessions_max);
 
         (void) audit_session_from_pid(&leader, &audit_id);
+
+#if 1 /// elogind: do not trust audit IDs inherited from contaminated daemon parents
+        if (audit_session_is_valid(audit_id)) {
+                r = audit_session_id_is_inherited_from_parent(&leader, audit_id);
+                if (r < 0)
+                        log_debug_errno(r,
+                                        "Failed to check whether audit session %" PRIu32
+                                        " of PID " PID_FMT " is inherited from its parent, ignoring: %m",
+                                        audit_id, leader.pid);
+                else if (r > 0) {
+                        log_warning("PID " PID_FMT " for service '%s' uid " UID_FMT
+                                    " inherited audit session %" PRIu32
+                                    " from its parent, ignoring inherited audit ID.",
+                                    leader.pid,
+                                    strempty(service),
+                                    uid,
+                                    audit_id);
+
+                        audit_id = AUDIT_SESSION_INVALID;
+                }
+        }
+#endif // 1
+
         if (audit_session_is_valid(audit_id)) {
                 /* Keep our session IDs and the audit session IDs in sync */
 
