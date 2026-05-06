@@ -704,6 +704,7 @@ int get_process_environ(pid_t pid, char **ret) {
 
         return 0;
 }
+#endif // 0
 
 int get_process_ppid(pid_t pid, pid_t *ret) {
         _cleanup_free_ char *line = NULL;
@@ -759,6 +760,7 @@ int get_process_ppid(pid_t pid, pid_t *ret) {
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 int pid_get_start_time(pid_t pid, usec_t *ret) {
         _cleanup_free_ char *line = NULL;
         const char *p;

@@ -46,15 +46,13 @@ static void test_pid_get_comm_one(pid_t pid) {
         _cleanup_free_ char *a = NULL, *c = NULL, *d = NULL, *f = NULL, *i = NULL;
         _cleanup_free_ char *env = NULL;
         char path[STRLEN("/proc//comm") + DECIMAL_STR_MAX(pid_t)];
-#if 0 /// UNNEEDED by elogind
         pid_t e;
+#if 0 /// UNNEEDED by elogind
         uid_t u;
         gid_t g;
 #endif // 0
         dev_t h;
-#if 0 /// UNNEEDED by elogind
         int r;
-#endif // 0
 
         log_info("/* %s */", __func__);
 
@@ -76,7 +74,6 @@ static void test_pid_get_comm_one(pid_t pid) {
         ASSERT_OK(pid_get_cmdline(pid, 1, 0, &d));
         log_info("PID"PID_FMT" cmdline truncated to 1: '%s'", pid, d);
 
-#if 0 /// UNNEEDED by elogind
         r = get_process_ppid(pid, &e);
         if (pid == 1)
                 ASSERT_ERROR(r, EADDRNOTAVAIL);
@@ -87,6 +84,7 @@ static void test_pid_get_comm_one(pid_t pid) {
                 ASSERT_GT(e, 0);
         }
 
+#if 0 /// UNNEEDED by elogind
         ASSERT_TRUE(pid_is_kernel_thread(pid) == 0 || pid != 1);
 
         r = get_process_exe(pid, &f);
@@ -824,6 +822,7 @@ TEST(setpriority_closest) {
                 _exit(EXIT_SUCCESS);
         }
 }
+#endif // 0
 
 TEST(get_process_ppid) {
         uint64_t limit;
@@ -862,6 +861,7 @@ TEST(get_process_ppid) {
         }
 }
 
+#if 0 /// UNNEEDED by elogind
 TEST(set_oom_score_adjust) {
         int a, b, r;
 
