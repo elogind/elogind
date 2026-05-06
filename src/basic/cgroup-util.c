@@ -1116,7 +1116,7 @@ int cg_pid_get_path_shifted(pid_t pid, const char *root, char **ret_cgroup) {
                 *ret_cgroup = TAKE_PTR(raw);
                 return 0;
         }
-        log_debug_elogind("Resulting cgroup:\"%s\"", *ret_cgroup);
+        log_debug_elogind("Resulting cgroup:\"%s\"", c);
 
         return strdup_to(ret_cgroup, c);
 }
