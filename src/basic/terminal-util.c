@@ -577,7 +577,12 @@ static int vt_reset_keyboard(int fd) {
         if (r < 0)
                 log_debug_errno(r, "Failed to determine kernel VT UTF-8 mode, assuming enabled: %m");
 
+#if 0 /// elogind: the second call is inefficient and can produce inconsistent behavior
         kb = vt_default_utf8() != 0 ? K_UNICODE : K_XLATE;
+#else // 0
+        kb = r != 0 ? K_UNICODE : K_XLATE;
+#endif // 0
+
         return RET_NERRNO(ioctl(fd, KDSKBMODE, kb));
 }
 
@@ -1614,9 +1619,9 @@ int vt_restore(int fd) {
 
 #if 0 /// elogind doesn't allocate VTs and shouldn't change those setup by login(1).
         r = fchmod_and_chown(fd, TTY_MODE, 0, GID_INVALID);
-#endif // 0
         if (r < 0)
                 RET_GATHER(ret, log_debug_errno(r, "Failed to chmod()/chown() VT, ignoring: %m"));
+#endif // 0
 
         return ret;
 }
