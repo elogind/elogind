@@ -56,6 +56,11 @@ SleepConfig* sleep_config_free(SleepConfig *sc) {
 
         strv_free(sc->mem_modes);
 
+#if 1 /// elogind: free sleep helper configuration vectors
+        strv_free(sc->suspend_by_using);
+        strv_free(sc->hibernate_by_using);
+#endif // 1
+
         return mfree(sc);
 }
 
