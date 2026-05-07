@@ -6,7 +6,7 @@
 #include <linux/vt.h>
 #include <signal.h>
 #include <sys/ioctl.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "sd-messages.h"
@@ -50,6 +50,81 @@
 
 static void session_remove_fifo(Session *s);
 static void session_restore_vt(Session *s);
+
+#if 1 /// elogind allow to take (limited) control of the users VT, and needs two helper functions for that
+static int session_chown_tty(Session *s) {
+        _cleanup_close_ int fd = -EBADF;
+        char path[sizeof("/dev/tty") + DECIMAL_STR_MAX(s->vtnr)];
+        int r;
+
+        assert(s);
+
+        if (s->type != SESSION_TTY)
+                return 0;
+
+        if (!s->seat || !seat_has_vts(s->seat))
+                return 0;
+
+        if (s->vtnr < 1)
+                return 0;
+
+        xsprintf(path, "/dev/tty%u", s->vtnr);
+
+        fd = open_terminal(path, O_RDWR|O_CLOEXEC|O_NONBLOCK|O_NOCTTY);
+        if (fd < 0)
+                return log_warning_errno(fd, "Cannot open %s of session %s to change owner: %m", path, s->id);
+
+        r = RET_NERRNO(fchown(fd, s->user->user_record->uid, -1));
+        if (r < 0)
+                return log_warning_errno(r, "Cannot change owner of %s to UID " UID_FMT ": %m",
+                                         path, s->user->user_record->uid);
+
+        log_debug_elogind("Changed owner of %s to UID " UID_FMT " for tty session %s.",
+                          path, s->user->user_record->uid, s->id);
+
+        return 1;
+}
+
+static int session_restore_tty(Session *s) {
+        _cleanup_close_ int fd = -EBADF;
+        char path[sizeof("/dev/tty") + DECIMAL_STR_MAX(s->vtnr)];
+        struct stat st;
+        int r;
+
+        assert(s);
+
+        if (s->type != SESSION_TTY)
+                return 0;
+
+        if (!s->seat || !seat_has_vts(s->seat))
+                return 0;
+
+        if (s->vtnr < 1)
+                return 0;
+
+        xsprintf(path, "/dev/tty%u", s->vtnr);
+
+        fd = open_terminal(path, O_RDWR|O_CLOEXEC|O_NONBLOCK|O_NOCTTY);
+        if (fd < 0)
+                return log_debug_errno(fd, "Cannot open %s of session %s to restore owner, ignoring: %m",
+                                       path, s->id);
+
+        if (fstat(fd, &st) < 0)
+                return log_debug_errno(errno, "Cannot stat %s of session %s to restore owner, ignoring: %m",
+                                       path, s->id);
+
+        if (st.st_uid != s->user->user_record->uid)
+                return 0;
+
+        r = RET_NERRNO(fchown(fd, 0, -1));
+        if (r < 0)
+                return log_debug_errno(r, "Cannot restore owner of %s to root, ignoring: %m", path);
+
+        log_debug_elogind("Restored owner of %s to root after tty session %s.", path, s->id);
+
+        return 1;
+}
+#endif // 1
 
 int session_new(Manager *m, const char *id, Session **ret) {
         _cleanup_(session_freep) Session *s = NULL;
@@ -953,6 +1028,10 @@ int session_start(Session *s, sd_bus_message *properties, sd_bus_error *error) {
 
         s->started = true;
 
+#if 1 /// elogind: give local tty sessions ownership of their VT on login
+        (void) session_chown_tty(s);
+#endif // 1
+
         user_elect_display(s->user);
 
         /* Save data */
@@ -1052,6 +1131,10 @@ int session_stop(Session *s, bool force) {
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
 
+#if 1 /// elogind: restore VT ownership for local tty sessions on logout
+        (void) session_restore_tty(s);
+#endif // 1
+
         if (s->seat)
                 seat_evict_position(s->seat, s);
 
@@ -1078,6 +1161,10 @@ int session_finalize(Session *s) {
 
         if (!s->user)
                 return -ESTALE;
+
+#if 1 /// elogind: defensively restore VT ownership for local tty sessions
+        (void) session_restore_tty(s);
+#endif // 1
 
 #if 1 /// cleanup elogind session watch on its cgroup
         session_release_cgroup(s);
