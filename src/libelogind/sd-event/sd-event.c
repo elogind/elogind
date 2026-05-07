@@ -4095,6 +4095,19 @@ static int source_memory_pressure_initiate_dispatch(sd_event_source *s) {
                 return 1; /* if we wrote something, then don't continue with dispatching user dispatch
                            * function. Instead, shortcut it so that we wait for next EPOLLOUT immediately. */
 
+#if 1 /// elogind: For normal PSI notifications, `EPOLLPRI` is expected, so check for errors first
+        /* Treat IO errors on the notifier the same way as errors returned from a callback. In particular,
+         * cgroup PSI files may report EPOLLERR together with EPOLLPRI after the watched cgroup was removed.
+         * Such an fd cannot provide useful memory pressure notifications anymore, hence disable the source.
+         *
+         * Do not apply this early error handling to EPOLLIN based fake/test/non-PSI sources: stream sockets
+         * may legitimately report EPOLLIN|EPOLLRDHUP when the peer sent data and then closed. In that case
+         * the pending data must still be consumed and the callback must still be dispatched. */
+        if (s->memory_pressure.events == EPOLLPRI &&
+            (s->memory_pressure.revents & (EPOLLHUP|EPOLLERR|EPOLLRDHUP)) != 0)
+                return -EIO;
+#endif // 1
+
         /* No pending incoming IO? Then let's not continue further */
         if ((s->memory_pressure.revents & (EPOLLIN|EPOLLPRI)) == 0) {
 
