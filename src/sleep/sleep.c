@@ -152,8 +152,13 @@ static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* 
 
 #if 1 /// If an external program is configured to suspend/hibernate, elogind calls that one first.
 static int execute_external(Manager* m, const SleepConfig* sleep_config, SleepOperation operation) {
-        int r = -1;
         char **tools = NULL;
+        int r = -ENOENT;
+
+        assert(m);
+        assert(sleep_config);
+        assert(operation >= 0);
+        assert(operation < _SLEEP_OPERATION_CONFIG_MAX);
 
         if ((SLEEP_SUSPEND == operation) && !strv_isempty(sleep_config->suspend_by_using))
                 tools = sleep_config->suspend_by_using;
@@ -161,29 +166,43 @@ static int execute_external(Manager* m, const SleepConfig* sleep_config, SleepOp
         if (((SLEEP_HIBERNATE == operation) || (SLEEP_HYBRID_SLEEP == operation)) && !strv_isempty(sleep_config->hibernate_by_using))
                 tools = sleep_config->hibernate_by_using;
 
-        if (tools) {
-                STRV_FOREACH(tool, tools) {
-                        int k;
+        STRV_FOREACH(tool, tools) {
+                pid_t pid = 0;
+                int k;
 
-                        log_debug_elogind("Calling '%s' to '%s'...", *tool, sleep_operation_to_string(operation));
-                        k = safe_fork(*tool, FORK_LOG|FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS, &m->tool_fork_pid);
+                log_debug_elogind("Calling '%s' to '%s'...", *tool, sleep_operation_to_string(operation));
+                k = safe_fork(*tool, FORK_LOG|FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS, &pid);
 
-                        if (k < 0) {
-                                r = log_error_errno(errno, "Failed to fork run %s: %m", *tool);
-                                continue;
-                        }
+                if (k < 0) {
+                        r = log_error_errno(errno, "Failed to fork external sleep tool '%s': %m", *tool);
+                        continue;
+                }
 
-                        if (0 == k) {
-                                /* Child */
-                                execlp(*tool, *tool, NULL);
-                                log_error_errno(errno, "Failed to execute %s: %m", *tool);
-                                _exit(EXIT_FAILURE);
-                        }
+                if (0 == k) {
+                        /* Child */
+                        execlp(*tool, *tool, NULL);
+                        log_error_errno(errno, "Failed to execute external sleep tool '%s': %m", *tool);
+                        _exit(EXIT_FAILURE);
+                }
 
-                        log_debug_elogind( "Forking off '%s' returned %d and set PID %d", *tool, k, m->tool_fork_pid );
+                m->tool_fork_pid = pid;
+                log_debug_elogind("Forked external sleep tool '%s' as PID " PID_FMT ".", *tool, pid);
 
+                k = wait_for_terminate_and_check(*tool, pid, WAIT_LOG);
+                if (m->tool_fork_pid == pid)
+                        m->tool_fork_pid = 0;
+
+                if (k == 0) {
+                        log_debug_elogind("External sleep tool '%s' completed successfully.", *tool);
                         return 0;
                 }
+
+                if (k < 0)
+                        r = k;
+                else
+                        r = -EPROTO;
+
+                log_debug_errno(r, "External sleep tool '%s' failed, trying next tool if configured: %m", *tool);
         }
 
         return r;
