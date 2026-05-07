@@ -66,7 +66,7 @@ static SleepOperation arg_operation = _SLEEP_OPERATION_INVALID;
 static int nvidia_sleep(Manager* m, int fd, SleepOperation operation, unsigned* vtnr) {
         static char const* drv_suspend = "/proc/driver/nvidia/suspend";
         _cleanup_fclose_ FILE *f = NULL;
-        int k, r;
+        int k, r = 0;
         char** sessions;
         unsigned vt = 0;
 
@@ -523,11 +523,13 @@ static int execute(
                 return -ECANCELED;
         }
 
-        /* If this was successful and hook scripts were allowed to interrupt, we have
-         * to signal everybody that a sleep is imminent, now.
+        /*
+         * elogind: Always notify login1 clients before entering sleep.
+         *
+         * If hooks are allowed to interrupt sleep, the notification must happen only after they
+         * succeeded.
          */
-        if (sleep_config->allow_suspend_interrupts)
-                (void) prepare_for_sleep(true);
+        (void) prepare_for_sleep(true);
 #endif // 0
 #if 0 /// elogind does not support systemd-homed
         (void) lock_all_homes();
