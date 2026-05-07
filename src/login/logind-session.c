@@ -1224,6 +1224,11 @@ static int release_timeout_callback(sd_event_source *es, uint64_t usec, void *us
 
         log_debug_elogind("Session release timeout reached, stopping session %s", s->id);
         session_stop(s, /* force = */ false);
+
+#if 1 /// sessions are no longer auto gc'ed in session_stop(), so gc it here
+        session_add_to_gc_queue(s);
+#endif // 1
+
         return 0;
 }
 
