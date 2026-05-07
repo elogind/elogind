@@ -94,8 +94,10 @@ static int check_inhibitors(sd_bus* bus, enum elogind_action a) {
         if (geteuid() == 0)
                 return 0;
 
+#if 0 /// elogind: non-tty context must not ignore all inhibitors, or shortcuts can force suspend/shutdown (#322)
         if (!on_tty())
                 return 0;
+#endif // 0
 
         if (arg_transport != BUS_TRANSPORT_LOCAL)
                 return 0;
