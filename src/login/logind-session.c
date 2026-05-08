@@ -1170,7 +1170,6 @@ int session_stop(Session *s, bool force) {
         log_debug_elogind("Stopping session %s %s ...", s->id, force ? "(forced)" : "");
 
         s->timer_event_source = sd_event_source_unref(s->timer_event_source);
-        s->leader_pidfd_event_source = sd_event_source_unref(s->leader_pidfd_event_source);
 
         if (s->seat)
                 seat_evict_position(s->seat, s);
@@ -1487,6 +1486,7 @@ static int session_dispatch_fifo(sd_event_source *es, int fd, uint32_t revents, 
         log_debug_elogind("EOF on Session %s FIFO: Session died abnormally, stopping...", s->id);
         session_remove_fifo(s);
         session_stop(s, /* force = */ false);
+        session_add_to_gc_queue(s);
 
         return 1;
 }
@@ -1564,7 +1564,10 @@ static int session_dispatch_leader_pidfd(sd_event_source *es, int fd, uint32_t r
         Session *s = ASSERT_PTR(userdata);
 
         assert(s->leader.fd == fd);
+
+        s->leader_pidfd_event_source = sd_event_source_unref(s->leader_pidfd_event_source);
         session_stop(s, /* force= */ false);
+        session_add_to_gc_queue(s);
 
         return 1;
 }
