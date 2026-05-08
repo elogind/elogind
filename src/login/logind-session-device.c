@@ -25,6 +25,11 @@ enum SessionDeviceNotifications {
         SESSION_DEVICE_RELEASE,
 };
 
+#if 1 /// elogind is solo without PID 1 backup, so we might have to hit EBUSY when setting DRM master on a device
+#define DRM_SET_MASTER_RETRY_USEC 10000U
+#define DRM_SET_MASTER_RETRY_ATTEMPTS 20U
+#endif // 1
+
 static int session_device_notify(SessionDevice *sd, enum SessionDeviceNotifications type) {
         _cleanup_(sd_bus_message_unrefp) sd_bus_message *m = NULL;
         _cleanup_free_ char *path = NULL;
@@ -105,7 +110,20 @@ static void sd_eviocrevoke(int fd) {
 
 static int sd_drmsetmaster(int fd) {
         assert(fd >= 0);
+#if 0 /// elogind is solo without PID 1 backup, so we might have to hit EBUSY when setting DRM master on a device
         return RET_NERRNO(ioctl(fd, DRM_IOCTL_SET_MASTER, 0));
+#else // 0
+        int r;
+
+        for (unsigned i = 0;; i++) {
+                r = RET_NERRNO(ioctl(fd, DRM_IOCTL_SET_MASTER, 0));
+                if (r != -EBUSY || i >= DRM_SET_MASTER_RETRY_ATTEMPTS)
+                        return r;
+
+                /* DRM master can be held transiently by another client during resume. */
+                (void) usleep(DRM_SET_MASTER_RETRY_USEC);
+        }
+#endif // 0
 }
 
 static int sd_drmdropmaster(int fd) {
@@ -427,10 +445,31 @@ void session_device_resume_all(Session *s) {
                 if (sd->active)
                         continue;
 
+#if 0 /// elogind has no PID 1 backup, so let us have at least debug logging, just in case.
                 if (session_device_start(sd) < 0)
                         continue;
                 if (session_device_save(sd) < 0)
                         continue;
+#else // 0
+                /* The systemd resume loop silently ignors failures. That makes this class of failure
+                 * unnecessarily hard to diagnose. Let's make failures easier to diagnose from elogind logs.
+                 */
+                int r = session_device_start(sd);
+                if (r < 0) {
+                        log_debug_errno(r,
+                                        "Failed to resume session device [%u:%u], ignoring: %m",
+                                        major(sd->dev), minor(sd->dev));
+                        continue;
+                }
+
+                r = session_device_save(sd);
+                if (r < 0) {
+                        log_debug_errno(r,
+                                        "Failed to save resumed session device [%u:%u], ignoring: %m",
+                                        major(sd->dev), minor(sd->dev));
+                        continue;
+                }
+#endif // 0
 
                 session_device_notify(sd, SESSION_DEVICE_RESUME);
         }
