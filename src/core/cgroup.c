@@ -2797,7 +2797,7 @@ int session_watch_cgroup(Session *s) {
         if (s->cgroup_control_inotify_wd > -1)
                 return 0;
 
-        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, "cgroup.events", &events);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path ?: s->id, "cgroup.events", &events);
         if (r < 0)
                 return r;
 
@@ -4150,16 +4150,19 @@ static int unit_check_cgroup_events(Unit *u) {
 }
 #else // 0
 static int session_check_cgroup_events(Session *s) {
+        const char *cgroup_path;
         _cleanup_free_ char *path      = NULL;
         _cleanup_free_ char *populated = NULL;
         int r;
 
         assert(s);
 
-        r = cg_read_event(SYSTEMD_CGROUP_CONTROLLER, s->id, "populated", &populated);
+        cgroup_path = s->cgroup_path ?: s->id;
+
+        r = cg_read_event(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, "populated", &populated);
         if (r == -ENOENT) {
                 // Does the path itself exist?
-                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &path);
+                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, NULL, &path);
                 if (r < 0) {
                         // We can assume that this session went away and did not get cleaned up properly.
                         log_debug_elogind_errno(r, "Cannot determine filesystem path for session %s cgroup: %m", s->id);
@@ -4638,6 +4641,7 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
         _cleanup_free_ char *path = NULL;
 	int r = 0;
         Session *s;
+        const char *cgroup_path;
 
         assert(m);
         assert(cgroup);
@@ -4652,12 +4656,14 @@ int manager_notify_cgroup_empty(Manager *m, const char *cgroup) {
                 return 0;
         }
 
+        cgroup_path = s->cgroup_path ?: s->id;
+
         /* Let's verify that the cgroup is really empty */
-        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &path);
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, NULL, &path);
         if (r < 0)
                 log_debug_elogind_errno(r, "Cannot determine filesystem path for session %s cgroup: %m", s->id);
 
-        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, s->id);
+        r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, cgroup_path);
         if (r <= 0) {
                 if (r < 0)
                         log_debug_elogind_errno(r,

@@ -118,6 +118,9 @@ struct Manager {
 
         char **kill_only_users, **kill_exclude_users;
         bool kill_user_processes;
+#if 1 /// elogind: allow cgroups to be split into session/ and delegated/ (opt-in)
+        bool delegate_session_cgroups;
+#endif // 1
 
         uint64_t session_counter;
         uint64_t inhibit_counter;

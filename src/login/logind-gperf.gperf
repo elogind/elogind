@@ -51,6 +51,9 @@ Login.IdleActionSec,                config_parse_sec,                   0, offse
 Login.RuntimeDirectorySize,         config_parse_tmpfs_size,            0, offsetof(Manager, runtime_dir_size)
 Login.RuntimeDirectoryInodesMax,    config_parse_iec_uint64,            0, offsetof(Manager, runtime_dir_inodes)
 Login.RemoveIPC,                    config_parse_bool,                  0, offsetof(Manager, remove_ipc)
+#if 1 /// elogind opt-in feature, split session cgroups into session/ and delegated/
+Login.DelegateSessionCgroups,       config_parse_bool,                  0, offsetof(Manager, delegate_session_cgroups)
+#endif // 1
 Login.InhibitorsMax,                config_parse_uint64,                0, offsetof(Manager, inhibitors_max)
 Login.SessionsMax,                  config_parse_uint64,                0, offsetof(Manager, sessions_max)
 Login.DesignatedMaintenanceTime,    config_parse_calendar,              0, offsetof(Manager, maintenance_time)

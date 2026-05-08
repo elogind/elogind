@@ -48,6 +48,11 @@
 
 #define RELEASE_USEC (20*USEC_PER_SEC)
 
+#if 1 /// names for elogind cgroup v2 subgrouping opt-in feature
+#define SESSION_CGROUP_LEAF "session"
+#define SESSION_CGROUP_DELEGATED "delegated"
+#endif // 1
+
 static void session_remove_fifo(Session *s);
 static void session_restore_vt(Session *s);
 
@@ -121,6 +126,167 @@ static int session_restore_tty(Session *s) {
                 return log_debug_errno(r, "Cannot restore owner of %s to root, ignoring: %m", path);
 
         log_debug_elogind("Restored owner of %s to root after tty session %s.", path, s->id);
+
+        return 1;
+}
+#endif // 1
+
+#if 1 /// elogind: optional delegated per-session cgroup subtree
+static int session_use_delegated_cgroup(Session *s) {
+        int r;
+
+        assert(s);
+        assert(s->manager);
+
+        if (!s->manager->delegate_session_cgroups)
+                return false;
+
+        r = cg_all_unified();
+        if (r < 0)
+                return r;
+
+        return r > 0;
+}
+
+static int session_get_user_gid(Session *s, gid_t *ret_gid) {
+        struct passwd *pw;
+
+        assert(s);
+        assert(s->user);
+        assert(ret_gid);
+
+        errno = 0;
+        pw = getpwuid(s->user->user_record->uid);
+        if (!pw)
+                return errno_or_else(ENOENT);
+
+        *ret_gid = pw->pw_gid;
+        return 0;
+}
+
+static int session_enable_controllers(const char *path) {
+        _cleanup_free_ char *controllers = NULL, *p = NULL;
+        int r;
+
+        assert(path);
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, path, "cgroup.controllers", &p);
+        if (r < 0)
+                return r;
+
+        r = read_one_line_file(p, &controllers);
+        if (r < 0)
+                return r;
+
+        for (const char *q = controllers;;) {
+                _cleanup_free_ char *controller = NULL;
+                _cleanup_free_ char *enable = NULL;
+
+                r = extract_first_word(&q, &controller, NULL, 0);
+                if (r < 0)
+                        return r;
+                if (r == 0)
+                        break;
+
+                enable = strjoin("+", controller);
+                if (!enable)
+                        return -ENOMEM;
+
+                r = cg_set_attribute(SYSTEMD_CGROUP_CONTROLLER, path, "cgroup.subtree_control", enable);
+                if (r < 0)
+                        log_debug_errno(r,
+                                        "Failed to enable cgroup controller %s for delegated session cgroup %s, ignoring: %m",
+                                        controller,
+                                        path);
+        }
+
+        return 0;
+}
+
+static int session_setup_cgroup_paths(Session *s) {
+        int r;
+
+        assert(s);
+        assert(s->id);
+
+        if (s->cgroup_path && s->cgroup_leaf_path)
+                return 0;
+
+        r = free_and_strdup(&s->cgroup_path, s->id);
+        if (r < 0)
+                return r;
+
+        r = session_use_delegated_cgroup(s);
+        if (r < 0)
+                return r;
+
+        if (r > 0) {
+                _cleanup_free_ char *leaf = NULL;
+
+                leaf = path_join(s->id, SESSION_CGROUP_LEAF);
+                if (!leaf)
+                        return -ENOMEM;
+
+                return free_and_replace(s->cgroup_leaf_path, leaf);
+        }
+
+        return free_and_strdup(&s->cgroup_leaf_path, s->id);
+}
+
+static int session_create_delegated_cgroup(Session *s) {
+        _cleanup_free_ char *delegated = NULL;
+        uid_t uid;
+        gid_t gid;
+        int r;
+
+        assert(s);
+        assert(s->user);
+        assert(s->cgroup_path);
+        assert(s->cgroup_leaf_path);
+
+        r = session_use_delegated_cgroup(s);
+        if (r <= 0)
+                return r;
+
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path);
+        if (r < 0)
+                return r;
+
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_leaf_path);
+        if (r < 0)
+                return r;
+
+        delegated = path_join(s->cgroup_path, SESSION_CGROUP_DELEGATED);
+        if (!delegated)
+                return -ENOMEM;
+
+        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, delegated);
+        if (r < 0)
+                return r;
+
+        r = session_enable_controllers(s->cgroup_path);
+        if (r < 0)
+                log_debug_errno(r,
+                                "Failed to enable controllers for delegated session cgroup %s, ignoring: %m",
+                                s->cgroup_path);
+
+        uid = s->user->user_record->uid;
+
+        r = session_get_user_gid(s, &gid);
+        if (r < 0) {
+                log_debug_errno(r,
+                                "Failed to determine primary GID for UID " UID_FMT ", using UID as GID: %m",
+                                uid);
+                gid = uid;
+        }
+
+        r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER, delegated, uid, gid);
+        if (r < 0)
+                return log_warning_errno(r,
+                                         "Failed to delegate cgroup %s to UID " UID_FMT ": %m",
+                                         delegated,
+                                         uid);
+
 
         return 1;
 }
@@ -271,8 +437,11 @@ Session* session_free(Session *s) {
         }
 #endif // 0
 
-#if 0 /// elogind does not support systemd scope_jobs
+#if 0 /// elogind does not support systemd scope_jobs, but optional cgroup subgrouping
         free(s->scope_job);
+#else // 0
+        s->cgroup_leaf_path = mfree(s->cgroup_leaf_path);
+        s->cgroup_path = mfree(s->cgroup_path);
 #endif // 0
 
         session_reset_leader(s, /* keep_fdstore = */ true);
@@ -896,20 +1065,32 @@ static int session_start_cgroup(Session *s) {
         assert(s);
         assert(s->user);
 
-        r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->id);
+        // Create the default, or the delegated per-session cgroup subtree
+        r = session_setup_cgroup_paths(s);
         if (r < 0)
-                return log_error_errno(r, "Failed to create cgroup %s: %m", s->id);
+                return r;
 
-        // elogind: restored sessions may have no live leader during daemon restart
+        r = session_create_delegated_cgroup(s);
+        if (r < 0)
+                return r;
+
+        if (r == 0) {
+                r = cg_create(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path);
+                if (r < 0)
+                        return log_error_errno(r, "Failed to create cgroup %s: %m", s->cgroup_path);
+        }
+
+        // restored sessions may have no live leader during daemon restart
         if (pidref_is_set(&s->leader)) {
                 r = pidref_is_alive(&s->leader);
                 if (r > 0) {
-                        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->id, s->leader.pid);
+                        // attach session processes to the leaf cgroup when delegating
+                        r = cg_attach(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_leaf_path, s->leader.pid);
                         if (r < 0)
                                 log_warning_errno(r,
                                                   "Failed to attach PID " PID_FMT " to cgroup %s: %m",
                                                   s->leader.pid,
-                                                  s->id);
+                                                  s->cgroup_leaf_path);
                 } else if (r < 0)
                         log_debug_errno(r,
                                         "Leader PID " PID_FMT " of session %s is not alive, not attaching: %m",
@@ -920,7 +1101,7 @@ static int session_start_cgroup(Session *s) {
 
         r = session_watch_cgroup(s);
         if (r < 0)
-                log_warning_errno(r, "Failed to watch cgroup %s: %m", s->id);
+                log_warning_errno(r, "Failed to watch cgroup %s: %m", s->cgroup_path ?: s->id);
 
         return 0;
 }
@@ -1164,7 +1345,9 @@ int session_finalize(Session *s) {
 
 #if 1 /// cleanup elogind session watch on its cgroup
         session_release_cgroup(s);
-        if (s->id)
+        if (s->cgroup_path)
+                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path, /* delete_root= */ true);
+        else if (s->id)
                 (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
 #endif // 1
 
@@ -1666,7 +1849,7 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
                 r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
                 log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
                 if (0 == r)
-                        return cg_kill_recursive (s->id,
+                        return cg_kill_recursive (s->cgroup_path ?: s->id,
                                                   signo,
                                                   CGROUP_IGNORE_SELF,
                                                   NULL,
