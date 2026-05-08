@@ -7,7 +7,7 @@
 #include "errno-util.h"
 #include "fd-util.h"
 #include "fileio.h"
-//#include "fs-util.h"
+#include "fs-util.h"
 #include "missing_threads.h"
 #include "mkdir.h"
 #include "parse-util.h"
@@ -409,6 +409,7 @@ int cg_attach_fallback(const char *controller, const char *path, pid_t pid) {
 
         return r;
 }
+#endif // 0
 
 int cg_set_access(
                 const char *controller,
@@ -498,6 +499,7 @@ int cg_set_access(
         return 0;
 }
 
+#if 0 /// UNNEEDED by elogind
 struct access_callback_data {
         uid_t uid;
         gid_t gid;

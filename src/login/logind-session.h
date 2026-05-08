@@ -119,6 +119,11 @@ struct Session {
         int cgroup_control_inotify_wd;
 #endif // 1
 
+#if 1 /// elogind supports splitting session cgroups into session/ and delegated/
+        char *cgroup_path;
+        char *cgroup_leaf_path;
+#endif // 1
+
         char *controller;
         Hashmap *devices;
         sd_bus_track *track;
