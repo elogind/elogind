@@ -2196,6 +2196,9 @@ static int elogind_execute_shutdown_or_sleep(
          */
         m->sleep_fork_action = a; /* Remember this for the SIGCHLD handler */
         m->action_job = strdup( handle_action_to_string( a->handle ) );
+        if (!m->action_job)
+                return log_oom();
+
         forker = strjoina( "e-", m->action_job );
         t = safe_fork( forker,
                        FORK_LOG|FORK_REOPEN_LOG|FORK_DEATHSIG_SIGTERM|FORK_CLOSE_ALL_FDS|FORK_REARRANGE_STDIO,
@@ -2203,7 +2206,13 @@ static int elogind_execute_shutdown_or_sleep(
 
         if ( t ) {
                 log_debug_elogind( "Forking off '%s' returned %d and set PID %d", forker, t, m->sleep_fork_pid );
-                return t < 0 ? log_error_errno( t, "Failed to fork %s: %m", forker ) : t;
+                if (t < 0) {
+                        m->sleep_fork_action = NULL;
+                        m->action_job = mfree(m->action_job);
+                        return log_error_errno( t, "Failed to fork %s: %m", forker );
+                }
+
+                return t;
         }
 
         /* This is the forked out child */
@@ -2220,7 +2229,7 @@ static int elogind_execute_shutdown_or_sleep(
 
         log_debug_elogind("Exiting from %s", program_invocation_short_name);
 
-        log_info("Operation '%s' finished.", handle_action_to_string(m->delayed_action->handle));
+        log_info("Operation '%s' finished.", handle_action_to_string(a->handle));
 
         m->action_job = mfree(m->action_job);
         m->delayed_action = NULL;
