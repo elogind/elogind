@@ -453,6 +453,41 @@
         <xi:include href="version-info.xml" xpointer="v252"/></listitem>
       </varlistentry>
 
+      <!-- 1 /// elogind: document optional delegated session cgroup subtrees -->
+      <varlistentry>
+        <term><varname>DelegateSessionCgroups=</varname></term>
+
+        <listitem><para>Takes a boolean argument. If enabled, and if the unified cgroup v2 hierarchy is used,
+          <filename>elogind</filename> creates a user-owned per-session cgroup subtree. Session processes are
+          placed in a <filename>session/</filename> leaf cgroup below the session cgroup, while a
+          <filename>delegated/</filename> cgroup is created for user-managed subgroups. The per-session cgroup
+          itself remains empty of processes, so that cgroup v2 controllers may be enabled below it without
+          violating the cgroup v2 no-internal-processes rule.</para>
+
+          <para>For example, with this option enabled, the cgroup layout for session
+            <replaceable>SESSION</replaceable> is:</para>
+
+          <programlisting>/sys/fs/cgroup/<replaceable>SESSION</replaceable>/
+    session/
+    delegated/</programlisting>
+
+          <para>The <filename>/sys/fs/cgroup/<replaceable>SESSION</replaceable>/</filename> subtree, including
+            <filename>session/</filename> and <filename>delegated/</filename>, is owned by the session user.
+            Processes started by the session are placed in <filename>session/</filename>. The user may create and
+            manage subgroups below <filename>delegated/</filename>, and may move processes there as permitted by
+            the kernel's cgroup v2 delegation rules.</para>
+
+          <para>This option is disabled by default. When disabled, <filename>elogind</filename> keeps the
+            traditional per-session cgroup layout and does not create the additional
+            <filename>session/</filename> and <filename>delegated/</filename> subgroups.</para>
+
+          <para>Enabling this option delegates cgroup management for the session subtree to the logged-in user.
+            The administrator enabling this option is responsible for deciding whether this is appropriate for
+            the system and for any user-level service manager or other software that makes use of the delegated
+            cgroup subtree.</para></listitem>
+      </varlistentry>
+      <!-- // 1 -->
+
       <varlistentry>
         <term><varname>DesignatedMaintenanceTime=</varname></term>
 
