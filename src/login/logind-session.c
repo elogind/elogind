@@ -88,6 +88,22 @@ static int session_get_user_gid(Session *s, gid_t *ret_gid) {
         return 0;
 }
 
+static int session_chown_cgroup_path(Session *s, const char *path, uid_t uid, gid_t gid) {
+        int r;
+
+        assert(s);
+        assert(path);
+
+        r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER, path, uid, gid);
+        if (r < 0)
+                return log_warning_errno(r,
+                                         "Failed to delegate cgroup %s to UID " UID_FMT ": %m",
+                                         path,
+                                         uid);
+
+        return 0;
+}
+
 static int session_enable_controllers(const char *path) {
         _cleanup_free_ char *controllers = NULL, *p = NULL;
         int r;
@@ -204,12 +220,17 @@ static int session_create_delegated_cgroup(Session *s) {
                 gid = uid;
         }
 
-        r = cg_set_access(SYSTEMD_CGROUP_CONTROLLER, delegated, uid, gid);
+        r = session_chown_cgroup_path(s, s->cgroup_path, uid, gid);
         if (r < 0)
-                return log_warning_errno(r,
-                                         "Failed to delegate cgroup %s to UID " UID_FMT ": %m",
-                                         delegated,
-                                         uid);
+                return r;
+
+        r = session_chown_cgroup_path(s, s->cgroup_leaf_path, uid, gid);
+        if (r < 0)
+                return r;
+
+        r = session_chown_cgroup_path(s, delegated, uid, gid);
+        if (r < 0)
+                return r;
 
         return 1;
 }
