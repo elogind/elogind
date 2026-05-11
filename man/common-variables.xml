@@ -26,9 +26,11 @@
       <listitem><para id='log-color-body'>A boolean. If true, messages written to the tty will be colored
       according to priority.</para>
 
+      <!-- 0 /// elogind: elogind does not ship journalctl
       <para>This setting is only useful when messages are written directly to the terminal, because
       <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> and
       other tools that display logs will color messages based on the log level on their own.</para>
+      // 0 -->
       </listitem>
     </varlistentry>
 
@@ -38,9 +40,11 @@
       <listitem><para id='log-time-body'>A boolean. If true, console log messages will be prefixed with a
       timestamp.</para>
 
+      <!-- 0 /// elogind: elogind does not ship journalctl
       <para>This setting is only useful when messages are written directly to the terminal or a file, because
       <citerefentry><refentrytitle>journalctl</refentrytitle><manvolnum>1</manvolnum></citerefentry> and
       other tools that display logs will attach timestamps based on the entry metadata on their own.</para>
+      // 0 -->
       </listitem>
     </varlistentry>
 
@@ -50,8 +54,10 @@
       <listitem><para id='log-location-body'>A boolean. If true, messages will be prefixed with a filename
       and line number in the source code where the message originates.</para>
 
+      <!-- 0 /// elogind: do not assume journald metadata
       <para>Note that the log location is often attached as metadata to journal entries anyway. Including it
       directly in the message text can nevertheless be convenient when debugging programs.</para>
+      // 0 -->
       </listitem>
     </varlistentry>
 
@@ -61,8 +67,10 @@
       <listitem><para id='log-tid-body'>A boolean. If true, messages will be prefixed with the current
       numerical thread ID (TID).</para>
 
+      <!-- 0 /// elogind: do not assume journald metadata
       <para>Note that the this information is attached as metadata to journal entries anyway. Including it
       directly in the message text can nevertheless be convenient when debugging programs.</para>
+      // 0 -->
       </listitem>
     </varlistentry>
 

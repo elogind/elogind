@@ -112,9 +112,10 @@
     specified. The string may contain any kind of variable assignments, but see the next section
     for a list of assignments understood by the service manager.</para>
 
-    <para>Note that elogind will accept status data sent from a service only if the
+    <!-- 0 /// elogind: elogind is not a service manager and does not track units
+    <para>Note that systemd will accept status data sent from a service only if the
     <varname>NotifyAccess=</varname> option is correctly set in the service definition file. See
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
+    <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
     details.</para>
 
     <para>Note that <function>sd_notify()</function> notifications may be attributed to units correctly only
@@ -133,6 +134,11 @@
     service manager when it returns successfully. Use of <function>sd_notify_barrier()</function> is needed
     for clients which are not invoked by the service manager, otherwise this synchronization mechanism is
     unnecessary for attribution of notifications to the unit.</para>
+    --><!-- else // 0 -->
+    <para><function>sd_notify()</function> sends a notification datagram to the socket specified in
+    <varname>$NOTIFY_SOCKET</varname>. Whether the notification is consumed, and how it is attributed to a
+    service, depends on the service manager that provided that socket.</para>
+    <!-- // 0 -->
 
     <para><function>sd_notifyf()</function> is similar to <function>sd_notify()</function> but takes a
     <function>printf()</function>-like format string plus arguments.</para>

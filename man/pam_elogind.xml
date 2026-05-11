@@ -38,9 +38,11 @@
     and hence the elogind control group hierarchy.</para>
     <!-- // 0 -->
 
-    <para>The module also applies various resource management and runtime parameters to the new session, as
-    configured in the <ulink url="https://systemd.io/USER_RECORD">JSON User Records</ulink> of the user, when
-    one is defined.</para>
+    <!-- 0 /// elogind: JSON user records are systemd-homed functionality
+      <para>The module also applies various resource management and runtime parameters to the new session, as
+      configured in the <ulink url="https://systemd.io/USER_RECORD">JSON User Records</ulink> of the user, when
+      one is defined.</para>
+    // 0 -->
 
     <!-- 0 /// elogind has no elogind.service
     <para>On login, this module — in conjunction with <filename>systemd-logind.service</filename> — ensures the
@@ -66,29 +68,44 @@
       systemd user manager instance, is started.</para></listitem>
       // 0 -->
 
+      <!-- 0 /// elogind: JSON user records are systemd-homed functionality
       <listitem><para>The <literal>$TZ</literal>, <literal>$EMAIL</literal> and <literal>$LANG</literal>
       environment variables are configured for the user, based on the respective data from the user's JSON
       record (if it is defined). Moreover, any environment variables explicitly configured in the user record
       are imported, and the umask, nice level, and resource limits initialized.</para></listitem>
+      --><!-- else // 0 -->
+      <listitem><para>If enabled in
+      <citerefentry><refentrytitle>logind.conf</refentrytitle>
+      <manvolnum>5</manvolnum></citerefentry> (<varname>KillUserProcesses=</varname>), all processes of the session are
+      terminated. If the last concurrent session of a user ends, elogind removes the user's runtime state
+      after the configured stop delay.</para></listitem>
+      <!-- // 0 -->
     </orderedlist>
 
     <para>On logout, this module ensures the following:</para>
 
     <orderedlist>
+      <!-- 0 /// elogind does not spawn user instances and does not support systemd user slices
       <listitem><para>If enabled in
       <citerefentry><refentrytitle>logind.conf</refentrytitle>
       <manvolnum>5</manvolnum></citerefentry> (<varname>KillUserProcesses=</varname>), all processes of the session are
       terminated. If the last concurrent session of a user ends, the user's elogind instance will be terminated too,
       and so will the user's slice unit.</para></listitem>
+      // 0 -->
 
       <listitem><para>If the last concurrent session of a user ends,
       the user runtime directory <filename>/run/user/$UID</filename> and all its
       contents are removed, too.</para></listitem>
     </orderedlist>
 
-    <para>If the system was not booted up with elogind as init system,
-    this module does nothing and immediately returns
-    <constant>PAM_SUCCESS</constant>.</para>
+      <!-- 0 /// elogind: elogind is not an init system
+      <para>If the system was not booted up with elogind as init system,
+      this module does nothing and immediately returns
+      <constant>PAM_SUCCESS</constant>.</para>
+      --><!-- else // 0 -->
+      <para>If elogind is not running or cannot be contacted, this module does nothing and immediately returns
+      <constant>PAM_SUCCESS</constant>.</para>
+      <!-- // 0 -->
 
   </refsect1>
 
@@ -144,6 +161,7 @@
         <term><varname>default-capability-bounding-set=</varname></term>
         <term><varname>default-capability-ambient-set=</varname></term>
 
+<!-- 0 /// elogind has no user instances like systemd-user
         <listitem><para>Takes a comma-separated list of process capabilities
         (e.g. <constant>CAP_WAKE_ALARM</constant>, <constant>CAP_BLOCK_SUSPEND</constant>, …) to set for the
         invoked session's processes, if the user record does not encode appropriate sets of capabilities
@@ -152,12 +170,18 @@
         for details on the capabilities concept. If not specified, the default bounding set is left as is
         (i.e. usually contains the full set of capabilities). The default ambient set is set to
         <constant>CAP_WAKE_ALARM</constant> for regular users if the PAM session is associated with a local
-<!-- 0 /// elogind has no user instances like systemd-user
         seat or if it is invoked for the <literal>systemd-user</literal> service. Otherwise defaults to the
---><!-- else // 0 -->
-        seat. Otherwise, defaults to the
-<!-- // 0 -->
         empty set.</para>
+--><!-- else // 0 -->
+        <listitem><para>Takes a comma-separated list of process capabilities
+        (e.g. <constant>CAP_WAKE_ALARM</constant>, <constant>CAP_BLOCK_SUSPEND</constant>, …) to set for the
+        invoked session's processes. See <citerefentry
+        project='man-pages'><refentrytitle>capabilities</refentrytitle><manvolnum>7</manvolnum></citerefentry>
+        for details on the capabilities concept. If not specified, the default bounding set is left as is
+        (i.e. usually contains the full set of capabilities). The default ambient set is set to
+        <constant>CAP_WAKE_ALARM</constant> for regular users if the PAM session is associated with a local
+        seat. Otherwise, defaults to the empty set.</para>
+<!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v254"/></listitem>
       </varlistentry>
@@ -221,6 +245,7 @@
         is not set if the current user is not the original user of the session.</para></listitem>
       </varlistentry>
 
+      <!-- 0 /// elogind: JSON user records are systemd-homed functionality
       <varlistentry>
         <term><varname>$TZ</varname></term>
         <term><varname>$EMAIL</varname></term>
@@ -231,6 +256,7 @@
 
         <xi:include href="version-info.xml" xpointer="v245"/></listitem>
       </varlistentry>
+      // 0 -->
 
     </variablelist>
 

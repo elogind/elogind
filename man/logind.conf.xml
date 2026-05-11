@@ -45,7 +45,7 @@
     <citerefentry><refentrytitle>systemd.syntax</refentrytitle><manvolnum>7</manvolnum></citerefentry>
     for a general description of the syntax.</para>
     --><!-- else // 0 -->
-    <para>These files configures various parameters of elogind.</para>
+    <para>These files configure various parameters of elogind.</para>
     <!-- // 0 -->
   </refsect1>
 
@@ -160,6 +160,7 @@
         <term><varname>KillOnlyUsers=</varname></term>
         <term><varname>KillExcludeUsers=</varname></term>
 
+        <!-- 0 /// elogind has no systemd scope units
         <listitem><para>These settings take space-separated lists of usernames that override the
         <varname>KillUserProcesses=</varname> setting. A user name may be added to
         <varname>KillExcludeUsers=</varname> to exclude the processes in the session scopes of that user from
@@ -170,6 +171,18 @@
         setting is specified, only the processes in the session scopes of those users will be
         killed. Otherwise, users are subject to the <varname>KillUserProcesses=yes</varname> setting.
         </para></listitem>
+        --><!-- else // 0 -->
+        <listitem><para>These settings take space-separated lists of usernames that override the
+        <varname>KillUserProcesses=</varname> setting. A user name may be added to
+        <varname>KillExcludeUsers=</varname> to exclude the processes in the session cgroups of that user from
+        being killed even if <varname>KillUserProcesses=yes</varname> is set. If
+        <varname>KillExcludeUsers=</varname> is not set, the <literal>root</literal> user is excluded by
+        default. <varname>KillExcludeUsers=</varname> may be set to an empty value to override this
+        default. If a user is not excluded, <varname>KillOnlyUsers=</varname> is checked next. If this
+        setting is specified, only the processes in the session cgroups of those users will be
+        killed. Otherwise, users are subject to the <varname>KillUserProcesses=yes</varname> setting.
+        </para></listitem>
+        <!-- // 0 -->
       </varlistentry>
 
       <varlistentry>
@@ -230,16 +243,16 @@
         non-zero rapid logout/login cycles are sped up, as the user's service manager is not constantly restarted. If
         set to <literal>infinity</literal> the per-user service for a user is never terminated again after first login,
         and continues to run until system shutdown. Defaults to 10s.</para>
+        --><!-- else // 0 -->
+        <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
+        set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
+        </para>
+        <!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v240"/></listitem>
       </varlistentry>
 
       <varlistentry>
-        --><!-- else // 0 -->
-        <listitem><para>Specifies how long to keep the user record around for a user after they logged out fully. If
-        set to zero, the user is terminated immediately when the last session of the user has ended. Defaults to 10s.
-        </para></listitem>
-        <!-- // 0 -->
         <term><varname>HandlePowerKey=</varname></term>
         <term><varname>HandlePowerKeyLongPress=</varname></term>
         <term><varname>HandleRebootKey=</varname></term>
@@ -257,8 +270,13 @@
         <literal>ignore</literal>, <literal>poweroff</literal>, <literal>reboot</literal>,
         <literal>halt</literal>, <literal>kexec</literal>, <literal>suspend</literal>,
         <literal>hibernate</literal>, <literal>hybrid-sleep</literal>,
+        <!-- 0 /// elogind does not support factory-resetting a machine.
         <literal>suspend-then-hibernate</literal>, <literal>lock</literal>, and
         <literal>factory-reset</literal>.  If <literal>ignore</literal>, <command>elogind</command>
+        --><!-- else // 0 -->
+        <literal>suspend-then-hibernate</literal>, and <literal>lock</literal>.
+        If <literal>ignore</literal>, <command>elogind</command>
+        <!-- // 0 -->
         will never handle these keys. If <literal>lock</literal>, all running sessions will be screen-locked;
         otherwise, the specified action will be taken in the respective event. Only input devices with the
         <literal>power-switch</literal> udev tag will be watched for key/lid switch
@@ -398,19 +416,17 @@
         <term><varname>SessionsMax=</varname></term>
 
         <listitem><para>Controls the maximum number of concurrent user sessions to manage. Defaults to 8192
-        <!-- 0 /// rename me to elogind
+        <!-- 0 /// elogind ships pam_elogind
         (8K). Depending on how the <filename>pam_systemd.so</filename> module is included in the PAM stack
+        configuration, further login sessions will either be refused, or permitted but not tracked by
+        <filename>systemd</filename>.</para>
         --><!-- else // 0 -->
         (8K). Depending on how the <filename>pam_elogind.so</filename> module is included in the PAM stack
-        <!-- // 0 -->
         configuration, further login sessions will either be refused, or permitted but not tracked by
-        <!-- 0 /// rename me to elogind
         <filename>elogind</filename>.</para>
+        <!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v230"/></listitem>
-        --><!-- else // 0 -->
-        <filename>elogind</filename>.</para></listitem>
-        <!-- // 0 -->
       </varlistentry>
 
       <varlistentry>
@@ -491,7 +507,7 @@
         <citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         --><!-- else // 0 -->
         <citerefentry><refentrytitle>sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-        // 0 -->
+        <!-- // 0 -->
       </para>
   </refsect1>
 

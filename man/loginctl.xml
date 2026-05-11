@@ -65,6 +65,7 @@
       <varlistentry>
         <term><command>session-status</command> <optional><replaceable>ID</replaceable>…</optional></term>
 
+        <!-- 0 /// elogind does not ship journald, so it can't show journal lines
         <listitem><para>Show terse runtime status information about
         one or more sessions, followed by the most recent log data
         from the journal. Takes one or more session identifiers as
@@ -73,6 +74,15 @@
         generate human-readable output. If you are looking for
         computer-parsable output, use <command>show-session</command>
         instead.</para>
+        --><!-- else // 0 -->
+        <listitem><para>Show terse runtime status information about
+        one or more sessions. Takes one or more session identifiers as
+        parameters. If no session identifiers are passed, the status of
+        the caller's session is shown. This function is intended to
+        generate human-readable output. If you are looking for
+        computer-parsable output, use <command>show-session</command>
+        instead.</para>
+        <!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v233"/></listitem>
       </varlistentry>
@@ -161,6 +171,7 @@
       <varlistentry>
         <term><command>user-status</command> <optional><replaceable>USER</replaceable>…</optional></term>
 
+        <!-- 0 /// elogind does not ship journald, so it can't show journal lines
         <listitem><para>Show terse runtime status information about
         one or more logged in users, followed by the most recent log
         data from the journal. Takes one or more user names or numeric
@@ -169,6 +180,15 @@
         function is intended to generate human-readable output. If you
         are looking for computer-parsable output, use
         <command>show-user</command> instead.</para>
+        --><!-- else // 0 -->
+        <listitem><para>Show terse runtime status information about
+        one or more logged in users. Takes one or more user names or numeric
+        user IDs as parameters. If no parameters are passed, the status
+        is shown for the user of the session of the caller. This
+        function is intended to generate human-readable output. If you
+        are looking for computer-parsable output, use
+        <command>show-user</command> instead.</para>
+        <!-- // 0 -->
 
         <xi:include href="version-info.xml" xpointer="v233"/></listitem>
       </varlistentry>
@@ -434,7 +454,7 @@
           <term><option>BroadcastPowerOffInterrupts</option>, <option>BroadcastSuspendInterrupts</option></term>
 
           <listitem>
-            <para>By default an interrupt of a power off or a suspend is broadcasted. If you do not whish these
+            <para>By default an interrupt of a power off or a suspend is broadcasted. If you do not wish these
               broadcasts to happen, change <literal>BroadcastPowerOffInterrupts</literal> and/or
               <literal>BroadcastSuspendInterrupts</literal> to <literal>no</literal> in
               <filename>/etc/elogind/sleep.conf</filename>.</para>
@@ -530,7 +550,7 @@
         numerical signal numbers and the program will exit immediately.</para></listitem>
       </varlistentry>
 
-      <!-- 0 /// nope, elogind does not need this, as there is mno journald around
+      <!-- 0 /// elogind: no bundled journald support for journal line selection
       <varlistentry>
         <term><option>-n</option></term>
         <term><option>&#x2D;&#x2D;lines=</option></term>
@@ -664,7 +684,7 @@ sed (1004)
             Unit: user-1004.slice
 </programlisting>
       <para>There are two sessions, 2 and 3. The session 2 is a graphical session,
-      marked with a star. Uptime, state, lingering state und the user unit are shown.
+      marked with a star. Uptime, state, lingering state and the user unit are shown.
       The user unit is an artificial construct, elogind does not really support
       systemd units and slices.</para>
 <!-- // 0 -->

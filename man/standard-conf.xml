@@ -50,8 +50,13 @@
     local configuration is recommended over modifications to the main configuration file.</para>
 
     <para>In addition to the "main" configuration file, drop-in configuration snippets are read from
+    <!-- 0 /// elogind: systemd drop-in directories are not used for elogind configuration
     <filename>/usr/lib/systemd/*.conf.d/</filename>, <filename>/usr/local/lib/systemd/*.conf.d/</filename>,
     and <filename>/etc/systemd/*.conf.d/</filename>. Those drop-ins have higher precedence and override the
+    --><!-- else // 0 -->
+    <filename>/usr/lib/elogind/*.conf.d/</filename>, <filename>/usr/local/lib/elogind/*.conf.d/</filename>,
+    and <filename>/etc/elogind/*.conf.d/</filename>. Those drop-ins have higher precedence and override the
+    <!-- // 0 -->
     main configuration file. Files in the <filename>*.conf.d/</filename> configuration subdirectories are
     sorted by their filename in lexicographic order, regardless of in which of the subdirectories they
     reside. When multiple files specify the same option, for options which accept just a single value, the

@@ -51,7 +51,8 @@
     <para><filename>/etc/elogind/sleep.conf</filename></para>
     <para><filename>/etc/elogind/sleep.conf.d/*.conf</filename></para>
     <para><filename>/run/elogind/sleep.conf.d/*.conf</filename></para>
-    <para><filename>/usr/lib/systemd/sleep.conf.d/*.conf</filename></para>
+    <para><filename>/usr/lib/elogind/sleep.conf.d/*.conf</filename></para>
+    <para><filename>/usr/local/lib/elogind/sleep.conf.d/*.conf</filename></para>
   </refsynopsisdiv>
 <!-- // 0 -->
 
@@ -327,7 +328,7 @@
         <term><varname>BroadcastPowerOffInterrupts=</varname></term>
         <term><varname>BroadcastSuspendInterrupts=</varname></term>
 
-          <listitem><para>By default an interrupt of a power off or a suspend is broadcasted. If you do not whish these broadcasts
+          <listitem><para>By default an interrupt of a power off or a suspend is broadcasted. If you do not wish these broadcasts
             to happen, change <literal>BroadcastPowerOffInterrupts</literal> and/or <literal>BroadcastSuspendInterrupts</literal>
             to <literal>no</literal> in <filename>/etc/elogind/sleep.conf</filename>.
             Please see

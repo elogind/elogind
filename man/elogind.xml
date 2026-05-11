@@ -120,6 +120,12 @@
     <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>
     for information about the configuration of this service.</para>
 
+  <!-- 1 /// elogind: the freedesktop URLs are explicitly meant as "historical background". -->
+  </refsect1>
+  <refsect1>
+    <title>Historical Background</title>
+  <!-- // 1 -->
+
     <para>See <ulink
     url="http://www.freedesktop.org/wiki/Software/systemd/multiseat">Multi-Seat
     on Linux</ulink> for an introduction into basic concepts of logind
