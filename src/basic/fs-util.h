@@ -60,7 +60,7 @@ int stat_warn_permissions(const char *path, const struct stat *st);
 #define access_nofollow(path, mode)                                             \
         RET_NERRNO(faccessat(AT_FDCWD, (path), (mode), AT_SYMLINK_NOFOLLOW))
 #else // __GLIBC__
-#define laccess(path, mode)                                             \
+#define access_nofollow(path, mode)                                             \
         RET_NERRNO(faccessat(AT_FDCWD, (path), (mode), 0))
 #endif // __GLIBC__
 
