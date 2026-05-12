@@ -36,6 +36,17 @@ def process_source_file(file):
             print('        {{ "{0}_ref", {0}_ref }},'.format(m[1]))
             print('        {{ "{0}_unref", {0}_unref }},'.format(m[1]))
 
+#if 1 /// elogind has to explicitly state its source files
+try:
+    sources_separator = sys.argv.index('--sources')
+except ValueError:
+    headers = sys.argv[3:]
+    sources = []
+else:
+    headers = sys.argv[3:sources_separator]
+    sources = sys.argv[sources_separator + 1:]
+#endif // 1
+
 print('''/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <stdio.h>
@@ -44,8 +55,13 @@ print('''/* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 ''')
 
-for header in sys.argv[3:]:
+#if 0 /// elogind: argv is already processed
+# for header in sys.argv[3:]:
+#     print('#include "{}"'.format(header.split('/')[-1]))
+#else // 0
+for header in headers:
     print('#include "{}"'.format(header.split('/')[-1]))
+#endif // 0
 
 print('''
 /* We want to check deprecated symbols too, without complaining */
@@ -65,12 +81,26 @@ with open(sys.argv[1], "r") as f:
 print('''        {}
 }, symbols_from_source[] = {''')
 
-for dirpath, _, filenames in sorted(os.walk(sys.argv[2])):
-    for filename in sorted(filenames):
-        if not filename.endswith(".c") and not filename.endswith(".h"):
-            continue
-        with open(os.path.join(dirpath, filename), "r") as f:
+#if 0 /// elogind: argv is already processed and may contain sources
+# for dirpath, _, filenames in sorted(os.walk(sys.argv[2])):
+#     for filename in sorted(filenames):
+#         if not filename.endswith(".c") and not filename.endswith(".h"):
+#             continue
+#         with open(os.path.join(dirpath, filename), "r") as f:
+#             process_source_file(f)
+#else // 0
+if sources:
+    for source in sorted(sources):
+        with open(source, "r") as f:
             process_source_file(f)
+else:
+    for dirpath, _, filenames in sorted(os.walk(sys.argv[2])):
+        for filename in sorted(filenames):
+            if not filename.endswith(".c") and not filename.endswith(".h"):
+                continue
+            with open(os.path.join(dirpath, filename), "r") as f:
+                process_source_file(f)
+#endif // 0
 
 print('''        {}
 };

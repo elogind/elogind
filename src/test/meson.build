@@ -25,12 +25,24 @@ test_env = {
 
 generate_sym_test_py = find_program('generate-sym-test.py')
 
+#if 0 /// elogind has to handover the libelogind sources explicitly, as they vary with varlink option
+# test_libelogind_sym_c = custom_target(
+#         input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
+#         output : 'test-libelogind-sym.c',
+#         command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
+#         capture : true,
+#         build_by_default : want_tests != 'false')
+#else // 0
 test_libelogind_sym_c = custom_target(
-        input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
-        output : 'test-libelogind-sym.c',
-        command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path] + systemd_headers,
-        capture : true,
-        build_by_default : want_tests != 'false')
+	input : [libelogind_sym_path] + systemd_headers + libelogind_sources,
+	output : 'test-libelogind-sym.c',
+	command : [generate_sym_test_py, libelogind_sym_path, libelogind_dir_path]
+	+ systemd_headers
+	+ ['--sources']
+	+ libelogind_sources,
+	capture : true,
+	build_by_default : want_tests != 'false')
+#endif // 0
 
 #if 0 /// UNNEEDED in elogind
 # test_libudev_sym_c = custom_target(
