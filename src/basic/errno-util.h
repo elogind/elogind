@@ -15,7 +15,22 @@
  * https://stackoverflow.com/questions/34880638/compound-literal-lifetime-and-if-blocks
  *
  * Note that we use the GNU variant of strerror_r() here. */
+#if 0 /// elogind supports MUSL and must therefore support their XSI variant
 #define STRERROR(errnum) strerror_r(abs(errnum), (char[ERRNO_BUF_LEN]){}, ERRNO_BUF_LEN)
+#else // 0
+#if defined(__GLIBC__) && defined(_GNU_SOURCE)
+#define STRERROR(errnum) strerror_r(abs(errnum), (char[ERRNO_BUF_LEN]){}, ERRNO_BUF_LEN)
+#else // __GLIBC__
+static inline const char *strerror_xsi(int errnum, char buf[static ERRNO_BUF_LEN]) {
+        if (strerror_r(abs(errnum), buf, ERRNO_BUF_LEN) < 0)
+                return "Unknown error";
+
+        return buf;
+}
+
+#define STRERROR(errnum) strerror_xsi(errnum, (char[ERRNO_BUF_LEN]){})
+#endif // __GLIBC__
+#endif // 0
 
 /* A helper to print an error message or message for functions that return 0 on EOF.
  * Note that we can't use ({ … }) to define a temporary variable, so errnum is
