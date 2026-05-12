@@ -414,10 +414,12 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
 }
 
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
+#if 0 /// elogind has its own session system
         _cleanup_free_ char *unit = NULL;
-#if 1 /// elogind has its own session system
+#else // 0
+        _cleanup_free_ char *session = NULL;
         Session *s;
-#endif // 1
+#endif // 0
         User *u = NULL;
         int r;
 
@@ -426,18 +428,23 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
         if (!pid_is_valid(pid))
                 return -EINVAL;
 
+#if 0 /// elogind does not use slices but session IDs only
         r = cg_pid_get_slice(pid, &unit);
         if (r >= 0)
                 u = hashmap_get(m->user_units, unit);
 
-#if 1 /// elogind also has its own session system
+#else // 0
+        r = cg_pid_get_session(pid, &session);
+        if (r >= 0)
+                u = hashmap_get(m->user_units, session);
+
         if ((r < 0) || (NULL == u)) {
                 r = manager_get_session_by_pidref(m, &PIDREF_MAKE_FROM_PID(pid), &s);
                 // If a session was found, ignore it if it is already closing.
                 if ((r > 0) && (SESSION_CLOSING != session_get_state(s)))
                         u = s->user;
         }
-#endif // 1
+#endif // 0
 
         if (ret)
                 *ret = u;
