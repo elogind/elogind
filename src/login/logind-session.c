@@ -1864,18 +1864,23 @@ int session_kill(Session *s, KillWhom whom, int signo, sd_bus_error *error) {
 
                 return manager_kill_unit(s->manager, s->scope, KILL_ALL, signo, error);
 #else // 0
-                _cleanup_free_ char *fs = NULL;
-                int r;
-                r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
-                log_debug_elogind("session_kill(): Path for %s is %s @ %s", strnull(s->id), strnull(fs), SYSTEMD_CGROUP_CONTROLLER);
-                if (0 == r)
-                        return cg_kill_recursive (s->cgroup_path ?: s->id,
-                                                  signo,
-                                                  CGROUP_IGNORE_SELF,
-                                                  NULL,
-                                                  NULL,
-                                                  NULL);
-                return r;
+                {
+                        _cleanup_free_ char *fs = NULL;
+                        int r;
+                        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, s->id, NULL, &fs);
+                        log_debug_elogind("session_kill(): Path for %s is %s @ %s",
+                                          strnull(s->id),
+                                          strnull(fs),
+                                          SYSTEMD_CGROUP_CONTROLLER);
+                        if (0 == r)
+                                return cg_kill_recursive (s->cgroup_path ?: s->id,
+                                                          signo,
+                                                          CGROUP_IGNORE_SELF,
+                                                          NULL,
+                                                          NULL,
+                                                          NULL);
+                        return r;
+                }
 #endif // 0
 
         case KILL_LEADER:
