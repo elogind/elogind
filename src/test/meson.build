@@ -457,14 +457,20 @@ executables += [
 #                 'conditions' : ['ENABLE_NSS'],
 #                 'timeout' : 120,
 #         },
-#         test_template + {
-#                 'sources' : files(
-#                         'test-nss-users.c',
-#                         'nss-test-util.c',
-#                 ),
-#                 'dependencies' : libdl,
+#endif // 0
+        test_template + {
+                'sources' : files(
+                        'test-nss-users.c',
+                        'nss-test-util.c',
+                ),
+                'dependencies' : libdl,
+#if 0 /// elogind: nss-elogind tests require real varlink and userdb support
 #                 'conditions' : ['ENABLE_NSS'],
-#         },
+#else // 0
+                'conditions' : ['ENABLE_NSS_ELOGIND', 'ENABLE_USERDB', 'ENABLE_VARLINK'],
+#endif // 0
+        },
+#if 0 /// UNNEEDED by elogind
 #         test_template + {
 #                 'sources' : files('test-openssl.c'),
 #                 'dependencies' : libopenssl,
@@ -535,10 +541,16 @@ executables += [
         test_template + {
                 'sources' : files('test-varlink.c'),
                 'dependencies' : threads,
+                #if 1 /// elogind: this test needs the real varlink implementation
+                'conditions' : ['ENABLE_VARLINK'],
+                #endif // 1
         },
         test_template + {
                 'sources' : files('test-varlink-idl.c'),
                 'dependencies' : threads,
+                #if 1 /// elogind: this test needs the real varlink implementation
+                'conditions' : ['ENABLE_VARLINK'],
+                #endif // 1
         },
 #if 0 /// elogind does not provide a watchdog
 #         test_template + {

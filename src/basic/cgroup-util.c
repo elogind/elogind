@@ -1495,17 +1495,17 @@ int cg_path_get_owner_uid(const char *path, uid_t *ret_uid) {
         _cleanup_free_ char *slice = NULL;
         char *start, *end;
 #else // 0
-        _cleanup_free_ char *slice = NULL, *p = NULL, *s = NULL;
+        _cleanup_free_ char *session = NULL, *p = NULL, *s = NULL;
 #endif // 0
         int r;
 
         assert(path);
 
+#if 0 /// elogind does not support systemd slices
         r = cg_path_get_slice(path, &slice);
         if (r < 0)
                 return r;
 
-#if 0 /// elogind does not support systemd slices
         start = startswith(slice, "user-");
         if (!start)
                 return -ENXIO;
@@ -1518,7 +1518,11 @@ int cg_path_get_owner_uid(const char *path, uid_t *ret_uid) {
         if (parse_uid(start, ret_uid) < 0)
                 return -ENXIO;
 #else // 0
-        p = strjoin("/run/systemd/sessions/", slice);
+        r = cg_path_get_session(path, &session);
+        if (r < 0)
+                return r;
+
+        p = strjoin("/run/systemd/sessions/", session);
 
         r = parse_env_file(NULL, p, "UID", &s);
         if (r == -ENOENT)

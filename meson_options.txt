@@ -222,6 +222,8 @@ option('efi', type : 'boolean',
        description : 'enable EFI support')
 option('userdb', type : 'boolean',
        description : 'install the elogind-userdbd stack')
+option('varlink', type : 'boolean', value : true,
+       description : 'build Varlink support and varlinkctl')
 #endif // 0
 option('man', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        value : 'disabled',

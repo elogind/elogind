@@ -114,13 +114,29 @@ sd_json_sources = files(
 
 ############################################################
 
-sd_varlink_sources = files(
-        'sd-varlink/sd-varlink.c',
-        'sd-varlink/sd-varlink-idl.c',
-        'sd-varlink/varlink-io.systemd.c',
-        'sd-varlink/varlink-org.varlink.service.c',
-        'sd-varlink/varlink-util.c',
-)
+#if 0 /// elogind: allow replacing varlink implementation with public API stubs
+# sd_varlink_sources = files(
+#         'sd-varlink/sd-varlink.c',
+#         'sd-varlink/sd-varlink-idl.c',
+#         'sd-varlink/varlink-io.systemd.c',
+#         'sd-varlink/varlink-org.varlink.service.c',
+#         'sd-varlink/varlink-util.c',
+# )
+#else // 0
+if get_option('varlink')
+	sd_varlink_sources = files(
+		'sd-varlink/sd-varlink.c',
+		'sd-varlink/sd-varlink-idl.c',
+		'sd-varlink/varlink-io.systemd.c',
+		'sd-varlink/varlink-org.varlink.service.c',
+		'sd-varlink/varlink-util.c',
+	)
+else
+	sd_varlink_sources = files(
+		'sd-varlink/sd-varlink-stub.c',
+	)
+endif
+#endif // 0
 
 ############################################################
 

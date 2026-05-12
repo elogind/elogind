@@ -19,53 +19,60 @@ export
 
 # -----------------------------------------------------------------------------------
 # Set this to YES on the command line for a debug build
-DEBUG      ?= NO
+DEBUG      := $(if $(DEBUG),$(DEBUG),NO)
 
 # -----------------------------------------------------------------------------------
 # Set this to either "release" or "developer" to force a mode
 # Otherwise DEBUG=YES sets BUILDMODE=developer and DEBUG=NO sets BUILDMODE=release
-BUILDMODE  ?= auto
+BUILDMODE  := $(if $(BUILDMODE),$(BUILDMODE),auto)
 
 # -----------------------------------------------------------------------------------
 # Set this to yes to not build, but to show all build commands ninja would issue
-JUST_PRINT ?= NO
+JUST_PRINT := $(if $(JUST_PRINT),$(JUST_PRINT),NO)
+
+# -----------------------------------------------------------------------------------
+# This deactivates varlink support, and therefore also userdb and nss-elogind, if set to NO
+VARLINK := $(if $(VARLINK),$(VARLINK),YES)
+
 
 # -----------------------------------------------------------------------------------
 # --- Build variables
 # -----------------------------------------------------------------------------------
 HERE       := ${CURDIR}
 BASIC_OPT  := --buildtype release
-BUILDDIR   ?= $(HERE)/build
-CGCONTROL  ?= $(shell $(HERE)/tools/meson-get-cg-controller.sh)
-CGDEFAULT  ?= $(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2)
-DESTDIR    ?=
+BUILDDIR   := $(if $(BUILDDIR),$(BUILDDIR),$(HERE)/build)
+CGCONTROL  := $(if $(CGCONTROL),$(CGCONTROL),$(shell $(HERE)/tools/meson-get-cg-controller.sh))
+CGDEFAULT  := $(if $(CGDEFAULT),$(CGDEFAULT),$(shell grep "^rc_cgroup_mode" /etc/rc.conf | cut -d '"' -f 2))
+DESTDIR    := $(if ($DESTDIR),$(DESTDIR),)
 MESON_LST  := $(shell find $(HERE)/ -type f -name 'meson.build') $(HERE)/meson_options.txt
-ROOTPREFIX ?= /tmp/elogind_test
-PREFIX     ?= $(ROOTPREFIX)/usr
-SYSCONFDIR ?= $(ROOTPREFIX)/etc
-VERSION    ?= 9999
+ROOTPREFIX := $(if $(ROOTPREFIX),$(ROOTPREFIX),/tmp/elogind_test)
+PREFIX     := $(if $(PREFIX),$(PREFIX),$(ROOTPREFIX)/usr)
+SYSCONFDIR := $(if $(SYSCONFDIR),$(SYSCONFDIR),$(ROOTPREFIX)/etc)
+VERSION    := $(if $(VERSION),$(VERSION),9999)
 
 # -----------------------------------------------------------------------------------
 # --- Package configuration
 # -----------------------------------------------------------------------------------
-USE_ACL     ?= enabled
-USE_AUDIT   ?= enabled
-USE_EFI     ?= false
-USE_HTML    ?= auto
-USE_MAN     ?= auto
-USE_SELINUX ?= disabled
-USE_SMACK   ?= true
-USE_USERDB  ?= true
-USE_UTMP    ?= true
-USE_XENCTRL ?= auto
+USE_ACL      := $(if $(USE_ACL),$(USE_ACL),enabled)
+USE_AUDIT    := $(if $(USE_AUDIT),$(USE_AUDIT),enabled)
+USE_AUTOKILL := $(if $(USE_AUTOKILL),$(USE_AUTOKILL),false)
+USE_EFI      := $(if $(USE_EFI),$(USE_EFI),false)
+USE_HTML     := $(if $(USE_HTML),$(USE_HTML),auto)
+USE_MAN      := $(if $(USE_MAN),$(USE_MAN),auto)
+USE_NSS      := $(if $(USE_NSS),$(USE_NSS),true)
+USE_SELINUX  := $(if $(USE_SELINUX),$(USE_SELINUX),disabled)
+USE_SMACK    := $(if $(USE_SMACK),$(USE_SMACK),true)
+USE_USERDB   := $(if $(USE_USERDB),$(USE_USERDB),true)
+USE_UTMP     := $(if $(USE_UTMP),$(USE_UTMP),true)
+USE_XENCTRL  := $(if $(USE_XENCTRL),$(USE_XENCTRL),auto)
 
 # -----------------------------------------------------------------------------------
 # Tools needed by the wrapper
 # -----------------------------------------------------------------------------------
 MAKE  := $(shell which make)
-MESON ?= $(shell which meson)
+MESON := $(if $(MESON),$(MESON),$(shell which meson))
 MKDIR := $(shell which mkdir) -p
-NINJA ?= $(shell which ninja)
+NINJA := $(if $(NINJA),$(NINJA),$(shell which ninja))
 
 # Save users/systems choice
 envCFLAGS   := ${CFLAGS}
@@ -111,6 +118,16 @@ else
         BUILDMODE := release
     endif
 endif
+
+
+# disable varlink, userdb and nss-elogind if wanted
+ifeq (NO,$(VARLINK))
+	BASIC_OPT  := -Dvarlink=false
+	BUILDDIR   := ${BUILDDIR}_novar
+	USE_NSS    := false
+	USE_USERDB := false
+endif
+
 
 # Set search paths including the actual build directory
 VPATH  := $(BUILDDIR):$(HERE):$(HERE)/src
@@ -201,6 +218,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Defi=$(USE_EFI) \
 			-Dhtml=$(USE_HTML) \
 			-Dman=$(USE_MAN) \
+			-Dnss-elogind=$(USE_NSS) \
 			-Dpam=enabled \
 			-Dselinux=$(USE_SELINUX) \
 			-Dsmack=$(USE_SMACK) \
