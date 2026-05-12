@@ -20,7 +20,7 @@
 #include "format-util.h"
 #include "fs-util.h"
 #include "log.h"
-// #include "login-util.h"
+#include "login-util.h"
 #include "macro.h"
 #include "missing_magic.h"
 #include "missing_threads.h"
@@ -1573,6 +1573,9 @@ int cg_path_get_session(const char *path, char **ret_session) {
 
         if (!start[0])
                 return -ENXIO;
+
+        if (!session_id_valid(start))
+                return -ENXIO;
 #endif // 0
 
         if (ret_session) {
@@ -1658,14 +1661,14 @@ int cg_pid_get_owner_uid(pid_t pid, uid_t *ret_uid) {
 }
 
 int cg_path_get_slice(const char *p, char **ret_slice) {
+#if 0 /// elogind does not support systemd slices
         const char *e = NULL;
 
         assert(p);
         assert(ret_slice);
 
-#if 0 /// elogind does not support systemd slices
-        /* Finds the right-most slice unit from the beginning, but
-         * stops before we come to the first non-slice unit. */
+        /* Finds the right-most slice unit from the beginning, but stops before we come to
+         * the first non-slice unit. */
 
         for (;;) {
                 size_t n;
@@ -1693,25 +1696,8 @@ int cg_path_get_slice(const char *p, char **ret_slice) {
                 p += n;
         }
 #else // 0
-        /* In elogind, what is reported here, is the location of
-         * the session. This is derived from /proc/<self|PID>/cgroup.
-         * In there we look at the controller, which will look something
-         * like "1:name=openrc:/3".
-         * The last part gets extracted (and is now p), which is "/3" in
-         * this case. The three is the session id, and that can be mapped.
-         */
-        if (strlen(p) == 0) {
-                return -ENXIO;
-        }
-
-        e = startswith(p, "/");
-
-        if (e)
-                *ret_slice = strdup(e);
-        else
-                *ret_slice = strdup(p);
-
-        return 0;
+        /* This is just a compatibility wrapper, as there are no slices, just sessions in elogind */
+        return cg_path_get_session(p, ret_slice);
 #endif // 0
 }
 
@@ -1731,27 +1717,24 @@ int cg_pid_get_slice(pid_t pid, char **ret_slice) {
 }
 
 int cg_path_get_user_slice(const char *p, char **ret_slice) {
-#if 0 /// UNNEEDED by elogind
+#if 0 /// elogind does not support systemd slices
         const char *t;
-#endif // 0
+
         assert(p);
         assert(ret_slice);
 
-#if 0 /// nothing to skip in elogind
         t = skip_user_prefix(p);
         if (!t)
                 return -ENXIO;
-#endif // 0
 
-#if 0 /// UNNEEDED by elogind
         /* And now it looks pretty much the same as for a system slice, so let's just use the same parser
          * from here on. */
         return cg_path_get_slice(t, ret_slice);
 #else // 0
         /* In elogind there is nothing to skip, we can use the path
-         * directly. Generally speaking this is always a session id
+         * directly. Generally speaking, this is always a session id
          * to user mapping. */
-        return cg_path_get_slice(p, ret_slice);
+        return cg_path_get_session(p, ret_slice);
 #endif // 0
 }
 
