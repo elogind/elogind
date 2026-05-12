@@ -438,6 +438,16 @@ conf.set('DEFAULT_TIMEOUT_SEC',                               get_option('defaul
 # conf.set10('ENABLE_FIRST_BOOT_FULL_PRESET',                   get_option('first-boot-full-preset'))
 #endif // 0
 
+#if 1 /// elogind: userdb and nss-elogind need real varlink support
+if not get_option('varlink')
+        if get_option('userdb')
+                error('elogind-userdbd requires varlink support. Use -Duserdb=false with -Dvarlink=false.')
+        endif
+        if get_option('nss-elogind')
+                error('nss-elogind requires varlink support. Use -Dnss-elogind=false with -Dvarlink=false.')
+        endif
+endif
+
 #####################################################################
 
 cc = meson.get_compiler('c')
@@ -2056,7 +2066,8 @@ foreach term : ['efi',
                 'nss-elogind',
                 'smack',
                 'userdb',
-                'utmp']
+                'utmp',
+                'varlink']
 #endif // 0
         have = get_option(term)
         name = 'ENABLE_' + term.underscorify().to_upper()
@@ -2959,7 +2970,13 @@ subdir('src/nss-elogind')
 # subdir('src/user-sessions')
 #endif // 0
 subdir('src/userdb')
-subdir('src/varlinkctl')
+#if 0 /// elogind: varlinkctl requires the real varlink implementation
+# subdir('src/varlinkctl')
+#else // 0
+if get_option('varlink')
+        subdir('src/varlinkctl')
+endif
+#endif // 0
 #if 0 /// UNNEEDED by elogind
 # subdir('src/vconsole')
 # subdir('src/veritysetup')
@@ -3668,6 +3685,9 @@ foreach tuple : [
 #         ['tmpfiles'],
 #endif // 0
         ['userdb'],
+#if 1 /// elogind: report whether the varlink implementation is built
+        ['varlink',                get_option('varlink')],
+#endif // 1
 #if 0 /// UNNEEDED by elogind
 #         ['vconsole'],
 #         ['vmspawn'],

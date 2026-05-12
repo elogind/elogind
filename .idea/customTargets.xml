@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CLionExternalBuildManager">
-    <target id="3b587314-842f-47a6-a273-943cab3dd19d" name="test DEBUG" defaultType="MAKE">
-      <configuration id="77afdec8-ac78-4fda-b9f1-e135507574bf" name="test DEBUG">
+    <target id="3b587314-842f-47a6-a273-943cab3dd19d" name="test DEBUG no varlink" defaultType="MAKE">
+      <configuration id="77afdec8-ac78-4fda-b9f1-e135507574bf" name="test DEBUG no varlink">
         <build type="MAKE">
-          <make targetName="test DEBUG=YES BUILDMODE=release PREFIX=/tmp/elogind_test_d JUST_PRINT=NO" />
+          <make targetName="test DEBUG=YES BUILDMODE=release VARLINK=NO PREFIX=/tmp/elogind_test_d JUST_PRINT=NO" />
         </build>
         <clean type="MAKE">
           <make targetName="clean DEBUG=YES" />
