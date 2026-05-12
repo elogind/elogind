@@ -129,9 +129,52 @@ TEST(path_get_session) {
         check_p_g_s("/user.slice/user-1000.slice/session-2.scope/foobar.service", 0, "2");
         check_p_g_s("/session-3.scope", 0, "3");
         check_p_g_s("/session-.scope", -ENXIO, NULL);
+#else // 0
+        check_p_g_s("/3", 0, "3");
+        check_p_g_s("/3/session", 0, "3");
+        check_p_g_s("/3/delegated", 0, "3");
+        check_p_g_s("/3/session/app", 0, "3");
+        check_p_g_s("/3/delegated/app", 0, "3");
+        check_p_g_s("/_3", 0, "3");
+        check_p_g_s("/_3/session", 0, "3");
+        check_p_g_s("/_3/delegated", 0, "3");
+        check_p_g_s("/", -ENXIO, NULL);
 #endif // 0
         check_p_g_s("", -ENXIO, NULL);
 }
+
+#if 1 /// elogind uses its own compatibility test helper to cover both the classic (flat) and the delegated layout
+static void check_p_g_session_compat(const char *path, int code, const char *result) {
+        _cleanup_free_ char *session = NULL, *slice = NULL, *user_slice = NULL;
+
+        assert_se(cg_path_get_session(path, &session) == code);
+        assert_se(streq_ptr(session, result));
+
+        assert_se(cg_path_get_slice(path, &slice) == code);
+        assert_se(streq_ptr(slice, result));
+
+        assert_se(cg_path_get_user_slice(path, &user_slice) == code);
+        assert_se(streq_ptr(user_slice, result));
+}
+
+TEST(path_get_session_compat) {
+        check_p_g_session_compat("/3", 0, "3");
+        check_p_g_session_compat("/3/session", 0, "3");
+        check_p_g_session_compat("/3/delegated", 0, "3");
+        check_p_g_session_compat("/3/session/app", 0, "3");
+        check_p_g_session_compat("/3/delegated/app", 0, "3");
+
+        check_p_g_session_compat("/_3", 0, "3");
+        check_p_g_session_compat("/_3/session", 0, "3");
+        check_p_g_session_compat("/_3/delegated", 0, "3");
+
+        check_p_g_session_compat("/", -ENXIO, NULL);
+        check_p_g_session_compat("", -ENXIO, NULL);
+        check_p_g_session_compat("/user.slice", -ENXIO, NULL);
+        check_p_g_session_compat("/user.slice/user-waldo.slice", -ENXIO, NULL);
+        check_p_g_session_compat("/foo.slice/foo-bar.slice/waldo.service", -ENXIO, NULL);
+}
+#endif // 1
 
 static void check_p_g_o_u(const char *path, int code, uid_t result) {
         uid_t uid = 0;
@@ -148,7 +191,7 @@ TEST(path_get_owner_uid) {
         check_p_g_o_u("", -ENXIO, 0);
 }
 
-#if 0 /// elogind does not support systemd scopes and slices
+#if 0 /// elogind uses its own compatibility test instead
 static void check_p_g_slice(const char *path, int code, const char *result) {
         _cleanup_free_ char *s = NULL;
 
