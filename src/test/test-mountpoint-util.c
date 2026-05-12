@@ -20,7 +20,6 @@
 #include "musl_missing.h"
 #include "virt.h"
 #include "tmpfile-util.h"
-#include "virt.h"
 
 static void test_mount_propagation_flag_one(const char *name, int ret, unsigned long expected) {
         unsigned long flags;
