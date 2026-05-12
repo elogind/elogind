@@ -151,11 +151,6 @@ void siphash24_compress(const void *_in, size_t inlen, struct siphash *state) {
                         break;
         }
 }
-#if 1 /// end diagnostic push in elogind
-#  ifdef __GNUC__
-#    pragma GCC diagnostic pop
-#  endif // __GNUC__
-#endif // 1
 
 uint64_t siphash24_finalize(struct siphash *state) {
         uint64_t b;
