@@ -1,0 +1,59 @@
+/***
+  SPDX-License-Identifier: LGPL-2.1-or-later
+
+  elogind is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published by
+  the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+***/
+
+{
+global:
+        _nss_elogind_getpwnam_r;
+        _nss_elogind_getspnam_r;
+        _nss_elogind_getpwuid_r;
+        _nss_elogind_endpwent;
+        _nss_elogind_setpwent;
+        _nss_elogind_getpwent_r;
+        _nss_elogind_endspent;
+        _nss_elogind_setspent;
+        _nss_elogind_getspent_r;
+        _nss_elogind_getgrnam_r;
+        _nss_elogind_getsgnam_r;
+        _nss_elogind_getgrgid_r;
+        _nss_elogind_endgrent;
+        _nss_elogind_setgrent;
+        _nss_elogind_getgrent_r;
+        _nss_elogind_endsgent;
+        _nss_elogind_setsgent;
+        _nss_elogind_getsgent_r;
+        _nss_elogind_initgroups_dyn;
+
+        /* These two are not used by glibc, but can be used by apps to explicitly disable nss-elogind for the calling thread. */
+        _nss_elogind_block;
+        _nss_elogind_is_blocked;
+
+        /* These are aliases for users that use nss-elogind as a drop-in replacement for nss-systemd. */
+        _nss_systemd_getpwnam_r;
+        _nss_systemd_getspnam_r;
+        _nss_systemd_getpwuid_r;
+        _nss_systemd_endpwent;
+        _nss_systemd_setpwent;
+        _nss_systemd_getpwent_r;
+        _nss_systemd_endspent;
+        _nss_systemd_setspent;
+        _nss_systemd_getspent_r;
+        _nss_systemd_getgrnam_r;
+        _nss_systemd_getsgnam_r;
+        _nss_systemd_getgrgid_r;
+        _nss_systemd_endgrent;
+        _nss_systemd_setgrent;
+        _nss_systemd_getgrent_r;
+        _nss_systemd_endsgent;
+        _nss_systemd_setsgent;
+        _nss_systemd_getsgent_r;
+        _nss_systemd_initgroups_dyn;
+        _nss_systemd_block;
+        _nss_systemd_is_blocked;
+local: *;
+};

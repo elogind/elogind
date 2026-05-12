@@ -215,6 +215,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Daudit=$(USE_AUDIT) \
 			-Dcgroup-controller=$(CGCONTROL) \
 			-Ddbus=enabled \
+			-Ddefault-kill-user-processes=$(USE_AUTOKILL) \
 			-Defi=$(USE_EFI) \
 			-Dhtml=$(USE_HTML) \
 			-Dman=$(USE_MAN) \

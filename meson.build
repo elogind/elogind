@@ -34,13 +34,9 @@ conf.set('PROJECT_VERSION', project_major_version,
          description : 'Numerical project version (used where a simple number is expected)')
 conf.set_quoted('PROJECT_VERSION_FULL', meson.project_version(), description : 'Full project version')
 
-# This is to be used instead of meson.source_root(), as the latter will return
-# the wrong result when elogind is being built as a meson subproject
-project_source_root = meson.current_source_dir()
-project_build_root = meson.current_build_dir()
 relative_source_path = run_command('realpath',
-                                   '--relative-to=@0@'.format(project_build_root),
-                                   project_source_root,
+                                   '--relative-to=@0@'.format(meson.project_build_root()),
+                                   meson.project_source_root(),
                                    check : true).stdout().strip()
 conf.set_quoted('RELATIVE_SOURCE_PATH', relative_source_path)
 
@@ -374,8 +370,12 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 #endif // 0
 #if 0 /// UNNEEDED by elogind
 # conf.set_quoted('SYSTEMD_CGROUPS_AGENT_PATH',                 libexecdir / 'systemd-cgroups-agent')
+# conf.set_quoted('SYSTEMD_CRYPTSETUP_PATH',                    bindir / 'systemd-cryptsetup')
+# conf.set_quoted('SYSTEMD_EXPORT_PATH',                        libexecdir / 'systemd-export')
 # conf.set_quoted('SYSTEMD_FSCK_PATH',                          libexecdir / 'systemd-fsck')
 # conf.set_quoted('SYSTEMD_GROWFS_PATH',                        libexecdir / 'systemd-growfs')
+# conf.set_quoted('SYSTEMD_HOMEWORK_PATH',                      libexecdir / 'systemd-homework')
+# conf.set_quoted('SYSTEMD_IMPORT_FS_PATH',                     libexecdir / 'systemd-import-fs')
 # conf.set_quoted('SYSTEMD_IMPORT_PATH',                        libexecdir / 'systemd-import')
 # conf.set_quoted('SYSTEMD_INTEGRITYSETUP_PATH',                libexecdir / 'systemd-integritysetup')
 # conf.set_quoted('SYSTEMD_KBD_MODEL_MAP',                      pkgdatadir / 'kbd-model-map')
@@ -390,8 +390,8 @@ conf.set_quoted('SYSTEMD_BINARY_PATH',                        libexecdir / 'elog
 #endif // 0
 conf.set_quoted('SYSTEMD_USERWORK_PATH',                      libexecdir / 'elogind-userwork')
 #if 0 /// UNNEEDED by elogind
-# conf.set_quoted('SYSTEMD_NSRESOURCEWORK_PATH',                libexecdir / 'elogind-nsresourcework')
-# conf.set_quoted('SYSTEMD_MOUNTWORK_PATH',                     libexecdir / 'elogind-mountwork')
+# conf.set_quoted('SYSTEMD_MOUNTWORK_PATH',                     libexecdir / 'systemd-mountwork')
+# conf.set_quoted('SYSTEMD_NSRESOURCEWORK_PATH',                libexecdir / 'systemd-nsresourcework')
 # conf.set_quoted('SYSTEMD_VERITYSETUP_PATH',                   libexecdir / 'systemd-veritysetup')
 # conf.set_quoted('SYSTEM_CONFIG_UNIT_DIR',                     pkgsysconfdir / 'system')
 # conf.set_quoted('SYSTEM_DATA_UNIT_DIR',                       systemunitdir)
@@ -476,13 +476,10 @@ install_tests = want_tests != 'false' and get_option('install-tests')
 # endif
 #
 # if want_libfuzzer
-#         fuzzing_engine = meson.get_compiler('cpp').find_library('Fuzzer', required : false)
-#         if fuzzing_engine.found()
-#                 userspace_c_args += '-fsanitize-coverage=trace-pc-guard,trace-cmp'
-#         elif cc.has_argument('-fsanitize=fuzzer-no-link')
+#         if cc.has_argument('-fsanitize=fuzzer-no-link')
 #                 userspace_c_args += '-fsanitize=fuzzer-no-link'
 #         else
-#                 error('Looks like neither libFuzzer nor -fsanitize=fuzzer-no-link is supported')
+#                 error('Looks like -fsanitize=fuzzer-no-link is not supported')
 #         endif
 # elif want_ossfuzz
 #         fuzzing_engine = meson.get_compiler('cpp').find_library('FuzzingEngine')
@@ -590,6 +587,7 @@ possible_link_flags = [
         '-Wl,--fatal-warnings',
         '-Wl,-z,now',
         '-Wl,-z,relro',
+        '-Wl,-z,gcs-report-dynamic=none',
 ]
 
 if get_option('b_sanitize') == 'none'
@@ -851,23 +849,24 @@ conf.set10('HAVE_PROGRAM_INVOCATION_NAME', have_pisn,
 #####################################################################
 #endif // 1
 
-sh = find_program('sh')
-echo = find_program('echo')
-sed = find_program('sed')
 awk = find_program('awk')
-stat = find_program('stat')
-ln = find_program('ln')
-git = find_program('git', required : false)
-env = find_program('env')
-#if 0 /// UNNEEDED by elogind
-# rsync = find_program('rsync', required : false)
-#endif // 0
 diff = find_program('diff')
+echo = find_program('echo')
+env = find_program('env')
 find = find_program('find')
 
 #if 1 /// elogind needs a tool to symlink its installed headers.
-meson_symlink_headers = project_source_root + '/tools/meson-symlink_headers.sh'
+meson_symlink_headers = meson.project_source_root() + '/tools/meson-symlink_headers.sh'
 #endif // 1
+getent = find_program('getent', required : false)
+git = find_program('git', required : false)
+gperf = find_program('gperf')
+id = find_program('id', required : false)
+ln = find_program('ln')
+rsync = find_program('rsync', required : false)
+sed = find_program('sed')
+sh = find_program('sh')
+stat = find_program('stat')
 
 ln_s = ln.full_path() + ' -frsT -- "${DESTDIR:-}@0@" "${DESTDIR:-}@1@"'
 
@@ -909,14 +908,9 @@ foreach prog : progs
 endforeach
 
 #if 0 /// unneeded by elogind
-# if run_command(ln, '--relative', '--help', check : false).returncode() != 0
-#         error('ln does not support --relative (added in coreutils 8.16)')
-# endif
 #endif // 0
 
 #####################################################################
-
-gperf = find_program('gperf')
 
 gperf_test_format = '''
 #include <string.h>
@@ -1019,7 +1013,13 @@ conf.set_quoted('FALLBACK_HOSTNAME', fallback_hostname)
 #         if time_epoch == ''
 #                 NEWS = files('NEWS')
 #                 time_epoch = run_command(stat, '-c', '%Y', NEWS,
-#                                          check : true).stdout()
+#                                          check : false)
+#                 if time_epoch.returncode() != 0
+#                         # If the above fails, maybe the stat(1) uses BSD-style syntax
+#                         time_epoch = run_command(stat, '-f', '%m', NEWS,
+#                                                  check : true)
+#                 endif
+#                 time_epoch = time_epoch.stdout()
 #         endif
 #         time_epoch = time_epoch.strip().to_int()
 # endif
@@ -1095,41 +1095,49 @@ nobody_user = get_option('nobody-user')
 nobody_group = get_option('nobody-group')
 
 if not meson.is_cross_build()
-        getent_result = run_command('getent', 'passwd', '65534', check : false)
-        if getent_result.returncode() == 0
-                name = getent_result.stdout().split(':')[0]
-                if name != nobody_user
-                        warning('\n' +
-                                'The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
-                                'Your build will result in an user table setup that is incompatible with the local system.')
+        if getent.found()
+                ret = run_command(getent, 'passwd', '65534', check : false)
+                if ret.returncode() == 0
+                        name = ret.stdout().split(':')[0]
+                        if name != nobody_user
+                                warning('\n' +
+                                        'The local user with the UID 65534 does not match the configured user name "@0@" of the nobody user (its name is @1@).\n'.format(nobody_user, name) +
+                                        'Your build will result in an user table setup that is incompatible with the local system.')
+                        endif
                 endif
         endif
-        id_result = run_command('id', '-u', nobody_user, check : false)
-        if id_result.returncode() == 0
-                id = id_result.stdout().strip().to_int()
-                if id != 65534
-                        warning('\n' +
-                                'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, id) +
-                                'Your build will result in an user table setup that is incompatible with the local system.')
+        if id.found()
+                ret = run_command(id, '-u', nobody_user, check : false)
+                if ret.returncode() == 0
+                        uid = ret.stdout().strip().to_int()
+                        if uid != 65534
+                                warning('\n' +
+                                        'The local user with the configured user name "@0@" of the nobody user does not have UID 65534 (it has @1@).\n'.format(nobody_user, uid) +
+                                        'Your build will result in an user table setup that is incompatible with the local system.')
+                        endif
                 endif
         endif
 
-        getent_result = run_command('getent', 'group', '65534', check : false)
-        if getent_result.returncode() == 0
-                name = getent_result.stdout().split(':')[0]
-                if name != nobody_group
-                        warning('\n' +
-                                'The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
-                                'Your build will result in an group table setup that is incompatible with the local system.')
+        if getent.found()
+                ret = run_command(getent, 'group', '65534', check : false)
+                if ret.returncode() == 0
+                        name = ret.stdout().split(':')[0]
+                        if name != nobody_group
+                                warning('\n' +
+                                        'The local group with the GID 65534 does not match the configured group name "@0@" of the nobody group (its name is @1@).\n'.format(nobody_group, name) +
+                                        'Your build will result in an group table setup that is incompatible with the local system.')
+                        endif
                 endif
         endif
-        id_result = run_command('id', '-g', nobody_group, check : false)
-        if id_result.returncode() == 0
-                id = id_result.stdout().strip().to_int()
-                if id != 65534
-                        warning('\n' +
-                                'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, id) +
-                                'Your build will result in an group table setup that is incompatible with the local system.')
+        if id.found()
+                ret = run_command(id, '-g', nobody_group, check : false)
+                if ret.returncode() == 0
+                        gid = ret.stdout().strip().to_int()
+                        if gid != 65534
+                                warning('\n' +
+                                        'The local group with the configured group name "@0@" of the nobody group does not have GID 65534 (it has @1@).\n'.format(nobody_group, gid) +
+                                        'Your build will result in an group table setup that is incompatible with the local system.')
+                        endif
                 endif
         endif
 endif
@@ -1186,6 +1194,16 @@ conf.set10('DEV_KVM_UACCESS', dev_kvm_mode != '0666')
 group_render_mode = get_option('group-render-mode')
 conf.set_quoted('GROUP_RENDER_MODE', group_render_mode)
 conf.set10('GROUP_RENDER_UACCESS', group_render_mode != '0666')
+tty_mode = get_option('tty-mode')
+# The setting is used as both octal integer and string through STRINGIFY().
+# Here, only check if the value starts with '06', and further check will be done in terminal-util.h.
+if not tty_mode.startswith('06')
+        error('Unexpected access mode "@0@" is specified for TTY/PTS device nodes, it must be "06xx".'.format(tty_mode))
+elif tty_mode != '0600' and tty_mode != '0620'
+        warning('Unexpected access mode "@0@" is specified for TTY/PTS device nodes, typically it should be "0600" or "0620", proceeding anyway.'.format(tty_mode))
+endif
+# Do not use set_quoted() here, so that the value is available as an integer.
+conf.set('TTY_MODE', tty_mode)
 
 kill_user_processes = get_option('default-kill-user-processes')
 conf.set10('KILL_USER_PROCESSES', kill_user_processes)
@@ -2045,6 +2063,7 @@ conf.set10('ENABLE_HOMED', false)
 #                 'xdg-autostart']
 #else // 0
 foreach term : ['efi',
+                'nss-elogind',
                 'smack',
                 'userdb',
                 'utmp',
@@ -2095,6 +2114,17 @@ conf.set10('ENABLE_COMPAT_MUTABLE_UID_BOUNDARIES', true)
 # conf.set10('ENABLE_TIMEDATECTL', get_option('timedated') or get_option('timesyncd'))
 #
 # conf.set10('ENABLE_SSH_PROXY_CONFIG', sshconfdir != 'no')
+#else // 0
+enable_nss = false
+foreach term : ['ENABLE_NSS_MYHOSTNAME',
+                'ENABLE_NSS_MYMACHINES',
+                'ENABLE_NSS_RESOLVE']
+        conf.set10(term, false)
+endforeach
+if conf.get('ENABLE_NSS_ELOGIND') == 1
+        enable_nss = true
+endif
+conf.set10('ENABLE_NSS', enable_nss)
 #endif // 0
 conf.set10('ENABLE_SSH_USERDB_CONFIG', conf.get('ENABLE_USERDB') == 1 and sshdconfdir != 'no')
 
@@ -2157,9 +2187,21 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #         #
 #         # C.f. https://mesonbuild.com/Reference-tables.html#cpu-families
 #         # and src/basic/missing_syscall_def.h.
+#
+#         # Start with older ABI. When define is missing, we're likely targeting that.
+#         ppc64_elf_version = '1'
+#
+#         if host_machine.cpu_family() == 'ppc64'
+#                 # cc doesn't have to be bpf_compiler, but they should be targeting the same ABI
+#                 call_elf_value = cc.get_define('_CALL_ELF')
+#                 if call_elf_value != ''
+#                         ppc64_elf_version = call_elf_value
+#                 endif
+#         endif
+#
 #         cpu_arch_defines = {
 #                 'ppc'         : ['-D__powerpc__', '-D__TARGET_ARCH_powerpc'],
-#                 'ppc64'       : ['-D__powerpc64__', '-D__TARGET_ARCH_powerpc', '-D_CALL_ELF=2'],
+#                 'ppc64'       : ['-D__powerpc64__', '-D__TARGET_ARCH_powerpc', '-D_CALL_ELF=' + ppc64_elf_version],
 #                 'riscv32'     : ['-D__riscv', '-D__riscv_xlen=32', '-D__TARGET_ARCH_riscv'],
 #                 'riscv64'     : ['-D__riscv', '-D__riscv_xlen=64', '-D__TARGET_ARCH_riscv'],
 #                 'x86'         : ['-D__i386__', '-D__TARGET_ARCH_x86'],
@@ -2206,11 +2248,21 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 #                 target_triplet_cmd = run_command('gcc', '-print-multiarch', check: false)
 #         endif
 #         if target_triplet_cmd.returncode() == 0
+#                 sysroot = meson.get_external_property('sys_root', '/')
 #                 target_triplet = target_triplet_cmd.stdout().strip()
-#                 bpf_o_unstripped_cmd += [
-#                         '-isystem',
-#                         '/usr/include/@0@'.format(target_triplet)
-#                 ]
+#                 target_include_dir = sysroot / 'usr' / 'include'
+#                 target_triple_include_dir = target_include_dir / target_triplet
+#                 isystem_dir = ''
+#                 if fs.is_dir(target_triple_include_dir)
+#                         isystem_dir = target_triple_include_dir
+#                 elif fs.is_dir(target_include_dir)
+#                         isystem_dir = target_include_dir
+#                 endif
+#                 if isystem_dir != ''
+#                         bpf_o_unstripped_cmd += [
+#                                 '-isystem', isystem_dir
+#                         ]
+#                 endif
 #         endif
 #
 #         bpf_o_unstripped_cmd += [
@@ -2289,7 +2341,9 @@ conf.set10('SYSTEMD_SLOW_TESTS_DEFAULT', want_slow_tests)
 
 #####################################################################
 
-check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
+#if 0 /// UNUSED by elogind
+# check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
+#endif // 0
 
 #####################################################################
 
@@ -2349,7 +2403,6 @@ check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 #         message('Using provided @0@'.format(provided_vmlinux_h_path))
 # elif use_generated_vmlinux_h
 #         vmlinux_h_dependency = custom_target(
-#                 'vmlinux.h',
 #                 output: 'vmlinux.h',
 #                 command : [ bpftool, 'btf', 'dump', 'file', '/sys/kernel/btf/vmlinux', 'format', 'c' ],
 #                 capture : true)
@@ -2361,13 +2414,16 @@ check_efi_alignment_py = find_program('tools/check-efi-alignment.py')
 # endif
 #
 # conf.set10('HAVE_VMLINUX_H', use_provided_vmlinux_h or use_generated_vmlinux_h)
+#
+# conf.set10('ENABLE_SYSCTL_BPF', conf.get('HAVE_VMLINUX_H') == 1 and libbpf.version().version_compare('>= 0.7'))
+#else // 0
+conf.set10('HAVE_VMLINUX_H', false)
 #endif // 0
 
 #####################################################################
 
 #if 0 /// UNUSED by elogind
 # check_version_history_py = find_program('tools/check-version-history.py')
-#if 0 /// UNUSED by elogind
 # elf2efi_py = find_program('tools/elf2efi.py')
 #endif // 0
 export_dbus_interfaces_py = find_program('tools/dbus_exporter.py')
@@ -2657,10 +2713,11 @@ libudev = dependency('libudev', required : true)
 runtest_env = custom_target(
         'elogind-runtest.env',
         output : 'elogind-runtest.env',
-        command : [sh, '-c',
-                   '{ echo SYSTEMD_TEST_DATA=@0@; echo SYSTEMD_CATALOG_DIR=@1@; } >@OUTPUT@'.format(
-                           project_source_root / 'test',
-                           project_build_root / 'catalog')],
+        command : ['printf',
+                   'SYSTEMD_TEST_DATA=%q\nSYSTEMD_CATALOG_DIR=%q\n',
+                   meson.project_source_root() / 'test',
+                   meson.project_build_root() / 'catalog'],
+        capture: true,
         depends : catalogs,
         build_by_default : true)
 
@@ -2713,11 +2770,11 @@ fuzz_template = executable_template + {
 }
 
 #if 0 /// elogind does not fuzz
-# if want_ossfuzz or (want_libfuzzer and fuzzing_engine.found())
+# if want_ossfuzz
 #         fuzz_additional_kwargs = {
 #                 'dependencies' : fuzzing_engine,
 #         }
-# elif want_libfuzzer and not fuzzing_engine.found()
+# elif want_libfuzzer
 #         fuzz_additional_kwargs = {
 #                 'link_args' : ['-fsanitize=fuzzer'],
 #         }
@@ -2867,7 +2924,9 @@ subdir('src/login')
 # subdir('src/nss-myhostname')
 # subdir('src/nss-mymachines')
 # subdir('src/nss-resolve')
-# subdir('src/nss-systemd')
+#endif // 0
+subdir('src/nss-elogind')
+#if 0 /// UNNEEDED by elogind
 # subdir('src/oom')
 # subdir('src/path')
 # subdir('src/pcrextend')
@@ -3050,9 +3109,7 @@ foreach dict : executables
 #         if is_fuzz
 #                 fuzzer_exes += exe
 #
-#                 if want_tests != 'false'
-#                         # Run the fuzz regression tests without any sanitizers enabled.
-#                         # Additional invocations with sanitizers may get added below.
+#                 if want_tests != 'false' and want_fuzz_tests
 #                         fuzz_ins = fuzz_regression_tests.get(name, {})
 #                         foreach directive : fuzz_ins.get('directives', [])
 #                                 tt = '@0@_@1@'.format(name, fs.name(directive.full_path()))
@@ -3064,6 +3121,8 @@ foreach dict : executables
 #                                      exe,
 #                                      suite : 'fuzz',
 #                                      args : directive.full_path(),
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
 #                                      depends : directive)
 #                         endforeach
 #                         foreach file : fuzz_ins.get('files', [])
@@ -3075,6 +3134,8 @@ foreach dict : executables
 #                                 test(tt,
 #                                      exe,
 #                                      suite : 'fuzz',
+#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
+#                                      timeout : 60,
 #                                      args : file)
 #                         endforeach
 #                 endif
@@ -3138,7 +3199,7 @@ foreach dict : modules
         if is_nss
                 # We cannot use shared_module because it does not support version suffix.
                 # Unfortunately shared_library insists on creating the symlink…
-                meson.add_install_script(sh, '-c', 'rm $DESTDIR@0@/lib@1@.so'.format(libdir, name),
+                meson.add_install_script(sh, '-c', 'rm -f $DESTDIR@0@/lib@1@.so'.format(libdir, name),
                                          install_tag : 'nss')
                 nss_targets += lib
         endif
@@ -3177,7 +3238,6 @@ endif
 # endforeach
 #
 # ukify = custom_target(
-#         'ukify',
 #         input : 'src/ukify/ukify.py',
 #         output : 'ukify',
 #         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
@@ -3281,12 +3341,14 @@ install_data('LICENSE.GPL2',
              'docs/CODING_STYLE.md',
 #if 0 /// irrelevant for elogind
 #              'docs/DISTRO_PORTING.md',
-#              'docs/ENVIRONMENT.md',
+#endif // 0
+             'docs/ENVIRONMENT.md',
+#if 0 /// irrelevant for elogind
 #              'docs/HACKING.md',
 #              'docs/TRANSIENT-SETTINGS.md',
 #              'docs/TRANSLATORS.md',
-#              'docs/UIDS-GIDS.md',
 #endif // 0
+             'docs/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind
@@ -3312,8 +3374,8 @@ if get_option('mode') == 'developer' and want_tests != 'false' and jekyll.found(
              jekyll,
              suite : 'dist',
              args : ['build',
-                     '--source', project_source_root / 'docs',
-                     '--destination', project_build_root / '_site'])
+                     '--source', meson.project_source_root() / 'docs',
+                     '--destination', meson.project_build_root() / '_site'])
 endif
 
 #####################################################################
@@ -3339,73 +3401,23 @@ foreach exec : public_programs
         endif
 endforeach
 
-
-#if 0 /// fuzz regression tests are not supported by elogind
-# # Enable tests for all supported sanitizers
-# foreach tuple : fuzz_sanitizers
-#         sanitizer = tuple[0]
-#         build = tuple[1]
-#
-#         if cc.has_link_argument('-fsanitize=@0@'.format(sanitizer))
-#                 foreach fuzzer, fuzz_ins : fuzz_regression_tests
-#                         name = '@0@:@1@'.format(fuzzer, sanitizer)
-#                         if want_tests == 'false'
-#                                 message('Not compiling @0@ because tests is set to false'.format(name))
-#                                 continue
-#                         endif
-#                         if not want_fuzz_tests
-#                                 message('Not compiling @0@ because fuzz-tests is set to false'.format(name))
-#                                 continue
-#                         endif
-#                         exe = custom_target(
-#                                 name,
-#                                 output : name,
-#                                 depends : build,
-#                                 command : [ln, '-fs',
-#                                            build.full_path() / fuzzer,
-#                                            '@OUTPUT@'],
-#                                 build_by_default : true)
-#
-#                         foreach directive : fuzz_ins.get('directives', [])
-#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(directive.full_path()), sanitizer),
-#                                      env,
-#                                      suite : 'fuzz+san',
-#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-#                                      timeout : 60,
-#                                      args : [exe.full_path(), directive.full_path()],
-#                                      depends : directive)
-#                         endforeach
-#                         foreach file : fuzz_ins.get('files', [])
-#                                 test('@0@_@1@_@2@'.format(fuzzer, fs.name(file), sanitizer),
-#                                      env,
-#                                      suite : 'fuzz+san',
-#                                      env : ['UBSAN_OPTIONS=print_stacktrace=1:print_summary=1:halt_on_error=1'],
-#                                      timeout : 60,
-#                                      args : [exe.full_path(), file])
-#                         endforeach
-#                 endforeach
-#         endif
-# endforeach
-#endif // 0
-
 #####################################################################
 
 if git.found()
         all_files = run_command(
                 env, '-u', 'GIT_WORK_TREE',
-                git, '--git-dir=@0@/.git'.format(project_source_root),
+                git, '--git-dir=@0@/.git'.format(meson.project_source_root()),
                      'ls-files', ':/*.[ch]', ':/*.cc',
                 check : false)
         if all_files.returncode() == 0
                 all_files = files(all_files.stdout().split())
 
                 custom_target(
-                        'tags',
                         output : 'tags',
-                        command : [env, 'etags', '-o', '@0@/TAGS'.format(project_source_root)] + all_files)
+                        command : [env, 'etags', '-o', '@0@/TAGS'.format(meson.project_source_root())] + all_files)
                 run_target(
                         'ctags',
-                        command : [env, 'ctags', '--tag-relative=never', '-o', '@0@/tags'.format(project_source_root)] + all_files)
+                        command : [env, 'ctags', '--tag-relative=never', '-o', '@0@/tags'.format(meson.project_source_root())] + all_files)
 
                 ############################################
 
@@ -3413,7 +3425,7 @@ if git.found()
                         test('check-includes',
                              files('tools/check-includes.py'),
                              args: all_files,
-                             env : ['PROJECT_SOURCE_ROOT=@0@'.format(project_source_root)],
+                             env : ['PROJECT_SOURCE_ROOT=@0@'.format(meson.project_source_root())],
                              suite : 'headers')
                 endif
         endif
@@ -3430,18 +3442,18 @@ if git.found()
         ####################################################
 
         git_head = run_command(
-                git, '--git-dir=@0@/.git'.format(project_source_root),
+                git, '--git-dir=@0@/.git'.format(meson.project_source_root()),
                      'rev-parse', 'HEAD',
                 check : false).stdout().strip()
         git_head_short = run_command(
-                git, '--git-dir=@0@/.git'.format(project_source_root),
+                git, '--git-dir=@0@/.git'.format(meson.project_source_root()),
                      'rev-parse', '--short=7', 'HEAD',
                 check : false).stdout().strip()
 
         run_target(
                 'git-snapshot',
                 command : [git, 'archive',
-                           '-o', '@0@/elogind-@1@.tar.gz'.format(project_source_root,
+                           '-o', '@0@/elogind-@1@.tar.gz'.format(meson.project_source_root(),
                                                                  git_head_short),
                            '--prefix', 'systemd-@0@/'.format(git_head),
                            'HEAD'])
@@ -3474,12 +3486,12 @@ alias_target('update-man-rules', update_man_rules)
 # endif
 #
 # meson_extract_unit_files = find_program('tools/meson-extract-unit-files.py')
-# custom_target('installed-unit-files.txt',
-#               output : 'installed-unit-files.txt',
-#               capture : true,
-#               install : want_tests != 'no' and install_tests,
-#               install_dir : testdata_dir,
-#               command : [meson_extract_unit_files, project_build_root])
+# custom_target(
+#         output : 'installed-unit-files.txt',
+#         capture : true,
+#         install : want_tests != 'no' and install_tests,
+#         install_dir : testdata_dir,
+#         command : [meson_extract_unit_files, meson.project_build_root()])
 #
 # #####################################################################
 #
@@ -3651,7 +3663,9 @@ foreach tuple : [
 #         ['nss-myhostname'],
 #         ['nss-mymachines'],
 #         ['nss-resolve'],
-#         ['nss-systemd'],
+#endif // 0
+        ['nss-elogind'],
+#if 0 /// UNNEEDED by elogind
 #         ['oomd'],
 #         ['portabled'],
 #         ['pstore'],

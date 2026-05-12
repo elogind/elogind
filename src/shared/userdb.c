@@ -1419,7 +1419,6 @@ int membershipdb_iterator_get(
         return r;
 }
 
-#if 0 /// UNNEEDED by elogind
 int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret) {
         _cleanup_(userdb_iterator_freep) UserDBIterator *iterator = NULL;
         _cleanup_strv_free_ char **members = NULL;
@@ -1451,7 +1450,6 @@ int membershipdb_by_group_strv(const char *name, UserDBFlags flags, char ***ret)
         *ret = TAKE_PTR(members);
         return 0;
 }
-#endif // 0
 
 int userdb_block_nss_systemd(int b) {
 #if 0 /// elogind does not ship its own libnss implementation, no block needed

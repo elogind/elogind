@@ -29,7 +29,6 @@ custom_html_xsl = files('custom-html.xsl')
 xslt_cmd = [xsltproc, '-o', '@OUTPUT0@'] + xsltproc_flags
 
 custom_entities_ent = custom_target(
-        'custom-entities.ent',
         input : 'custom-entities.ent.in',
         output : 'custom-entities.ent',
         command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'])
@@ -76,7 +75,6 @@ foreach tuple : manpages
 
                 if xsltproc.found()
                         p1 = custom_target(
-                                man,
                                 input : xml,
                                 output : [man] + manaliases,
                                 command : xslt_cmd + [custom_man_xsl, '@INPUT@'],
@@ -88,7 +86,6 @@ foreach tuple : manpages
                         p2 = []
                         foreach htmlalias : htmlaliases
                                 link = custom_target(
-                                        htmlalias,
                                         output : htmlalias,
                                         command : [ln, '-fs', html, '@OUTPUT@'])
                                 if want_html
@@ -103,7 +100,6 @@ foreach tuple : manpages
                         endforeach
 
                         p3 = custom_target(
-                                html,
                                 input : xml,
                                 output : html,
                                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
@@ -129,7 +125,6 @@ if not have_lxml
 endif
 
 elogind_directives_xml = custom_target(
-        'elogind.directives.xml',
         input : ['directives-template.xml', source_xml_files],
         output : 'elogind.directives.xml',
         depends : man_page_depends,
@@ -137,7 +132,6 @@ elogind_directives_xml = custom_target(
 
 nonindex_xml_files = source_xml_files + [elogind_directives_xml]
 elogind_index_xml = custom_target(
-        'elogind.index.xml',
         input : nonindex_xml_files,
         output : 'elogind.index.xml',
         command : [make_man_index_py, '@OUTPUT@'] + nonindex_xml_files)
@@ -154,7 +148,6 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
         mandirn = get_option('mandir') / ('man' + section)
 
         p1 = custom_target(
-                man,
                 input : xml,
                 output : man,
                 command : xslt_cmd + [custom_man_xsl, '@INPUT@'],
@@ -166,7 +159,6 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
         if html == 'elogind.index.html'
                 htmlalias = 'index.html'
                 link = custom_target(
-                        htmlalias,
                         input : p2,
                         output : htmlalias,
                         command : [ln, '-fs', html, '@OUTPUT@'])
@@ -182,7 +174,6 @@ foreach tuple : xsltproc.found() ? [['elogind.directives', '7', elogind_directiv
         endif
 
         p3 = custom_target(
-                html,
                 input : xml,
                 output : html,
                 command : xslt_cmd + [custom_html_xsl, '@INPUT@'],
@@ -199,13 +190,11 @@ endforeach
 # Cannot use run_target because those targets are used in depends
 # Also see https://github.com/mesonbuild/meson/issues/368.
 man = custom_target(
-        'man',
         output : 'man',
         depends : man_pages,
         command : [echo])
 
 html = custom_target(
-        'html',
         output : 'html',
         depends : html_pages,
         command : [echo])
@@ -226,7 +215,7 @@ html = custom_target(
 ############################################################
 
 buildroot_substs = configuration_data()
-buildroot_substs.set_quoted('BUILD_ROOT', project_build_root)
+buildroot_substs.set_quoted('BUILD_ROOT', meson.project_build_root())
 
 configure_file(
         input : 'man.in',
@@ -243,17 +232,18 @@ configure_file(
 update_dbus_docs = custom_target(
         'update-dbus-docs-impl',
         output : 'update-dbus-docs',
-        command : [update_dbus_docs_py, '--build-dir', project_build_root, '@INPUT@'],
-        input : dbus_docs)
+        command : [update_dbus_docs_py, '--build-dir', meson.project_build_root(), '@INPUT@'],
+        input : dbus_docs,
+        depends : dbus_programs)
 
 #if 0 /// Not suitable for elogind - We use a subset and those tools therefore always fail
 # if conf.get('BUILD_MODE_DEVELOPER') == 1
 #         test('dbus-docs-fresh',
 #              update_dbus_docs_py,
 #              suite : 'dist',
-#              args : ['--build-dir', project_build_root, '--test', dbus_docs],
+#              args : ['--build-dir', meson.project_build_root(), '--test', dbus_docs],
 #              depends : dbus_programs)
-# 
+#
 #         test('check-version-history',
 #              check_version_history_py,
 #              suite : 'dist',
@@ -265,7 +255,7 @@ update_man_rules = custom_target(
         'update-man-rules-impl',
         output : 'update-man-rules',
         command : [update_man_rules_py,
-                   '@0@/man/*.xml'.format(project_source_root),
+                   '@0@/man/*.xml'.format(meson.project_source_root()),
                    '@0@/rules/meson.build'.format(meson.current_source_dir())],
         depends : man_page_depends)
 
@@ -292,6 +282,7 @@ update_man_rules = custom_target(
 #         'sd-bus-container-read.c',
 #         'sd_bus_error-example.c',
 #         'sd_bus_service_reconnect.c',
+#         'sd_device_enumerator_new-example.c',
 #         'send-unit-files-changed.c',
 #         'vtable-example.c',
 # )
