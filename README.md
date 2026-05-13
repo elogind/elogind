@@ -10,16 +10,11 @@ interface and provides the `libelogind` library.
 All of the credit for elogind should go to the systemd developers.  
 For more on systemd, see  
   http://www.freedesktop.org/wiki/Software/systemd  
-All of the blame should go to Andy Wingo, who extracted elogind
-from systemd.  
-All complaints should go to Sven Eden, who is maintaining elogind.
-But you could also [Buy Him A Coffee](https://www.buymeacoffee.com/EdenWorX)
-instead if you like elogind and want to say thanks.
+The project was extracted from systemd by Andy Wingo and is currently maintained
+by Sven Eden, whom you can [buy a Coffee](https://www.buymeacoffee.com/EdenWorX) if you like elogind and want to say thanks.
 
 Build Status
 ------------
-* CI Status main       : [![elogind CI Status main](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/elogind/elogind/actions)
-* CI Status v252-stable: [![elogind CI Status v252-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v252-stable)](https://github.com/elogind/elogind/actions)
 * CI Status v255-stable: [![elogind CI Status v255-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v255-stable)](https://github.com/elogind/elogind/actions)
 * CI Status v257-stable: [![elogind CI Status v257-stable](https://github.com/elogind/elogind/actions/workflows/build.yml/badge.svg?branch=v257-stable)](https://github.com/elogind/elogind/actions)
 
@@ -86,12 +81,12 @@ sessions via RPC calls to systemd, in elogind there is no systemd so
 there is no global cgroup-based resource management.  This has a few
 implications:
 
-  * Elogind does not create "slices" for users.  Elogind will not
-    record that users are associated with slices.
-  * The /run/systemd/slices directory will always be empty.
-  * Elogind does not have the concept of a "scope", internally, as
-    it's the same as a session. Any API that refers to scopes will
-    always return an error code.
+* The directory used by systemd for slices (`/run/systemd/slices`) is
+   not used by elogind; it will remain empty, or may not exist at all
+   on cgroup v2.
+* Elogind does not have the concept of a "scope", internally, as
+   it's the same as a session. Any API that refers to scopes will
+   always return an error code.
 
 On the other hand, elogind does use a similar strategy to systemd in
 that it places processes in a private cgroup for organizational
@@ -106,9 +101,14 @@ Elogind does monitor power button and the lid switch, like systemd,
 but instead of doing RPC to systemd to suspend, poweroff, or restart
 the machine, elogind just does this directly.  For suspend, hibernate,
 and hybrid-sleep, elogind uses the same code as systemd-sleep.
-Instead of using a separate sleep.conf file to configure the sleep
-behavior, this is included in the [Sleep] section of
-`/etc/elogind/login.conf`. See the example `login.conf` for more.  
+
+The sleep configuration can be found at `/etc/elogind/sleep.conf` by
+default.
+Additions to the sleep capabilities of elogind over systemd-sleep, are
+introduced in `/etc/elogind/sleep.conf.d/10-elogind.conf` by default.
+Likewise additions to elogind over systemd-logind are introduced in
+`/etc/elogind/logind.conf.d/10-elogind.conf` by default.
+
 For shutdown, reboot, and kexec, elogind shells out to `halt`,
 `reboot` and `kexec` binaries.
 
@@ -159,35 +159,34 @@ elogind, this function is also a stub, and always returns -ENOSYS.
 License
 =======
 
-LGPLv2.1+ for all code
+LGPL‑2.1‑or‑later
   - except `src/basic/MurmurHash2.c` which is Public Domain
   - except `src/basic/siphash24.c` which is CC0 Public Domain
 
 Dependencies
 ============
 
-  * glibc >= 2.19 (*or* musl-libc >= 1.1.20)
-  * libcap
-  * libudev
-  * PAM >= 1.7.0 (optional)
-  * libacl (optional)
-  * libselinux (optional)
-  * libaudit (optional)
-  * pkg-config
-  * gperf >= 3.1
-  * docbook-xsl (optional, required for documentation)
-  * xsltproc    (optional, required for documentation)
-  * python-lxml (optional, required to build the indices)
-  * python, meson, ninja
-  * gcc, awk, sed, grep, m4, and similar tools
+* glibc >= 2.28 (*or* musl-libc >= 1.1.20)
+* libcap
+* libudev
+* PAM >= 1.7.0 (optional)
+* libacl (optional)
+* libselinux (optional)
+* libaudit (optional)
+* meson >= 0.60.0
+* ninja >= 1.10
+* gperf >= 3.1
+* pkg-config
+* docbook-xsl (optional, required for documentation)
+* xsltproc    (optional, required for documentation)
+* python3 with the `lxml` module (optional, required to build the indices)
+* gcc, awk, sed, grep, m4, and similar tools
 
 During runtime, you need the following additional dependencies:
 ---------------------------------------------------------------
-  * util-linux >= v2.27.1 required
-  * dbus >= 1.9.14 (strictly speaking optional, but recommended)  
-    NOTE: If using dbus < 1.9.18, you should override the default  
-          policy directory (--with-dbuspolicydir=/etc/dbus-1/system.d).
-  * PolicyKit (optional)
+  * util-linux >= v2.38.1 required
+  * dbus >= 1.12.0
+  * PolicyKit >= 0.105 (optional)
 
 To build in directory build/:  
     `meson build/ && ninja -C build`
@@ -209,14 +208,17 @@ their current values.
 
 Useful commands:  
 ----------------
-  * `ninja -v some/target`
-  * `ninja test`
-  * `sudo ninja install`
-  * `DESTDIR=... ninja install`
-  * `make DEBUG=YES`  
-    The Makefile is a full convenience wrapper, that allows to use meson/ninja in  
-    Makefile compatible IDEs like CLion or vscode.
-    Note: For maximum control you should use meson/ninja directly instead.  
+* `ninja -v some/target`
+* `ninja test`
+* `sudo ninja install`
+* `DESTDIR=... ninja install`
+* `make DEBUG=YES`  
+   The Makefile is a full convenience wrapper, that allows to use meson/ninja in  
+   Makefile compatible IDEs like CLion or vscode.
+   Note: For maximum control you should use meson/ninja directly instead.  
+* To build a static version of libelogind, add the Meson option
+   `-Dstatic-libelogind=pic` (or `true`/`no-pic`).  The resulting static library
+   will be installed alongside the shared library.
 
 A tarball can be created with:  
   `git archive --format=tar --prefix=elogind-241/ v241 | xz > elogind-241.tar.xz`
