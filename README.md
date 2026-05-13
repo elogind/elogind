@@ -3,15 +3,9 @@ Elogind User, Seat and Session Manager
 Introduction
 ============
 
-Elogind is the systemd project's "logind", extracted out to be a
-standalone daemon.  It integrates with PAM to know the set of users
-that are logged in to a system and whether they are logged in
-graphically, on the console, or remotely.  Elogind exposes this
-information via the standard org.freedesktop.login1 D-Bus interface,
-as well as through the file system using systemd's standard
-/run/systemd layout.  Elogind also provides "libelogind", which is a
-subset of the facilities offered by "libsystemd".  There is a
-"libelogind.pc" pkg-config file as well.
+Elogind is the **systemd** project's *logind* component, extracted out to be a
+stand‑alone daemon that implements the `org.freedesktop.login1` D‑Bus
+interface and provides the `libelogind` library.
 
 All of the credit for elogind should go to the systemd developers.  
 For more on systemd, see  

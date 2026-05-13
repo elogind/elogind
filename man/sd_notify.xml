@@ -112,10 +112,12 @@
     specified. The string may contain any kind of variable assignments, but see the next section
     for a list of assignments understood by the service manager.</para>
 
-    <para>Note that elogind will accept status data sent from a service only if the
+    <!-- 0 /// elogind: the sd_notify API is used by elogind, not a systemd service
+    <para>Note that systemd will accept status data sent from a service only if the
     <varname>NotifyAccess=</varname> option is correctly set in the service definition file. See
-    <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
+    <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry> for
     details.</para>
+    // 0 -->
 
     <para>Note that <function>sd_notify()</function> notifications may be attributed to units correctly only
     if either the sending process is still around at the time PID 1 processes the message, or if the sending
@@ -177,13 +179,13 @@
       <varlistentry>
         <term>READY=1</term>
 
-        <!-- 0 /// Do not imply systemd mechanics, elogind is only providing the sd_bus functions.
-        --><!-- else // 0 -->
-        configuration. Since there is little value in signaling non-readiness, the only value services should send is
-        <!-- // 0 -->
         <listitem><para>Tells the service manager that service startup is finished, or the service finished
-        re-loading its configuration. This is only used by elogind if the service definition file has
+        <!-- 0 /// Do not imply systemd mechanics, elogind is only providing the sd_bus functions.
+        re-loading its configuration. This is only used by systemd if the service definition file has
         <varname>Type=notify</varname> or <varname>Type=notify-reload</varname> set. Since there is little
+        --><!-- else // 0 -->
+        re-loading its configuration. Since there is little
+        <!-- // 0 -->
         value in signaling non-readiness, the only value services should send is <literal>READY=1</literal>
         (i.e.  <literal>READY=0</literal> is not defined).</para></listitem>
       </varlistentry>
@@ -247,7 +249,7 @@
 
         <listitem><para>Reset the access to the service status notification socket during runtime, overriding
         <varname>NotifyAccess=</varname> setting in the service unit file. See
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for details, specifically <literal>NotifyAccess=</literal> for a list of accepted values.
         </para>
 
@@ -356,7 +358,7 @@
         <varname>WatchdogSec=</varname> is enabled and the service did not send <literal>WATCHDOG=1</literal>
         in time. Note that <varname>WatchdogSec=</varname> does not need to be enabled for
         <literal>WATCHDOG=trigger</literal> to trigger the watchdog action. See
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for information about the watchdog behavior. </para>
 
         <xi:include href="version-info.xml" xpointer="v243"/></listitem>
@@ -382,7 +384,7 @@
         if the runtime of the current state is beyond the original maximum times of
         <varname>TimeoutStartSec=</varname>, <varname>RuntimeMaxSec=</varname>, and
         <varname>TimeoutStopSec=</varname>.  See
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+        <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>
         for effects on the service timeouts.</para>
 
         <xi:include href="version-info.xml" xpointer="v236"/></listitem>
@@ -396,19 +398,19 @@
         held for the service by the service manager and will later be handed back using the usual file
         descriptor passing logic at the next start or restart of the service, see
         <citerefentry><refentrytitle>sd_listen_fds</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
-        <!-- 0 /// Tell people that this is depending on the service manager, elogind is only the messenger here.
+        <!-- 0 /// Tell people that this is depending on the service manager, systemd is only the messenger here.
         Any open sockets and other file descriptors which should not be closed during a restart may be stored
         this way. When a service is stopped, its file descriptor store is discarded and all file descriptors
         in it are closed, except when overridden with <varname>FileDescriptorStorePreserve=</varname>, see
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
+        <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para>
 
         <para>The service manager will accept messages for a service only if its
         <varname>FileDescriptorStoreMax=</varname> setting is non-zero (defaults to zero, see
-        <citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>).
+        <citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry>).
         The service manager will set the <varname>$FDSTORE</varname> environment variable for services that
         have the file descriptor store enabled, see
-        <citerefentry><refentrytitle>elogind.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
+        <citerefentry><refentrytitle>systemd.exec</refentrytitle><manvolnum>5</manvolnum></citerefentry>.
         </para>
 
         <para>If <varname>FDPOLL=0</varname> is not set and the file descriptors are pollable (see
@@ -687,20 +689,16 @@ sd_notify_barrier(0, 5 * 1000000);
 
   <refsect1>
     <title>See Also</title>
-      <!-- 0 /// elogind is in section 8
-      --><!-- else // 0 -->
-      <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-      <!-- // 0 -->
-      <!-- 0 /// elogind does not provide systemd.service
-      // 0 -->
     <para><simplelist type="inline">
       <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd_listen_fds</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd_listen_fds_with_names</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd_watchdog_enabled</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
+      <!-- 0 /// elogind does not provide systemd.service
       <member><citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
-      <member><citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>systemd.service</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
+      // 0 -->
     </simplelist></para>
   </refsect1>
 
