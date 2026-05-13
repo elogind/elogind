@@ -102,9 +102,9 @@ struct Manager {
         /* Data specific to the cgroup subsystem */
         CGroupMask cgroup_supported;
         char *cgroup_root;
-#if 1 /// elogind: remember the cgroup path owned by the elogind daemon
+
+        /* remember the cgroup path owned by the elogind daemon */
         char *cgroup_self;
-#endif // 1
 
         /* elogind might spawn processes to suspend/hibernate, so we need their PIDs to end them properly */
         pid_t sleep_fork_pid; /* for suspend/hibernate fork */
