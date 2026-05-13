@@ -447,6 +447,7 @@ if not get_option('varlink')
                 error('nss-elogind requires varlink support. Use -Dnss-elogind=false with -Dvarlink=false.')
         endif
 endif
+#endif // 1
 
 #####################################################################
 

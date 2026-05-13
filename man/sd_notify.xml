@@ -398,7 +398,7 @@
         held for the service by the service manager and will later be handed back using the usual file
         descriptor passing logic at the next start or restart of the service, see
         <citerefentry><refentrytitle>sd_listen_fds</refentrytitle><manvolnum>3</manvolnum></citerefentry>.
-        <!-- 0 /// Tell people that this is depending on the service manager, systemd is only the messenger here.
+        <!-- 0 /// Tell people that this is depending on the service manager, elogind is only the messenger here.
         Any open sockets and other file descriptors which should not be closed during a restart may be stored
         this way. When a service is stopped, its file descriptor store is discarded and all file descriptors
         in it are closed, except when overridden with <varname>FileDescriptorStorePreserve=</varname>, see
