@@ -1169,4 +1169,12 @@ enum nss_status _nss_systemd_getsgent_r(struct sgrp *result, char *buffer, size_
 enum nss_status _nss_systemd_initgroups_dyn(const char *user_name, gid_t gid, long *start, long *size, gid_t **groupsp, long int limit, int *errnop) {
         return _nss_elogind_initgroups_dyn(user_name, gid, start, size, groupsp, limit, errnop);
 }
+
+int _nss_systemd_block(bool b) {
+        return _nss_elogind_block(b);
+}
+
+bool _nss_systemd_is_blocked(void) {
+        return _nss_elogind_is_blocked();
+}
 #endif // 1
