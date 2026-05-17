@@ -13,5 +13,5 @@ static inline void _nss_elogind_unblockp(bool *b) {
 }
 
 /* aliases for using nss-elogind as a drop-in replacement for nss-systemd */
-static inline int  _nss_systemd_block(bool b)     { return _nss_elogind_block(b); }
-static inline bool _nss_systemd_is_blocked(void)  { return _nss_elogind_is_blocked(); }
+int _nss_systemd_block(bool b);
+bool _nss_systemd_is_blocked(void);
