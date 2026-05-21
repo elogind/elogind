@@ -1035,11 +1035,10 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                         "manager-early" : "manager";
                 tty = NULL;
 
-        }
+        } else if (tty && strchr(tty, ':')) {
+#else // 0
+        if (tty && strchr(tty, ':')) {
 #endif // 0
-        tty = strempty(tty);
-
-        if (strchr(tty, ':')) {
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */
                 if (isempty(display))
