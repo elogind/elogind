@@ -346,8 +346,13 @@ static int vl_method_get_group_record(sd_varlink *link, sd_json_variant *paramet
                 return sd_varlink_error(link, "io.systemd.UserDatabase.ServiceNotAvailable", NULL);
         }
 
+#if 0 /// elogind: Let us fix this until upstream fixes it.
         if ((uid_is_valid(p.gid) && g->gid != p.gid) ||
             (p.group_name && !streq(g->group_name, p.group_name)))
+#else // 0
+        if ((gid_is_valid(p.gid) && g->gid != p.gid) ||
+            (p.group_name && !streq(g->group_name, p.group_name)))
+#endif // 0
                 return sd_varlink_error(link, "io.systemd.UserDatabase.ConflictingRecordFound", NULL);
 
         r = build_group_json(link, g, &v);
