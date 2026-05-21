@@ -9,7 +9,7 @@
  * see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53769 */
 #  if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L && !(defined(__STDC_NO_THREADS__) || (defined(__GNU_LIBRARY__) && __GLIBC__ == 2 && __GLIBC_MINOR__ < 16))
 #    define thread_local _Thread_local
-#  else
+#  else // __STDC_VERSION__
 #    define thread_local __thread
-#  endif
+#  endif // __STDC_VERSION__
 #endif
