@@ -147,12 +147,12 @@ netgroup:       nis</programlisting>
     <citerefentry><refentrytitle>systemd-nspawn</refentrytitle><manvolnum>1</manvolnum></citerefentry>:
     </para>
 
-    <programlisting># systemd-nspawn -M rawhide \-\-boot \-\-network-veth \-\-private-users=pick
+    <programlisting># systemd-nspawn -M rawhide &#x2D;&#x2D;boot &#x2D;&#x2D;network-veth &#x2D;&#x2D;private-users=pick
 Spawning container rawhide on /var/lib/machines/rawhide.
 Selected user namespace base 20119552 and range 65536.
 ...
 
-$ machinectl \-\-max-addresses=3
+$ machinectl &#x2D;&#x2D;max-addresses=3
 MACHINE CLASS     SERVICE        OS     VERSION ADDRESSES
 rawhide container systemd-nspawn fedora 30      169.254.40.164 fe80::94aa:3aff:fe7b:d4b9
 
@@ -170,12 +170,12 @@ vu-rawhide-0      731 ?        /usr/lib/systemd/systemd-journald
 vu-rawhide-192    734 ?        /usr/lib/systemd/systemd-networkd
 vu-rawhide-193    738 ?        /usr/lib/systemd/systemd-resolved
 vu-rawhide-0      742 ?        /usr/lib/systemd/systemd-logind
-vu-rawhide-81     744 ?        /usr/bin/dbus-daemon \-\-system \-\-address=systemd: \-\-nofork \-\-nopidfile \-\-systemd-activation \-\-syslog-only
+vu-rawhide-81     744 ?        /usr/bin/dbus-daemon &#x2D;&#x2D;system &#x2D;&#x2D;address=systemd: &#x2D;&#x2D;nofork &#x2D;&#x2D;nopidfile &#x2D;&#x2D;systemd-activation &#x2D;&#x2D;syslog-only
 vu-rawhide-0      746 ?        /usr/sbin/sshd -D ...
-vu-rawhide-0      752 ?        /usr/lib/systemd/systemd \-\-user
+vu-rawhide-0      752 ?        /usr/lib/systemd/systemd &#x2D;&#x2D;user
 vu-rawhide-0      753 ?        (sd-pam)
-vu-rawhide-0     1628 ?        login \-\- zbyszek
-vu-rawhide-1000  1630 ?        /usr/lib/systemd/systemd \-\-user
+vu-rawhide-0     1628 ?        login &#x2D;&#x2D; zbyszek
+vu-rawhide-1000  1630 ?        /usr/lib/systemd/systemd &#x2D;&#x2D;user
 vu-rawhide-1000  1631 ?        (sd-pam)
 vu-rawhide-1000  1637 pts/8    -zsh
 </programlisting>

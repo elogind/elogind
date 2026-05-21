@@ -1616,7 +1616,6 @@ int cg_pid_get_slice(pid_t pid, char **ret_slice) {
 int cg_path_get_user_slice(const char *p, char **ret_slice) {
 #if 0 /// elogind does not support systemd slices
         const char *t;
-
         assert(p);
         assert(ret_slice);
 

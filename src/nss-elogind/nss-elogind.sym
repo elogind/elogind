@@ -53,6 +53,8 @@ global:
         _nss_systemd_setsgent;
         _nss_systemd_getsgent_r;
         _nss_systemd_initgroups_dyn;
+
+        /* These two are not used by glibc, but can be used by apps to explicitly disable nss-systemd for the calling thread. */
         _nss_systemd_block;
         _nss_systemd_is_blocked;
 local: *;

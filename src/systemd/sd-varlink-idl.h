@@ -115,9 +115,9 @@ struct sd_varlink_symbol {
         sd_varlink_symbol_flags_t symbol_flags;
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
         sd_varlink_field fields[];
-#else
+#else // __STDC_VERSION__
         sd_varlink_field fields[1];
-#endif
+#endif // __STDC_VERSION__
 };
 
 /* An interface definition has a name and consist of symbols */
@@ -126,9 +126,9 @@ struct sd_varlink_interface {
         sd_varlink_interface_flags_t interface_flags;
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
         const sd_varlink_symbol *symbols[];
-#else
+#else // __STDC_VERSION__
         const sd_varlink_symbol *symbols[1];
-#endif
+#endif // __STDC_VERSION__
 };
 
 #define SD_VARLINK_DEFINE_FIELD(_name, _field_type, _field_flags)          \
