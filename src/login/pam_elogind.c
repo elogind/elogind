@@ -1029,9 +1029,19 @@ _public_ PAM_EXTERN int pam_sm_open_session(
         desktop = getenv_harder(handle, "XDG_SESSION_DESKTOP", desktop_pam);
         incomplete = getenv_harder_bool(handle, "XDG_SESSION_INCOMPLETE", false);
 
-        tty = strempty(tty);
+#if 0 /// elogind will never witness systemd-user calling
+        if (streq_ptr(service, "systemd-user")) {
+                /* If we detect that we are running in the "systemd-user" PAM stack, then let's patch the class to
+                 * 'manager' if not set, simply for robustness reasons. */
+                type = "unspecified";
+                class = IN_SET(user_record_disposition(ur), USER_INTRINSIC, USER_SYSTEM, USER_DYNAMIC) ?
+                        "manager-early" : "manager";
+                tty = NULL;
 
-        if (strchr(tty, ':')) {
+        } else if (tty && strchr(tty, ':')) {
+#else // 0
+        if (tty && strchr(tty, ':')) {
+#endif // 0
                 /* A tty with a colon is usually an X11 display, placed there to show up in utmp. We rearrange things
                  * and don't pretend that an X display was a tty. */
                 if (isempty(display))
