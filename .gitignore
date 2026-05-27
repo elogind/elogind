@@ -69,7 +69,12 @@ mkosi.local.conf
 /.project
 
 # Development files that remain to be local
+_Deparsed_XSubs.pm
+.aiignore
+.idea/perl5shared.xml
+.opencode/
+.perl*
+AGENTS.md
 cb/elogind.layout
 compile_commands.json
-_Deparsed_XSubs.pm
 #endif // 1
