@@ -58,8 +58,7 @@
 #include "user-util.h"
 #include "utmp-wtmp.h"
 #include "virt.h"
-
-// Additional includes needed by elogind
+/// Additional includes needed by elogind
 #include <stdio.h>
 #include "exec-elogind.h"
 #include "os-util.h"

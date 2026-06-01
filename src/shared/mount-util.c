@@ -42,7 +42,7 @@
 //#include "strv.h"
 //#include "tmpfile-util.h"
 //#include "user-util.h"
-// Additional includes needed by elogind
+/// Additional includes needed by elogind
 #include <libmount.h>
 
 

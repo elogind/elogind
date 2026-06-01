@@ -8,7 +8,7 @@
 #include "recurse-dir.h"
 #include "strv.h"
 #include "tests.h"
-// Additional includes needed by elogind
+/// Additional includes needed by elogind
 #include "musl_missing.h"
 
 static char **list_nftw = NULL;
