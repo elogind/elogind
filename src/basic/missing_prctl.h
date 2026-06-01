@@ -1,7 +1,14 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 #pragma once
 
+#if 0 /// elogind should also be buildable on musl, and needs a bit more care here
 #include <linux/prctl.h>
+#else // 0
+#include <sys/prctl.h>
+#ifndef PR_SET_MM_MAP
+#  include <linux/prctl.h>
+#endif
+#endif // 0
 
 #include "macro.h"
 
