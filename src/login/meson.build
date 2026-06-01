@@ -208,8 +208,8 @@ if enable_logind
                 input: 'org.freedesktop.login1.service.in',
                 output: 'org.freedesktop.login1.service',
                 command : [jinja2_cmdline, '@INPUT@', '@OUTPUT@'],
-                install: enable_logind,
-                install_dir : dbussystemservicedir)
+                install_dir : dbussystemservicedir,
+                install : true)
 #endif // 0
         install_data('org.freedesktop.login1.policy',
                      install_dir : polkitpolicydir)
