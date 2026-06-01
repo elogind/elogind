@@ -255,6 +255,7 @@ shared_sources = files(
         'wall.c',
         'xml.c',
 )
+
 #endif // 0
 
 if get_option('tests') != 'false'
