@@ -18,7 +18,7 @@ TEMPLATE = '''\
         <contrib>Developer</contrib>
         <firstname>Sven</firstname>
         <surname>Eden</surname>
-        <email>sven.eden@gmx.de</email>
+        <email>sven@eden-worx.com</email>
       </author>
       <!-- // 1 -->
     <title>elogind.index</title>
