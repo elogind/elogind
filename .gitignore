@@ -77,4 +77,8 @@ _Deparsed_XSubs.pm
 AGENTS.md
 cb/elogind.layout
 compile_commands.json
+
+# But we need to see this for the release notes:
+!changelog_git.*
+
 #endif // 1
