@@ -2649,8 +2649,8 @@ install_libelogind_static = static_library(
 #                         userspace],
 #         c_args : libsystemd_c_args + (static_libsystemd_pic ? [] : ['-fno-PIC']))
 #
-# if static_libelogind != 'false'
-#         alias_target('libelogind', libelogind, install_libelogind_static)
+# if static_libsystemd != 'false'
+#         alias_target('libsystemd', libsystemd, install_libsystemd_static)
 # else
 #         alias_target('libelogind', libelogind)
 # endif
@@ -3348,8 +3348,8 @@ install_data('LICENSE.GPL2',
 #              'docs/HACKING.md',
 #              'docs/TRANSIENT-SETTINGS.md',
 #              'docs/TRANSLATORS.md',
+#              'docs/UIDS-GIDS.md',
 #endif // 0
-             'docs/UIDS-GIDS.md',
              install_dir : docdir)
 
 #if 0 /// irrelevant for elogind

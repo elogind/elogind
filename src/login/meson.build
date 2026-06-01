@@ -170,8 +170,8 @@ modules += [
 #                 'conditions' : [
 #                         'HAVE_PAM',
 #                 ],
-#                 'sources' : files('pam_elogind_loadkey.c'),
-#                 'version-script' : meson.current_source_dir() / 'pam_elogind_loadkey.sym',
+#                 'sources' : files('pam_systemd_loadkey.c'),
+#                 'version-script' : meson.current_source_dir() / 'pam_systemd_loadkey.sym',
 #         },
 #endif // 0
 ]
