@@ -51,8 +51,8 @@
       </para></listitem>
 
       <listitem><para>netdev and network files, see
-      <citerefentry><refentrytitle>elogind.netdev</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-      <citerefentry><refentrytitle>elogind.network</refentrytitle><manvolnum>5</manvolnum></citerefentry>
+      <citerefentry><refentrytitle>systemd.netdev</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+      <citerefentry><refentrytitle>systemd.network</refentrytitle><manvolnum>5</manvolnum></citerefentry>
       </para></listitem>
       // 0 -->
 
