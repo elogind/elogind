@@ -98,7 +98,6 @@ files, as long as:
 The simplest way to define a user record is via the drop-in directories (as documented
 in [nss-elogind(8)](file:///usr/share/doc/elogind/html/nss-elogind.html)
 and [elogind-userdbd(8)](file:///usr/share/doc/elogind/html/elogind-userdbd.html)).
-
 Such records can have blob directories by simply referring to some persistent
 place from the record, possibly next to the record itself. For instance,
 `/etc/userdb/grobie.user` may contain:
@@ -108,7 +107,7 @@ place from the record, possibly next to the record itself. For instance,
         "userName": "grobie",
         "disposition": "regular",
         "homeDirectory": "/home/grobie",
-        "blobDirectory": "/etc/userdb/grobie.blob/"
+        "blobDirectory": "/etc/userdb/grobie.blob/",
 }
 ```
 

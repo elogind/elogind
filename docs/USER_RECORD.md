@@ -905,8 +905,6 @@ provides.
 As mentioned, the `signature` section of the user record may contain one or
 more cryptographic signatures of the user record.
 Like all others, this section is optional, and only used when cryptographic validation of user records shall be used.
-Specifically, all user records managed by `systemd-homed.service` will carry such signatures and the service refuses
-managing user records that come
 without signature or with signatures not recognized by any locally defined public key.
 
 The `signature` field in the top-level user record object is an array of objects.
