@@ -70,7 +70,10 @@ mkosi.local.conf
 /.project
 
 # Development files that remain to be local
+.opencode/
+.aiignore
 cb/elogind.layout
+AGENTS.md
 compile_commands.json
 _Deparsed_XSubs.pm
 #endif // 1

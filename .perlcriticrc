@@ -1,0 +1,59 @@
+# please alpha sort config items as you add them
+
+severity        = 1
+only            = 0
+force           = 0
+top             = 20
+theme           = bugs+certrec+certrule+complexity+core+maintenance+nits+pbp+performance+security+unicode
+criticism-fatal = 1
+color           = 0
+allow-unsafe    = 0
+
+[Documentation::PodSpelling]
+spell_command = aspell --lang=en list
+stop_words = elogind systemd perldoc patchset EdenWorX MERCHANTABILITY
+
+[InputOutput::ProhibitBacktickOperators]
+only_in_void_context = 1
+
+[InputOutput::RequireCheckedSyscalls]
+functions = :builtins
+exclude_functions = print
+
+[Modules::ProhibitExcessMainComplexity]
+max_mccabe = 30
+
+[RegularExpressions::RequireExtendedFormatting]
+minimum_regex_length_to_complain_about = 16
+
+[Variables::ProhibitPunctuationVars]
+allow = $@ $! $? $$ $|
+
+[Variables::RequireLocalizedPunctuationVars]
+allow = %SIG $SIG $SIG{__WARN__} $SIG{__DIE__} $SIG{CHLD}
+
+[ValuesAndExpressions::ProhibitInterpolationOfLiterals]
+allow_if_string_contains_single_quote = 1
+
+# This rule is not really useful unless you have nothing but multiline lists with one item per line, or if you have to
+# deal with many re-orderings of lists.
+[-CodeLayout::RequireTrailingCommas]
+
+# No, just no.
+[-NamingConventions::Capitalization]
+
+# This may lead to many false positives according to its POD.
+[-RegularExpressions::ProhibitEnumeratedClasses]
+
+# Defaults to 5, but that is too few. Allow at least one more.
+[Subroutines::ProhibitManyArgs]
+max_arguments = 6
+
+# This one brings too many false positives
+[-ValuesAndExpressions::ProhibitAccessOfPrivateData]
+
+# I am very sorry, but this policy is totally bonkers!
+[-ValuesAndExpressions::ProhibitMagicNumbers]
+
+[RegularExpressions::ProhibitComplexRegexes]
+max_characters = 80
