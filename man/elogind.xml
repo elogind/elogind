@@ -1166,8 +1166,8 @@
 
         <listitem><para>Boot into the specified legacy SysV runlevel.
         <varname>2</varname>, <varname>3</varname>, and <varname>4</varname> are equivalent to
-        <varname>elogind.unit=multi-user.target</varname>; and <varname>5</varname> is equivalent to
-        <varname>elogind.unit=graphical.target</varname>, and provided for compatibility reasons and to be
+        <varname>systemd.unit=multi-user.target</varname>; and <varname>5</varname> is equivalent to
+        <varname>systemd.unit=graphical.target</varname>, and provided for compatibility reasons and to be
         easier to type.</para>
 
         <xi:include href="version-info.xml" xpointer="v186"/></listitem>
@@ -1396,7 +1396,7 @@
           <term><option>&#x2D;&#x2D;crash-reboot</option></term>
 
           <listitem><para>Automatically reboot the system on crash. This switch has no effect when running as
-          user instance. See <varname>elogind.crash_reboot</varname> above.</para>
+          user instance. See <varname>systemd.crash_reboot</varname> above.</para>
 
           <xi:include href="version-info.xml" xpointer="v227"/></listitem>
         </varlistentry>
