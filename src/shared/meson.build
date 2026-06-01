@@ -269,7 +269,6 @@ shared_sources = files(
         'smack-util.c',
         'sleep-config.c',
         'udev-util.c',
-        'user-record-nss.c',
         'user-record-show.c',
         'user-record.c',
         'userdb-dropin.c',
@@ -279,6 +278,11 @@ shared_sources = files(
         'wall.c',
         'xml.c',
 )
+
+if get_option('nss-elogind') != false
+	shared_sources += files('user-record-nss.c')
+endif
+
 #endif // 0
 
 if get_option('tests') != 'false'
