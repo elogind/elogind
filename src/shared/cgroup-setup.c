@@ -390,7 +390,7 @@ int cg_attach(const char *controller, const char *path, pid_t pid) {
                 r = cg_attach(SYSTEMD_CGROUP_CONTROLLER_LEGACY, path, pid);
 #if 0 /// elogind supports other controllers
                 if (r < 0)
-                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat elogind cgroup '%s', ignoring: %m", pid, path);
+                        log_warning_errno(r, "Failed to attach "PID_FMT" to compat systemd cgroup '%s', ignoring: %m", pid, path);
 #else // 0
                 if (r < 0)
                         log_warning_errno(r, "Failed to attach "PID_FMT" to compat %s cgroup %s: %m", pid, CGROUP_CONTROLLER_NAME, path);
