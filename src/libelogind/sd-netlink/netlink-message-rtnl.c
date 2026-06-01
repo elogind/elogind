@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
 #include <netinet/in.h>
-#include <linux/fib_rules.h>
-#include <linux/if_addrlabel.h>
-#include <linux/if_bridge.h>
-#include <linux/nexthop.h>
+//#include <linux/fib_rules.h>
+//#include <linux/if_addrlabel.h>
+//#include <linux/if_bridge.h>
+//#include <linux/nexthop.h>
 #include <stdbool.h>
 #include <unistd.h>
 
@@ -15,6 +15,11 @@
 //#include "netlink-types.h"
 #include "netlink-util.h"
 #include "socket-util.h"
+/// Additional includes needed by elogind
+#include <linux/fib_rules.h>    // Re-added here to fix #352
+#include <linux/if_addrlabel.h> // ...
+#include <linux/if_bridge.h>    // ...
+#include <linux/nexthop.h>      // <--
 
 #if 0 /// UNNEEDED by elogind
 static bool rtnl_message_type_is_neigh(uint16_t type) {

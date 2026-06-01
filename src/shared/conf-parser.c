@@ -2,7 +2,7 @@
 
 #include <errno.h>
 //#include <limits.h>
-#include <linux/ipv6.h>
+//#include <linux/ipv6.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -46,6 +46,8 @@
 #include "syslog-util.h"
 #include "time-util.h"
 #include "utf8.h"
+/// Additional includes needed by elogind
+#include <linux/ipv6.h> // Re-add here to fix #352
 
 DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(config_file_hash_ops_fclose,
                                               char, path_hash_func, path_compare,
