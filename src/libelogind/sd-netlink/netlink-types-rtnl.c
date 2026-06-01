@@ -1,5 +1,10 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
+#if 1 /// fix issue #352 when building elogind against musl
+#include "missing_network.h"
+#include "netlink-types-internal.h"
+#endif // 1
+
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <linux/batman_adv.h>
@@ -26,8 +31,8 @@
 #include <linux/veth.h>
 #include <linux/wireguard.h>
 
-#include "missing_network.h"
-#include "netlink-types-internal.h"
+//#include "missing_network.h"
+//#include "netlink-types-internal.h"
 
 enum {
         BOND_ARP_TARGETS_0,

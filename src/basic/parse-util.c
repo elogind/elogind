@@ -2,7 +2,7 @@
 
 #include <errno.h>
 #include <inttypes.h>
-#include <linux/ipv6.h>
+//#include <linux/ipv6.h>
 #include <net/if.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,9 +18,9 @@
 #include "process-util.h"
 //#include "stat-util.h"
 #include "string-util.h"
-
 /// Additional includes needed by elogind
 #include "strv.h"
+#include <linux/ipv6.h> // Re-add here to fix #352
 
 int parse_boolean(const char *v) {
         if (!v)
