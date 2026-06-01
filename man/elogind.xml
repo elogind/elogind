@@ -1179,8 +1179,8 @@
 
         <listitem><para>Boot into the specified legacy SysV runlevel.
         <varname>2</varname>, <varname>3</varname>, and <varname>4</varname> are equivalent to
-        <varname>elogind.unit=multi-user.target</varname>; and <varname>5</varname> is equivalent to
-        <varname>elogind.unit=graphical.target</varname>, and provided for compatibility reasons and to be
+        <varname>systemd.unit=multi-user.target</varname>; and <varname>5</varname> is equivalent to
+        <varname>systemd.unit=graphical.target</varname>, and provided for compatibility reasons and to be
         easier to type.</para>
 
         <xi:include href="version-info.xml" xpointer="v186"/></listitem>
@@ -1293,8 +1293,8 @@
       </varlistentry>
     </variablelist>
 
-    <para>For a list of system credentials various other components of elogind consume, see
-    <citerefentry><refentrytitle>elogind.system-credentials</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
+    <para>For a list of system credentials various other components of systemd consume, see
+    <citerefentry><refentrytitle>systemd.system-credentials</refentrytitle><manvolnum>7</manvolnum></citerefentry>.</para>
   </refsect1>
 
   <refsect1>
@@ -1497,8 +1497,8 @@
           <term><option>&#x2D;&#x2D;crash-action=</option></term>
 
           <listitem><para>Specify what to do when the system manager (PID 1) crashes. This switch has no
-          effect when <command>elogind</command> is running as user instance. See
-          <varname>elogind.crash_action=</varname> above.</para>
+          effect when <command>systemd</command> is running as user instance. See
+          <varname>systemd.crash_action=</varname> above.</para>
 
           <xi:include href="version-info.xml" xpointer="v256"/></listitem>
         </varlistentry>
@@ -1712,8 +1712,8 @@
       <member><citerefentry><refentrytitle>daemon</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>sd-daemon</refentrytitle><manvolnum>3</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>org.freedesktop.systemd1</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
-      <member><citerefentry><refentrytitle>elogind.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
-      <member><citerefentry><refentrytitle>elogind.special</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>systemd.unit</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
+      <member><citerefentry><refentrytitle>systemd.special</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
       <member><citerefentry project='die-net'><refentrytitle>pkg-config</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
       <member><citerefentry><refentrytitle>kernel-command-line</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>
       <member><citerefentry project='man-pages'><refentrytitle>bootup</refentrytitle><manvolnum>7</manvolnum></citerefentry></member>

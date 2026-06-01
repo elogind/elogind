@@ -29,12 +29,12 @@
     <para><simplelist>
       <member><filename>/etc/elogind/logind.conf</filename></member>
       <member><filename>/run/systemd/logind.conf</filename></member>
-      <member><filename>/usr/local/lib/elogind/logind.conf</filename></member>
-      <member><filename>/usr/lib/elogind/logind.conf</filename></member>
-      <member><filename>/etc/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/local/lib/systemd/logind.conf</filename></member>
+      <member><filename>/usr/lib/systemd/logind.conf</filename></member>
+      <member><filename>/etc/systemd/logind.conf.d/*.conf</filename></member>
       <member><filename>/run/systemd/logind.conf.d/*.conf</filename></member>
-      <member><filename>/usr/local/lib/elogind/logind.conf.d/*.conf</filename></member>
-      <member><filename>/usr/lib/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/local/lib/systemd/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></member>
     </simplelist></para>
     --><!-- else // 0 -->
     <para><filename>/etc/elogind/logind.conf</filename></para>
@@ -506,19 +506,15 @@
 
   <refsect1>
       <title>See Also</title>
-        <!-- 0 /// elogind is in section 8
-        --><!-- else // 0 -->
-        <citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry>,
-        <!-- // 0 -->
-        <!-- 0 /// UNNEEDED by elogind
-        --><!-- else // 0 -->
-        <citerefentry><refentrytitle>sleep.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
-        // 0 -->
       <para><simplelist type="inline">
         <member><citerefentry><refentrytitle>elogind</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>elogind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+        <!-- 0 /// elogind has no service file
+        <member><citerefentry><refentrytitle>systemd-logind.service</refentrytitle><manvolnum>8</manvolnum></citerefentry></member>
+        // 0 -->
         <member><citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry></member>
-        <member><citerefentry><refentrytitle>elogind-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
+        <!-- 0 /// Not relevant for elogind
+        <member><citerefentry><refentrytitle>systemd-system.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry></member>
+        // 0 -->
       </simplelist></para>
   </refsect1>
 
