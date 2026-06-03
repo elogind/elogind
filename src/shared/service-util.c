@@ -51,6 +51,7 @@ int service_parse_argv(
                 ARG_BUS_INTROSPECT,
         };
 
+
         static const struct option options[] = {
 #if 1 /// elogind allows to be daemonized
                 { "daemon",         no_argument,       NULL, 'D'                },
@@ -83,6 +84,11 @@ int service_parse_argv(
 
                 case '?':
                         return -EINVAL;
+
+#if 1 /// elogind allows to be daemonized, but the option is handled in elogind_startup()
+                case 'D':
+                        break;
+#endif // 1
 
                 default:
                         assert_not_reached();
