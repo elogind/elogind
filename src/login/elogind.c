@@ -424,10 +424,18 @@ int elogind_startup(int argc, char *argv[], bool *has_forked) {
         int i, r;
         pid_t pid;
 
-        /* if elogind was called with -h/--help, -v/--version or --bus-introspect, skip all checks */
-        for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
-                if (STR_IN_SET(argv[i], "-h", "--help", "-v", "--version", argv[i]) || startswith(argv[i], "--bus-introspect") )
+        for ( i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
+                /* elogind can be put into background using -D/--daemon option */
+                if ( STR_IN_SET(argv[i], "-D", "--daemon") ) {
+                        log_debug_elogind( "elogind_startup(): Encountered '%s', daemonizing...", argv[i] );
+                        daemonize = true;
+                        continue;
+                }
+                /* if elogind was called with -h/--help, -v/--version or --bus-introspect, skip all checks */
+                if ( STR_IN_SET(argv[i], "-h", "--help", "-v", "--version", argv[i]) || startswith(argv[i], "--bus-introspect") ) {
+                        log_debug_elogind( "elogind_startup(): Encountered '%s', returning 0", argv[i] );
                         return 0;
+                }
         }
 
         /* Do not continue if elogind is already running */
@@ -435,12 +443,6 @@ int elogind_startup(int argc, char *argv[], bool *has_forked) {
         if ( pid ) {
                 log_error( "elogind is already running as PID " PID_FMT, pid);
                 return -pid;
-        }
-
-        /* elogind can be put into background using -D/--daemon option */
-        for (i = 1; !daemonize && (i <= argc) && argv[i]; ++i ) {
-                if (streq("-D", argv[i]) || streq("--daemon", argv[i]))
-                        daemonize = true;
         }
 
         if ( daemonize ) {
