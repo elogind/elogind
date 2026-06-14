@@ -3,6 +3,7 @@
 
 #include <fcntl.h>
 #include <inttypes.h>
+#include <sys/stat.h>
 //#include <sys/uio.h>
 
 #if HAVE_GCRYPT
