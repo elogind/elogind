@@ -548,7 +548,9 @@ static int execute(
          * If hooks are allowed to interrupt sleep, the notification must happen only after they
          * succeeded.
          */
-        (void) prepare_for_sleep(true);
+        if (sleep_config->allow_suspend_interrupts) { // if interrupts are not allowed PrepareForSleep already sent in bus_manager_shutdown_or_sleep_now_or_later
+            (void) prepare_for_sleep(true);
+        }
 #endif // 0
 #if 0 /// elogind does not support systemd-homed
         (void) lock_all_homes();
@@ -587,8 +589,13 @@ static int execute(
                 nvidia_sleep(m, driver_fd, _SLEEP_OPERATION_MAX, &vtnr);
 
         /* Before performing the hook scripts, tell subscribers that we are back, so needed services are up again */
-        (void) prepare_for_sleep(false);
+        if (sleep_config->allow_suspend_interrupts) {
+                // if interrupts are not allowed, then PrepareForSleep was already sent in
+                // bus_manager_shutdown_or_sleep_now_or_later()
+                (void) prepare_for_sleep(false);
+        }
 #endif // 1
+
         arguments[1] = "post";
 #if 0 /// elogind does not execute wakeup hook scripts in parallel, they might be order relevant
         (void) execute_directories(dirs, DEFAULT_TIMEOUT_USEC, NULL, NULL, (char **) arguments, NULL, EXEC_DIR_PARALLEL | EXEC_DIR_IGNORE_ERRORS);
