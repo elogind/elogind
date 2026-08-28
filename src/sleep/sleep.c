@@ -548,7 +548,9 @@ static int execute(
          * If hooks are allowed to interrupt sleep, the notification must happen only after they
          * succeeded.
          */
-        (void) prepare_for_sleep(true);
+        if (sleep_config->allow_suspend_interrupts) { // if interrupts are not allowed PrepareForSleep already sent in bus_manager_shutdown_or_sleep_now_or_later
+            (void) prepare_for_sleep(true);
+        }
 #endif // 0
 #if 0 /// elogind does not support systemd-homed
         (void) lock_all_homes();
@@ -588,7 +590,10 @@ static int execute(
 #endif // 1
 
 #if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
-        (void) prepare_for_sleep(false);
+
+        if (sleep_config->allow_suspend_interrupts) { // if interrupts are not allowed PrepareForSleep already sent in bus_manager_shutdown_or_sleep_now_or_later
+            (void) prepare_for_sleep(false);
+        }
 #endif // 0
 
 
