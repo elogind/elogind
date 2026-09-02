@@ -591,7 +591,7 @@ static int execute(
 
 #if 1 /// Before performing the hook scripts, tell subscribers that we are back, so needed services are up again
 
-        if (sleep_config->allow_suspend_interrupts) { // if interrupts are not allowed PrepareForSleep already sent in bus_manager_shutdown_or_sleep_now_or_later
+        if (sleep_config->allow_suspend_interrupts) { // if interrupts are not allowed PrepareForSleep already sent by elogind_sigchld_handler 
             (void) prepare_for_sleep(false);
         }
 #endif // 0
