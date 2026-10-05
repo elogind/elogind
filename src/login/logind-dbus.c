@@ -2032,7 +2032,7 @@ int send_prepare_for(Manager *m, const HandleActionData *a, bool _active) {
 }
 
 #if 1 /// elogind specific helper to make HALT and REBOOT possible.
-static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb ) {
+static int elogind_run_helper( Manager* m, const char* helper, const char* arg_verb, const char* extra_arg ) {
         static const char * const dirs[] = {
                 SYSTEM_SHUTDOWN_PATH,
                 PKGSYSCONFDIR "/system-shutdown",
@@ -2088,7 +2088,7 @@ static int elogind_run_helper( Manager* m, const char* helper, const char* arg_v
                 return log_error_errno( errno, "Failed to fork run %s: %m", helper );
         if ( 0 == r ) {
                 /* Child */
-                execlp( helper, helper, NULL );
+                execlp( helper, helper, extra_arg, NULL );
                 log_error_errno( errno, "Failed to execute %s: %m", helper );
                 _exit( EXIT_FAILURE );
         }
@@ -2127,13 +2127,13 @@ static int elogind_shutdown_or_sleep( Manager* m, HandleAction action ) {
 
         switch ( action ) {
                 case HANDLE_POWEROFF:
-                        return elogind_run_helper( m, POWEROFF, "poweroff" );
+                        return elogind_run_helper( m, POWEROFF, "poweroff", NULL );
                 case HANDLE_REBOOT:
-                        return elogind_run_helper( m, REBOOT, "reboot" );
+                        return elogind_run_helper( m, REBOOT, "reboot", NULL );
                 case HANDLE_HALT:
-                        return elogind_run_helper( m, HALT, "halt" );
+                        return elogind_run_helper( m, HALT, "halt", NULL );
                 case HANDLE_KEXEC:
-                        return elogind_run_helper( m, KEXEC, "kexec" );
+                        return elogind_run_helper( m, KEXEC, "kexec", "-e" );
                 case HANDLE_SUSPEND:
                         return do_sleep( m, SLEEP_SUSPEND );
                 case HANDLE_HIBERNATE:
