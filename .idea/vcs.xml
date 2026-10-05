@@ -10,5 +10,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/pwx" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pwx/cmake-build-debug/_deps/catch2-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/pwx/cmake-build-release/_deps/catch2-src" vcs="Git" />
   </component>
 </project>

@@ -66,6 +66,7 @@ __pycache__/
 
 # Development files that remain to be local
 .idea/perl5shared.xml
+docs/README*.md
 .opencode/
 .aiignore
 .perl*
