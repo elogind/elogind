@@ -84,9 +84,15 @@ static int elogind_sigchld_handler(
                 sd_event_source* s,
                 const struct signalfd_siginfo* si,
                 void* userdata ) {
+        _cleanup_(sleep_config_freep) SleepConfig *sleep_config = NULL;
+        
         const HandleActionData* a;
         Manager* m = userdata;
         int r, status;
+
+        r = parse_sleep_config(&sleep_config);
+        if (r < 0)
+                return r;
 
         r = sd_event_get_state( m->event );
 
@@ -108,7 +114,10 @@ static int elogind_sigchld_handler(
                                 m->sleep_fork_pid = 0;
                         /* emulate match_job_removed for sleep wakeup */
                         if ( a && a->sleep_operation != _SLEEP_OPERATION_INVALID ) {
-                                (void) send_prepare_for( m, a, false );
+                                if (!sleep_config->allow_suspend_interrupts) {
+                                        /* if interrupts are allowed PrepareForSleep sent by prepare_for_sleep in sleep.c */
+                                        (void) send_prepare_for( m, a, false );
+                                }
                                 m->action_job = mfree(m->action_job);
                                 m->delayed_action = NULL;
                                 m->sleep_fork_action = NULL; /* All done */
