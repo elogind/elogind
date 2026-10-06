@@ -2529,6 +2529,12 @@ boot_stubs = []
 
 build_dir_include = include_directories('.')
 
+#if 1 /// if elogind is built on musl, we have to include some overloads
+if get_option('libc') == 'musl'
+	libc_include_dir = 'src/include/musl'
+endif
+
+
 basic_includes = include_directories(
         'src/basic',
         'src/fundamental',
