@@ -16,7 +16,7 @@
 #include "strv.h"
 #include "time-util.h"
 #include "user-record.h"
-#include "user-record-nss.h"
+//#include "user-record-nss.h"
 #include "user-util.h"
 #include "userdb.h"
 #include "varlink-io.systemd.UserDatabase.h"

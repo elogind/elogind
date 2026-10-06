@@ -24,7 +24,9 @@
 //#include "varlink-io.systemd.PCRLock.h"
 //#include "varlink-io.systemd.Resolve.h"
 //#include "varlink-io.systemd.Resolve.Monitor.h"
+#if 1 && ENABLE_USERDB /// elogind: UserDatabase protocol is only built with userdb support
 #include "varlink-io.systemd.UserDatabase.h"
+#endif // 1 && ENABLE_USERDB
 //#include "varlink-io.systemd.oom.h"
 //#include "varlink-io.systemd.service.h"
 //#include "varlink-io.systemd.sysext.h"
@@ -156,8 +158,10 @@ static void test_parse_format_one(const sd_varlink_interface *iface) {
 TEST(parse_format) {
         test_parse_format_one(&vl_interface_org_varlink_service);
         print_separator();
+#if 1 && ENABLE_USERDB /// elogind: UserDatabase protocol is only built with userdb support
         test_parse_format_one(&vl_interface_io_systemd_UserDatabase);
         print_separator();
+#endif // 1 && ENABLE_USERDB
 #if 0 /// Unsupported by elogind
         test_parse_format_one(&vl_interface_io_systemd_NamespaceResource);
         print_separator();

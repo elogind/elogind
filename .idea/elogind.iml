@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module version="4">
   <component name="AdditionalModuleElements">
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.cache" />
+      <excludeFolder url="file://$MODULE_DIR$/.opencode" />
+      <excludeFolder url="file://$MODULE_DIR$/.vscode" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/.opencode" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/cmake-build-debug" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/cmake-build-release" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/elogind" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/libgit2-1.9.4" />
+      <excludeFolder url="file://$MODULE_DIR$/pwx/systemd" />
+    </content>
   </component>
 </module>
