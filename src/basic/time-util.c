@@ -1182,7 +1182,11 @@ int parse_time(const char *t, usec_t *ret, usec_t default_unit) {
 
                 errno = 0;
                 l = strtoll(p, &e, 10);
+#if 0 /// elogind: musl strtoll() sets errno when no digits are found, unlike glibc; only honor it past a conversion
                 if (errno > 0)
+#else // 0
+                if (errno > 0 && e != p)
+#endif // 0
                         return -errno;
                 if (l < 0)
                         return -ERANGE;
@@ -1362,7 +1366,11 @@ int parse_nsec(const char *t, nsec_t *ret) {
 
                 errno = 0;
                 l = strtoll(p, &e, 10);
+#if 0 /// elogind: musl strtoll() sets errno when no digits are found, unlike glibc; only honor it past a conversion
                 if (errno > 0)
+#else // 0
+                if (errno > 0 && e != p)
+#endif // 0
                         return -errno;
                 if (l < 0)
                         return -ERANGE;
