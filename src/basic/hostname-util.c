@@ -128,8 +128,12 @@ bool hostname_is_valid(const char *s, ValidHostnameFlags flags) {
         if (hyphen)
                 return false;
 
+#if 0 /// elogind: HOST_NAME_MAX differs across libcs; validate against the Linux limit of 64 on all libcs
         if (p-s > HOST_NAME_MAX) /* Note that HOST_NAME_MAX is 64 on Linux, but DNS allows domain names up to
                                   * 255 characters */
+#else // 0
+        if (p-s > 64) /* HOST_NAME_MAX is 64 on Linux, but DNS allows domain names up to 255 characters */
+#endif // 0
                 return false;
 
         return true;
