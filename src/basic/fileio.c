@@ -177,11 +177,19 @@ int write_string_stream_full(
         }
 
         if (fputs(line, f) == EOF)
+#if 0 /// elogind: musl fputs() to a read-mode stream returns EOF without setting errno, unlike glibc
                 return -errno;
+#else // 0
+                return errno_or_else(EBADF);
+#endif // 0
 
         if (needs_nl)
                 if (fputc('\n', f) == EOF)
+#if 0 /// elogind: musl fputc() to a read-mode stream returns EOF without setting errno, unlike glibc
                         return -errno;
+#else // 0
+                        return errno_or_else(EBADF);
+#endif // 0
 
         if (flags & WRITE_STRING_FILE_SYNC)
                 r = fflush_sync_and_check(f);
