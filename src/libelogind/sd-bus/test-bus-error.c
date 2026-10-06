@@ -233,8 +233,12 @@ TEST(sd_bus_error_set_errnof) {
         assert_se(sd_bus_error_has_name(&error, SD_BUS_ERROR_ACCESS_DENIED));
         errno = EACCES;
         assert_se(asprintf(&str, "%m") >= 0);
-        assert_se(streq(error.message, str));
-        assert_se(error._need_free == 0);
+                assert_se(streq(error.message, str));
+#ifndef __GLIBC__ /// elogind: XSI strerror_r() fills a heap buffer and promotes the error to dynamic on musl
+                assert_se(error._need_free > 0);
+#else
+                assert_se(error._need_free == 0);
+#endif
 
         str = mfree(str);
         sd_bus_error_free(&error);
