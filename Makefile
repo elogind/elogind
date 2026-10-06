@@ -64,6 +64,7 @@ USE_SELINUX  := $(if $(USE_SELINUX),$(USE_SELINUX),disabled)
 USE_SMACK    := $(if $(USE_SMACK),$(USE_SMACK),true)
 USE_USERDB   := $(if $(USE_USERDB),$(USE_USERDB),true)
 USE_UTMP     := $(if $(USE_UTMP),$(USE_UTMP),true)
+USE_VARLINK  := $(if $(USE_VARLINK),$(USE_VARLINK),true)
 USE_XENCTRL  := $(if $(USE_XENCTRL),$(USE_XENCTRL),auto)
 
 # -----------------------------------------------------------------------------------
@@ -122,10 +123,11 @@ endif
 
 # disable varlink, userdb and nss-elogind if wanted
 ifeq (NO,$(VARLINK))
-	BASIC_OPT  := -Dvarlink=false
-	BUILDDIR   := ${BUILDDIR}_novar
-	USE_NSS    := false
-	USE_USERDB := false
+	BASIC_OPT   := -Dvarlink=false
+	BUILDDIR    := ${BUILDDIR}_novar
+	USE_NSS     := false
+	USE_USERDB  := false
+	USE_VARLINK := false
 endif
 
 
@@ -225,6 +227,7 @@ $(CONFIG): $(BUILDDIR) $(MESON_LST)
 			-Dsmack=$(USE_SMACK) \
 			-Duserdb=$(USE_USERDB) \
 			-Dutmp=$(USE_UTMP) \
+			-Dvarlink=$(USE_VARLINK) \
 			-Dxenctrl=$(USE_XENCTRL) \
 			-Dmode=$(BUILDMODE) \
 	)
