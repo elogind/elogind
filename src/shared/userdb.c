@@ -658,7 +658,11 @@ int userdb_by_name(const char *name, UserDBFlags flags, UserRecord **ret) {
                 r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS synthesis when nss-elogind is disabled; behave as not-found
                         r = nss_user_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
+#else /// ENABLE_NSS_ELOGIND
+                        r = -ESRCH;
+#endif // ENABLE_NSS_ELOGIND
                         log_debug_elogind("nss_user_record_by_name returned: %d", r);
                         if (r >= 0)
                                 return r;
@@ -710,7 +714,11 @@ int userdb_by_uid(uid_t uid, UserDBFlags flags, UserRecord **ret) {
                 r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
                         /* Client-side NSS fallback */
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS synthesis when nss-elogind is disabled; behave as not-found
                         r = nss_user_record_by_uid(uid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
+#else // ENABLE_NSS_ELOGIND
+                        r = -ESRCH;
+#endif // ENABLE_NSS_ELOGIND
                         if (r >= 0)
                                 return r;
                 }
@@ -744,8 +752,10 @@ int userdb_all(UserDBFlags flags, UserDBIterator **ret) {
                 if (r < 0)
                         return r;
 
+#if ENABLE_NSS_ELOGIND /// elogind: skip NSS enumeration when nss-elogind is disabled
                 setpwent();
                 iterator->nss_iterating = true;
+#endif // ENABLE_NSS_ELOGIND
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_DROPIN) && (qr < 0 || !iterator->dropin_covered)) {
@@ -775,6 +785,7 @@ int userdb_iterator_get(UserDBIterator *iterator, UserRecord **ret) {
         assert(iterator);
         assert(iterator->what == LOOKUP_USER);
 
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS enumeration when nss-elogind is disabled
         if (iterator->nss_iterating) {
                 struct passwd *pw;
 
@@ -821,6 +832,7 @@ int userdb_iterator_get(UserDBIterator *iterator, UserRecord **ret) {
                 iterator->nss_iterating = false;
                 endpwent();
         }
+#endif // ENABLE_NSS_ELOGIND
 
         for (; iterator->dropins && iterator->dropins[iterator->current_dropin]; iterator->current_dropin++) {
                 const char *i = iterator->dropins[iterator->current_dropin];
@@ -929,7 +941,11 @@ int groupdb_by_name(const char *name, UserDBFlags flags, GroupRecord **ret) {
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS synthesis when nss-elogind is disabled; behave as not-found
                         r = nss_group_record_by_name(name, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
+#else // ENABLE_NSS_ELOGIND
+                        r = -ESRCH;
+#endif // ENABLE_NSS_ELOGIND
                         if (r >= 0)
                                 return r;
                 }
@@ -978,7 +994,11 @@ int groupdb_by_gid(gid_t gid, UserDBFlags flags, GroupRecord **ret) {
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_NSS) && !(iterator && iterator->nss_covered)) {
                 r = userdb_iterator_block_nss_elogind(iterator);
                 if (r >= 0) {
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS synthesis when nss-elogind is disabled; behave as not-found
                         r = nss_group_record_by_gid(gid, !FLAGS_SET(flags, USERDB_SUPPRESS_SHADOW), ret);
+#else // ENABLE_NSS_ELOGIND
+                        r = -ESRCH;
+#endif // ENABLE_NSS_ELOGIND
                         if (r >= 0)
                                 return r;
                 }
@@ -1012,8 +1032,10 @@ int groupdb_all(UserDBFlags flags, UserDBIterator **ret) {
                 if (r < 0)
                         return r;
 
+#if ENABLE_NSS_ELOGIND /// elogind: skip NSS enumeration when nss-elogind is disabled
                 setgrent();
                 iterator->nss_iterating = true;
+#endif // ENABLE_NSS_ELOGIND
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_DROPIN) && (qr < 0 || !iterator->dropin_covered)) {
@@ -1042,6 +1064,7 @@ int groupdb_iterator_get(UserDBIterator *iterator, GroupRecord **ret) {
         assert(iterator);
         assert(iterator->what == LOOKUP_GROUP);
 
+#if ENABLE_NSS_ELOGIND /// elogind: no NSS enumeration when nss-elogind is disabled
         if (iterator->nss_iterating) {
                 struct group *gr;
 
@@ -1085,6 +1108,7 @@ int groupdb_iterator_get(UserDBIterator *iterator, GroupRecord **ret) {
                 iterator->nss_iterating = false;
                 endgrent();
         }
+#endif // ENABLE_NSS_ELOGIND
 
         for (; iterator->dropins && iterator->dropins[iterator->current_dropin]; iterator->current_dropin++) {
                 const char *i = iterator->dropins[iterator->current_dropin];
@@ -1180,8 +1204,10 @@ int membershipdb_by_user(const char *name, UserDBFlags flags, UserDBIterator **r
                 if (r < 0)
                         return r;
 
+#if ENABLE_NSS_ELOGIND /// elogind: skip NSS enumeration when nss-elogind is disabled
                 setgrent();
                 iterator->nss_iterating = true;
+#endif // ENABLE_NSS_ELOGIND
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_DROPIN) && (qr < 0 || !iterator->dropin_covered))
@@ -1228,7 +1254,9 @@ int membershipdb_by_group(const char *name, UserDBFlags flags, UserDBIterator **
                         return r;
 
                 /* We ignore all errors here, since the group might be defined by a userdb native service, and we queried them already above. */
+#if ENABLE_NSS_ELOGIND /// elogind: skip NSS enumeration when nss-elogind is disabled
                 (void) nss_group_record_by_name(name, false, &gr);
+#endif // ENABLE_NSS_ELOGIND
                 if (gr) {
                         iterator->members_of_group = strv_copy(gr->members);
                         if (!iterator->members_of_group)
@@ -1271,8 +1299,10 @@ int membershipdb_all(UserDBFlags flags, UserDBIterator **ret) {
                 if (r < 0)
                         return r;
 
+#if ENABLE_NSS_ELOGIND /// elogind: skip NSS enumeration when nss-elogind is disabled
                 setgrent();
                 iterator->nss_iterating = true;
+#endif // ENABLE_NSS_ELOGIND
         }
 
         if (!FLAGS_SET(flags, USERDB_EXCLUDE_DROPIN) && (qr < 0 || !iterator->dropin_covered))

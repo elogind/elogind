@@ -269,11 +269,9 @@ shared_sources = files(
         'smack-util.c',
         'sleep-config.c',
         'udev-util.c',
-        'user-record-show.c',
         'user-record.c',
         'userdb-dropin.c',
         'userdb.c',
-        'varlink-io.systemd.UserDatabase.c',
         'verbs.c',
         'wall.c',
         'xml.c',
@@ -281,6 +279,14 @@ shared_sources = files(
 
 if get_option('nss-elogind') != false
 	shared_sources += files('user-record-nss.c')
+endif
+
+# these shared sources are only needed for the userdb stack
+if get_option('userdb') != false
+	shared_sources += files(
+		'user-record-show.c',
+		'varlink-io.systemd.UserDatabase.c',
+	)
 endif
 
 #endif // 0

@@ -449,6 +449,12 @@ if not get_option('varlink')
 endif
 #endif // 1
 
+#if 1 /// elogind: nss-elogind needs the userdb stack at runtime
+if get_option('nss-elogind') and not get_option('userdb')
+        error('nss-elogind requires userdb support. Use -Dnss-elogind=false with -Duserdb=false.')
+endif
+#endif // 1
+
 #####################################################################
 
 cc = meson.get_compiler('c')
