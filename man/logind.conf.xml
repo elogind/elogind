@@ -25,9 +25,9 @@
   </refnamediv>
 
   <refsynopsisdiv>
-    <!-- 0 /// not supported by elogind, this is a little different here
+    <!-- 0 /// Here we search in elogind subdirectories instead
     <para><simplelist>
-      <member><filename>/etc/elogind/logind.conf</filename></member>
+      <member><filename>/etc/systemd/logind.conf</filename></member>
       <member><filename>/run/systemd/logind.conf</filename></member>
       <member><filename>/usr/local/lib/systemd/logind.conf</filename></member>
       <member><filename>/usr/lib/systemd/logind.conf</filename></member>
@@ -37,8 +37,14 @@
       <member><filename>/usr/lib/systemd/logind.conf.d/*.conf</filename></member>
     </simplelist></para>
     --><!-- else // 0 -->
-    <para><filename>/etc/elogind/logind.conf</filename></para>
-    <para><filename>/etc/elogind/logind.conf.d/*.conf</filename></para>
+      <member><filename>/etc/elogind/logind.conf</filename></member>
+      <member><filename>/run/elogind/logind.conf</filename></member>
+      <member><filename>/usr/local/lib/elogind/logind.conf</filename></member>
+      <member><filename>/usr/lib/elogind/logind.conf</filename></member>
+      <member><filename>/etc/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/run/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/local/lib/elogind/logind.conf.d/*.conf</filename></member>
+      <member><filename>/usr/lib/elogind/logind.conf.d/*.conf</filename></member>
     <!-- // 0 -->
   </refsynopsisdiv>
 
