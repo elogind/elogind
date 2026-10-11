@@ -86,6 +86,11 @@ struct Manager {
         /* Map for finding the session for each inotify watch descriptor for the cgroup.events cgroupv2 attribute. */
         Hashmap *cgroup_control_inotify_wd_session;
 
+        /* Map of inotify watch descriptors to the cgroup paths of finalized sessions whose cgroup could not
+         * be removed yet because processes were still running in it. The cgroup is removed as soon as its
+         * cgroup.events reports "populated 0". */
+        Hashmap *cgroup_orphan_inotify_wd;
+
         /* Make sure the user cannot accidentally unmount our cgroup
          * file system */
         int pin_cgroupfs_fd;
