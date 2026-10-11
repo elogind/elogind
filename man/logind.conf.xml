@@ -145,6 +145,11 @@
         but see the options <varname>KillOnlyUsers=</varname> and
         <varname>KillExcludeUsers=</varname> below.</para>
 
+        <!-- 1 /// elogind: surviving processes keep their session cgroups until they exit -->
+        <para>Processes that survive logout keep their session cgroup, which is removed automatically once
+        it becomes empty.</para>
+        <!-- // 1 -->
+
         <!-- 0 /// elogind has no user manager unit, and lingering isn't clarified, yet.
         <para>In addition to session processes, user process may run under the user
         manager unit <filename>user@.service</filename>. Depending on the linger
