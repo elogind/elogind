@@ -1369,10 +1369,14 @@ int session_finalize(Session *s) {
 
 #if 1 /// cleanup elogind session watch on its cgroup
         session_release_cgroup(s);
-        if (s->cgroup_path)
-                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path, /* delete_root= */ true);
-        else if (s->id)
-                (void) cg_trim(SYSTEMD_CGROUP_CONTROLLER, s->id, /* delete_root= */ true);
+        if (s->cgroup_path || s->id) {
+                const char *cgroup_path = s->cgroup_path ?: s->id;
+
+                /* If processes are still running in the session cgroup (daemons that outlived the
+                 * session), it cannot be removed now. Keep watching it and remove it once it is empty. */
+                if (cg_trim(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, /* delete_root= */ true) < 0)
+                        (void) manager_watch_orphan_cgroup(s->manager, cgroup_path);
+        }
 #endif // 1
 
         if (s->started)

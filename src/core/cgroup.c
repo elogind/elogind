@@ -3613,6 +3613,122 @@ void session_release_cgroup(Session *s) {
 }
 #endif // 0
 
+#if 1 /// elogind removes cgroups of finalized sessions once they become empty
+DEFINE_PRIVATE_HASH_OPS_WITH_VALUE_DESTRUCTOR(orphan_cgroup_hash_ops, void, trivial_hash_func, trivial_compare_func,
+                                              char, free);
+
+/* Stop tracking an orphaned cgroup. The inotify watch is only removed if no live session shares it: inotify
+ * hands out the same watch descriptor when the same inode is watched twice on one inotify fd, which happens
+ * if a new session reuses the cgroup directory. */
+static void manager_forget_orphan_cgroup(Manager *m, int wd, bool rm_watch) {
+        assert(m);
+
+        void* inotify_wd = hashmap_remove(m->cgroup_orphan_inotify_wd, INT_TO_PTR(wd));
+        if (inotify_wd)
+                free(inotify_wd);
+
+        if (rm_watch && m->cgroup_inotify_fd >= 0 &&
+            !hashmap_contains(m->cgroup_control_inotify_wd_session, INT_TO_PTR(wd)))
+                (void) inotify_rm_watch(m->cgroup_inotify_fd, wd);
+}
+
+static int manager_check_orphan_cgroup(Manager *m, int wd) {
+        _cleanup_free_ char *populated = NULL;
+        const char *cgroup_path;
+        int r;
+
+        assert(m);
+
+        cgroup_path = hashmap_get(m->cgroup_orphan_inotify_wd, INT_TO_PTR(wd));
+        if (!cgroup_path)
+                return 0;
+
+        /* A new session has taken over this cgroup, it is not ours to remove anymore. */
+        if (hashmap_contains(m->cgroup_control_inotify_wd_session, INT_TO_PTR(wd))) {
+                log_debug("Orphaned cgroup %s is in use by a session again, no longer watching it.", cgroup_path);
+                manager_forget_orphan_cgroup(m, wd, /* rm_watch= */ false);
+                return 0;
+        }
+
+        r = cg_read_event(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, "populated", &populated);
+        if (r == -ENOENT) {
+                /* Removed by someone else. */
+                manager_forget_orphan_cgroup(m, wd, /* rm_watch= */ true);
+                return 0;
+        }
+        if (r < 0)
+                return log_debug_errno(r, "Failed to read cgroup.events of orphaned cgroup %s: %m", cgroup_path);
+
+        if (!streq(populated, "0"))
+                return 0;
+
+        r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, /* delete_root= */ true);
+        if (r < 0)
+                /* Keep watching, we will try again on the next event. */
+                return log_debug_errno(r, "Failed to remove empty orphaned cgroup %s: %m", cgroup_path);
+
+        log_debug("Removed orphaned cgroup %s, it is empty now.", cgroup_path);
+        manager_forget_orphan_cgroup(m, wd, /* rm_watch= */ true);
+        return 1;
+}
+
+int manager_watch_orphan_cgroup(Manager *m, const char *cgroup_path) {
+        _cleanup_free_ char *events = NULL, *p = NULL;
+        int wd, r;
+
+        assert(m);
+        assert(cgroup_path);
+
+        if (m->cgroup_inotify_fd < 0)
+                return 0;
+
+        /* Only applies to the unified hierarchy */
+        r = cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER);
+        if (r <= 0)
+                return r;
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, "cgroup.events", &events);
+        if (r < 0)
+                return r;
+
+        wd = inotify_add_watch(m->cgroup_inotify_fd, events, IN_MODIFY);
+        if (wd < 0) {
+                if (errno == ENOENT) /* Already gone */
+                        return 0;
+
+                return log_debug_errno(errno, "Failed to watch orphaned cgroup %s: %m", cgroup_path);
+        }
+
+        /* Shared with a live session (see above), nothing to do. */
+        if (hashmap_contains(m->cgroup_control_inotify_wd_session, INT_TO_PTR(wd)))
+                return 0;
+
+        p = strdup(cgroup_path);
+        if (!p) {
+                (void) inotify_rm_watch(m->cgroup_inotify_fd, wd);
+                return log_oom();
+        }
+
+        r = hashmap_ensure_put(&m->cgroup_orphan_inotify_wd, &orphan_cgroup_hash_ops, INT_TO_PTR(wd), p);
+        if (r == -EEXIST) { /* Already watched, drop our duplicate */
+                free(p);
+                return 0;
+        }
+        if (r < 0) {
+                (void) inotify_rm_watch(m->cgroup_inotify_fd, wd);
+                return log_oom();
+        }
+        TAKE_PTR(p);
+
+        log_debug("Watching orphaned cgroup %s until it is empty.", cgroup_path);
+
+        /* The last process may have exited between the failed removal and adding the watch. */
+        (void) manager_check_orphan_cgroup(m, wd);
+
+        return 0;
+}
+#endif // 1
+
 #if 0 /// UNNEEDED by elogind
 int unit_cgroup_is_empty(Unit *u) {
         int r;
@@ -4226,9 +4342,15 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                                 /* Queue overflow has no watch descriptor */
                                 continue;
 
-                        if (e->mask & IN_IGNORED)
+                        if (e->mask & IN_IGNORED) {
                                 /* The watch was just removed */
+#if 1 /// elogind: the kernel drops the watch when an orphaned cgroup is removed by someone else
+                                void* inotify_wd = hashmap_remove(m->cgroup_orphan_inotify_wd, INT_TO_PTR(e->wd));
+                                if (inotify_wd)
+                                        free(inotify_wd);
+#endif // 1
                                 continue;
+                        }
 
                         /* Note that inotify might deliver events for a watch even after it was removed,
                          * because it was queued before the removal. Let's ignore this here safely. */
@@ -4245,6 +4367,8 @@ static int on_cgroup_inotify_event(sd_event_source *s, int fd, uint32_t revents,
                         session = hashmap_get(m->cgroup_control_inotify_wd_session, INT_TO_PTR(e->wd));
                         if (session)
                                 (void) session_check_cgroup_events(session);
+
+                        (void) manager_check_orphan_cgroup(m, e->wd);
 #endif // 0
                 }
         }
@@ -4512,6 +4636,7 @@ void manager_shutdown_cgroup(Manager *m, bool delete) {
         m->cgroup_memory_inotify_wd_unit = hashmap_free(m->cgroup_memory_inotify_wd_unit);
 #else // 0
         m->cgroup_control_inotify_wd_session = hashmap_free(m->cgroup_control_inotify_wd_session);
+        m->cgroup_orphan_inotify_wd = hashmap_free(m->cgroup_orphan_inotify_wd);
 #endif // 0
 
         m->cgroup_inotify_event_source = sd_event_source_disable_unref(m->cgroup_inotify_event_source);

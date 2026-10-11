@@ -464,6 +464,9 @@ void unit_release_cgroup(Unit *u, bool drop_cgroup_runtime);
 #else // 0
 void session_release_cgroup(Session *s);
 #endif // 0
+#if 1 /// elogind: remove cgroups of finalized sessions once they become empty
+int manager_watch_orphan_cgroup(Manager *m, const char *cgroup_path);
+#endif // 1
 
 #if 0 /// UNNEEDED by elogind
 void unit_add_to_cgroup_empty_queue(Unit *u);
