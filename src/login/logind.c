@@ -40,6 +40,7 @@
 #include "terminal-util.h"
 #include "udev-util.h"
 /// Additional includes needed by elogind
+#include "cgroup.h"
 #include "elogind.h"
 #include "musl_missing.h"
 #include "user-util.h"
@@ -1244,6 +1245,12 @@ static int manager_startup(Manager *m) {
 
         /* Remove stale objects before we start them */
         manager_gc(m, false);
+
+#if 1 /// elogind: remove pre-restart orphan session cgroups via a startup scan
+        r = manager_scan_orphan_cgroups(m);
+        if (r < 0)
+                log_warning_errno(r, "Orphan session cgroup scan failed: %m");
+#endif // 1
 
 #if 0 /// elogind does not support autospawning of vts
         /* Reserve the special reserved VT */

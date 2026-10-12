@@ -40,6 +40,8 @@
 //#include "string-table.h"
 #include "string-util.h"
 #include "virt.h"
+/// Additional includes needed by elogind
+#include "dirent-util.h"
 
 #if BPF_FRAMEWORK
 #include "bpf-dlopen.h"
@@ -3724,6 +3726,78 @@ int manager_watch_orphan_cgroup(Manager *m, const char *cgroup_path) {
 
         /* The last process may have exited between the failed removal and adding the watch. */
         (void) manager_check_orphan_cgroup(m, wd);
+
+        return 0;
+}
+#endif // 1
+
+#if 1 /// elogind: remove pre-restart orphan session cgroups via a startup scan
+static bool session_id_matches_orphan_scan(const char *name) {
+        const char *p;
+
+        assert(name);
+
+        /* The daemon only generates numeric (audit) or c-prefixed (counter) session IDs, see
+         * method_create_session(). Anything else at the top level is not ours. */
+        if (name[0] == 'c')
+                name++;
+
+        if (!*name)
+                return false;
+
+        for (p = name; *p; p++)
+                if (*p < '0' || *p > '9')
+                        return false;
+
+        return true;
+}
+
+int manager_scan_orphan_cgroups(Manager *m) {
+        _cleanup_closedir_ DIR *d = NULL;
+        _cleanup_free_ char *root = NULL;
+        int r;
+
+        assert(m);
+
+        /* Only applies to the unified hierarchy */
+        r = cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER);
+        if (r <= 0)
+                return r;
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, NULL, NULL, &root);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to determine cgroup root for orphan scan: %m");
+
+        d = opendir(root);
+        if (!d)
+                return log_debug_errno(errno, "Failed to open cgroup root %s for orphan scan: %m", root);
+
+        FOREACH_DIRENT(de, d, return log_debug_errno(errno, "Failed to enumerate cgroup root %s: %m", root)) {
+                Session *session;
+
+                if (de->d_type != DT_DIR)
+                        continue;
+
+                if (!session_id_matches_orphan_scan(de->d_name))
+                        continue;
+
+                /* Owned by a live session, not ours to touch. */
+                if (hashmap_contains(m->sessions, de->d_name))
+                        continue;
+
+                HASHMAP_FOREACH(session, m->sessions)
+                        if (streq_ptr(session->cgroup_path, de->d_name))
+                                break;
+                if (session)
+                        continue;
+
+                log_debug("Found pre-restart orphan session cgroup candidate %s, trimming.", de->d_name);
+
+                /* Only empty directories go away here; populated ones are handed to the orphan watch. */
+                r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, de->d_name, /* delete_root= */ true);
+                if (r < 0)
+                        (void) manager_watch_orphan_cgroup(m, de->d_name);
+        }
 
         return 0;
 }

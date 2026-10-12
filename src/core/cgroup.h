@@ -14,6 +14,7 @@
 #include "pidref.h"
 #include "time-util.h"
 /// Additional includes needed by elogind
+#include "logind.h"
 #include "logind-session.h"
 
 #if 0 /// UNNEEDED by elogind
@@ -464,8 +465,11 @@ void unit_release_cgroup(Unit *u, bool drop_cgroup_runtime);
 #else // 0
 void session_release_cgroup(Session *s);
 #endif // 0
-#if 1 /// elogind: remove cgroups of finalized sessions once they become empty
+#if 1 /// Without direct PID 1 assistance, elogind has to take care of session cgroup housecleaning
+/* remove cgroups of finalized sessions once they become empty */
 int manager_watch_orphan_cgroup(Manager *m, const char *cgroup_path);
+/* remove pre-restart orphan session cgroups via a startup scan */
+int manager_scan_orphan_cgroups(Manager *m);
 #endif // 1
 
 #if 0 /// UNNEEDED by elogind
@@ -474,8 +478,6 @@ int unit_check_oomd_kill(Unit *u);
 int unit_check_oom(Unit *u);
 
 int unit_attach_pids_to_cgroup(Unit *u, Set *pids, const char *suffix_path);
-#else // 0
-# include "logind.h"
 #endif // 0
 
 int manager_setup_cgroup(Manager *m);
