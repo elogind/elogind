@@ -1652,7 +1652,7 @@ static int parse_argv(int argc, char *argv[]) {
 #if 0 /// elogind adds some system commands to loginctl
         while ((c = getopt_long(argc, argv, "hp:P:als:H:M:n:o:j", options, NULL)) >= 0)
 #else // 0
-        while ((c = getopt_long(argc, argv, "hp:P:als:H:M:cfi", options, NULL)) >= 0)
+        while ((c = getopt_long(argc, argv, "hp:P:als:H:M:cfij", options, NULL)) >= 0)
 #endif // 0
 
                 switch (c) {
