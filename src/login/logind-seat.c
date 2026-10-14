@@ -26,6 +26,7 @@
 #include "tmpfile-util.h"
 /// Additional includes needed by elogind
 #include "musl_missing.h"
+#include "process-util.h"
 
 int seat_new(Manager *m, const char *id, Seat **ret) {
         _cleanup_(seat_freep) Seat *s = NULL;
@@ -370,6 +371,10 @@ int seat_active_vt_changed(Seat *s, unsigned vtnr) {
          * find a running one first */
         LIST_FOREACH(sessions_by_seat, i, s->sessions)
                 if (i->vtnr == vtnr && !i->stopping) {
+#if 1 /// elogind: never auto-activate leaderless adopted sessions
+                        if (pidref_is_alive(&i->leader) <= 0)
+                                continue;
+#endif // 1
                         new_active = i;
                         break;
                 }
@@ -379,6 +384,10 @@ int seat_active_vt_changed(Seat *s, unsigned vtnr) {
                  * active one, let the first one win */
                 LIST_FOREACH(sessions_by_seat, i, s->sessions)
                         if (i->vtnr == vtnr) {
+#if 1 /// elogind: never auto-activate leaderless adopted sessions
+                                if (pidref_is_alive(&i->leader) <= 0)
+                                        continue;
+#endif // 1
                                 new_active = i;
                                 break;
                         }
@@ -555,7 +564,11 @@ int seat_attach_session(Seat *s, Session *session) {
 
         /* On seats with VTs, the VT logic defines which session is active. On
          * seats without VTs, we automatically activate new sessions. */
+#if 0 /// elogind: never auto-activate leaderless adopted sessions
         if (!seat_has_vts(s))
+#else // 0
+        if (!seat_has_vts(s) && pidref_is_alive(&session->leader) > 0)
+#endif // 0
                 seat_set_active(s, session);
 
         return 0;
