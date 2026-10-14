@@ -219,6 +219,47 @@ static int session_enable_controllers(const char *path) {
         return 0;
 }
 
+#if 1 /// elogind: create the configured prefix chain with controllers enabled top-down
+static int session_ensure_cgroup_prefix(Session *s) {
+        const char *prefix;
+        size_t len;
+
+        assert(s);
+        assert(s->manager);
+
+        prefix = s->manager->session_cgroup_prefix;
+        if (isempty(prefix))
+                return 0;
+
+        /* cg_create() makes missing parents as needed, but controllers must be enabled level by level from
+         * the top so delegation works anywhere below the prefix; per-level failures stay best-effort. */
+        len = strlen(prefix);
+        for (size_t i = 1; i <= len; i++) {
+                _cleanup_free_ char *level = NULL;
+                int r;
+
+                if (i < len && prefix[i] != '/')
+                        continue;
+
+                level = strndup(prefix, i);
+                if (!level)
+                        return -ENOMEM;
+
+                r = cg_create(SYSTEMD_CGROUP_CONTROLLER, level);
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to create prefix level %s, ignoring: %m", level);
+                        continue;
+                }
+
+                r = session_enable_controllers(level);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to enable prefix controllers %s, ignoring: %m", level);
+        }
+
+        return 0;
+}
+#endif // 1
+
 static int session_setup_cgroup_paths(Session *s) {
         int r;
 
@@ -228,7 +269,22 @@ static int session_setup_cgroup_paths(Session *s) {
         if (s->cgroup_path && s->cgroup_leaf_path)
                 return 0;
 
+#if 0 /// UNNEEDED by elogind: sessions always live at the cgroupfs root
         r = free_and_strdup(&s->cgroup_path, s->id);
+#else // 0
+        /* Nest session cgroups below the configured prefix; an empty prefix keeps the root layout. */
+        if (isempty(s->manager->session_cgroup_prefix))
+                r = free_and_strdup(&s->cgroup_path, s->id);
+        else {
+                _cleanup_free_ char *prefixed = NULL;
+
+                prefixed = path_join(s->manager->session_cgroup_prefix, s->id);
+                if (!prefixed)
+                        return -ENOMEM;
+
+                r = free_and_replace(s->cgroup_path, prefixed);
+        }
+#endif // 0
         if (r < 0)
                 return r;
 
@@ -239,14 +295,22 @@ static int session_setup_cgroup_paths(Session *s) {
         if (r > 0) {
                 _cleanup_free_ char *leaf = NULL;
 
+#if 0 /// UNNEEDED by elogind: the leaf derives from the (possibly prefixed) session path
                 leaf = path_join(s->id, SESSION_CGROUP_LEAF);
+#else // 0
+                leaf = path_join(s->cgroup_path, SESSION_CGROUP_LEAF);
+#endif // 0
                 if (!leaf)
                         return -ENOMEM;
 
                 return free_and_replace(s->cgroup_leaf_path, leaf);
         }
 
+#if 0 /// UNNEEDED by elogind: see above
         return free_and_strdup(&s->cgroup_leaf_path, s->id);
+#else // 0
+        return free_and_strdup(&s->cgroup_leaf_path, s->cgroup_path);
+#endif // 0
 }
 
 static int session_create_delegated_cgroup(Session *s) {
@@ -1126,6 +1190,15 @@ static int session_start_cgroup(Session *s) {
                 if (r < 0)
                         return log_error_errno(r, "Failed to create cgroup %s: %m", s->cgroup_path);
         }
+
+#if 1 /// elogind: with a prefix configured, ensure the whole chain exists with controllers enabled
+        if (!isempty(s->manager->session_cgroup_prefix)) {
+                r = session_ensure_cgroup_prefix(s);
+                if (r < 0)
+                        log_debug_errno(r, "Failed to ensure session cgroup prefix %s, ignoring: %m",
+                                        s->manager->session_cgroup_prefix);
+        }
+#endif // 1
 
         // restored sessions may have no live leader during daemon restart
         if (pidref_is_set(&s->leader)) {

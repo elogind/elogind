@@ -3755,6 +3755,7 @@ static bool session_id_matches_orphan_scan(const char *name) {
 int manager_scan_orphan_cgroups(Manager *m) {
         _cleanup_closedir_ DIR *d = NULL;
         _cleanup_free_ char *root = NULL;
+        const char *prefix;
         int r;
 
         assert(m);
@@ -3768,12 +3769,31 @@ int manager_scan_orphan_cgroups(Manager *m) {
         if (r < 0)
                 return log_debug_errno(r, "Failed to determine cgroup root for orphan scan: %m");
 
+        /* match session names below the prefix; empty prefix scans the root as before */
+        prefix = isempty(m->session_cgroup_prefix) ? NULL : m->session_cgroup_prefix;
+        if (prefix) {
+                _cleanup_free_ char *subdir = NULL;
+
+                subdir = path_join(root, prefix);
+                if (!subdir)
+                        return log_oom();
+
+                free_and_replace(root, subdir);
+        }
+
         d = opendir(root);
-        if (!d)
+        if (!d) {
+                /* a configured but not yet created prefix simply has no orphans */
+                if (prefix && errno == ENOENT)
+                        return 0;
                 return log_debug_errno(errno, "Failed to open cgroup root %s for orphan scan: %m", root);
+        }
 
         FOREACH_DIRENT(de, d, return log_debug_errno(errno, "Failed to enumerate cgroup root %s: %m", root)) {
                 Session *session = NULL;
+                /* candidates below the prefix resolve to prefixed paths */
+                _cleanup_free_ char *candidate = NULL;
+                const char *cgroup_path;
 
                 if (de->d_type != DT_DIR)
                         continue;
@@ -3785,18 +3805,31 @@ int manager_scan_orphan_cgroups(Manager *m) {
                 if (hashmap_contains(m->sessions, de->d_name))
                         continue;
 
+                /* compare stored paths against the prefixed candidate */
+                if (prefix) {
+                        candidate = path_join(prefix, de->d_name);
+                        if (!candidate)
+                                return log_oom();
+                        cgroup_path = candidate;
+                } else
+                        cgroup_path = de->d_name;
+
                 HASHMAP_FOREACH(session, m->sessions)
-                        if (streq_ptr(session->cgroup_path, de->d_name))
+                        /* stored paths carry the prefix, compare against the prefixed candidate */
+                        if (streq_ptr(session->cgroup_path, cgroup_path))
                                 break;
                 if (session)
                         continue;
 
-                log_debug("Found pre-restart orphan session cgroup candidate %s, trimming.", de->d_name);
+                /* log the prefixed candidate path */
+                log_debug("Found pre-restart orphan session cgroup candidate %s, trimming.", cgroup_path);
 
-                /* Only empty directories go away here; populated ones are handed to the orphan watch. */
-                r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, de->d_name, /* delete_root= */ true);
+                /* Only empty directories go away here; populated ones are handed to the orphan watch.
+                 * Operate on the prefixed candidate path
+                 */
+                r = cg_trim(SYSTEMD_CGROUP_CONTROLLER, cgroup_path, /* delete_root= */ true);
                 if (r < 0)
-                        (void) manager_watch_orphan_cgroup(m, de->d_name);
+                        (void) manager_watch_orphan_cgroup(m, cgroup_path);
         }
 
         return 0;
