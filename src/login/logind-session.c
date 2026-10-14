@@ -1401,6 +1401,12 @@ int session_finalize(Session *s) {
                 session_device_free(sd);
 
         (void) unlink(s->state_file);
+#if 1 /// elogind: a finalized session is gone for good, so its fifo must go too
+        /* kept fifos of merely freed (not finalized) sessions still survive
+         * daemon restarts, see session_free()
+         */
+        s->fifo_path = unlink_and_free(s->fifo_path);
+#endif // 1
         session_add_to_gc_queue(s);
         user_add_to_gc_queue(s->user);
 
