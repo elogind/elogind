@@ -143,6 +143,15 @@ executables += [
                 ],
                 'dependencies' : threads,
         },
+#if 1 /// elogind: unit test for the SessionCgroupPrefix option plumbing
+        test_template + {
+                'sources' : files('test-login-prefix.c'),
+                'link_with' : [
+                        liblogind_core,
+                        libshared,
+                ],
+        },
+#endif // 1
         test_template + {
                 'sources' : files('test-session-properties.c'),
                 'type' : 'manual',

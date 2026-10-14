@@ -1,0 +1,55 @@
+/* SPDX-License-Identifier: LGPL-2.1-or-later */
+
+#include "conf-parser.h"
+#include "logind.h"
+#include "string-util.h"
+#include "tests.h"
+
+static void test_prefix_one(const char *initial, const char *rvalue, const char *expected) {
+        _cleanup_free_ char *prefix = NULL;
+        int r;
+
+        if (initial) {
+                prefix = strdup(initial);
+                assert_se(prefix);
+        }
+
+        r = config_parse_session_cgroup_prefix("elogind", "test.conf", 1, "Login", 1,
+                                               "SessionCgroupPrefix", 0, rvalue, &prefix, NULL);
+        assert_se(r >= 0);
+        assert_se(streq_ptr(expected, prefix));
+}
+
+TEST(session_cgroup_prefix_parse) {
+        test_prefix_one(NULL, "", NULL);
+        test_prefix_one(NULL, "host", "host");
+        test_prefix_one(NULL, "a/b/c", "a/b/c");
+        test_prefix_one(NULL, "a//b/./c/", "a/b/c");
+        test_prefix_one("keep", "/abs", "keep");
+        test_prefix_one("keep", "../up", "keep");
+        test_prefix_one("keep", "a/../../x", "keep");
+        test_prefix_one("keep", ".", "keep");
+        test_prefix_one("old", "", NULL);
+}
+
+TEST(session_cgroup_prefix_gperf) {
+        ConfigParserCallback func = NULL;
+        Manager m;
+        void *data = NULL;
+        int ltype = -1;
+
+        zero(m);
+
+        assert_se(config_item_perf_lookup(logind_gperf_lookup, "Login", "SessionCgroupPrefix",
+                                          &func, &ltype, &data, &m) > 0);
+        assert_se(func == config_parse_session_cgroup_prefix);
+        assert_se(data == (uint8_t*) &m + offsetof(Manager, session_cgroup_prefix));
+
+        assert_se(func("elogind", "test.conf", 1, "Login", 1, "SessionCgroupPrefix", ltype,
+                       "host", data, &m) >= 0);
+        assert_se(streq_ptr(m.session_cgroup_prefix, "host"));
+
+        m.session_cgroup_prefix = mfree(m.session_cgroup_prefix);
+}
+
+DEFINE_TEST_MAIN(LOG_INFO);
