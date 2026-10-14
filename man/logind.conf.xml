@@ -495,7 +495,12 @@
           <para>Enabling this option delegates cgroup management for the session subtree to the logged-in user.
             The administrator enabling this option is responsible for deciding whether this is appropriate for
             the system and for any user-level service manager or other software that makes use of the delegated
-            cgroup subtree.</para></listitem>
+            cgroup subtree.</para>
+
+          <para>Session cgroups whose processes outlive the session are watched until they become empty and then
+          removed automatically. The same applies at daemon startup to session cgroups left behind by earlier daemon
+          runs: unowned directories matching session names are removed if empty, or watched until they empty if they
+          still hold processes.</para></listitem>
       </varlistentry>
       <!-- // 1 -->
 
