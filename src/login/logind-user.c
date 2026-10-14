@@ -37,6 +37,7 @@
 #include "unit-name.h"
 #include "user-util.h"
 /// Additional includes needed by elogind
+#include "process-util.h"
 #include "user-runtime-dir.h"
 
 
@@ -958,6 +959,11 @@ int user_kill(User *u, int signo) {
 static bool elect_display_filter(Session *s) {
         /* Return true if the session is a candidate for the user’s ‘primary session’ or ‘display’. */
         assert(s);
+
+#if 1 /// elogind: never elect leaderless adopted sessions as display
+        if (pidref_is_alive(&s->leader) <= 0)
+                return false;
+#endif // 1
 
         return SESSION_CLASS_CAN_DISPLAY(s->class) && s->started && !s->stopping;
 }

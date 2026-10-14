@@ -1004,6 +1004,11 @@ int session_activate(Session *s) {
         if (s->seat->active == s)
                 return 0;
 
+#if 1 /// elogind: never activate leaderless adopted sessions; nothing could use the VT or devices
+        if (pidref_is_alive(&s->leader) <= 0)
+                return log_debug_errno(SYNTHETIC_ERRNO(EOWNERDEAD), "Cannot activate session %s with dead leader: %m", s->id);
+#endif // 1
+
         /* on seats with VTs, we let VTs manage session-switching */
         if (seat_has_vts(s->seat)) {
                 if (s->vtnr == 0)
@@ -1766,7 +1771,7 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         log_debug_elogind("Session %s may gc ?", s->id);
         log_debug_elogind("  dns && !started: %s", yes_no(drop_not_started && !s->started));
         log_debug_elogind("  is userless    : %s", yes_no(!s->user));
-        log_debug_elogind("  has leader     : %s", yes_no(-ESRCH == pidref_is_alive(&s->leader)));
+        log_debug_elogind("  has leader     : %s", yes_no(pidref_is_alive(&s->leader) > 0));
         log_debug_elogind("  dns or stopping: %s", yes_no(drop_not_started || s->stopping));
         log_debug_elogind("  FIFO state     : %s",
                           s->fifo_fd < 0           ? "No FIFO opened"   :
@@ -1829,6 +1834,20 @@ bool session_may_gc(Session *s, bool drop_not_started) {
         return true;
 #else // 0
         // elogind has to rely on drop_not_started, and that the state is correctly loaded
+
+        // adopt live sessions with dead leaders instead of dropping them unseen
+        if (!s->stopping) {
+                /* Reaching here, the leader is recorded but not alive (dead, zombie, or indeterminate; an
+                 * unrecorded leader was already handled above), but the session may still own live
+                 * processes. Keep tracking it until its cgroup empties instead of dropping those
+                 * processes silently; the empty notification path will finalize it then. */
+                r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, s->cgroup_path ?: s->id);
+                if (r == 0) {
+                        log_debug_elogind("Adopting session %s with dead leader but populated cgroup.", s->id);
+                        return false;
+                }
+        }
+
         return (drop_not_started || s->stopping);
 #endif // 0
 }
