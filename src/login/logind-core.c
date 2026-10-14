@@ -374,6 +374,38 @@ int manager_process_button_device(Manager *m, sd_device *d) {
         return 0;
 }
 
+#if 1 /// elogind: resolve PIDs below the configured session cgroup prefix
+static int manager_pid_get_session_name(Manager *m, pid_t pid, char **ret) {
+        _cleanup_free_ char *cgroup = NULL, *prefixed = NULL, *stripped_path = NULL;
+        const char *stripped;
+        int r;
+
+        assert(m);
+
+        if (isempty(m->session_cgroup_prefix))
+                return cg_pid_get_session(pid, ret);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        prefixed = path_join("/", m->session_cgroup_prefix);
+        if (!prefixed)
+                return log_oom();
+
+        stripped = path_startswith(cgroup, prefixed);
+        if (!stripped || stripped[0] == '\0')
+                /* Not below our prefix (or directly in it): belongs to no session. */
+                return -ENXIO;
+
+        stripped_path = path_join("/", stripped);
+        if (!stripped_path)
+                return log_oom();
+
+        return cg_path_get_session(stripped_path, ret);
+}
+#endif // 1
+
 int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) {
 #if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
@@ -397,8 +429,9 @@ int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) 
         if (r >= 0)
                 s = hashmap_get(m->session_units, unit);
 #else // 0
+        /* PIDs resolve below the configured session cgroup prefix */
         log_debug_elogind("Searching session for PID %d", pid->pid);
-        r = cg_pid_get_session(pid->pid, &session_name);
+        r = manager_pid_get_session_name(m, pid->pid, &session_name);
 
         if (r >= 0)
                 s = hashmap_get(m->sessions, session_name);
@@ -456,7 +489,9 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
                 u = hashmap_get(m->user_units, unit);
 
 #else // 0
-        r = cg_pid_get_session(pid, &session);
+        /* PIDs resolve below the configured session cgroup prefix */
+        log_debug_elogind("Searching session for PID %d", pid);
+        r = manager_pid_get_session_name(m, pid, &session);
         if (r >= 0)
                 u = hashmap_get(m->user_units, session);
 
@@ -465,6 +500,10 @@ int manager_get_user_by_pid(Manager *m, pid_t pid, User **ret) {
                 // If a session was found, ignore it if it is already closing.
                 if ((r > 0) && (SESSION_CLOSING != session_get_state(s)))
                         u = s->user;
+        } else {
+                /* protect with else, manager_get_session_by_pidref() logs unconditionally */
+                log_debug_elogind("Session Name \"%s\" -> Session \"%s\"",
+                                  strnull(session), s && s->id ? s->id : "(null)");
         }
 #endif // 0
 
