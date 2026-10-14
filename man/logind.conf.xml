@@ -504,6 +504,25 @@
       </varlistentry>
       <!-- // 1 -->
 
+      <!-- 1 /// elogind: document the optional session cgroup prefix -->
+      <varlistentry>
+        <term><varname>SessionCgroupPrefix=</varname></term>
+
+        <listitem><para>Takes a relative cgroup path below the cgroupfs root, e.g.
+          <literal>host</literal>. If set, <filename>elogind</filename> creates all session cgroups below this
+          prefix instead of directly below the cgroupfs root, so that session
+          <replaceable>SESSION</replaceable> lives in
+          <filename>/sys/fs/cgroup/<replaceable>PREFIX</replaceable>/<replaceable>SESSION</replaceable>/</filename>.
+          The value must be a clean relative path without <filename>.</filename> or
+          <filename>..</filename> components; absolute paths are rejected. Empty (the default) keeps the
+          traditional layout directly below the cgroupfs root.</para>
+
+          <para>Changing this option only affects sessions created afterwards. Sessions that are already
+          running keep their original cgroup paths, so moving to a different prefix requires a daemon restart
+          and re-login.</para></listitem>
+      </varlistentry>
+      <!-- // 1 -->
+
       <varlistentry>
         <term><varname>DesignatedMaintenanceTime=</varname></term>
 

@@ -87,6 +87,9 @@ void manager_reset_config(Manager *m) {
 #if 1 /// elogind opt-in feature to split v2 session cgroups into session/ and delegated/
         m->delegate_session_cgroups = false;
 #endif // 1
+#if 1 /// elogind: optional session cgroup prefix, empty (cgroupfs root) by default
+        m->session_cgroup_prefix = mfree(m->session_cgroup_prefix);
+#endif // 1
 
         m->kill_only_users = strv_free(m->kill_only_users);
         m->kill_exclude_users = strv_free(m->kill_exclude_users);
@@ -630,6 +633,54 @@ int manager_spawn_autovt(Manager *m, unsigned vtnr) {
         return 0;
 }
 #endif // 0
+
+#if 1 /// elogind: parse the optional session cgroup prefix (relative-only, no dot-dot)
+int config_parse_session_cgroup_prefix(
+                const char *unit,
+                const char *filename,
+                unsigned line,
+                const char *section,
+                unsigned section_line,
+                const char *lvalue,
+                int ltype,
+                const char *rvalue,
+                void *data,
+                void *userdata) {
+
+        char **s = ASSERT_PTR(data);
+        _cleanup_free_ char *n = NULL;
+
+        assert(filename);
+        assert(lvalue);
+        assert(rvalue);
+
+        if (isempty(rvalue)) {
+                *s = mfree(*s);
+                return 0;
+        }
+
+        if (path_is_absolute(rvalue)) {
+                log_syntax(unit, LOG_WARNING, filename, line, 0,
+                           "Session cgroup prefix must be relative, ignoring: %s", rvalue);
+                return 0;
+        }
+
+        n = strdup(rvalue);
+        if (!n)
+                return log_oom();
+
+        path_simplify(n);
+
+        if (streq(n, ".") || !path_is_valid_full(n, /* accept_dot_dot= */ false)) {
+                log_syntax(unit, LOG_WARNING, filename, line, 0,
+                           "Session cgroup prefix is not a clean relative path, ignoring: %s", rvalue);
+                return 0;
+        }
+
+        free_and_replace(*s, n);
+        return 0;
+}
+#endif // 1
 
 bool manager_is_lid_closed(Manager *m) {
         Button *b;

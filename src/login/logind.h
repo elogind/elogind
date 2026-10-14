@@ -126,6 +126,9 @@ struct Manager {
 #if 1 /// elogind: allow cgroups to be split into session/ and delegated/ (opt-in)
         bool delegate_session_cgroups;
 #endif // 1
+#if 1 /// elogind: optional prefix nesting all session cgroups below the cgroupfs root
+        char *session_cgroup_prefix;
+#endif // 1
 
         uint64_t session_counter;
         uint64_t inhibit_counter;
@@ -264,6 +267,9 @@ int manager_set_lid_switch_ignore(Manager *m, usec_t until);
 
 CONFIG_PARSER_PROTOTYPE(config_parse_n_autovts);
 CONFIG_PARSER_PROTOTYPE(config_parse_tmpfs_size);
+#if 1 /// elogind: parser for the optional session cgroup prefix
+CONFIG_PARSER_PROTOTYPE(config_parse_session_cgroup_prefix);
+#endif // 1
 
 int manager_setup_wall_message_timer(Manager *m);
 bool logind_wall_tty_filter(const char *tty, bool is_local, void *userdata);

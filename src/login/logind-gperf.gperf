@@ -54,6 +54,9 @@ Login.RemoveIPC,                    config_parse_bool,                  0, offse
 #if 1 /// elogind opt-in feature, split session cgroups into session/ and delegated/
 Login.DelegateSessionCgroups,       config_parse_bool,                  0, offsetof(Manager, delegate_session_cgroups)
 #endif // 1
+#if 1 /// elogind: configurable session cgroup prefix, empty (cgroupfs root) by default
+Login.SessionCgroupPrefix,          config_parse_session_cgroup_prefix, 0, offsetof(Manager, session_cgroup_prefix)
+#endif // 1
 Login.InhibitorsMax,                config_parse_uint64,                0, offsetof(Manager, inhibitors_max)
 Login.SessionsMax,                  config_parse_uint64,                0, offsetof(Manager, sessions_max)
 Login.DesignatedMaintenanceTime,    config_parse_calendar,              0, offsetof(Manager, maintenance_time)

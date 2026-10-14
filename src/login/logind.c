@@ -216,6 +216,9 @@ static Manager* manager_free(Manager *m) {
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
+#if 1 /// elogind: free the optional session cgroup prefix
+        free(m->session_cgroup_prefix);
+#endif // 1
 
         free(m->scheduled_shutdown_tty);
         free(m->wall_message);
