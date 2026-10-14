@@ -3773,7 +3773,7 @@ int manager_scan_orphan_cgroups(Manager *m) {
                 return log_debug_errno(errno, "Failed to open cgroup root %s for orphan scan: %m", root);
 
         FOREACH_DIRENT(de, d, return log_debug_errno(errno, "Failed to enumerate cgroup root %s: %m", root)) {
-                Session *session;
+                Session *session = NULL;
 
                 if (de->d_type != DT_DIR)
                         continue;
