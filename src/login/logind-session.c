@@ -516,8 +516,16 @@ int session_set_leader_consume(Session *s, PidRef _leader) {
         assert(s);
         assert(pidref_is_set(&pidref));
 
+#if 0 /// UNNEEDED by elogind: restored pid-only leaders must still be upgraded to pidfds below
         if (pidref_equal(&s->leader, &pidref))
                 return 0;
+#else // 0
+        /* A pid-only leader restored at session load compares equal to its pidfd counterpart, but must still be
+         * replaced so the pidfd (watch, map identity, fdstore re-push) takes over; a pidfd leader is never
+         * downgraded to pid-only. */
+        if (pidref_equal(&s->leader, &pidref) && (s->leader.fd >= 0 || pidref.fd < 0))
+                return 0;
+#endif // 0
 
         session_reset_leader(s, /* keep_fdstore = */ false);
 
@@ -975,10 +983,16 @@ int session_load(Session *s) {
                                 return log_error_errno(r, "Failed to parse LEADER_FD_SAVED=%s: %m", leader_fd_saved);
                         s->leader_fd_saved = r > 0;
 
+#if 0 /// UNNEEDED by elogind: waiting for fdstore delivery leaves sessions leaderless
                         if (s->leader_fd_saved)
                                 /* The leader fd will be acquired from fdstore later */
                                 return 0;
+#endif // 0
                 }
+
+#if 1 /// elogind: preserve leader_fd_saved across consume() for later fdstore upgrade
+                bool leader_fd_was_saved = s->leader_fd_saved;
+#endif // 1
 
                 _cleanup_(pidref_done) PidRef p = PIDREF_NULL;
 
@@ -987,6 +1001,9 @@ int session_load(Session *s) {
                         r = session_set_leader_consume(s, TAKE_PIDREF(p));
                 if (r < 0)
                         log_warning_errno(r, "Failed to set leader PID for session '%s': %m", s->id);
+#if 1 /// elogind: restore the fdstore flag cleared by consume() above
+                s->leader_fd_saved = leader_fd_was_saved;
+#endif // 1
         }
 
         return r;

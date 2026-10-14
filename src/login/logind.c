@@ -509,8 +509,10 @@ static int deliver_session_leader_fd_consume(Session *s, const char *fdname, int
         if (!s->leader_fd_saved)
                 log_warning("Got leader pidfd for session '%s', but not recorded in session state, proceeding anyway.",
                             s->id);
+#if 0 /// UNNEEDED by elogind: a set leader is the expected fdstore-upgrade case
         else
                 assert(!pidref_is_set(&s->leader));
+#endif // 0
 
         r = pidref_set_pidfd_take(&leader_fdstore, fd);
         if (r < 0) {
