@@ -200,13 +200,24 @@
         users. If enabled for a specific user, a user manager is
         spawned for the user at boot and kept around after logouts.
         --><!-- else // 0 -->
-        users. If enabled for a specific user, a lingeringe file 
+        users. If enabled for a specific user, a linger file
         for the user is written to disk and kept around after logouts.
         <!-- // 0 -->
         This allows users who are not logged in to run long-running
         services. Takes one or more user names or numeric UIDs as
         argument. If no argument is specified, enables/disables
         lingering for the user of the session of the caller.</para>
+
+        <!-- 1 /// elogind: lingering users are exempt from killing on logout -->
+        <para>Lingering users are exempt from killing on logout even if
+        <varname>KillUserProcesses=yes</varname> is set in
+        <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>,
+        which keeps detached workloads such as
+        <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        or
+        <citerefentry project='die-net'><refentrytitle>tmux</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        sessions alive across logouts without disabling killing globally.</para>
+        <!-- // 1 -->
 
         <para>See also <varname>KillUserProcesses=</varname> setting in
         <citerefentry><refentrytitle>logind.conf</refentrytitle><manvolnum>5</manvolnum></citerefentry>.

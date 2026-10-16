@@ -140,7 +140,7 @@
         --><!-- else // 0 -->
         user should be killed when the user logs out. If true, the processes
         listed in their session cgroup will be terminated. If false, the session cgroup
-        is ignored
+        is ignored. Defaults to <literal>&KILL_USER_PROCESSES;</literal>,
         <!-- // 0 -->
         but see the options <varname>KillOnlyUsers=</varname> and
         <varname>KillExcludeUsers=</varname> below.</para>
@@ -148,6 +148,24 @@
         <!-- 1 /// elogind: surviving processes keep their session cgroups until they exit -->
         <para>Processes that survive logout keep their session cgroup, which is removed automatically once
         it becomes empty.</para>
+        <!-- // 1 -->
+
+        <!-- 1 /// elogind: survivors keep held resources; lingering users are exempt from killing -->
+        <para>If <varname>KillUserProcesses=no</varname>, surviving processes keep running with everything
+        they hold: open files, device nodes, and exclusive resources such as DRM graphics master. For
+        example, a compositor orphaned by a display-manager stop keeps the display, so a subsequently
+        started graphical session cannot take over the devices until the orphan exits — only a reboot (or
+        manually stopping the leftover processes) recovers.</para>
+
+        <para>Users with lingering enabled (see <command>enable-linger</command> in
+        <citerefentry><refentrytitle>loginctl</refentrytitle><manvolnum>1</manvolnum></citerefentry>)
+        are exempt from killing: their session processes survive logout even if
+        <varname>KillUserProcesses=yes</varname> is set, except on forced stops. Administrators may
+        enable lingering for users with long-running detached workloads (such as
+        <citerefentry project='die-net'><refentrytitle>screen</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        or
+        <citerefentry project='die-net'><refentrytitle>tmux</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+        sessions) instead of disabling killing globally.</para>
         <!-- // 1 -->
 
         <!-- 0 /// elogind has no user manager unit, and lingering isn't clarified, yet.
@@ -168,7 +186,7 @@
         unless they are moved out of the session scope. See example in
         <citerefentry><refentrytitle>systemd-run</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
         --><!-- else // 0 -->
-        unless they are moved out of the session scope.
+        unless they are moved out of the session scope or the user is set up to linger.
         <!-- // 0 -->
         </para></listitem>
       </varlistentry>
