@@ -535,9 +535,16 @@
           <filename>..</filename> components; absolute paths are rejected. Empty (the default) keeps the
           traditional layout directly below the cgroupfs root.</para>
 
-          <para>Changing this option only affects sessions created afterwards. Sessions that are already
-          running keep their original cgroup paths, so moving to a different prefix requires a daemon restart
-          and re-login.</para></listitem>
+          <para>Changing this option only affects sessions created afterwards: stored cgroup paths are
+          not re-homed. Running sessions keep their original paths and become unreachable zombies after a prefix
+          change, so moving to a different prefix requires a reboot, not just a daemon restart or re-login. A
+          warning is logged at startup if session-like cgroups linger at the cgroup root while a prefix is
+          set.</para>
+
+          <para>With a prefix set, daemon D-Bus callers are resolved prefix-aware (the sender cgroup is shifted
+          and the prefix stripped before lookup); non-daemon <filename>libelogind</filename> clients remain
+          prefix-unaware and will see degraded or denied lookups (fail-closed) until a Varlink or D-Bus prefix
+          query is available.</para></listitem>
       </varlistentry>
       <!-- // 1 -->
 
