@@ -1256,6 +1256,9 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 log_warning_errno(r, "Orphan session cgroup scan failed: %m");
 #endif // 1
+#if 1 /// elogind: warn on stale prefix leftovers
+        (void) manager_warn_stale_prefix_cgroups(m);
+#endif // 1
 
 #if 0 /// elogind does not support autospawning of vts
         /* Reserve the special reserved VT */
