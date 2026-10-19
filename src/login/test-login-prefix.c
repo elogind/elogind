@@ -1,7 +1,9 @@
 /* SPDX-License-Identifier: LGPL-2.1-or-later */
 
+#include "cgroup-util.h"
 #include "conf-parser.h"
 #include "logind.h"
+#include "path-util.h"
 #include "string-util.h"
 #include "tests.h"
 
@@ -50,6 +52,64 @@ TEST(session_cgroup_prefix_gperf) {
         assert_se(streq_ptr(m.session_cgroup_prefix, "host"));
 
         m.session_cgroup_prefix = mfree(m.session_cgroup_prefix);
+}
+
+static void test_strip_one(const char *shifted, const char *prefix, const char *expected_session, int expected_code) {
+        _cleanup_free_ char *prefixed = NULL, *stripped_path = NULL, *session = NULL;
+        const char *stripped;
+        int r;
+
+        if (isempty(prefix)) {
+                r = cg_path_get_session(shifted, &session);
+                assert_se(r == expected_code);
+                assert_se(streq_ptr(session, expected_session));
+                return;
+        }
+
+        prefixed = path_join("/", prefix);
+        assert_se(prefixed);
+
+        stripped = path_startswith(shifted, prefixed);
+        if (!stripped || stripped[0] == '\0') {
+                assert_se(expected_code == -ENXIO);
+                return;
+        }
+
+        stripped_path = path_join("/", stripped);
+        assert_se(stripped_path);
+
+        r = cg_path_get_session(stripped_path, &session);
+        assert_se(r == expected_code);
+        assert_se(streq_ptr(session, expected_session));
+}
+
+TEST(session_cgroup_prefix_strip) {
+        /* empty prefix keeps root layout */
+        test_strip_one("/5", "", "5", 0);
+        test_strip_one("/5/session", "", "5", 0);
+        test_strip_one("/c2", "", "c2", 0);
+
+        /* single-component prefix */
+        test_strip_one("/leroy/5", "leroy", "5", 0);
+        test_strip_one("/leroy/5/session", "leroy", "5", 0);
+        test_strip_one("/leroy/c2/delegated", "leroy", "c2", 0);
+
+        /* multi-component prefix */
+        test_strip_one("/a/b/c5", "a/b", "c5", 0);
+        test_strip_one("/a/b/c5/session", "a/b", "c5", 0);
+        test_strip_one("/host/elogind/c5", "host/elogind", "c5", 0);
+
+        /* component-boundary: "host" must not match "hostile" */
+        test_strip_one("/hostile/5", "host", NULL, -ENXIO);
+        test_strip_one("/hostile", "host", NULL, -ENXIO);
+
+        /* exact prefix match has no session below */
+        test_strip_one("/leroy", "leroy", NULL, -ENXIO);
+        test_strip_one("/a/b", "a/b", NULL, -ENXIO);
+
+        /* non-matching prefix */
+        test_strip_one("/other/5", "leroy", NULL, -ENXIO);
+        test_strip_one("/5", "leroy", NULL, -ENXIO);
 }
 
 DEFINE_TEST_MAIN(LOG_INFO);
