@@ -406,6 +406,93 @@ static int manager_pid_get_session_name(Manager *m, pid_t pid, char **ret) {
 }
 #endif // 1
 
+#if 1 /// elogind: prefix-aware sender cgroup resolution
+int manager_get_session_by_creds(Manager *m, sd_bus_creds *creds, Session **ret) {
+        const char *cgroup;
+        const char *shifted;
+        _cleanup_free_ char *root = NULL, *prefixed = NULL, *stripped_path = NULL, *session_name = NULL;
+        const char *stripped;
+        Session *s;
+        int r;
+
+        assert(m);
+        assert(creds);
+        assert(ret);
+
+        if (isempty(m->session_cgroup_prefix)) {
+                const char *name;
+
+                r = sd_bus_creds_get_session(creds, &name);
+                if (r < 0)
+                        return r;
+
+                s = hashmap_get(m->sessions, name);
+                if (!s)
+                        return -ENXIO;
+
+                *ret = s;
+                return 0;
+        }
+
+        r = sd_bus_creds_get_cgroup(creds, &cgroup);
+        if (r < 0)
+                return r;
+
+        r = cg_get_root_path(&root);
+        if (r < 0)
+                return r;
+
+        r = cg_shift_path(cgroup, root, &shifted);
+        if (r < 0)
+                return r;
+
+        prefixed = path_join("/", m->session_cgroup_prefix);
+        if (!prefixed)
+                return log_oom();
+
+        stripped = path_startswith(shifted, prefixed);
+        if (!stripped || stripped[0] == '\0')
+                return -ENXIO;
+
+        stripped_path = path_join("/", stripped);
+        if (!stripped_path)
+                return log_oom();
+
+        r = cg_path_get_session(stripped_path, &session_name);
+        if (r < 0)
+                return r;
+
+        s = hashmap_get(m->sessions, session_name);
+        if (!s)
+                return -ENXIO;
+
+        *ret = s;
+        return 0;
+}
+
+int manager_get_user_by_creds(Manager *m, sd_bus_creds *creds, User **ret) {
+        Session *s;
+        int r;
+
+        assert(m);
+        assert(creds);
+        assert(ret);
+
+        r = manager_get_session_by_creds(m, creds, &s);
+        if (r == 0) {
+                if (!s->user)
+                        return -ENXIO;
+
+                *ret = s->user;
+                return 0;
+        }
+        if (r != -ENXIO)
+                return r;
+
+        return -ENXIO;
+}
+#endif // 1
+
 int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret) {
 #if 0 /// elogind does not support systemd units, but its own session system
         _cleanup_free_ char *unit = NULL;
