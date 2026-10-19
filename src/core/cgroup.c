@@ -3836,6 +3836,66 @@ int manager_scan_orphan_cgroups(Manager *m) {
 }
 #endif // 1
 
+#if 1 /// elogind: warn on stale prefix leftovers
+int manager_warn_stale_prefix_cgroups(Manager *m) {
+        _cleanup_closedir_ DIR *d = NULL;
+        _cleanup_free_ char *root = NULL;
+        bool warned = false;
+        int r;
+
+        assert(m);
+
+        if (isempty(m->session_cgroup_prefix))
+                return 0;
+
+        r = cg_unified_controller(SYSTEMD_CGROUP_CONTROLLER);
+        if (r <= 0)
+                return r;
+
+        r = cg_get_path(SYSTEMD_CGROUP_CONTROLLER, NULL, NULL, &root);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to determine cgroup root for stale prefix check: %m");
+
+        d = opendir(root);
+        if (!d)
+                return log_debug_errno(errno, "Failed to open cgroup root %s for stale prefix check: %m", root);
+
+        FOREACH_DIRENT(de, d, return log_debug_errno(errno, "Failed to enumerate cgroup root %s: %m", root)) {
+                _cleanup_free_ char *candidate = NULL;
+
+                if (de->d_type != DT_DIR)
+                        continue;
+
+                if (!session_id_matches_orphan_scan(de->d_name))
+                        continue;
+
+                /* Session-like name at the root while a prefix is configured: stale leftover? */
+                candidate = path_join(root, de->d_name);
+                if (!candidate)
+                        return log_oom();
+
+                r = cg_is_empty_recursive(SYSTEMD_CGROUP_CONTROLLER, de->d_name);
+                if (r > 0) /* empty, not stale */
+                        continue;
+                if (r < 0) {
+                        log_debug_errno(r, "Failed to determine whether stale candidate %s is empty, ignoring: %m", candidate);
+                        continue;
+                }
+
+                if (!warned) {
+                        log_warning("SessionCgroupPrefix=%s is set, but session-like cgroups remain at the cgroup root "
+                                    "(e.g. %s). A prefix change requires a reboot; stale cgroups are left behind and "
+                                    "will not be adopted. Reboot to clean them, or stop all sessions and rmdir the leftovers.",
+                                    m->session_cgroup_prefix, de->d_name);
+                        warned = true;
+                } else
+                        log_debug("Stale session-like cgroup at root while prefix %s is set: %s", m->session_cgroup_prefix, de->d_name);
+        }
+
+        return 0;
+}
+#endif // 1
+
 #if 0 /// UNNEEDED by elogind
 int unit_cgroup_is_empty(Unit *u) {
         int r;

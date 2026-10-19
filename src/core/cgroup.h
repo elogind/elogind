@@ -471,6 +471,9 @@ int manager_watch_orphan_cgroup(Manager *m, const char *cgroup_path);
 /* remove pre-restart orphan session cgroups via a startup scan */
 int manager_scan_orphan_cgroups(Manager *m);
 #endif // 1
+#if 1 /// elogind: warn on stale prefix leftovers
+int manager_warn_stale_prefix_cgroups(Manager *m);
+#endif // 1
 
 #if 0 /// UNNEEDED by elogind
 void unit_add_to_cgroup_empty_queue(Unit *u);
