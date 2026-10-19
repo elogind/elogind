@@ -89,19 +89,29 @@ static int get_sender_session(
 
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         Session *session = NULL;
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         const char *name;
+#endif // 0
         int r;
 
         /* Acquire the sender's session. This first checks if the sending process is inside a session itself,
          * and returns that. If not and 'consult_display' is true, this returns the display session of the
          * owning user of the caller. */
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         r = sd_bus_query_sender_creds(message,
-                                      SD_BUS_CREDS_SESSION|SD_BUS_CREDS_AUGMENT|
-                                      (consult_display ? SD_BUS_CREDS_OWNER_UID : 0), &creds);
+                                       SD_BUS_CREDS_SESSION|SD_BUS_CREDS_AUGMENT|
+                                       (consult_display ? SD_BUS_CREDS_OWNER_UID : 0), &creds);
+#else // 0
+        r = sd_bus_query_sender_creds(message,
+                                       SD_BUS_CREDS_SESSION|SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_AUGMENT|
+                                       (consult_display ? SD_BUS_CREDS_OWNER_UID : 0), &creds);
+#endif // 0
+
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         r = sd_bus_creds_get_session(creds, &name);
         if (r < 0) {
                 if (r != -ENXIO)
@@ -124,6 +134,24 @@ static int get_sender_session(
                 }
         } else
                 session = hashmap_get(m->sessions, name);
+#else // 0
+        r = manager_get_session_by_creds(m, creds, &session);
+        if (r < 0) {
+                if (r != -ENXIO)
+                        return r;
+
+                if (consult_display) {
+                        User *user = NULL;
+
+                        r = manager_get_user_by_creds(m, creds, &user);
+                        if (r < 0) {
+                                if (r != -ENXIO)
+                                        return r;
+                        } else if (user)
+                                session = user->display;
+                }
+        }
+#endif // 0
 
         if (!session)
                 return sd_bus_error_setf(error, BUS_ERROR_NO_SESSION_FOR_PID,
@@ -163,14 +191,23 @@ int manager_get_session_from_creds(
 static int get_sender_user(Manager *m, sd_bus_message *message, sd_bus_error *error, User **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
         uid_t uid;
+#if 0 /// elogind needs the user to be initialized
         User *user;
+#else // 0
+        User *user = NULL;
+#endif // 0
         int r;
 
         /* Note that we get the owner UID of the session, not the actual client UID here! */
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_AUGMENT, &creds);
+#else // 0
+        r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_AUGMENT, &creds);
+#endif // 0
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         r = sd_bus_creds_get_owner_uid(creds, &uid);
         if (r < 0) {
                 if (r != -ENXIO)
@@ -179,6 +216,15 @@ static int get_sender_user(Manager *m, sd_bus_message *message, sd_bus_error *er
                 user = NULL;
         } else
                 user = hashmap_get(m->users, UID_TO_PTR(uid));
+#else // 0
+        r = manager_get_user_by_creds(m, creds, &user);
+        if (r < 0) {
+                if (r != -ENXIO)
+                        return r;
+
+                user = NULL;
+        }
+#endif // 0
 
         if (!user)
                 return sd_bus_error_setf(error, BUS_ERROR_NO_USER_FOR_PID,
@@ -1604,17 +1650,35 @@ static int method_set_user_linger(sd_bus_message *message, void *userdata, sd_bu
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
         r = sd_bus_query_sender_creds(message,
-                                      SD_BUS_CREDS_EUID|SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_AUGMENT,
-                                      &creds);
+                                       SD_BUS_CREDS_EUID|SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_AUGMENT,
+                                       &creds);
+#else // 0
+        r = sd_bus_query_sender_creds(message,
+                                       SD_BUS_CREDS_EUID|SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_AUGMENT,
+                                       &creds);
+#endif // 0
+
         if (r < 0)
                 return r;
 
         if (!uid_is_valid(uid)) {
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
                 /* Note that we get the owner UID of the session or user unit, not the actual client UID here! */
                 r = sd_bus_creds_get_owner_uid(creds, &uid);
                 if (r < 0)
                         return r;
+#else // 0
+                User *u = NULL;
+
+                /* Note that we get the owner UID of the session or user unit, not the actual client UID here! */
+                r = manager_get_user_by_creds(m, creds, &u);
+                if (r < 0)
+                        return r;
+
+                uid = u->user_record->uid;
+#endif // 0
         }
 
         /* owner_uid is racy, so for authorization we must use euid */

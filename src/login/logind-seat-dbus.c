@@ -321,6 +321,7 @@ static int seat_node_enumerator(sd_bus *bus, const char *path, void *userdata, c
         if (message) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
                 r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_SESSION|SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_AUGMENT, &creds);
                 if (r >= 0) {
                         bool may_auto = false;
@@ -351,6 +352,31 @@ static int seat_node_enumerator(sd_bus *bus, const char *path, void *userdata, c
                                         may_auto = user && user->display && user->display->seat;
                                 }
                         }
+#else // 0
+                r = sd_bus_query_sender_creds(message,
+                                              SD_BUS_CREDS_SESSION|SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_AUGMENT,
+                                              &creds);
+                if (r >= 0) {
+                        bool may_auto = false;
+                        Session *session = NULL;
+
+                        r = manager_get_session_by_creds(m, creds, &session);
+                        if (r == 0 && session && session->seat) {
+                                r = strv_extend(&l, "/org/freedesktop/login1/seat/self");
+                                if (r < 0)
+                                        return r;
+
+                                may_auto = true;
+                        }
+
+                        if (!may_auto) {
+                                User *user = NULL;
+
+                                r = manager_get_user_by_creds(m, creds, &user);
+                                if (r == 0)
+                                        may_auto = user && user->display && user->display->seat;
+                        }
+#endif // 0
 
                         if (may_auto) {
                                 r = strv_extend(&l, "/org/freedesktop/login1/seat/auto");
