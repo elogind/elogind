@@ -250,6 +250,10 @@ int manager_get_idle_hint(Manager *m, dual_timestamp *t);
 int manager_get_user_by_pid(Manager *m, pid_t pid, User **user);
 int manager_get_session_by_pidref(Manager *m, const PidRef *pid, Session **ret);
 int manager_get_session_by_leader(Manager *m, const PidRef *pid, Session **ret);
+#if 1 /// elogind: prefix-aware sender cgroup resolution
+int manager_get_session_by_creds(Manager *m, sd_bus_creds *creds, Session **ret);
+int manager_get_user_by_creds(Manager *m, sd_bus_creds *creds, User **ret);
+#endif // 1
 
 bool manager_is_lid_closed(Manager *m);
 bool manager_is_docked_or_external_displays(Manager *m);
