@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AgentCommitMessageProject"><![CDATA[{
+  "mode": "CUSTOM",
+  "instruction": "**RULES**\n\n- Start the commit message with a brief summary line.\n- If only one file was changed, begin the summary line with the filename followed by a colon.\n- The full summary line must not be longer than 72 characters.\n- Add an empty line after the summary line.\n- Avoid overly verbose descriptions or unnecessary details.\n- Use short sentences in imperative form that are no more than 140 characters long to describe each change.\n- If a description item is longer than 70 characters, write the item in two lines, with a maximum of 70 characters each.\n- For each change start on a new line.\n- Prefix each line with a \"+\" for additions, a \"-\" for removals, and a \"#\" for fixes.\n- Add a space after the prefix and before the description.\n- If an item is written in two lines, prefix the second line with two spaces, so the are aligned.\n"
+}]]></component>
   <component name="CommitMessageInspectionProfile">
     <profile version="1.0">
       <inspection_tool class="BodyLimit" enabled="true" level="WARNING" enabled_by_default="true">

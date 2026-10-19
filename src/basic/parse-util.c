@@ -363,8 +363,8 @@ int parse_errno(const char *t) {
 
         return e;
 }
-
 #endif // 0
+
 int parse_fd(const char *t) {
         int r, fd;
 

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-#if 0 /// elogind has only one of the parts here in it...
+#if 0 /// elogind has only one of the parts here in it, and two are optional
 # libcore_sources = files(
 #         'audit-fd.c',
 #         'automount.c',

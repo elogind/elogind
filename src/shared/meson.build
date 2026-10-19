@@ -281,7 +281,7 @@ if get_option('nss-elogind') != false
 	shared_sources += files('user-record-nss.c')
 endif
 
-# these shared sources are only needed for the userdb stack
+# These shared sources are only needed for the userdb stack
 if get_option('userdb') != false
 	shared_sources += files(
 		'user-record-show.c',
