@@ -201,6 +201,10 @@ static Manager* manager_free(Manager *m) {
         if (m->unlink_nologin)
                 (void) unlink_or_warn("/run/nologin");
 
+#if 1 /// We are no longer officially "inside" elogind
+        elogind_set_inside(false);
+#endif // 1
+
         hashmap_free(m->polkit_registry);
 
         sd_bus_flush_close_unref(m->bus);
@@ -209,12 +213,14 @@ static Manager* manager_free(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
+
 #if 1 /// elogind has to free its own data
         elogind_manager_free(m);
 #endif // 1
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
+
 #if 1 /// elogind: free the optional session cgroup prefix
         free(m->session_cgroup_prefix);
 #endif // 1
@@ -1257,6 +1263,10 @@ static int manager_startup(Manager *m) {
 #if 1 /// elogind: warn on stale prefix leftovers
         (void) manager_warn_stale_prefix_cgroups(m);
 #endif // 1
+#if 1 /// We are now officially "inside" elogind
+        elogind_set_inside(true);
+#endif // 1
+
 
 #if 0 /// elogind does not support autospawning of vts
         /* Reserve the special reserved VT */

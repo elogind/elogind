@@ -327,6 +327,7 @@ static int user_node_enumerator(sd_bus *bus, const char *path, void *userdata, c
         if (message) {
                 _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
 
+#if 0 /// elogind uses prefix-aware sender cgroup resolution instead
                 r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_AUGMENT, &creds);
                 if (r >= 0) {
                         uid_t uid;
@@ -340,6 +341,20 @@ static int user_node_enumerator(sd_bus *bus, const char *path, void *userdata, c
                                                 return r;
                                 }
                         }
+#else // 0
+                r = sd_bus_query_sender_creds(message, SD_BUS_CREDS_OWNER_UID|SD_BUS_CREDS_CGROUP|SD_BUS_CREDS_AUGMENT, &creds);
+                if (r >= 0) {
+                        User *u = NULL;
+
+                        r = manager_get_user_by_creds(m, creds, &u);
+                        if (r == 0 && u) {
+                                r = strv_extend(&l, "/org/freedesktop/login1/user/self");
+                                if (r < 0)
+                                        return r;
+
+                                user = u;
+                        }
+#endif // 0
                 }
         }
 
