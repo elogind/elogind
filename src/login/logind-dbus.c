@@ -190,8 +190,8 @@ int manager_get_session_from_creds(
 
 static int get_sender_user(Manager *m, sd_bus_message *message, sd_bus_error *error, User **ret) {
         _cleanup_(sd_bus_creds_unrefp) sd_bus_creds *creds = NULL;
+#if 0 /// elogind needs no uid and the user to be initialized
         uid_t uid;
-#if 0 /// elogind needs the user to be initialized
         User *user;
 #else // 0
         User *user = NULL;
