@@ -41,6 +41,7 @@
 #include "udev-util.h"
 /// Additional includes needed by elogind
 #include "cgroup.h"
+#include "core-varlink.h"
 #include "dynamic-user.h"
 #include "elogind.h"
 #include "musl_missing.h"
@@ -210,6 +211,9 @@ static Manager* manager_free(Manager *m) {
         hashmap_free(m->polkit_registry);
 
         sd_bus_flush_close_unref(m->bus);
+#if 1 /// also finish elogind varlink server
+        manager_varlink_done(m);
+#endif // 1
         sd_event_unref(m->event);
 
 #if 0 /// elogind does not support autospawning of vts
@@ -1218,6 +1222,12 @@ static int manager_startup(Manager *m) {
         r = manager_connect_bus(m);
         if (r < 0)
                 return r;
+
+#if 1 /// elogind supports a varlink server by its own
+        r = manager_varlink_init(m);
+        if (r < 0)
+                log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
+#endif // 1
 
         /* Instantiate magic seat 0 */
         r = manager_add_seat(m, "seat0", &m->seat0);
