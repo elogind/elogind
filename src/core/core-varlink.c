@@ -12,8 +12,11 @@
 //#include "varlink-io.systemd.ManagedOOM.h"
 #include "varlink-util.h"
 /// Additional includes needed by elogind
+#include "cgroup-util.h"
 #include "dynamic-user.h"
+#include "logind.h"
 #include "path-util.h"
+#include "pidref.h"
 #include "sd-varlink.h"
 
 typedef struct LookupParameters {
@@ -592,6 +595,66 @@ static int vl_method_get_memberships(sd_varlink *link, sd_json_variant *paramete
         return sd_varlink_error(link, "io.systemd.UserDatabase.NoRecordFound", NULL);
 }
 
+#if 1 /// elogind: session cgroup prefix queries
+static int vl_method_get_session_cgroup_prefix(sd_varlink *link, sd_json_variant *parameters, sd_varlink_method_flags_t flags, void *userdata) {
+        Manager *m = ASSERT_PTR(userdata);
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *reply = NULL;
+        int r;
+
+        assert(link);
+
+        r = sd_json_buildo(&reply, SD_JSON_BUILD_PAIR("prefix", SD_JSON_BUILD_STRING(strempty(m->session_cgroup_prefix))));
+        if (r < 0)
+                return r;
+
+        return sd_varlink_reply(link, reply);
+}
+
+static int vl_method_get_session_by_pid(sd_varlink *link, sd_json_variant *parameters, sd_varlink_method_flags_t flags, void *userdata) {
+        Manager *m = ASSERT_PTR(userdata);
+        struct {
+                pid_t pid;
+        } p = {
+                .pid = 0,
+        };
+        static const sd_json_dispatch_field dispatch_table[] = {
+                { "pid", SD_JSON_VARIANT_INTEGER, sd_json_dispatch_int, offsetof(typeof(p), pid), 0 },
+                {}
+        };
+        _cleanup_free_ char *session_name = NULL;
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *reply = NULL;
+        Session *session = NULL;
+        PidRef pidref = PIDREF_NULL;
+        int r;
+
+        assert(link);
+        assert(parameters);
+
+        r = sd_varlink_dispatch(link, parameters, dispatch_table, &p);
+        if (r != 0)
+                return r;
+
+        if (!pid_is_valid(p.pid))
+                return sd_varlink_error(link, "io.elogind.Manager.InvalidPID", NULL);
+
+        r = pidref_set_pid(&pidref, p.pid);
+        if (r < 0)
+                return r;
+
+        r = manager_get_session_by_pidref(m, &pidref, &session);
+        if (r < 0)
+                return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+        if (!session)
+                return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+
+        r = sd_json_buildo(&reply, SD_JSON_BUILD_PAIR("session", SD_JSON_BUILD_STRING(session->id)));
+        if (r < 0)
+                return r;
+
+        return sd_varlink_reply(link, reply);
+}
+#endif // 1
+
 static void vl_disconnect(sd_varlink_server *s, sd_varlink *link, void *userdata) {
         Manager *m = ASSERT_PTR(userdata);
 
@@ -652,6 +715,14 @@ int manager_setup_varlink_server(Manager *m) {
         if (r < 0)
                 return log_debug_errno(r, "Failed to register varlink methods: %m");
 
+#if 1 /// elogind: session cgroup prefix queries
+        r = sd_varlink_server_bind_method_many(s,
+                        "io.elogind.Manager.GetSessionCgroupPrefix", vl_method_get_session_cgroup_prefix,
+                        "io.elogind.Manager.GetSessionByPID", vl_method_get_session_by_pid);
+        if (r < 0)
+                return log_debug_errno(r, "Failed to register elogind varlink methods: %m");
+#endif // 1
+
         r = sd_varlink_server_bind_disconnect(s, vl_disconnect);
         if (r < 0)
                 return log_debug_errno(r, "Failed to register varlink disconnect handler: %m");
@@ -680,7 +751,12 @@ static int manager_varlink_init_system(Manager *m) {
         if (!MANAGER_IS_TEST_RUN(m)) {
                 (void) mkdir_label("/run/systemd/userdb", 0755);
 
+#if 0 /// elogind cannot support managed oom
                 FOREACH_STRING(address, "/run/systemd/userdb/io.systemd.DynamicUser", VARLINK_ADDR_PATH_MANAGED_OOM_SYSTEM) {
+#else // 0
+                const char *address = "/run/systemd/userdb/io.systemd.DynamicUser";
+                {
+#endif // 0
                         if (!fresh) {
                                 /* We might have got sockets through deserialization. Do not bind to them twice. */
 

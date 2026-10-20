@@ -82,9 +82,11 @@
  * in containers so that our children inherit that. */
 #define DEFAULT_RLIMIT_MEMLOCK (1024ULL*1024ULL*8ULL)
 
+#if 0 /// elogind cannot support managed oom
 /* Path where PID1 listens for varlink subscriptions from systemd-oomd to notify of changes in ManagedOOM settings. */
 #define VARLINK_ADDR_PATH_MANAGED_OOM_SYSTEM "/run/systemd/io.systemd.ManagedOOM"
 /* Path where systemd-oomd listens for varlink connections from user managers to report changes in ManagedOOM settings. */
 #define VARLINK_ADDR_PATH_MANAGED_OOM_USER "/run/systemd/oom/io.systemd.ManagedOOM"
+#endif // 0
 
 #define KERNEL_BASELINE_VERSION "5.4"
