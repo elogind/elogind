@@ -41,6 +41,7 @@
 #include "udev-util.h"
 /// Additional includes needed by elogind
 #include "cgroup.h"
+#include "dynamic-user.h"
 #include "elogind.h"
 #include "musl_missing.h"
 #include "user-util.h"
@@ -152,6 +153,10 @@ static Manager* manager_free(Manager *m) {
                 return NULL;
 
         log_debug_elogind("%s", "Freeing hashmaps ...");
+#if 1 /// Get rid of dynamic users first, for elogind they are purely temporary anyway
+        dynamic_user_vacuum(m, false);
+        hashmap_free(m->dynamic_users);
+#endif // 1
         hashmap_free(m->devices);
         hashmap_free(m->seats);
         hashmap_free(m->sessions);
@@ -210,12 +215,14 @@ static Manager* manager_free(Manager *m) {
 #if 0 /// elogind does not support autospawning of vts
         safe_close(m->reserve_vt_fd);
 #endif // 0
+
 #if 1 /// elogind has to free its own data
         elogind_manager_free(m);
 #endif // 1
 
         strv_free(m->kill_only_users);
         strv_free(m->kill_exclude_users);
+
 #if 1 /// elogind: free the optional session cgroup prefix
         free(m->session_cgroup_prefix);
 #endif // 1
