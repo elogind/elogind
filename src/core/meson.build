@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
-#if 0 /// elogind has only one of the parts here in it...
+#if 0 /// elogind has only one of the parts here in it, and two are optional
 # libcore_sources = files(
 #         'audit-fd.c',
 #         'automount.c',
@@ -73,9 +73,19 @@
 #         )
 # endif
 #else // 0
-libcore_sources = files(
+libcore_core_sources = files(
         'cgroup.c',
 )
+if get_option('varlink')
+	libcore_varlink_sources = files(
+		'core-varlink.c',
+		'dynamic-user.c',
+	)
+else
+	libcore_varlink_sources = files(
+	)
+endif
+libcore_sources = libcore_core_sources + libcore_varlink_sources
 #endif // 0
 
 #if 0 /// Almost the rest is not needed by elogind, we use the sources directly in login
