@@ -754,8 +754,7 @@ static int manager_varlink_init_system(Manager *m) {
 #if 0 /// elogind cannot support managed oom
                 FOREACH_STRING(address, "/run/systemd/userdb/io.systemd.DynamicUser", VARLINK_ADDR_PATH_MANAGED_OOM_SYSTEM) {
 #else // 0
-                const char *address = "/run/systemd/userdb/io.systemd.DynamicUser";
-                {
+                for (const char *address = "/run/systemd/userdb/io.systemd.DynamicUser"; false;) {
 #endif // 0
                         if (!fresh) {
                                 /* We might have got sockets through deserialization. Do not bind to them twice. */

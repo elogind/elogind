@@ -23,3 +23,7 @@ static inline bool logind_running(void) {
         return access("/run/systemd/seats/", F_OK) >= 0;
 }
 #endif // 0
+
+#if 1 /// Declare we are inside or outside elogind. Implementation in sd-login.c.
+void elogind_set_inside(bool b);
+#endif // 1

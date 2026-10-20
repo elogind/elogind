@@ -28,6 +28,10 @@
 #include "string-util.h"
 #include "strv.h"
 #include "user-util.h"
+/// Additional includes needed by elogind
+#include "bus-error.h"
+#include "sd-bus.h"
+#include "sd-varlink.h"
 
 /* Error codes:
  *
@@ -39,13 +43,169 @@
  *    requested metadata on object is missing → -ENODATA
  */
 
+#if 1 /// To ensure that elogind does not accidentally calls itself via varlink, make this inside-elogind-aware
+static bool inside_elogind = false;
+
+// called from src/login/logind.c startup / free
+void elogind_set_inside(bool b) {
+        inside_elogind = b;
+}
+#endif // 1
+
+#if 1 /// elogind: prefix-aware sd-login via varlink, falling back to D-Bus SessionCgroupPrefix
+static int get_session_cgroup_prefix(char **ret) {
+        _cleanup_(sd_varlink_unrefp) sd_varlink *vl = NULL;
+        _cleanup_(sd_json_variant_unrefp) sd_json_variant *reply = NULL;
+        _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+        _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+        _cleanup_free_ char *prefix = NULL;
+        const char *s;
+        int r;
+
+        assert(ret);
+
+        // The daemon never uses sd-login for its own prefix; manager helpers do
+        if (inside_elogind)
+                return -ENODATA;
+
+        /* Try Varlink first, if available */
+        r = sd_varlink_connect_address(&vl, "/run/systemd/userdb/io.systemd.DynamicUser");
+        if (r >= 0) {
+                r = sd_varlink_call(vl, "io.elogind.Manager.GetSessionCgroupPrefix", NULL, &reply, NULL);
+                if (r >= 0) {
+                        sd_json_variant *v;
+
+                        v = sd_json_variant_by_key(reply, "prefix");
+                        if (v) {
+                                s = sd_json_variant_string(v);
+                                if (s) {
+                                        /* An empty prefix is the default, so we shortcut out here */
+                                        if (isempty(s)) {
+                                                *ret = NULL;
+                                                return 0;
+                                        }
+                                        prefix = strdup(s);
+                                        if (!prefix)
+                                                return -ENOMEM;
+
+                                        *ret = TAKE_PTR(prefix);
+                                        return 0;
+                                }
+                        }
+                }
+                /* Varlink not available or method failed: fall back to D-Bus */
+        }
+
+        r = sd_bus_open_system(&bus);
+        if (r < 0)
+                return r;
+
+        r = sd_bus_get_property_string(bus, "org.freedesktop.login1", "/org/freedesktop/login1",
+                                       "org.freedesktop.login1.Manager", "SessionCgroupPrefix", &error, &prefix);
+        if (r < 0) {
+                if (sd_bus_error_has_name(&error, SD_BUS_ERROR_UNKNOWN_PROPERTY) ||
+                    sd_bus_error_has_name(&error, SD_BUS_ERROR_SERVICE_UNKNOWN) ||
+                    sd_bus_error_has_name(&error, SD_BUS_ERROR_UNKNOWN_OBJECT))
+                        return -ENODATA;
+
+                return r;
+        }
+
+        *ret = TAKE_PTR(prefix);
+        return 0;
+}
+
+static int sd_pid_get_session_prefix_aware(pid_t pid, char **ret_session) {
+        _cleanup_free_ char *prefix = NULL;
+        _cleanup_free_ char *cgroup = NULL, *root = NULL, *prefixed = NULL, *stripped_path = NULL;
+        const char *shifted, *stripped;
+        int r;
+
+        assert(ret_session);
+
+        r = get_session_cgroup_prefix(&prefix);
+        if (r < 0 || isempty(prefix))
+                return cg_pid_get_session(pid, ret_session);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        r = cg_get_root_path(&root);
+        if (r < 0)
+                return r;
+
+        r = cg_shift_path(cgroup, root, &shifted);
+        if (r < 0)
+                return r;
+
+        prefixed = path_join("/", prefix);
+        if (!prefixed)
+                return -ENOMEM;
+
+        stripped = path_startswith(shifted, prefixed);
+        if (!stripped || stripped[0] == '\0')
+                return -ENXIO;
+
+        stripped_path = path_join("/", stripped);
+        if (!stripped_path)
+                return -ENOMEM;
+
+        return cg_path_get_session(stripped_path, ret_session);
+}
+
+static int sd_pid_get_owner_uid_prefix_aware(pid_t pid, uid_t *ret_uid) {
+        _cleanup_free_ char *prefix = NULL;
+        _cleanup_free_ char *cgroup = NULL, *root = NULL, *prefixed = NULL, *stripped_path = NULL;
+        const char *shifted, *stripped;
+        int r;
+
+        assert(ret_uid);
+
+        r = get_session_cgroup_prefix(&prefix);
+        if (r < 0 || isempty(prefix))
+                return cg_pid_get_owner_uid(pid, ret_uid);
+
+        r = cg_pid_get_path_shifted(pid, NULL, &cgroup);
+        if (r < 0)
+                return r;
+
+        r = cg_get_root_path(&root);
+        if (r < 0)
+                return r;
+
+        r = cg_shift_path(cgroup, root, &shifted);
+        if (r < 0)
+                return r;
+
+        prefixed = path_join("/", prefix);
+        if (!prefixed)
+                return -ENOMEM;
+
+        stripped = path_startswith(shifted, prefixed);
+        if (!stripped || stripped[0] == '\0')
+                return -ENXIO;
+
+        stripped_path = path_join("/", stripped);
+        if (!stripped_path)
+                return -ENOMEM;
+
+        return cg_path_get_owner_uid(stripped_path, ret_uid);
+}
+#endif // 1
+
 _public_ int sd_pid_get_session(pid_t pid, char **session) {
         int r;
 
         assert_return(pid >= 0, -EINVAL);
         assert_return(session, -EINVAL);
 
+#if 0 /// elogind uses prefix-aware sd-login via D-Bus SessionCgroupPrefix (unconditional) with varlink fallback
         r = cg_pid_get_session(pid, session);
+#else // 0
+        r = sd_pid_get_session_prefix_aware(pid, session);
+#endif // 0
+
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 }
 
@@ -123,7 +283,11 @@ _public_ int sd_pid_get_owner_uid(pid_t pid, uid_t *uid) {
         assert_return(pid >= 0, -EINVAL);
         assert_return(uid, -EINVAL);
 
+#if 0 /// elogind uses prefix-aware sd-login via D-Bus SessionCgroupPrefix (unconditional) with varlink fallback
         r = cg_pid_get_owner_uid(pid, uid);
+#else // 0
+        r = sd_pid_get_owner_uid_prefix_aware(pid, uid);
+#endif // 0
         return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
 }
 
@@ -363,7 +527,12 @@ _public_ int sd_peer_get_session(int fd, char **session) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses prefix-aware sd-login via D-Bus SessionCgroupPrefix (unconditional) with varlink fallback
         return cg_pid_get_session(ucred.pid, session);
+#else // 0
+        r = sd_pid_get_session_prefix_aware(ucred.pid, session);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
+#endif // 0
 }
 
 _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
@@ -377,7 +546,12 @@ _public_ int sd_peer_get_owner_uid(int fd, uid_t *uid) {
         if (r < 0)
                 return r;
 
+#if 0 /// elogind uses prefix-aware sd-login via D-Bus SessionCgroupPrefix (unconditional) with varlink fallback
         return cg_pid_get_owner_uid(ucred.pid, uid);
+#else // 0
+        r = sd_pid_get_owner_uid_prefix_aware(ucred.pid, uid);
+        return IN_SET(r, -ENXIO, -ENOMEDIUM) ? -ENODATA : r;
+#endif // 0
 }
 
 _public_ int sd_peer_get_unit(int fd, char **unit) {

@@ -208,6 +208,10 @@ static Manager* manager_free(Manager *m) {
         if (m->unlink_nologin)
                 (void) unlink_or_warn("/run/nologin");
 
+#if 1 /// We are no longer officially "inside" elogind
+        elogind_set_inside(false);
+#endif // 1
+
         hashmap_free(m->polkit_registry);
 
         sd_bus_flush_close_unref(m->bus);
@@ -1227,6 +1231,9 @@ static int manager_startup(Manager *m) {
         r = manager_varlink_init(m);
         if (r < 0)
                 log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
+
+        // We are now officially "inside" elogind
+        elogind_set_inside(true);
 #endif // 1
 
         /* Instantiate magic seat 0 */
