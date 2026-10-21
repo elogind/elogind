@@ -54,6 +54,8 @@ void elogind_set_inside(bool b) {
 
 #if 1 /// elogind: prefix-aware sd-login via varlink, falling back to D-Bus SessionCgroupPrefix
 static int get_session_cgroup_prefix(char **ret) {
+        static char *cached_prefix = NULL;
+        static bool cached_done = false;
         _cleanup_(sd_varlink_unrefp) sd_varlink *vl = NULL;
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *reply = NULL;
         _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
@@ -64,7 +66,19 @@ static int get_session_cgroup_prefix(char **ret) {
 
         assert(ret);
 
-        // The daemon never uses sd-login for its own prefix; manager helpers do
+        /* If we have a cached prefix, return it unconditionally */
+        if (cached_done) {
+                if (cached_prefix) {
+                        *ret = strdup(cached_prefix);
+                        if (!*ret)
+                                return -ENOMEM;
+                } else
+                        *ret = NULL;
+
+                return 0;
+        }
+
+        /* The daemon never uses sd-login for its own prefix; manager helpers do */
         if (inside_elogind)
                 return -ENODATA;
 
@@ -81,6 +95,8 @@ static int get_session_cgroup_prefix(char **ret) {
                                 if (s) {
                                         /* An empty prefix is the default, so we shortcut out here */
                                         if (isempty(s)) {
+                                                cached_done = true;
+                                                cached_prefix = mfree(cached_prefix);
                                                 *ret = NULL;
                                                 return 0;
                                         }
@@ -89,6 +105,9 @@ static int get_session_cgroup_prefix(char **ret) {
                                                 return -ENOMEM;
 
                                         *ret = TAKE_PTR(prefix);
+                                        cached_done = true;
+                                        free(cached_prefix);
+                                        cached_prefix = strdup(*ret);
                                         return 0;
                                 }
                         }
@@ -112,6 +131,9 @@ static int get_session_cgroup_prefix(char **ret) {
         }
 
         *ret = TAKE_PTR(prefix);
+        cached_done = true;
+        free(cached_prefix);
+        cached_prefix = *ret ? strdup(*ret) : NULL;
         return 0;
 }
 
