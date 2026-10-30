@@ -1227,15 +1227,6 @@ static int manager_startup(Manager *m) {
         if (r < 0)
                 return r;
 
-#if 1 /// elogind supports a varlink server by its own
-        r = manager_varlink_init(m);
-        if (r < 0)
-                log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
-
-        // We are now officially "inside" elogind
-        elogind_set_inside(true);
-#endif // 1
-
         /* Instantiate magic seat 0 */
         r = manager_add_seat(m, "seat0", &m->seat0);
         if (r < 0)
@@ -1283,6 +1274,15 @@ static int manager_startup(Manager *m) {
 #if 1 /// elogind: warn on stale prefix leftovers
         (void) manager_warn_stale_prefix_cgroups(m);
 #endif // 1
+#if 1 /// elogind supports a varlink server by its own, start after enumeration to avoid self-deadlock
+        r = manager_varlink_init(m);
+        if (r < 0)
+                log_warning_errno(r, "Failed to set up Varlink, ignoring: %m");
+
+        // We are now officially "inside" elogind
+        elogind_set_inside(true);
+#endif // 1
+
 
 #if 0 /// elogind does not support autospawning of vts
         /* Reserve the special reserved VT */
