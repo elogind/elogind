@@ -12,7 +12,9 @@
 //#include "varlink-io.systemd.ManagedOOM.h"
 #include "varlink-util.h"
 /// Additional includes needed by elogind
+#include "bus-error.h"
 #include "cgroup-util.h"
+#include "sd-bus.h"
 #include "dynamic-user.h"
 #include "logind.h"
 #include "path-util.h"
@@ -622,7 +624,6 @@ static int vl_method_get_session_by_pid(sd_varlink *link, sd_json_variant *param
                 { "pid", SD_JSON_VARIANT_INTEGER, sd_json_dispatch_int, offsetof(typeof(p), pid), 0 },
                 {}
         };
-        _cleanup_free_ char *session_name = NULL;
         _cleanup_(sd_json_variant_unrefp) sd_json_variant *reply = NULL;
         Session *session = NULL;
         PidRef pidref = PIDREF_NULL;
@@ -643,10 +644,36 @@ static int vl_method_get_session_by_pid(sd_varlink *link, sd_json_variant *param
                 return r;
 
         r = manager_get_session_by_pidref(m, &pidref, &session);
-        if (r < 0)
-                return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
-        if (!session)
-                return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+        if (r < 0 || !session) {
+                /* Forked varlink has stale Manager (COW at fork before sessions exist) — proxy via D-Bus to parent. */
+                _cleanup_(sd_bus_flush_close_unrefp) sd_bus *bus = NULL;
+                _cleanup_(sd_bus_error_free) sd_bus_error error = SD_BUS_ERROR_NULL;
+                _cleanup_(sd_bus_message_unrefp) sd_bus_message *reply_msg = NULL;
+                _cleanup_free_ char *bus_id = NULL;
+                const char *path = NULL;
+
+                r = sd_bus_open_system(&bus);
+                if (r < 0)
+                        return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+
+                r = sd_bus_call_method(bus, "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "GetSessionByPID", &error, &reply_msg, "u", (uint32_t) p.pid);
+                if (r < 0)
+                        return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+
+                r = sd_bus_message_read(reply_msg, "o", &path);
+                if (r < 0)
+                        return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+
+                r = sd_bus_get_property_string(bus, "org.freedesktop.login1", path, "org.freedesktop.login1.Session", "Id", &error, &bus_id);
+                if (r < 0)
+                        return sd_varlink_error(link, "io.elogind.Manager.NoSessionForPID", NULL);
+
+                r = sd_json_buildo(&reply, SD_JSON_BUILD_PAIR("session", SD_JSON_BUILD_STRING(bus_id)));
+                if (r < 0)
+                        return r;
+
+                return sd_varlink_reply(link, reply);
+        }
 
         r = sd_json_buildo(&reply, SD_JSON_BUILD_PAIR("session", SD_JSON_BUILD_STRING(session->id)));
         if (r < 0)
