@@ -104,6 +104,12 @@ static int elogind_sigchld_handler(
                         if ( WIFEXITED(status) || WIFSIGNALED(status) )
                                 m->tool_fork_pid = 0;
                 }
+                if ( m->varlink_pid > 0 ) {
+                        waitpid(m->varlink_pid, &status, WNOHANG | WUNTRACED);
+                        log_debug_elogind( "varlink PID %d waitpid() set status %d", m->varlink_pid, status );
+                        if ( WIFEXITED(status) || WIFSIGNALED(status) )
+                                m->varlink_pid = 0;
+                }
 
                 /* The sleep forker PID is always "the outer one", so wait for it second. */
                 if ( m->sleep_fork_pid > 0 ) {
@@ -492,6 +498,7 @@ int elogind_manager_new( Manager* m ) {
         m->do_interrupt      = false;
         m->sleep_fork_pid    = 0;
         m->tool_fork_pid     = 0;
+        m->varlink_pid       = 0;
         m->sleep_fork_action = NULL;
 
         /* If elogind should be its own controller, mount its cgroup */

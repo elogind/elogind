@@ -123,6 +123,8 @@ struct Manager {
 
         /* Core varlink server for future functionality */
         sd_varlink_server *varlink_server;
+        pid_t varlink_pid;
+        sd_event_source *varlink_child_event_source;
 #endif // 1
 
         Seat *seat0;

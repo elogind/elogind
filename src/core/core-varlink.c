@@ -17,6 +17,7 @@
 #include "logind.h"
 #include "path-util.h"
 #include "pidref.h"
+#include "process-util.h"
 #include "sd-varlink.h"
 
 typedef struct LookupParameters {
@@ -739,6 +740,9 @@ int manager_setup_varlink_server(Manager *m) {
 
 static int manager_varlink_init_system(Manager *m) {
         int r;
+#if 1 /// elogind has to fork out the varlink part
+        pid_t pid;
+#endif // 1
 
         assert(m);
 
@@ -746,6 +750,9 @@ static int manager_varlink_init_system(Manager *m) {
         if (!MANAGER_IS_SYSTEM(m))
                 return 0;
 #endif // 0
+
+// ---
+#if 0 /// elogind has to fork varlink server to avoid deadlock with synchronous userdb lookups (like sleep forking)
 
         r = manager_setup_varlink_server(m);
         if (r < 0)
@@ -755,11 +762,7 @@ static int manager_varlink_init_system(Manager *m) {
         if (!MANAGER_IS_TEST_RUN(m)) {
                 (void) mkdir_label("/run/systemd/userdb", 0755);
 
-#if 0 /// elogind cannot support managed oom
                 FOREACH_STRING(address, "/run/systemd/userdb/io.systemd.DynamicUser", VARLINK_ADDR_PATH_MANAGED_OOM_SYSTEM) {
-#else // 0
-                for (const char *address = "/run/systemd/userdb/io.systemd.DynamicUser"; address; address = NULL) {
-#endif // 0
                         if (!fresh) {
                                 /* We might have got sockets through deserialization. Do not bind to them twice. */
 
@@ -779,6 +782,47 @@ static int manager_varlink_init_system(Manager *m) {
                                 return log_error_errno(r, "Failed to bind to varlink socket '%s': %m", address);
                 }
         }
+#else // 0
+        if (MANAGER_IS_TEST_RUN(m))
+                return 0;
+
+        if (m->varlink_pid > 0)
+                return 0;
+
+        (void) mkdir_label("/run/systemd/userdb", 0755);
+
+        r = safe_fork("(varlink)", FORK_RESET_SIGNALS|FORK_CLOSE_ALL_FDS|FORK_LOG, &pid);
+        if (r < 0)
+                return log_error_errno(r, "Failed to fork varlink server: %m");
+        if (r == 0) {
+                /* Child — own event loop for varlink, parent's m->event stays untouched (COW). */
+                _cleanup_(sd_event_unrefp) sd_event *e = NULL;
+
+                r = sd_event_new(&e);
+                if (r < 0)
+                        _exit(EXIT_FAILURE);
+
+                /* Child's copy gets its own event and fresh varlink server. */
+                m->event = e;
+                m->varlink_server = NULL;
+
+                r = manager_setup_varlink_server(m);
+                if (r < 0)
+                        _exit(EXIT_FAILURE);
+
+                r = sd_varlink_server_listen_address(m->varlink_server, "/run/systemd/userdb/io.systemd.DynamicUser", 0666);
+                if (r < 0)
+                        _exit(EXIT_FAILURE);
+
+                log_debug("elogind varlink server (forked) listening on /run/systemd/userdb/io.systemd.DynamicUser (PID " PID_FMT ")", getpid_cached());
+
+                r = sd_event_loop(e);
+                _exit(r < 0 ? EXIT_FAILURE : EXIT_SUCCESS);
+        }
+
+        m->varlink_pid = pid;
+        log_debug("Forked varlink server as PID " PID_FMT, pid);
+#endif // 0
 
         return 1;
 }
@@ -807,6 +851,15 @@ int manager_varlink_init(Manager *m) {
 
 void manager_varlink_done(Manager *m) {
         assert(m);
+
+#if 1 /// elogind: forked varlink server — terminate child
+        if (m->varlink_pid > 0) {
+                (void) kill(m->varlink_pid, SIGTERM);
+                (void) waitpid(m->varlink_pid, NULL, 0);
+                m->varlink_pid = 0;
+        }
+        m->varlink_child_event_source = sd_event_source_unref(m->varlink_child_event_source);
+#endif // 1
 
 #if 0 /// elogind can not support managed oom
         /* Explicitly close the varlink connection to oomd. Note we first take the varlink connection out of
