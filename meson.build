@@ -2536,6 +2536,12 @@ basic_includes = include_directories(
         'src/systemd',
         '.')
 
+#if 1 /// if elogind is built on musl, we have to include some overloads
+if get_option('libc') == 'musl'
+basic_includes = [include_directories('src/include/musl'), basic_includes]
+endif
+#endif // 1
+
 #if 0 /// elogind has fewer subdirectories here, and needs a few others
 # libsystemd_includes = [basic_includes, include_directories(
 #         'src/libsystemd/sd-bus',

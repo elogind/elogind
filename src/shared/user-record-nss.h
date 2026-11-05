@@ -2,7 +2,11 @@
 #pragma once
 
 #include <grp.h>
+#if 0 /// to support musl, elogind uses a stub gshadow.h
 #include <gshadow.h>
+#else // 0
+#include "gshadow.h"
+#endif // 0
 #include <pwd.h>
 #include <shadow.h>
 
