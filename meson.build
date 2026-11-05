@@ -2526,12 +2526,6 @@ boot_stubs = []
 
 build_dir_include = include_directories('.')
 
-#if 1 /// if elogind is built on musl, we have to include some overloads
-if get_option('libc') == 'musl'
-	libc_include_dir = 'src/include/musl'
-endif
-
-
 basic_includes = include_directories(
         'src/basic',
         'src/fundamental',
@@ -2541,6 +2535,12 @@ basic_includes = include_directories(
 #endif // 1
         'src/systemd',
         '.')
+
+#if 1 /// if elogind is built on musl, we have to include some overloads
+if get_option('libc') == 'musl'
+basic_includes = [include_directories('src/include/musl'), basic_includes]
+endif
+#endif // 1
 
 #if 0 /// elogind has fewer subdirectories here, and needs a few others
 # libsystemd_includes = [basic_includes, include_directories(
