@@ -475,7 +475,7 @@ option('polkit', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 
 #if 1 /// early adoption of the 'libc' option, so elogind can keep supporting musl
 option('libc', type : 'combo', choices : ['glibc', 'musl'],
        description : 'libc implementation to be used')
-#endi // 1
+#endif // 1
 
 option('acl', type : 'feature', deprecated : { 'true' : 'enabled', 'false' : 'disabled' },
        description : 'libacl support')
