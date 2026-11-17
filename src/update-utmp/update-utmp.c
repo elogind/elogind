@@ -177,14 +177,19 @@ static int on_reboot(int argc, char *argv[], void *userdata) {
 #if 0 /// systemd hasn't started the system, so elogind always uses NOW()
         /* If this call fails, then utmp_put_reboot() will fix to the current time. */
         (void) get_startup_monotonic_time(c, &t);
-#else // 0
-        t = now(CLOCK_REALTIME);
-#endif // 0
         boottime = map_clock_usec(t, CLOCK_MONOTONIC, CLOCK_REALTIME);
         /* We query the recorded monotonic time here (instead of the system clock CLOCK_REALTIME), even
          * though we actually want the system clock time. That's because there's a likely chance that the
          * system clock wasn't set right during early boot. By manually converting the monotonic clock to the
          * system clock here we can compensate for incorrectly set clocks during early boot. */
+#else // 0
+        /* elogind has no systemd to query UserspaceTimestampMonotonic from, and runs this at
+         * shutdown-for-reboot (see elogind_execute_shutdown_or_sleep()), not at startup. t is already
+         * CLOCK_REALTIME, so use it directly: mapping it as monotonic would add (realtime-monotonic)
+         * and land decades in the future. */
+        t = now(CLOCK_REALTIME);
+        boottime = t;
+#endif // 0
 
         r = utmp_put_reboot(boottime);
         if (r < 0)
